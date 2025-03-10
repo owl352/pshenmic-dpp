@@ -2,7 +2,7 @@
 
 That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript
 
-**At this moment available classes:**
+**At this moment available structs:**
 - `Document`
 - `DocumentsBatch`
 - `IdentityPublicKey`
