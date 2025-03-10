@@ -43,8 +43,10 @@ impl From<&IdentifierWrapper> for Identifier {
 // Try to extract Identifier from **stringified** identifier_utils.
 // The `js_value` can be a stringified instance of: `Identifier`, `Buffer` or `Array`
 pub(crate) fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier, JsValue> {
-    js_value.is_undefined() || js_value.is_null();
-    
+    if js_value.is_undefined() || js_value.is_null() {
+        wasm_bindgen::throw_val(JsValue::from_str("the identifier cannot be null or undefined"));
+    }
+      
     let value = js_value.with_serde_to_json_value()?;
     match value {
         Value::Array(arr) => {

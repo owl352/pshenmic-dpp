@@ -1,11 +1,11 @@
+use dpp::platform_value::converter::serde_json::BTreeValueJsonConverter;
 use dpp::platform_value::string_encoding::Encoding::Base58;
-use dpp::platform_value::Value;
 use dpp::prelude::Revision;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use crate::document::DocumentWASM;
 use crate::identifier_utils::identifier_from_js_value;
-use crate::utils::{ToSerdeJSONExt};
+use crate::utils::ToSerdeJSONExt;
 
 #[wasm_bindgen]
 impl DocumentWASM {
@@ -53,7 +53,11 @@ impl DocumentWASM {
 
   #[wasm_bindgen(js_name=getProperties)]
   pub fn js_get_properties(&self) -> JsValue {
-    JsValue::from(Value::from(self.properties.clone()).as_str())
+    let json = &self.properties.to_json_value().unwrap();
+    
+    let obj = json.as_object().unwrap();
+
+    serde_wasm_bindgen::to_value(obj).unwrap()
   }
 
   #[wasm_bindgen(js_name=getRevision)]
