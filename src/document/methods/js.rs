@@ -34,7 +34,7 @@ impl DocumentWASM {
 
   #[wasm_bindgen(js_name=getId)]
   pub fn js_get_id(&self) -> JsValue {
-    JsValue::from_str(&self.id.to_string(Base58).as_str())
+    JsValue::from_str(self.id.to_string(Base58).as_str())
   }
 
   #[wasm_bindgen(js_name=getEntropy)]
@@ -48,7 +48,7 @@ impl DocumentWASM {
 
   #[wasm_bindgen(js_name=getOwnerId)]
   pub fn js_get_owner_id(&self) -> JsValue {
-    JsValue::from_str(&self.owner_id.to_string(Base58).as_str())
+    JsValue::from_str(self.owner_id.to_string(Base58).as_str())
   }
 
   #[wasm_bindgen(js_name=getProperties)]

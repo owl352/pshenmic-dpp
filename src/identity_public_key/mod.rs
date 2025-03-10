@@ -12,7 +12,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::identity_public_key::key_type::KeyTypeWASM;
 use crate::identity_public_key::purpose::PurposeWASM;
 use crate::identity_public_key::security_level::SecurityLevelWASM;
-use crate::utils::WithJsError;
 
 #[wasm_bindgen(js_name = IdentityPublicKeyWASM)]
 pub struct IdentityPublicKeyWASM {

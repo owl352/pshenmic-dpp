@@ -43,9 +43,8 @@ impl From<&IdentifierWrapper> for Identifier {
 // Try to extract Identifier from **stringified** identifier_utils.
 // The `js_value` can be a stringified instance of: `Identifier`, `Buffer` or `Array`
 pub(crate) fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier, JsValue> {
-    if js_value.is_undefined() || js_value.is_null() {
-        ()
-    }
+    js_value.is_undefined() || js_value.is_null();
+    
     let value = js_value.with_serde_to_json_value()?;
     match value {
         Value::Array(arr) => {
@@ -58,7 +57,7 @@ pub(crate) fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier,
             .map_err(ProtocolError::ValueError)
             .with_js_error(),
         _ => {
-            Err(JsValue::from_str(&("Invalid ID. Expected array or string")))
+            Err(JsValue::from_str("Invalid ID. Expected array or string"))
         }
     }
 }
