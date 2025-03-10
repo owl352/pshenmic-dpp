@@ -1,0 +1,29 @@
+[package]
+name = "wasm-rs-dpp"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+js-sys = "0.3.53"
+serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+dpp = { path = "../platform/packages/rs-dpp", default-features = false, features = [
+    "state-transition-signing",
+    "state-transitions",
+    "platform-value",
+    "identity-value-conversion",
+    "document-value-conversion",
+    "document-json-conversion",
+]}
+itertools = { version = "0.13" }
+anyhow = { version = "1.0.75" }
+bincode = {version = "=2.0.0-rc.3"}
+bincode_derive = {version = "=2.0.0-rc.3"}
+web-sys = { version = "0.3.77", features = ["console"] }
+
