@@ -1,0 +1,15 @@
+[package]
+name = "pshenmic_dpp_public_key"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+js-sys = "0.3.77"
+dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+    "identity-value-conversion",
+]}
+pshenmic_dpp_enums = {path = "../enums"}

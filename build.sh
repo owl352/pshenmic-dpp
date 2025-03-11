@@ -8,10 +8,10 @@ CARGO_BUILD_PROFILE="${CARGO_BUILD_PROFILE:-dev}"
 PROFILE_ARG="--profile ${CARGO_BUILD_PROFILE}"
 PROFILE=debug
 
-OUTPUT_FILE="./wasm/wasm_rs_dpp_bg.wasm"
+OUTPUT_FILE="${PWD}/wasm/pshenmic_dpp_bg.wasm"
 
 BUILD_COMMAND="cargo build --config net.git-fetch-with-cli=true --target=${TARGET} ${PROFILE_ARG}"
-BINDGEN_COMMAND="wasm-bindgen --out-dir=${OUTPUT_DIR} --target=web --omit-default-module-path ./target/${TARGET}/${PROFILE}/wasm_rs_dpp.wasm"
+BINDGEN_COMMAND="wasm-bindgen --out-dir=${OUTPUT_DIR} --target=web --omit-default-module-path ${PWD}/target/${TARGET}/${PROFILE}/pshenmic_dpp.wasm"
 
 if ! [[ -d ${OUTPUT_DIR} ]]; then
   mkdir -p "${OUTPUT_DIR}"

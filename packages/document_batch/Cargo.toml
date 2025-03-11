@@ -1,0 +1,20 @@
+[package]
+name = "pshenmic_dpp_document_batch"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+pshenmic_dpp_document = {path = "../document"}
+pshenmic_dpp_enums = {path = "../enums"}
+pshenmic_dpp_public_key = {path = "../public_key"}
+pshenmic_dpp_private_key = {path = "../private_key"}
+pshenmic_dpp_utils = {path = "../utils"}
+pshenmic_dpp_mock_bls = {path = "../mock_bls"}
+dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+    "document-json-conversion",
+    "state-transition-signing"
+]}

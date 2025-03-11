@@ -13,7 +13,7 @@ pub enum KeyTypeWASM {
 
 impl From<KeyTypeWASM> for KeyType {
   fn from(key_type: KeyTypeWASM) -> Self {
-    match key_type { 
+    match key_type {
       KeyTypeWASM::ECDSA_SECP256K1 => KeyType::ECDSA_SECP256K1,
       KeyTypeWASM::BLS12_381 => KeyType::BLS12_381,
       KeyTypeWASM::ECDSA_HASH160 => KeyType::ECDSA_HASH160,
@@ -25,7 +25,7 @@ impl From<KeyTypeWASM> for KeyType {
 
 impl From<KeyType> for KeyTypeWASM {
   fn from(key_type: KeyType) -> Self {
-    match key_type { 
+    match key_type {
       KeyType::ECDSA_SECP256K1 => KeyTypeWASM::ECDSA_SECP256K1,
       KeyType::BLS12_381 => KeyTypeWASM::BLS12_381,
       KeyType::ECDSA_HASH160 => KeyTypeWASM::ECDSA_HASH160,

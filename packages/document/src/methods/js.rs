@@ -3,9 +3,8 @@ use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::prelude::Revision;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::document::DocumentWASM;
-use crate::identifier_utils::identifier_from_js_value;
-use crate::utils::ToSerdeJSONExt;
+use pshenmic_dpp_utils::{identifier_from_js_value, ToSerdeJSONExt};
+use crate::DocumentWASM;
 
 #[wasm_bindgen]
 impl DocumentWASM {

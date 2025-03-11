@@ -1,6 +1,9 @@
 # PSHENMIC-DPP
 
-That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript
+
+
+That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
+Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it
 
 **At this moment available structs:**
 - `Document`
@@ -12,6 +15,15 @@ That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindi
 ## Example
 
 ```js
+import * as wasm from '../wasm/pshenmic_dpp';
+import wasmBytes from "../wasm/pshenmic_dpp_bg"
+
+function toHexString(byteArray) {
+  return Array.prototype.map.call(byteArray, function(byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+  }).join('');
+}
+
 var binaryString = atob(wasmBytes);
 var bytes = new Uint8Array(binaryString.length);
 for (var i = 0; i < binaryString.length; i++) {
@@ -20,7 +32,7 @@ for (var i = 0; i < binaryString.length; i++) {
 
 wasm.initSync({module: bytes.buffer})
 
-const document = await wasm.DocumentWASM.new(
+const document = wasm.DocumentWASM.new(
     {
         "name": "MyPool",
         "type": "EVONODE",

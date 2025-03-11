@@ -1,0 +1,13 @@
+[package]
+name = "pshenmic_dpp_enums"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = "0.2.100"
+dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+    "identity-value-conversion",
+]}

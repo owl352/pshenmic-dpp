@@ -1,0 +1,12 @@
+[package]
+name = "pshenmic_dpp_mock_bls"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+    "bls-signatures",
+]}

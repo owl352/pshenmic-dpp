@@ -1,6 +1,8 @@
+mod buffer;
+
 use std::collections::BTreeMap;
 use std::convert::TryInto;
-
+use itertools::Itertools;
 use anyhow::{anyhow, bail, Context};
 use dpp::{ProtocolError};
 use dpp::identifier::Identifier;
@@ -10,6 +12,8 @@ use js_sys::{Function};
 use serde::de::DeserializeOwned;
 use serde_json::Value as JsonValue;
 use wasm_bindgen::{convert::RefFromWasmAbi, prelude::*};
+use dpp::platform_value::string_encoding::Encoding;
+use wasm_bindgen::JsValue;
 
 pub trait ToSerdeJSONExt {
     fn with_serde_to_json_value(&self) -> Result<JsonValue, JsValue>;
@@ -19,7 +23,7 @@ pub trait ToSerdeJSONExt {
     fn with_serde_to_platform_value_map(&self) -> Result<BTreeMap<String, Value>, JsValue>;
     fn with_serde_into<D: DeserializeOwned>(&self) -> Result<D, JsValue>
     where
-        D: for<'de> serde::de::Deserialize<'de> + 'static;
+      D: for<'de> serde::de::Deserialize<'de> + 'static;
 }
 
 impl ToSerdeJSONExt for JsValue {
@@ -39,16 +43,16 @@ impl ToSerdeJSONExt for JsValue {
     /// as `JsValue` must be stringified first
     fn with_serde_to_platform_value_map(&self) -> Result<BTreeMap<String, Value>, JsValue> {
         self.with_serde_to_platform_value()?
-            .into_btree_string_map()
-            .map_err(ProtocolError::ValueError)
-            .with_js_error()
+          .into_btree_string_map()
+          .map_err(ProtocolError::ValueError)
+          .with_js_error()
     }
 
     /// converts the `JsValue` into any type that is supported by serde. It's an expensive conversion
     /// as the `jsValue` must be stringified first
     fn with_serde_into<D>(&self) -> Result<D, JsValue>
     where
-        D: for<'de> serde::de::Deserialize<'de> + 'static,
+      D: for<'de> serde::de::Deserialize<'de> + 'static,
     {
         with_serde_into(self)
     }
@@ -56,7 +60,7 @@ impl ToSerdeJSONExt for JsValue {
 
 pub fn to_vec_js<T>(iter: impl IntoIterator<Item = T>) -> Vec<JsValue>
 where
-    T: Into<JsValue>,
+  T: Into<JsValue>,
 {
     iter.into_iter().map(|v| v.into()).collect()
 }
@@ -68,34 +72,34 @@ pub fn to_vec_of_serde_values(
     values: impl IntoIterator<Item = impl AsRef<JsValue>>,
 ) -> Result<Vec<JsonValue>, JsValue> {
     values
-        .into_iter()
-        .map(|v| v.as_ref().with_serde_to_json_value())
-        .collect()
+      .into_iter()
+      .map(|v| v.as_ref().with_serde_to_json_value())
+      .collect()
 }
 
 pub fn to_vec_of_platform_values(
     values: impl IntoIterator<Item = impl AsRef<JsValue>>,
 ) -> Result<Vec<Value>, JsValue> {
     values
-        .into_iter()
-        .map(|v| v.as_ref().with_serde_to_platform_value())
-        .collect()
+      .into_iter()
+      .map(|v| v.as_ref().with_serde_to_platform_value())
+      .collect()
 }
 
 pub fn into_vec_of<T>(iter: &[JsValue]) -> Vec<T>
 where
-    T: for<'de> serde::de::Deserialize<'de>,
+  T: for<'de> serde::de::Deserialize<'de>,
 {
     iter.iter()
-        .map(|v| serde_wasm_bindgen::from_value(v.clone()).expect("data malformed"))
-        .collect()
+      .map(|v| serde_wasm_bindgen::from_value(v.clone()).expect("data malformed"))
+      .collect()
 }
 
 pub fn with_serde_to_json_value(data: JsValue) -> Result<JsonValue, JsValue> {
     let data = stringify(&data)?;
     let value: JsonValue = serde_json::from_str(&data)
-        .with_context(|| format!("cant convert {data:#?} to serde json value"))
-        .map_err(|e| format!("{e:#}"))?;
+      .with_context(|| format!("cant convert {data:#?} to serde json value"))
+      .map_err(|e| format!("{e:#}"))?;
     Ok(value)
 }
 
@@ -105,12 +109,12 @@ pub fn with_serde_to_platform_value(data: &JsValue) -> Result<Value, JsValue> {
 
 pub fn with_serde_into<D>(data: &JsValue) -> Result<D, JsValue>
 where
-    D: for<'de> serde::de::Deserialize<'de> + 'static,
+  D: for<'de> serde::de::Deserialize<'de> + 'static,
 {
     let data = stringify(data)?;
     let value: D = serde_json::from_str(&data)
-        .with_context(|| format!("cant convert {:#?} to serde json value", data))
-        .map_err(|e| format!("{:#}", e))?;
+      .with_context(|| format!("cant convert {:#?} to serde json value", data))
+      .map_err(|e| format!("{:#}", e))?;
     Ok(value)
 }
 
@@ -121,7 +125,7 @@ pub fn stringify(data: &JsValue) -> Result<String, JsValue> {
     );
 
     let data_string: String =
-        js_sys::JSON::stringify_with_replacer(data, &JsValue::from(replacer_func))?.into();
+      js_sys::JSON::stringify_with_replacer(data, &JsValue::from(replacer_func))?.into();
 
     Ok(data_string)
 }
@@ -151,7 +155,7 @@ impl<T> WithJsError<T> for Result<T, ProtocolError> {
 
 pub trait IntoWasm {
     fn to_wasm<T: RefFromWasmAbi<Abi = u32>>(&self, class_name: &str)
-        -> Result<T::Anchor, JsValue>;
+                                             -> Result<T::Anchor, JsValue>;
 }
 
 impl IntoWasm for JsValue {
@@ -171,19 +175,19 @@ pub fn generic_of_js_val<T: RefFromWasmAbi<Abi = u32>>(
         return Err(JsError::new(
             format!("Value supplied as {} is not an object", class_name).as_str(),
         )
-        .into());
+          .into());
     }
 
     let ctor_name = js_sys::Object::get_prototype_of(js_value)
-        .constructor()
-        .name();
+      .constructor()
+      .name();
 
     if ctor_name == class_name {
         let ptr = js_sys::Reflect::get(js_value, &JsValue::from_str("__wbg_ptr"))?;
         let ptr_u32: u32 = ptr
-            .as_f64()
-            .ok_or_else(|| JsValue::from(JsError::new("Invalid JS object pointer")))?
-            as u32;
+          .as_f64()
+          .ok_or_else(|| JsValue::from(JsError::new("Invalid JS object pointer")))?
+          as u32;
         let reference = unsafe { T::ref_from_abi(ptr_u32) };
         Ok(reference)
     } else {
@@ -205,14 +209,14 @@ pub fn get_bool_from_options(
     if options.is_object() {
         let val2 = options.with_serde_to_json_value()?;
         let kek = val2
-            .as_object()
-            .ok_or_else(|| JsError::new("Can't parse options"))?;
+          .as_object()
+          .ok_or_else(|| JsError::new("Can't parse options"))?;
         let kek2 = kek
-            .get(property)
-            .ok_or_else(|| JsError::new(&format!("Can't get property {} of options", property)))?;
+          .get(property)
+          .ok_or_else(|| JsError::new(&format!("Can't get property {} of options", property)))?;
         Ok(kek2
-            .as_bool()
-            .ok_or_else(|| JsError::new(&format!("Option {} is not a boolean", property)))?)
+          .as_bool()
+          .ok_or_else(|| JsError::new(&format!("Option {} is not a boolean", property)))?)
     } else {
         Ok(default)
     }
@@ -223,9 +227,9 @@ pub fn get_bool_from_options(
 #[allow(deprecated)]
 pub fn get_class_name(value: &JsValue) -> String {
     js_sys::Object::get_prototype_of(value)
-        .constructor()
-        .name()
-        .into()
+      .constructor()
+      .name()
+      .into()
 }
 
 #[allow(dead_code)]
@@ -234,9 +238,9 @@ pub fn get_class_name(value: &JsValue) -> String {
 pub fn try_to_u64(value: JsValue) -> Result<u64, anyhow::Error> {
     if value.is_bigint() {
         js_sys::BigInt::new(&value)
-            .map_err(|e| anyhow!("unable to create bigInt: {}", e.to_string()))?
-            .try_into()
-            .map_err(|e| anyhow!("conversion of BigInt to u64 failed: {:#}", e))
+          .map_err(|e| anyhow!("unable to create bigInt: {}", e.to_string()))?
+          .try_into()
+          .map_err(|e| anyhow!("conversion of BigInt to u64 failed: {:#}", e))
     } else if value.as_f64().is_some() {
         let number = js_sys::Number::from(value);
         convert_number_to_u64(number)
@@ -265,7 +269,7 @@ pub fn convert_number_to_u64(js_number: js_sys::Number) -> Result<u64, anyhow::E
     bail!("the value is not a number")
 }
 
-pub(crate) fn generate_document_id_v0(
+pub fn generate_document_id_v0(
     contract_id: &Identifier,
     owner_id: &Identifier,
     document_type_name: &str,
@@ -279,4 +283,69 @@ pub(crate) fn generate_document_id_v0(
     buf.extend_from_slice(entropy);
 
     Identifier::from_bytes(&hash_double_to_vec(&buf)).unwrap()
+}
+
+#[wasm_bindgen(raw_module = "../identifier_utils/Identifier.js")]
+extern "C" {
+    #[derive(Debug, Clone)]
+    #[wasm_bindgen(js_name = default)]
+    pub type IdentifierWrapper; // Rename to IdentifierJS?
+
+    #[wasm_bindgen(constructor, js_class=default)]
+    pub fn new(buffer: JsValue) -> IdentifierWrapper;
+
+    #[wasm_bindgen(method, js_name=toBuffer)]
+    pub fn to_buffer(this: &IdentifierWrapper) -> Vec<u8>;
+}
+
+impl From<Identifier> for IdentifierWrapper {
+    fn from(s: Identifier) -> Self {
+        IdentifierWrapper::new(buffer::Buffer::from_bytes(s.as_slice()).into())
+    }
+}
+
+impl From<IdentifierWrapper> for Identifier {
+    fn from(s: IdentifierWrapper) -> Self {
+        Identifier::from_bytes(&s.to_buffer()).unwrap()
+    }
+}
+
+impl From<&IdentifierWrapper> for Identifier {
+    fn from(s: &IdentifierWrapper) -> Self {
+        Identifier::from_bytes(&s.to_buffer()).unwrap()
+    }
+}
+
+// Try to extract Identifier from **stringified** identifier_utils.
+// The `js_value` can be a stringified instance of: `Identifier`, `Buffer` or `Array`
+pub fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier, JsValue> {
+    if js_value.is_undefined() || js_value.is_null() {
+        wasm_bindgen::throw_val(JsValue::from_str("the identifier cannot be null or undefined"));
+    }
+
+    let value: serde_json::Value = js_value.with_serde_to_json_value()?;
+    match value {
+        serde_json::Value::Array(arr) => {
+            let bytes: Vec<u8> = arr.into_iter().map(value_to_u8).try_collect()?;
+            Identifier::from_bytes(&bytes)
+              .map_err(ProtocolError::ValueError)
+              .with_js_error()
+        }
+        serde_json::Value::String(string) => Identifier::from_string(&string, Encoding::Base58)
+          .map_err(ProtocolError::ValueError)
+          .with_js_error(),
+        _ => {
+            Err(JsValue::from_str("Invalid ID. Expected array or string"))
+        }
+    }
+}
+
+pub fn value_to_u8(v: serde_json::Value) -> Result<u8, JsValue> {
+    let number = v
+      .as_u64()
+      .ok_or_else(|| format!("failed converting {} into u64", v))?;
+    if number > u8::MAX as u64 {
+        JsValue::from_str("the integer in the array isn't a byte");
+    }
+    Ok(number as u8)
 }

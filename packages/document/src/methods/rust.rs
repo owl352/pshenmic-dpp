@@ -5,8 +5,7 @@ use dpp::platform_value::Value;
 use dpp::prelude::Revision;
 use dpp::util::entropy_generator;
 use dpp::util::entropy_generator::EntropyGenerator;
-use crate::document::DocumentWASM;
-use crate::utils::generate_document_id_v0;
+use crate::DocumentWASM;
 
 impl DocumentWASM {
   pub fn new(
@@ -24,7 +23,7 @@ impl DocumentWASM {
       .generate()
       .unwrap();
 
-    let document_id = generate_document_id_v0(
+    let document_id = pshenmic_dpp_utils::generate_document_id_v0(
       &data_contract_id,
       &owner_id,
       document_type_name,

@@ -1,7 +1,3 @@
-mod purpose;
-mod security_level;
-mod key_type;
-
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, TimestampMillis};
 use dpp::identity::identity_public_key::accessors::v0::{IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0};
@@ -9,9 +5,9 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Hex};
 use js_sys::Boolean;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::identity_public_key::key_type::KeyTypeWASM;
-use crate::identity_public_key::purpose::PurposeWASM;
-use crate::identity_public_key::security_level::SecurityLevelWASM;
+use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
+use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
+use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 
 #[wasm_bindgen(js_name = IdentityPublicKeyWASM)]
 pub struct IdentityPublicKeyWASM {

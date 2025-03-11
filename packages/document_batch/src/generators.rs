@@ -1,4 +1,4 @@
-use crate::document::DocumentWASM;
+use pshenmic_dpp_document::DocumentWASM;
 use dpp::prelude::{Identifier, IdentityNonce};
 use dpp::state_transition::documents_batch_transition::document_base_transition::DocumentBaseTransition;
 use dpp::state_transition::documents_batch_transition::document_base_transition::v0::DocumentBaseTransitionV0;
