@@ -11,6 +11,12 @@ Each structure from rs-dpp is represented by a separate package, so you can buil
 - `IdentityPublicKey`
 - `PrivateKey`
 
+## How to build
+Default scripts allows to build full module
+```
+yarn
+yarn build
+```
 
 ## Example
 

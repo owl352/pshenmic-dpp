@@ -5,8 +5,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "tsc": "tsc",
-    "build": "./build.sh && ./build-js.sh",
-    "babel": ""
+    "build": "./scripts/build.sh && ./scripts/build-js.sh"
   },
   "author": "owl352",
   "license": "ISC",
