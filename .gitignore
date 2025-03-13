@@ -4,3 +4,4 @@
 /.yarn
 /.idea
 yarn.lock
+/wasm

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["packages/document", "packages/document_batch", "packages/enums", "packages/mock_bls", "packages/private_key", "packages/public_key", "packages/utils"]
+members = ["packages/document", "packages/document_batch", "packages/cbor-conversation", "packages/enums", "packages/mock_bls", "packages/private_key", "packages/public_key", "packages/utils"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -15,3 +15,4 @@ rust-version = "1.85"
 bincode = {version = "=2.0.0-rc.3"}
 bincode_derive = {version = "=2.0.0-rc.3"}
 pshenmic_dpp_document_batch = {path = "packages/document_batch"}
+pshenmic_dpp_document_search = {path = "packages/cbor-conversation" }
