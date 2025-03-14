@@ -15,7 +15,7 @@ Each structure from rs-dpp is represented by a separate package, so you can buil
 Default scripts allows to build full module
 ```
 yarn
-yarn build
+yarn build:full
 ```
 
 ## Example
@@ -30,9 +30,9 @@ function toHexString(byteArray) {
   }).join('');
 }
 
-var binaryString = atob(wasmBytes);
-var bytes = new Uint8Array(binaryString.length);
-for (var i = 0; i < binaryString.length; i++) {
+let binaryString = atob(wasmBytes);
+let bytes = new Uint8Array(binaryString.length);
+for (let i = 0; i < binaryString.length; i++) {
   bytes[i] = binaryString.charCodeAt(i);
 }
 

@@ -5,7 +5,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "tsc": "tsc",
-    "build": "./scripts/build.sh && ./scripts/build-js.sh"
+    "build:bin": "./scripts/build.sh",
+    "build:js": "./scripts/build-js.sh",
+    "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
+    "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh"
   },
   "author": "owl352",
   "license": "ISC",
@@ -13,7 +16,6 @@
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
-    "tsc": "^2.0.4",
     "typescript": "^5.8.2"
   },
   "packageManager": "yarn@4.2.2+sha224.1e50daf19e5e249a025569752c60b88005fddf57d10fcde5fc68b88f"
