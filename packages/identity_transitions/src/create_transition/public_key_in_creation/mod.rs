@@ -1,5 +1,5 @@
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
-use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, TimestampMillis};
+use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Hex;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
@@ -11,7 +11,6 @@ use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use std::process::id;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "IdentityPublicKeyInCreationWASM")]
