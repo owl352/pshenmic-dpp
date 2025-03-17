@@ -1,5 +1,5 @@
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
-use dpp::identity::{IdentityPublicKey, Purpose, SecurityLevel, TimestampMillis};
+use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Hex;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
@@ -58,18 +58,18 @@ impl IdentityPublicKeyInCreationWASM {
         key_type: KeyTypeWASM,
         read_only: bool,
         binary_data: &str,
-        disabled_at: Option<TimestampMillis>,
+        signature: &str,
     ) -> IdentityPublicKeyInCreationWASM {
         IdentityPublicKeyInCreationWASM(IdentityPublicKeyInCreation::V0(
             IdentityPublicKeyInCreationV0 {
-                id: 0,
-                key_type: Default::default(),
-                purpose: Default::default(),
-                security_level: Default::default(),
+                id,
+                key_type: KeyType::from(key_type),
+                purpose: Purpose::from(purpose),
+                security_level: SecurityLevel::from(security_level),
                 contract_bounds: None,
-                read_only: false,
-                data: Default::default(),
-                signature: Default::default(),
+                read_only,
+                data: BinaryData::from_string(binary_data, Hex).unwrap(),
+                signature: BinaryData::from_string(signature, Hex).unwrap(),
             },
         ))
     }
