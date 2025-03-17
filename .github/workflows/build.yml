@@ -33,6 +33,10 @@ jobs:
       run: |
         cargo fmt --check
 
+    - name: Install Rust dependencies for WASM
+      run: |
+        cargo install wasm-bindgen wasm-opt
+
     - name: Install dependencies
       run: |
         yarn
