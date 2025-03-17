@@ -3,5 +3,5 @@
 .pnp.*
 /.yarn
 /.idea
-yarn.lock
 /wasm
+package-lock.json
