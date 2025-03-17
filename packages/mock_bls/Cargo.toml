@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "bls-signatures",
 ]}
 

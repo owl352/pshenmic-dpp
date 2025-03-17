@@ -1,11 +1,13 @@
-use pshenmic_dpp_document::DocumentWASM;
 use dpp::prelude::{Identifier, IdentityNonce};
 use dpp::state_transition::documents_batch_transition::document_base_transition::DocumentBaseTransition;
 use dpp::state_transition::documents_batch_transition::document_base_transition::v0::DocumentBaseTransitionV0;
 use dpp::state_transition::documents_batch_transition::document_create_transition::DocumentCreateTransitionV0;
 use dpp::state_transition::documents_batch_transition::document_delete_transition::DocumentDeleteTransitionV0;
-use dpp::state_transition::documents_batch_transition::{DocumentCreateTransition, DocumentDeleteTransition, DocumentReplaceTransition};
 use dpp::state_transition::documents_batch_transition::document_replace_transition::DocumentReplaceTransitionV0;
+use dpp::state_transition::documents_batch_transition::{
+    DocumentCreateTransition, DocumentDeleteTransition, DocumentReplaceTransition,
+};
+use pshenmic_dpp_document::DocumentWASM;
 
 pub fn generate_create_transition(
     document: DocumentWASM,

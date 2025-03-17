@@ -9,7 +9,7 @@ crate-type = ["cdylib", "lib"]
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
 pshenmic_dpp_utils = {path = "../utils"}
-dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "document-json-conversion"
 ]}
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }

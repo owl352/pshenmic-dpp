@@ -8,7 +8,7 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
-dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
+dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "cbor",
 ]}
 pshenmic_dpp_utils = {path = "../utils"}

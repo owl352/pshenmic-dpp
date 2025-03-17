@@ -7,7 +7,12 @@ impl BlsModule for MockBLS {
         panic!("BLS signatures are not implemented");
     }
 
-    fn verify_signature(&self, _signature: &[u8], _data: &[u8], _public_key: &[u8]) -> Result<bool, ProtocolError> {
+    fn verify_signature(
+        &self,
+        _signature: &[u8],
+        _data: &[u8],
+        _public_key: &[u8],
+    ) -> Result<bool, ProtocolError> {
         panic!("BLS signatures are not implemented");
     }
 
