@@ -8,8 +8,12 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
-js-sys = "0.3.77"
 dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false, features = [
     "identity-value-conversion",
 ]}
 pshenmic_dpp_enums = {path = "../enums"}
+pshenmic_dpp_utils = {path = "../utils"}
+
+[profile.release]
+lto = true
+opt-level = 'z'

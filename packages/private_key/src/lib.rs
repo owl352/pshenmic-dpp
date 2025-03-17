@@ -1,31 +1,20 @@
-use dpp::dashcore::{PrivateKey};
+use dpp::dashcore::PrivateKey;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "PrivateKeyWASM")]
-pub struct PrivateKeyWASM{
-    private_key: PrivateKey
-}
+pub struct PrivateKeyWASM(PrivateKey);
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
     #[wasm_bindgen(js_name = "new")]
-    pub fn new(wif: &str) -> Self {
-        let pk = PrivateKey::from_wif(wif)
-          .expect("Unable to parse private key");
+    pub fn new(wif: &str) -> Result<Self, JsValue> {
+        let pk = PrivateKey::from_wif(wif).map_err(|err| JsValue::from_str(&*err.to_string()));
 
-        PrivateKeyWASM{
-            private_key: pk
+        match pk {
+            Ok(pk) => Ok(PrivateKeyWASM(pk)),
+            Err(err) => Err(err)
         }
-    }
-}
-
-impl PrivateKeyWASM {
-    pub fn get_key(&self) -> PrivateKey {
-        self.private_key
-    }
-
-    pub fn get_key_inner(&self) -> [u8; 32] {
-        self.private_key.inner.secret_bytes()
     }
 }
 
@@ -33,6 +22,11 @@ impl PrivateKeyWASM {
 impl PrivateKeyWASM {
     #[wasm_bindgen(js_name = "getKeyWIF")]
     pub fn get_key_wif(&self) -> String {
-        self.private_key.to_wif()
+        self.0.to_wif()
+    }
+
+    #[wasm_bindgen(js_name = "getKeyBytes")]
+    pub fn get_key_bytes(&self) -> Vec<u8> {
+        self.0.to_bytes()
     }
 }

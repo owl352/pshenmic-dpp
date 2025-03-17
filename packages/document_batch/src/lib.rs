@@ -1,18 +1,11 @@
-use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_enums::batch::batch_enum::BatchType;
 use crate::generators::{
     generate_create_transition, generate_delete_transition, generate_replace_transition,
 };
-use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use pshenmic_dpp_mock_bls::MockBLS;
-use pshenmic_dpp_private_key::PrivateKeyWASM;
-use pshenmic_dpp_utils::WithJsError;
 use dpp::document::{Document, DocumentV0};
 use dpp::prelude::IdentityNonce;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::documents_batch_transition::accessors::DocumentsBatchTransitionAccessorsV0;
 use dpp::state_transition::documents_batch_transition::document_base_transition::v0::v0_methods::DocumentBaseTransitionV0Methods;
-use dpp::state_transition::documents_batch_transition::document_create_transition::v0::v0_methods::DocumentCreateTransitionV0Methods;
 use dpp::state_transition::documents_batch_transition::document_transition::{
     DocumentTransition, DocumentTransitionV0Methods,
 };
@@ -20,12 +13,14 @@ use dpp::state_transition::documents_batch_transition::{
     DocumentCreateTransition, DocumentDeleteTransition, DocumentReplaceTransition,
     DocumentsBatchTransition, DocumentsBatchTransitionV0,
 };
-use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use dpp::state_transition::{StateTransition, StateTransitionLike};
+use pshenmic_dpp_document::DocumentWASM;
+use pshenmic_dpp_enums::batch::batch_enum::BatchType;
+use pshenmic_dpp_state_transition::StateTransitionWASM;
+use pshenmic_dpp_utils::WithJsError;
 use std::collections::BTreeMap;
-use dpp::identity::KeyType;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 
 mod generators;
 
@@ -34,6 +29,56 @@ mod generators;
 pub struct DocumentBatchWASM {
     batch: DocumentsBatchTransition,
     document: DocumentWASM,
+}
+
+impl From<(DocumentTransition, DocumentsBatchTransition)> for DocumentBatchWASM {
+    fn from(
+        (document_transition, batch): (DocumentTransition, DocumentsBatchTransition),
+    ) -> DocumentBatchWASM {
+        let data_contract_id = document_transition.base().data_contract_id();
+        let document_type_name = document_transition.base().document_type_name();
+        let entropy = document_transition.entropy();
+
+        let default = BTreeMap::new();
+        let properties = document_transition.data().unwrap_or(&default);
+
+        let document = DocumentV0 {
+            id: document_transition.get_id(),
+            owner_id: batch.owner_id(),
+            properties: properties.clone(),
+            revision: document_transition.revision(),
+            created_at: None,
+            updated_at: None,
+            transferred_at: None,
+            created_at_block_height: None,
+            updated_at_block_height: None,
+            transferred_at_block_height: None,
+            created_at_core_block_height: None,
+            updated_at_core_block_height: None,
+            transferred_at_core_block_height: None,
+        };
+
+        let normal_entropy = match entropy {
+            Some(entropy) => {
+                let mut entropy_sized = [0u8; 32];
+                let bytes = entropy.as_slice();
+                let len = bytes.len().min(32);
+                entropy_sized[..len].copy_from_slice(&bytes[..len]);
+                Some(entropy_sized)
+            }
+            None => None,
+        };
+
+        DocumentBatchWASM {
+            batch: batch.clone(),
+            document: DocumentWASM::from_batch(
+                Document::V0(document),
+                data_contract_id,
+                document_type_name.to_string(),
+                normal_entropy,
+            ),
+        }
+    }
 }
 
 #[wasm_bindgen]
@@ -110,205 +155,63 @@ impl DocumentBatchWASM {
             None => wasm_bindgen::throw_str("Entropy is empty"),
         }
     }
-    #[wasm_bindgen(js_name=sign)]
-    pub fn sign(
-        &mut self,
-        private_key: PrivateKeyWASM,
-        public_key: IdentityPublicKeyWASM,
-    ) -> Result<JsValue, JsValue> {
-        let mut st = StateTransition::from(self.batch.clone());
 
-        let sig = st.sign(
-            &public_key.get_key(),
-            private_key.get_key().to_bytes().as_slice(),
-            &MockBLS {},
-        );
+    #[wasm_bindgen(js_name=toStateTransition)]
+    pub fn to_state_transition(&self) -> StateTransitionWASM {
+        let st = StateTransition::from(self.batch.clone());
 
-        let bytes = match sig {
-            Ok(_sig) => {
-                self.batch.set_signature(st.signature().clone());
-                self.batch.set_signature_public_key_id(st.signature_public_key_id().unwrap());
-                st.serialize_to_bytes()
-            },
-            Err(e) => wasm_bindgen::throw_str(&e.to_string()),
-        };
-
-        match bytes {
-            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
-            Err(e) => Ok(JsValue::from_str(&format!("{}", e))),
-        }
-    }
-
-    #[wasm_bindgen(js_name=signByPrivateKey)]
-    pub fn sign_by_private_key(
-        &mut self,
-        private_key: PrivateKeyWASM,
-        key_type: KeyTypeWASM
-    ) -> JsValue {
-        let mut st = StateTransition::from(self.batch.clone());
-
-        let _sig = st.sign_by_private_key(
-            &private_key.get_key().to_bytes().as_slice(),
-            KeyType::from(key_type),
-            &MockBLS {},
-        ).with_js_error();
-
-        self.batch.set_signature(st.signature().clone());
-        self.batch.set_signature_public_key_id(st.signature_public_key_id().unwrap());
-
-        let bytes = st
-          .serialize_to_bytes()
-          .with_js_error();
-
-        match bytes {
-            Ok(bytes) => JsValue::from(bytes.clone()),
-            Err(err) => err
-        }
+        StateTransitionWASM::from(st)
     }
 
     #[wasm_bindgen(js_name=toBuffer)]
     pub fn to_buffer(&self) -> Result<JsValue, JsValue> {
-        let bytes = &StateTransition::from(self.batch.clone())
-          .serialize_to_bytes()
-          .expect("Serialization failed");
+        let bytes = self.batch.serialize_to_bytes().with_js_error();
 
-        Ok(JsValue::from(bytes.clone()))
+        match bytes {
+            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
+            Err(err) => Err(err),
+        }
     }
 
-    #[wasm_bindgen(js_name=fromBuffer)]
-    pub fn from_buffer(bytes: Vec<u8>) -> Result<DocumentBatchWASM, JsValue> {
-        let batch = &StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+    #[wasm_bindgen(js_name=fromStateTransition)]
+    pub fn from_state_transition(
+        state_transition: StateTransitionWASM,
+    ) -> Result<DocumentBatchWASM, JsValue> {
+        let rs_st = StateTransition::from(state_transition);
 
-        match batch {
+        match rs_st {
             StateTransition::DocumentsBatch(batch) => {
                 let transition = batch.transitions().first();
 
                 match transition {
                     None => Err(JsValue::from_str("No transition")),
-                    Some(document_transition) => {
-                        let data_contract_id = document_transition.base().data_contract_id();
-                        let document_type_name = document_transition.base().document_type_name();
-                        let entropy = document_transition.entropy();
-
-                        let document: DocumentV0 = match document_transition {
-                            DocumentTransition::Create(create_transition) => DocumentV0 {
-                                id: document_transition.get_id(),
-                                owner_id: batch.owner_id(),
-                                properties: create_transition.data().clone(),
-                                revision: document_transition.revision(),
-                                created_at: None,
-                                updated_at: None,
-                                transferred_at: None,
-                                created_at_block_height: None,
-                                updated_at_block_height: None,
-                                transferred_at_block_height: None,
-                                created_at_core_block_height: None,
-                                updated_at_core_block_height: None,
-                                transferred_at_core_block_height: None,
-                            },
-                            DocumentTransition::Replace(_replace_transition) => DocumentV0 {
-                                id: document_transition.get_id(),
-                                owner_id: batch.owner_id(),
-                                properties: BTreeMap::new(),
-                                revision: document_transition.revision(),
-                                created_at: None,
-                                updated_at: None,
-                                transferred_at: None,
-                                created_at_block_height: None,
-                                updated_at_block_height: None,
-                                transferred_at_block_height: None,
-                                created_at_core_block_height: None,
-                                updated_at_core_block_height: None,
-                                transferred_at_core_block_height: None,
-                            },
-                            DocumentTransition::Delete(_delete_transition) => DocumentV0 {
-                                id: document_transition.get_id(),
-                                owner_id: batch.owner_id(),
-                                properties: BTreeMap::new(),
-                                revision: document_transition.revision(),
-                                created_at: None,
-                                updated_at: None,
-                                transferred_at: None,
-                                created_at_block_height: None,
-                                updated_at_block_height: None,
-                                transferred_at_block_height: None,
-                                created_at_core_block_height: None,
-                                updated_at_core_block_height: None,
-                                transferred_at_core_block_height: None,
-                            },
-                            DocumentTransition::Transfer(_transfer_transition) => DocumentV0 {
-                                id: document_transition.get_id(),
-                                owner_id: batch.owner_id(),
-                                properties: BTreeMap::new(),
-                                revision: document_transition.revision(),
-                                created_at: None,
-                                updated_at: None,
-                                transferred_at: None,
-                                created_at_block_height: None,
-                                updated_at_block_height: None,
-                                transferred_at_block_height: None,
-                                created_at_core_block_height: None,
-                                updated_at_core_block_height: None,
-                                transferred_at_core_block_height: None,
-                            },
-                            DocumentTransition::UpdatePrice(_update_price_transition) => {
-                                DocumentV0 {
-                                    id: document_transition.get_id(),
-                                    owner_id: batch.owner_id(),
-                                    properties: BTreeMap::new(),
-                                    revision: document_transition.revision(),
-                                    created_at: None,
-                                    updated_at: None,
-                                    transferred_at: None,
-                                    created_at_block_height: None,
-                                    updated_at_block_height: None,
-                                    transferred_at_block_height: None,
-                                    created_at_core_block_height: None,
-                                    updated_at_core_block_height: None,
-                                    transferred_at_core_block_height: None,
-                                }
-                            }
-                            DocumentTransition::Purchase(_purchase_transition) => DocumentV0 {
-                                id: document_transition.get_id(),
-                                owner_id: batch.owner_id(),
-                                properties: BTreeMap::new(),
-                                revision: document_transition.revision(),
-                                created_at: None,
-                                updated_at: None,
-                                transferred_at: None,
-                                created_at_block_height: None,
-                                updated_at_block_height: None,
-                                transferred_at_block_height: None,
-                                created_at_core_block_height: None,
-                                updated_at_core_block_height: None,
-                                transferred_at_core_block_height: None,
-                            },
-                        };
-
-                        let normal_entropy = match entropy {
-                            Some(entropy) => {
-                                let mut entropy_sized = [0u8; 32];
-                                let bytes = entropy.as_slice();
-                                let len = bytes.len().min(32);
-                                entropy_sized[..len].copy_from_slice(&bytes[..len]);
-                                Some(entropy_sized)
-                            }
-                            None => None,
-                        };
-
-                        Ok(DocumentBatchWASM {
-                            batch: batch.clone(),
-                            document: DocumentWASM::from_batch(
-                                Document::V0(document),
-                                data_contract_id,
-                                document_type_name.to_string(),
-                                normal_entropy,
-                            ),
-                        })
-                    }
+                    Some(document_transition) => Ok(DocumentBatchWASM::from((
+                        document_transition.clone(),
+                        batch,
+                    ))),
                 }
             }
-            _ => Err(JsValue::from_str("incorrect batch type")),
+            _ => Err(JsValue::from_str("Invalid state transition")),
+        }
+    }
+
+    pub fn from_buffer(bytes: Vec<u8>) -> Result<DocumentBatchWASM, JsValue> {
+        let batch_transition =
+            DocumentsBatchTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error();
+
+        match batch_transition {
+            Ok(batch) => {
+                let transition = batch.transitions().first();
+
+                match transition {
+                    None => Err(JsValue::from_str("No transition")),
+                    Some(document_transition) => Ok(DocumentBatchWASM::from((
+                        document_transition.clone(),
+                        batch,
+                    ))),
+                }
+            }
+            Err(err) => Err(err),
         }
     }
 

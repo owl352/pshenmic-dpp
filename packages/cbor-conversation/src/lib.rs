@@ -1,12 +1,9 @@
-use std::collections::BTreeMap;
 use base64::Engine;
 use dpp::util::cbor_serializer::serializable_value_to_cbor;
 use pshenmic_dpp_utils::with_serde_to_platform_value;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use base64::prelude::BASE64_STANDARD;
-use ciborium;
-use ciborium::{cbor, Value};
 
 #[wasm_bindgen(js_name = "objectToCbor")]
 pub fn object_to_cbor(object: &JsValue) -> String {
@@ -21,7 +18,7 @@ pub fn object_to_cbor(object: &JsValue) -> String {
 pub fn cbor_to_object(cbor: String) -> JsValue {
     let base64_bytes = BASE64_STANDARD.decode(cbor).unwrap();
 
-    let cbor: Value = ciborium::de::from_reader(
+    let cbor: ciborium::Value = ciborium::de::from_reader(
         base64_bytes.as_slice()
     ).expect("REASON");
 
