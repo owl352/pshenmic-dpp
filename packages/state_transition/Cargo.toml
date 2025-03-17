@@ -13,7 +13,7 @@ pshenmic_dpp_private_key = {path = "../private_key"}
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_mock_bls = {path = "../mock_bls"}
 pshenmic_dpp_enums = {path = "../enums"}
-dpp = { git = "https://github.com/dashpay/platform", default-features = false, features = [
+dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "state-transition-signing"
 ]}
 
