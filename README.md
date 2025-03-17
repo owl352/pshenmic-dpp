@@ -10,6 +10,9 @@ Each structure from rs-dpp is represented by a separate package, so you can buil
 - `DocumentsBatch`
 - `IdentityPublicKey`
 - `PrivateKey`
+- `Identity`
+- `StateTransition`
+- `IdentityTransitions`
 
 ## How to build
 Default scripts allows to build full module

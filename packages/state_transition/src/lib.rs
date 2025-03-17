@@ -1,0 +1,95 @@
+use dpp::identity::KeyType;
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::state_transition::StateTransition;
+use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
+use pshenmic_dpp_mock_bls::MockBLS;
+use pshenmic_dpp_private_key::PrivateKeyWASM;
+use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_utils::WithJsError;
+use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
+
+#[wasm_bindgen(js_name = "StateTransitionWASM")]
+pub struct StateTransitionWASM(StateTransition);
+
+impl From<StateTransition> for StateTransitionWASM {
+    fn from(transition: StateTransition) -> Self {
+        StateTransitionWASM(transition)
+    }
+}
+
+impl From<StateTransitionWASM> for StateTransition {
+    fn from(transition: StateTransitionWASM) -> Self {
+        transition.0
+    }
+}
+
+#[wasm_bindgen]
+impl StateTransitionWASM {
+    #[wasm_bindgen(js_name=sign)]
+    pub fn sign(
+        &mut self,
+        private_key: PrivateKeyWASM,
+        public_key: IdentityPublicKeyWASM,
+    ) -> Result<JsValue, JsValue> {
+        let sig = self.0.sign(
+            &public_key.into(),
+            private_key.get_key_bytes().as_slice(),
+            &MockBLS {},
+        );
+
+        let bytes = match sig {
+            Ok(_sig) => {
+                self.0.set_signature(self.0.signature().clone());
+                self.0
+                    .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
+                self.0.serialize_to_bytes()
+            }
+            Err(e) => wasm_bindgen::throw_str(&e.to_string()),
+        };
+
+        match bytes {
+            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
+            Err(e) => Ok(JsValue::from_str(&format!("{}", e))),
+        }
+    }
+
+    #[wasm_bindgen(js_name=signByPrivateKey)]
+    pub fn sign_by_private_key(
+        &mut self,
+        private_key: PrivateKeyWASM,
+        key_type: KeyTypeWASM,
+    ) -> JsValue {
+        let _sig = self
+            .0
+            .sign_by_private_key(
+                &private_key.get_key_bytes().as_slice(),
+                KeyType::from(key_type),
+                &MockBLS {},
+            )
+            .with_js_error();
+
+        let bytes = self.0.serialize_to_bytes().with_js_error();
+
+        match bytes {
+            Ok(bytes) => JsValue::from(bytes.clone()),
+            Err(err) => err,
+        }
+    }
+
+    #[wasm_bindgen(js_name=toBuffer)]
+    pub fn to_buffer(&self) -> Result<JsValue, JsValue> {
+        let bytes = self.0.serialize_to_bytes().expect("Serialization failed");
+
+        Ok(JsValue::from(bytes.clone()))
+    }
+
+    pub fn from_buffer(buffer: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
+        let st = StateTransition::deserialize_from_bytes(buffer.as_slice());
+
+        match st {
+            Err(err) => Err(JsValue::from_str(err.to_string().as_str())),
+            Ok(transition) => Ok(StateTransitionWASM(transition)),
+        }
+    }
+}

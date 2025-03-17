@@ -11,3 +11,7 @@ wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "identity-value-conversion",
 ]}
+
+[profile.release]
+lto = true
+opt-level = 'z'

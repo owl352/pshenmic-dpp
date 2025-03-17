@@ -4,9 +4,8 @@
 TARGET=wasm32-unknown-unknown
 
 OUTPUT_DIR="${PWD}/wasm"
-CARGO_BUILD_PROFILE="${CARGO_BUILD_PROFILE:-dev}"
-PROFILE_ARG="--profile ${CARGO_BUILD_PROFILE}"
-PROFILE=debug
+PROFILE_ARG="--release"
+PROFILE=release
 
 OUTPUT_FILE="${PWD}/wasm/pshenmic_dpp_bg.wasm"
 

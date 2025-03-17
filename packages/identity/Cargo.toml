@@ -1,5 +1,5 @@
 [package]
-name = "pshenmic_dpp_document_search"
+name = "pshenmic_dpp_identity"
 version = "0.1.0"
 edition = "2024"
 
@@ -8,13 +8,9 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
-dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
-    "cbor",
-]}
-pshenmic_dpp_utils = {path = "../utils"}
-base64 = "0.22.1"
-ciborium = "0.2.2"
+dpp = { path = "../../../../platform/packages/rs-dpp", default-features = false}
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+pshenmic_dpp_public_key = { path = "../public_key" }
 
 [profile.release]
 lto = true
