@@ -1,13 +1,15 @@
+use dpp::identity::identity_public_key::accessors::v0::{
+    IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
+};
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, TimestampMillis};
-use dpp::identity::identity_public_key::accessors::v0::{IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0};
 use dpp::platform_value::BinaryData;
-use dpp::platform_value::string_encoding::Encoding::{Hex};
+use dpp::platform_value::string_encoding::Encoding::Hex;
 use js_sys::Boolean;
-use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = IdentityPublicKeyWASM)]
 pub struct IdentityPublicKeyWASM {
@@ -40,7 +42,6 @@ impl IdentityPublicKeyWASM {
         }
     }
 }
-
 
 impl IdentityPublicKeyWASM {
     pub fn get_key(&self) -> IdentityPublicKey {
@@ -97,7 +98,8 @@ impl IdentityPublicKeyWASM {
 
     #[wasm_bindgen(js_name = setSecurityLevel)]
     pub fn set_security_level(&mut self, security_level: SecurityLevelWASM) {
-        self.public_key.set_security_level(SecurityLevel::from(security_level))
+        self.public_key
+            .set_security_level(SecurityLevel::from(security_level))
     }
 
     #[wasm_bindgen(js_name = setKeyType)]

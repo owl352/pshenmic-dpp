@@ -1,13 +1,8 @@
-use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_enums::batch::batch_enum::BatchType;
 use crate::generators::{
     generate_create_transition, generate_delete_transition, generate_replace_transition,
 };
-use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use pshenmic_dpp_mock_bls::MockBLS;
-use pshenmic_dpp_private_key::PrivateKeyWASM;
-use pshenmic_dpp_utils::WithJsError;
 use dpp::document::{Document, DocumentV0};
+use dpp::identity::KeyType;
 use dpp::prelude::IdentityNonce;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::documents_batch_transition::accessors::DocumentsBatchTransitionAccessorsV0;
@@ -21,11 +16,16 @@ use dpp::state_transition::documents_batch_transition::{
     DocumentsBatchTransition, DocumentsBatchTransitionV0,
 };
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use pshenmic_dpp_document::DocumentWASM;
+use pshenmic_dpp_enums::batch::batch_enum::BatchType;
+use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
+use pshenmic_dpp_mock_bls::MockBLS;
+use pshenmic_dpp_private_key::PrivateKeyWASM;
+use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_utils::WithJsError;
 use std::collections::BTreeMap;
-use dpp::identity::KeyType;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 
 mod generators;
 
@@ -127,9 +127,10 @@ impl DocumentBatchWASM {
         let bytes = match sig {
             Ok(_sig) => {
                 self.batch.set_signature(st.signature().clone());
-                self.batch.set_signature_public_key_id(st.signature_public_key_id().unwrap());
+                self.batch
+                    .set_signature_public_key_id(st.signature_public_key_id().unwrap());
                 st.serialize_to_bytes()
-            },
+            }
             Err(e) => wasm_bindgen::throw_str(&e.to_string()),
         };
 
@@ -143,34 +144,35 @@ impl DocumentBatchWASM {
     pub fn sign_by_private_key(
         &mut self,
         private_key: PrivateKeyWASM,
-        key_type: KeyTypeWASM
+        key_type: KeyTypeWASM,
     ) -> JsValue {
         let mut st = StateTransition::from(self.batch.clone());
 
-        let _sig = st.sign_by_private_key(
-            &private_key.get_key().to_bytes().as_slice(),
-            KeyType::from(key_type),
-            &MockBLS {},
-        ).with_js_error();
+        let _sig = st
+            .sign_by_private_key(
+                &private_key.get_key().to_bytes().as_slice(),
+                KeyType::from(key_type),
+                &MockBLS {},
+            )
+            .with_js_error();
 
         self.batch.set_signature(st.signature().clone());
-        self.batch.set_signature_public_key_id(st.signature_public_key_id().unwrap());
+        self.batch
+            .set_signature_public_key_id(st.signature_public_key_id().unwrap());
 
-        let bytes = st
-          .serialize_to_bytes()
-          .with_js_error();
+        let bytes = st.serialize_to_bytes().with_js_error();
 
         match bytes {
             Ok(bytes) => JsValue::from(bytes.clone()),
-            Err(err) => err
+            Err(err) => err,
         }
     }
 
     #[wasm_bindgen(js_name=toBuffer)]
     pub fn to_buffer(&self) -> Result<JsValue, JsValue> {
         let bytes = &StateTransition::from(self.batch.clone())
-          .serialize_to_bytes()
-          .expect("Serialization failed");
+            .serialize_to_bytes()
+            .expect("Serialization failed");
 
         Ok(JsValue::from(bytes.clone()))
     }

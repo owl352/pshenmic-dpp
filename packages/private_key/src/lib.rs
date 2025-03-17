@@ -1,21 +1,18 @@
-use dpp::dashcore::{PrivateKey};
+use dpp::dashcore::PrivateKey;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "PrivateKeyWASM")]
-pub struct PrivateKeyWASM{
-    private_key: PrivateKey
+pub struct PrivateKeyWASM {
+    private_key: PrivateKey,
 }
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
     #[wasm_bindgen(js_name = "new")]
     pub fn new(wif: &str) -> Self {
-        let pk = PrivateKey::from_wif(wif)
-          .expect("Unable to parse private key");
+        let pk = PrivateKey::from_wif(wif).expect("Unable to parse private key");
 
-        PrivateKeyWASM{
-            private_key: pk
-        }
+        PrivateKeyWASM { private_key: pk }
     }
 }
 

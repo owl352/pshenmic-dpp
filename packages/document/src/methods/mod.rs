@@ -1,2 +1,2 @@
-mod rust;
 mod js;
+mod rust;
