@@ -1,7 +1,11 @@
 {
-  "name": "wasm-bindgen-template",
+  "name": "pshenmic-dpp",
   "version": "1.0.0",
   "main": "dist/wasm/pshenmic_dpp.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owl352/pshenmic-dpp"
+  },
   "scripts": {
     "tsc": "tsc",
     "build:bin": "./scripts/build.sh",

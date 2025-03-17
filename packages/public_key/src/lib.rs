@@ -6,12 +6,12 @@ use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, Timestam
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Hex;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
-use wasm_bindgen::JsValue;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
-use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_utils::WithJsError;
+use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Clone)]
 #[wasm_bindgen(js_name = IdentityPublicKeyWASM)]
@@ -136,8 +136,8 @@ impl IdentityPublicKeyWASM {
     #[wasm_bindgen(js_name = fromBuffer)]
     pub fn from_buffer(buffer: Vec<u8>) -> Result<IdentityPublicKeyWASM, JsValue> {
         let rs_pk = IdentityPublicKey::deserialize_from_bytes(buffer.as_slice()).with_js_error();
-        
-        match rs_pk { 
+
+        match rs_pk {
             Ok(pk) => Ok(IdentityPublicKeyWASM(pk)),
             Err(e) => Err(e),
         }

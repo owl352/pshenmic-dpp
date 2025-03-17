@@ -13,7 +13,7 @@ impl PrivateKeyWASM {
 
         match pk {
             Ok(pk) => Ok(PrivateKeyWASM(pk)),
-            Err(err) => Err(err)
+            Err(err) => Err(err),
         }
     }
 }

@@ -153,6 +153,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
+name = "base64-compat"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a8d4d2746f89841e49230dd26917df1876050f95abafafbe34f47cb534b88d7"
+dependencies = [
+ "byteorder",
+]
+
+[[package]]
 name = "base64ct"
 version = "1.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -215,6 +224,19 @@ dependencies = [
  "radium",
  "tap",
  "wyz",
+]
+
+[[package]]
+name = "blake3"
+version = "1.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "675f87afced0413c9bb02843499dbbd3882a237645883f71a2b59644a6d2f753"
+dependencies = [
+ "arrayref",
+ "arrayvec",
+ "cc",
+ "cfg-if",
+ "constant_time_eq",
 ]
 
 [[package]]
@@ -453,6 +475,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2459377285ad874054d797f3ccebf984978aa39129f6eafde5cdc8315b612f8"
 
 [[package]]
+name = "constant_time_eq"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
+
+[[package]]
 name = "core-foundation-sys"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -514,8 +542,8 @@ dependencies = [
  "bech32",
  "bitflags",
  "blsful",
- "dashcore-private",
- "dashcore_hashes",
+ "dashcore-private 0.1.0",
+ "dashcore_hashes 0.14.0",
  "hex",
  "hex_lit",
  "lazy_static",
@@ -527,16 +555,55 @@ dependencies = [
 ]
 
 [[package]]
+name = "dashcore"
+version = "0.38.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.38.0#fcc7c2266df12a8fb4878e60d1e1b6f49990f5ed"
+dependencies = [
+ "anyhow",
+ "base64-compat",
+ "bech32",
+ "bitflags",
+ "blake3",
+ "blsful",
+ "dashcore-private 0.38.0",
+ "dashcore_hashes 0.38.0",
+ "hex",
+ "hex_lit",
+ "lazy_static",
+ "rustversion",
+ "secp256k1",
+ "serde",
+ "serde_repr",
+ "strum",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "dashcore-private"
 version = "0.1.0"
 source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.35.0#521a76bfd7eaa90d2d89dc576808ec5772544f07"
+
+[[package]]
+name = "dashcore-private"
+version = "0.38.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.38.0#fcc7c2266df12a8fb4878e60d1e1b6f49990f5ed"
 
 [[package]]
 name = "dashcore_hashes"
 version = "0.14.0"
 source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.35.0#521a76bfd7eaa90d2d89dc576808ec5772544f07"
 dependencies = [
- "dashcore-private",
+ "dashcore-private 0.1.0",
+ "secp256k1",
+ "serde",
+]
+
+[[package]]
+name = "dashcore_hashes"
+version = "0.38.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.38.0#fcc7c2266df12a8fb4878e60d1e1b6f49990f5ed"
+dependencies = [
+ "dashcore-private 0.38.0",
  "secp256k1",
  "serde",
 ]
@@ -596,7 +663,7 @@ dependencies = [
  "byteorder",
  "chrono",
  "ciborium 0.2.0",
- "dashcore",
+ "dashcore 0.35.0",
  "derive_more",
  "env_logger",
  "getrandom",
@@ -610,15 +677,54 @@ dependencies = [
  "nohash-hasher",
  "num_enum",
  "once_cell",
- "platform-serialization",
- "platform-serialization-derive",
- "platform-value",
- "platform-version",
- "platform-versioning",
+ "platform-serialization 1.8.0",
+ "platform-serialization-derive 1.8.0",
+ "platform-value 1.8.0",
+ "platform-version 1.8.0",
+ "platform-versioning 1.8.0",
  "rand",
  "regex",
  "rust_decimal",
  "rust_decimal_macros",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "sha2",
+ "strum",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "dpp"
+version = "2.0.0-dev.1"
+source = "git+https://github.com/dashpay/platform#6161f7553353ca61c8933cf7ddf7c1c8ec4017c1"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64",
+ "bincode",
+ "bs58",
+ "byteorder",
+ "chrono",
+ "dashcore 0.38.0",
+ "derive_more",
+ "env_logger",
+ "getrandom",
+ "hex",
+ "indexmap",
+ "integer-encoding",
+ "itertools",
+ "lazy_static",
+ "nohash-hasher",
+ "num_enum",
+ "once_cell",
+ "platform-serialization 2.0.0-dev.1",
+ "platform-serialization-derive 2.0.0-dev.1",
+ "platform-value 2.0.0-dev.1",
+ "platform-version 2.0.0-dev.1",
+ "platform-versioning 2.0.0-dev.1",
+ "rand",
+ "regex",
  "serde",
  "serde_json",
  "serde_repr",
@@ -772,6 +878,15 @@ name = "grovedb-version"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a987e051c8c9cf8fa381b29b243d4951f8c1f24f9c90ceed52afca3ac460986c"
+dependencies = [
+ "thiserror 2.0.12",
+ "versioned-feature-core 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "grovedb-version"
+version = "3.0.0"
+source = "git+https://github.com/dashpay/grovedb?rev=f89e03e4e0ac12aa2feea5c94b38c09f4909facc#f89e03e4e0ac12aa2feea5c94b38c09f4909facc"
 dependencies = [
  "thiserror 2.0.12",
  "versioned-feature-core 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1219,13 +1334,33 @@ version = "1.8.0"
 source = "git+https://github.com/dashpay/platform?branch=master#196976c8faae1df92d915c93c7f24fd60bd0db56"
 dependencies = [
  "bincode",
- "platform-version",
+ "platform-version 1.8.0",
+]
+
+[[package]]
+name = "platform-serialization"
+version = "2.0.0-dev.1"
+source = "git+https://github.com/dashpay/platform#6161f7553353ca61c8933cf7ddf7c1c8ec4017c1"
+dependencies = [
+ "bincode",
+ "platform-version 2.0.0-dev.1",
 ]
 
 [[package]]
 name = "platform-serialization-derive"
 version = "1.8.0"
 source = "git+https://github.com/dashpay/platform?branch=master#196976c8faae1df92d915c93c7f24fd60bd0db56"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+ "virtue 0.0.17",
+]
+
+[[package]]
+name = "platform-serialization-derive"
+version = "2.0.0-dev.1"
+source = "git+https://github.com/dashpay/platform#6161f7553353ca61c8933cf7ddf7c1c8ec4017c1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1244,12 +1379,30 @@ dependencies = [
  "hex",
  "indexmap",
  "lazy_static",
- "platform-serialization",
- "platform-version",
+ "platform-serialization 1.8.0",
+ "platform-version 1.8.0",
  "rand",
  "regex",
  "serde",
  "serde_json",
+ "thiserror 1.0.69",
+ "treediff",
+]
+
+[[package]]
+name = "platform-value"
+version = "2.0.0-dev.1"
+source = "git+https://github.com/dashpay/platform#6161f7553353ca61c8933cf7ddf7c1c8ec4017c1"
+dependencies = [
+ "base64",
+ "bincode",
+ "bs58",
+ "hex",
+ "indexmap",
+ "platform-serialization 2.0.0-dev.1",
+ "platform-version 2.0.0-dev.1",
+ "rand",
+ "serde",
  "thiserror 1.0.69",
  "treediff",
 ]
@@ -1260,7 +1413,19 @@ version = "1.8.0"
 source = "git+https://github.com/dashpay/platform?branch=master#196976c8faae1df92d915c93c7f24fd60bd0db56"
 dependencies = [
  "bincode",
- "grovedb-version",
+ "grovedb-version 2.2.1",
+ "once_cell",
+ "thiserror 1.0.69",
+ "versioned-feature-core 1.0.0 (git+https://github.com/dashpay/versioned-feature-core)",
+]
+
+[[package]]
+name = "platform-version"
+version = "2.0.0-dev.1"
+source = "git+https://github.com/dashpay/platform#6161f7553353ca61c8933cf7ddf7c1c8ec4017c1"
+dependencies = [
+ "bincode",
+ "grovedb-version 3.0.0",
  "once_cell",
  "thiserror 1.0.69",
  "versioned-feature-core 1.0.0 (git+https://github.com/dashpay/versioned-feature-core)",
@@ -1270,6 +1435,16 @@ dependencies = [
 name = "platform-versioning"
 version = "1.8.0"
 source = "git+https://github.com/dashpay/platform?branch=master#196976c8faae1df92d915c93c7f24fd60bd0db56"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+]
+
+[[package]]
+name = "platform-versioning"
+version = "2.0.0-dev.1"
+source = "git+https://github.com/dashpay/platform#6161f7553353ca61c8933cf7ddf7c1c8ec4017c1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1335,7 +1510,7 @@ dependencies = [
 name = "pshenmic_dpp_document"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 1.8.0",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
  "wasm-bindgen",
@@ -1345,9 +1520,10 @@ dependencies = [
 name = "pshenmic_dpp_document_batch"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 1.8.0",
  "pshenmic_dpp_document",
  "pshenmic_dpp_enums",
+ "pshenmic_dpp_mock_bls",
  "pshenmic_dpp_state_transition",
  "pshenmic_dpp_utils",
  "wasm-bindgen",
@@ -1359,7 +1535,7 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "ciborium 0.2.2",
- "dpp",
+ "dpp 1.8.0",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
  "wasm-bindgen",
@@ -1369,7 +1545,7 @@ dependencies = [
 name = "pshenmic_dpp_enums"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 1.8.0",
  "wasm-bindgen",
 ]
 
@@ -1377,7 +1553,7 @@ dependencies = [
 name = "pshenmic_dpp_identity"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 2.0.0-dev.1",
  "pshenmic_dpp_public_key",
  "serde-wasm-bindgen",
  "wasm-bindgen",
@@ -1387,7 +1563,7 @@ dependencies = [
 name = "pshenmic_dpp_identity_transitions"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 2.0.0-dev.1",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_state_transition",
@@ -1399,14 +1575,14 @@ dependencies = [
 name = "pshenmic_dpp_mock_bls"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 1.8.0",
 ]
 
 [[package]]
 name = "pshenmic_dpp_private_key"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 1.8.0",
  "wasm-bindgen",
 ]
 
@@ -1414,7 +1590,7 @@ dependencies = [
 name = "pshenmic_dpp_public_key"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 1.8.0",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
  "wasm-bindgen",
@@ -1424,7 +1600,7 @@ dependencies = [
 name = "pshenmic_dpp_state_transition"
 version = "0.1.0"
 dependencies = [
- "dpp",
+ "dpp 2.0.0-dev.1",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_mock_bls",
  "pshenmic_dpp_private_key",
@@ -1438,7 +1614,7 @@ name = "pshenmic_dpp_utils"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "dpp",
+ "dpp 1.8.0",
  "itertools",
  "js-sys",
  "serde",
