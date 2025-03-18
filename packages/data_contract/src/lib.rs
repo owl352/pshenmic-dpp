@@ -61,7 +61,7 @@ impl DataContractWASM {
         platform_version: PlatformVersionWASM,
     ) -> Result<DataContractWASM, JsValue> {
         let rs_data_contract =
-            DataContract::versioned_deserialize(&bytes.as_slice(), true, &platform_version.into())
+            DataContract::versioned_deserialize(&bytes.as_slice(), full_validation, &platform_version.into())
                 .with_js_error();
 
         match rs_data_contract {
