@@ -2,8 +2,10 @@ use dpp::identifier::Identifier;
 use dpp::identity::accessors::{IdentityGettersV0, IdentitySettersV0};
 use dpp::identity::{Identity, KeyID};
 use dpp::platform_value::string_encoding::Encoding::Base58;
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -13,13 +15,17 @@ pub struct IdentityWASM(Identity);
 #[wasm_bindgen]
 impl IdentityWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(js_identifier: String) -> IdentityWASM {
+    pub fn new(js_identifier: String) -> Result<IdentityWASM, JsValue> {
         let identifier = Identifier::from_string(&*js_identifier, Base58);
 
         let identity =
-            Identity::create_basic_identity(identifier.unwrap(), PlatformVersion::first()).unwrap();
+            Identity::create_basic_identity(identifier.unwrap(), PlatformVersion::first())
+                .with_js_error();
 
-        IdentityWASM(identity)
+        match identity {
+            Ok(identity) => Ok(IdentityWASM(identity)),
+            Err(err) => Err(err),
+        }
     }
 
     #[wasm_bindgen(js_name = "setId")]
@@ -72,6 +78,20 @@ impl IdentityWASM {
     #[wasm_bindgen(js_name = "getPublicKeys")]
     pub fn get_public_keys(&self) -> JsValue {
         let keys = self.0.public_keys();
+
         serde_wasm_bindgen::to_value(keys).unwrap()
+    }
+
+    #[wasm_bindgen(js_name = "toBytes")]
+    pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
+        self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityWASM, JsValue> {
+        match Identity::deserialize_from_bytes(bytes.as_slice()).with_js_error() {
+            Ok(identity) => Ok(IdentityWASM(identity)),
+            Err(err) => Err(err),
+        }
     }
 }

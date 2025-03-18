@@ -1,6 +1,6 @@
 mod methods;
 
-use dpp::document::{Document, DocumentV0Getters};
+use dpp::document::{Document, DocumentV0, DocumentV0Getters};
 use dpp::identifier::Identifier;
 use dpp::identity::TimestampMillis;
 use dpp::platform_value::Value;
@@ -27,6 +27,49 @@ pub struct DocumentWASM {
     updated_at_core_block_height: Option<CoreBlockHeight>,
     transferred_at_core_block_height: Option<CoreBlockHeight>,
     entropy: Option<[u8; 32]>,
+}
+
+impl From<DocumentWASM> for Document {
+    fn from(wasm_doc: DocumentWASM) -> Self {
+        Document::V0(DocumentV0 {
+            id: wasm_doc.id,
+            owner_id: wasm_doc.owner_id,
+            properties: wasm_doc.properties,
+            revision: wasm_doc.revision,
+            created_at: wasm_doc.created_at,
+            updated_at: wasm_doc.updated_at,
+            transferred_at: wasm_doc.transferred_at,
+            created_at_block_height: wasm_doc.created_at_block_height,
+            updated_at_block_height: wasm_doc.updated_at_block_height,
+            transferred_at_block_height: wasm_doc.transferred_at_block_height,
+            created_at_core_block_height: wasm_doc.created_at_core_block_height,
+            updated_at_core_block_height: wasm_doc.updated_at_core_block_height,
+            transferred_at_core_block_height: wasm_doc.transferred_at_core_block_height,
+        })
+    }
+}
+
+impl From<Document> for DocumentWASM {
+    fn from(doc: Document) -> Self {
+        DocumentWASM {
+            id: doc.id(),
+            owner_id: doc.owner_id(),
+            revision: doc.revision(),
+            data_contract_id: Default::default(),
+            document_type_name: "".to_string(),
+            properties: doc.properties().clone(),
+            created_at: doc.created_at(),
+            updated_at: doc.updated_at(),
+            transferred_at: doc.transferred_at(),
+            created_at_block_height: doc.created_at_block_height(),
+            updated_at_block_height: doc.updated_at_block_height(),
+            transferred_at_block_height: doc.transferred_at_block_height(),
+            created_at_core_block_height: doc.created_at_core_block_height(),
+            updated_at_core_block_height: doc.updated_at_core_block_height(),
+            transferred_at_core_block_height: doc.transferred_at_core_block_height(),
+            entropy: None,
+        }
+    }
 }
 
 impl DocumentWASM {

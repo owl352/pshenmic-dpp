@@ -13,6 +13,8 @@ Each structure from rs-dpp is represented by a separate package, so you can buil
 - `Identity`
 - `StateTransition`
 - `IdentityTransitions`
+- `DataContract`
+- `Enums`
 
 ## How to build
 Default scripts allows to build full module

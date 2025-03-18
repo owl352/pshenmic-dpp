@@ -77,15 +77,16 @@ impl StateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=toBuffer)]
-    pub fn to_buffer(&self) -> Result<JsValue, JsValue> {
+    #[wasm_bindgen(js_name=toBytes)]
+    pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().expect("Serialization failed");
 
         Ok(JsValue::from(bytes.clone()))
     }
 
-    pub fn from_buffer(buffer: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
-        let st = StateTransition::deserialize_from_bytes(buffer.as_slice());
+    #[wasm_bindgen(js_name=fromBytes)]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
+        let st = StateTransition::deserialize_from_bytes(bytes.as_slice());
 
         match st {
             Err(err) => Err(JsValue::from_str(err.to_string().as_str())),

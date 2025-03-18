@@ -64,8 +64,8 @@ impl IdentityCreateTransitionWASM {
         StateTransitionWASM::from(StateTransition::IdentityCreate(self.clone().0))
     }
 
-    #[wasm_bindgen(js_name = "toBuffer")]
-    pub fn to_buffer(&self) -> Result<JsValue, JsValue> {
+    #[wasm_bindgen(js_name = "toBytes")]
+    pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().with_js_error();
 
         match bytes {
@@ -86,8 +86,8 @@ impl IdentityCreateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = "fromBuffer")]
-    pub fn from_buffer(bytes: Vec<u8>) -> Result<IdentityCreateTransitionWASM, JsValue> {
+    #[wasm_bindgen(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityCreateTransitionWASM, JsValue> {
         let rs_transition =
             IdentityCreateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error();
 

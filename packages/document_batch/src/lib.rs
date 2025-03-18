@@ -83,7 +83,7 @@ impl From<(DocumentTransition, DocumentsBatchTransition)> for DocumentBatchWASM 
 
 #[wasm_bindgen]
 impl DocumentBatchWASM {
-    #[wasm_bindgen(js_name=new)]
+    #[wasm_bindgen(constructor)]
     pub fn new(
         batch_type: BatchType,
         document: DocumentWASM,
@@ -163,8 +163,8 @@ impl DocumentBatchWASM {
         StateTransitionWASM::from(st)
     }
 
-    #[wasm_bindgen(js_name=toBuffer)]
-    pub fn to_buffer(&self) -> Result<JsValue, JsValue> {
+    #[wasm_bindgen(js_name=toBytes)]
+    pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.batch.serialize_to_bytes().with_js_error();
 
         match bytes {
@@ -195,7 +195,8 @@ impl DocumentBatchWASM {
         }
     }
 
-    pub fn from_buffer(bytes: Vec<u8>) -> Result<DocumentBatchWASM, JsValue> {
+    #[wasm_bindgen(js_name=fromBytes)]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<DocumentBatchWASM, JsValue> {
         let batch_transition =
             DocumentsBatchTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error();
 

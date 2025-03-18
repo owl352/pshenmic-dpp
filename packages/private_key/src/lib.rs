@@ -7,7 +7,7 @@ pub struct PrivateKeyWASM(PrivateKey);
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
-    #[wasm_bindgen(js_name = "new")]
+    #[wasm_bindgen(constructor)]
     pub fn new(wif: &str) -> Result<Self, JsValue> {
         let pk = PrivateKey::from_wif(wif).map_err(|err| JsValue::from_str(&*err.to_string()));
 

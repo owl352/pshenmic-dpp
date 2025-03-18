@@ -1,14 +1,21 @@
 use crate::DocumentWASM;
+use dpp::ProtocolError;
+use dpp::dashcore::hashes::serde::Serialize;
+use dpp::data_contract::JsonValue;
+use dpp::document::Document;
+use dpp::document::serialization_traits::DocumentPlatformConversionMethodsV0;
 use dpp::platform_value::converter::serde_json::BTreeValueJsonConverter;
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::prelude::Revision;
-use pshenmic_dpp_utils::{ToSerdeJSONExt, identifier_from_js_value};
+use pshenmic_dpp_data_contract::DataContractWASM;
+use pshenmic_dpp_enums::platform::PlatformVersionWASM;
+use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl DocumentWASM {
-    #[wasm_bindgen(js_name=new)]
+    #[wasm_bindgen(constructor)]
     pub fn js_new(
         js_raw_document: JsValue,
         js_document_type_name: &str,
@@ -50,12 +57,15 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=getProperties)]
-    pub fn js_get_properties(&self) -> JsValue {
-        let json = &self.properties.to_json_value().unwrap();
+    pub fn js_get_properties(&self) -> Result<JsValue, JsValue> {
+        let json_value: JsonValue = self
+            .properties
+            .to_json_value()
+            .map_err(ProtocolError::ValueError)
+            .with_js_error()?;
 
-        let obj = json.as_object().unwrap();
-
-        serde_wasm_bindgen::to_value(obj).unwrap()
+        let js_value = json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?;
+        Ok(js_value)
     }
 
     #[wasm_bindgen(js_name=getRevision)]
@@ -200,5 +210,51 @@ impl DocumentWASM {
     #[wasm_bindgen(js_name=setDocumentTypeName)]
     pub fn set_document_type_name(&mut self, document_type_name: &str) {
         self.document_type_name = document_type_name.to_string();
+    }
+
+    #[wasm_bindgen(js_name=toBytes)]
+    pub fn to_bytes(
+        &self,
+        data_contract: &DataContractWASM,
+        type_name: String,
+        platform_version: PlatformVersionWASM,
+    ) -> Result<Vec<u8>, JsValue> {
+        let rs_document: Document = Document::from(self.clone());
+
+        let document_type_ref = data_contract
+            .get_document_type_ref_by_name(type_name)
+            .map_err(|err| JsValue::from_str(err.to_string().as_str()))?;
+
+        DocumentPlatformConversionMethodsV0::serialize(
+            &rs_document,
+            document_type_ref,
+            &platform_version.into(),
+        )
+        .with_js_error()
+    }
+
+    #[wasm_bindgen(js_name=fromBytes)]
+    pub fn from_bytes(
+        bytes: Vec<u8>,
+        data_contract: &DataContractWASM,
+        type_name: String,
+        platform_version: PlatformVersionWASM,
+    ) -> Result<DocumentWASM, JsValue> {
+        let document_type_ref = match data_contract.get_document_type_ref_by_name(type_name) {
+            Ok(type_ref) => Ok(type_ref),
+            Err(err) => Err(JsValue::from_str(err.to_string().as_str())),
+        }?;
+
+        let rs_document = Document::from_bytes(
+            bytes.as_slice(),
+            document_type_ref,
+            &platform_version.into(),
+        )
+        .with_js_error();
+
+        match rs_document {
+            Ok(doc) => Ok(DocumentWASM::from(doc)),
+            Err(err) => Err(err),
+        }
     }
 }
