@@ -63,7 +63,7 @@ impl DocumentWASM {
             .to_json_value()
             .map_err(ProtocolError::ValueError)
             .with_js_error()?;
-    
+
         let js_value = json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?;
         Ok(js_value)
     }
