@@ -60,9 +60,12 @@ impl DataContractWASM {
         full_validation: bool,
         platform_version: PlatformVersionWASM,
     ) -> Result<DataContractWASM, JsValue> {
-        let rs_data_contract =
-            DataContract::versioned_deserialize(&bytes.as_slice(), full_validation, &platform_version.into())
-                .with_js_error();
+        let rs_data_contract = DataContract::versioned_deserialize(
+            &bytes.as_slice(),
+            full_validation,
+            &platform_version.into(),
+        )
+        .with_js_error();
 
         match rs_data_contract {
             Ok(rs_data_contract) => Ok(DataContractWASM(rs_data_contract)),
