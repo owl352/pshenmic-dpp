@@ -4,7 +4,7 @@ use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethod
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
-use dpp::data_contract::{DataContract, DataContractV0, JsonValue};
+use dpp::data_contract::{DataContract, DataContractV0};
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::serialization::{
     PlatformDeserializableWithPotentialValidationFromVersionedStructure,
@@ -12,7 +12,7 @@ use dpp::serialization::{
 };
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
-use serde::{Deserialize, Serialize};
+use dpp::dashcore::hashes::serde::Serialize;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -96,7 +96,7 @@ impl DataContractWASM {
     #[wasm_bindgen(js_name = "getSchema")]
     pub fn get_schema(&self) -> JsValue {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
-
+    
         self.0.document_schemas().serialize(&serializer).unwrap()
     }
 
@@ -122,11 +122,11 @@ impl DataContractWASM {
             .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
             .unwrap()
     }
-
+    
     #[wasm_bindgen(js_name = "toJson")]
     pub fn to_json(&self, platform_version: PlatformVersionWASM) -> Result<JsValue, JsValue> {
         let json = self.0.to_json(&platform_version.into()).with_js_error();
-
+    
         match json {
             Ok(json) => Ok(json.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?),
             Err(err) => Err(err),

@@ -1340,7 +1340,6 @@ dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
- "serde",
  "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
@@ -1353,7 +1352,6 @@ dependencies = [
  "pshenmic_dpp_data_contract",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
- "serde",
  "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
