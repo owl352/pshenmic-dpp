@@ -128,16 +128,14 @@ impl IdentityPublicKeyWASM {
         self.0.set_disabled_at(disabled_at)
     }
 
-    #[wasm_bindgen(js_name = toBuffer)]
-    pub fn to_buffer(&self) -> Result<Vec<u8>, JsValue> {
+    #[wasm_bindgen(js_name = toBytes)]
+    pub fn to_byes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name = fromBuffer)]
-    pub fn from_buffer(buffer: Vec<u8>) -> Result<IdentityPublicKeyWASM, JsValue> {
-        let rs_pk = IdentityPublicKey::deserialize_from_bytes(buffer.as_slice()).with_js_error();
-
-        match rs_pk {
+    #[wasm_bindgen(js_name = fromBytes)]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityPublicKeyWASM, JsValue> {
+        match IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error() {
             Ok(pk) => Ok(IdentityPublicKeyWASM(pk)),
             Err(e) => Err(e),
         }
