@@ -34,7 +34,37 @@ impl StateTransitionWASM {
     ) -> Result<JsValue, JsValue> {
         let sig = self.0.sign(
             &public_key.into(),
-            private_key.get_key_bytes().as_slice(),
+            private_key.to_bytes().as_slice(),
+            &MockBLS {},
+        );
+
+        let bytes = match sig {
+            Ok(_sig) => {
+                self.0.set_signature(self.0.signature().clone());
+                self.0
+                    .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
+                self.0.serialize_to_bytes()
+            }
+            Err(e) => wasm_bindgen::throw_str(&e.to_string()),
+        };
+
+        match bytes {
+            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
+            Err(e) => Ok(JsValue::from_str(&format!("{}", e))),
+        }
+    }
+
+    #[wasm_bindgen(js_name=signByBytes)]
+    pub fn sign_by_bytes(
+        &mut self,
+        private_key_bytes: Vec<u8>,
+        public_key_bytes: Vec<u8>,
+    ) -> Result<JsValue, JsValue> {
+        let public_key = IdentityPublicKeyWASM::from_bytes(public_key_bytes)?;
+
+        let sig = self.0.sign(
+            &public_key.into(),
+            private_key_bytes.as_slice(),
             &MockBLS {},
         );
 
@@ -63,7 +93,30 @@ impl StateTransitionWASM {
         let _sig = self
             .0
             .sign_by_private_key(
-                &private_key.get_key_bytes().as_slice(),
+                &private_key.to_bytes().as_slice(),
+                KeyType::from(key_type),
+                &MockBLS {},
+            )
+            .with_js_error();
+
+        let bytes = self.0.serialize_to_bytes().with_js_error();
+
+        match bytes {
+            Ok(bytes) => JsValue::from(bytes.clone()),
+            Err(err) => err,
+        }
+    }
+
+    #[wasm_bindgen(js_name=signByPrivateKeyBytes)]
+    pub fn sign_by_private_key_bytes(
+        &mut self,
+        private_key_bytes: Vec<u8>,
+        key_type: KeyTypeWASM,
+    ) -> JsValue {
+        let _sig = self
+            .0
+            .sign_by_private_key(
+                &private_key_bytes.as_slice(),
                 KeyType::from(key_type),
                 &MockBLS {},
             )
