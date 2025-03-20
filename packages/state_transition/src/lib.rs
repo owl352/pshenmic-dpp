@@ -58,10 +58,8 @@ impl StateTransitionWASM {
     pub fn sign_by_bytes(
         &mut self,
         private_key_bytes: Vec<u8>,
-        public_key_bytes: Vec<u8>,
+        public_key: IdentityPublicKeyWASM,
     ) -> Result<JsValue, JsValue> {
-        let public_key = IdentityPublicKeyWASM::from_bytes(public_key_bytes)?;
-
         let sig = self.0.sign(
             &public_key.into(),
             private_key_bytes.as_slice(),
@@ -85,38 +83,11 @@ impl StateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name=signByPrivateKey)]
-    pub fn sign_by_private_key(
-        &mut self,
-        private_key: PrivateKeyWASM,
-        key_type: KeyTypeWASM,
-    ) -> JsValue {
+    pub fn sign_by_private_key(&mut self, private_key: Vec<u8>, key_type: KeyTypeWASM) -> JsValue {
         let _sig = self
             .0
             .sign_by_private_key(
-                &private_key.to_bytes().as_slice(),
-                KeyType::from(key_type),
-                &MockBLS {},
-            )
-            .with_js_error();
-
-        let bytes = self.0.serialize_to_bytes().with_js_error();
-
-        match bytes {
-            Ok(bytes) => JsValue::from(bytes.clone()),
-            Err(err) => err,
-        }
-    }
-
-    #[wasm_bindgen(js_name=signByPrivateKeyBytes)]
-    pub fn sign_by_private_key_bytes(
-        &mut self,
-        private_key_bytes: Vec<u8>,
-        key_type: KeyTypeWASM,
-    ) -> JsValue {
-        let _sig = self
-            .0
-            .sign_by_private_key(
-                &private_key_bytes.as_slice(),
+                &private_key.as_slice(),
                 KeyType::from(key_type),
                 &MockBLS {},
             )
