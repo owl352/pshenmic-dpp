@@ -16,6 +16,8 @@ FEATURES_BASE="--features="
 FEATURES_DEFAULT="all"
 FEATURES_ARG="${FEATURES_BASE}${FEATURES_DEFAULT}"
 
+rm -rf $OUTPUT_DIR
+
 if [ -n "$FEATURES" ]; then
   echo -e "using feature: ${RED}'${FEATURES}'${NC}"
   FEATURES_ARG="${FEATURES_BASE}${FEATURES}"
@@ -36,3 +38,7 @@ if [[ "${OSTYPE}" == "darwin"* ]]; then
 else
   ${BINDGEN_COMMAND}
 fi
+
+rm "${OUTPUT_DIR}/.gitignore"
+rm "${OUTPUT_DIR}/package.json"
+rm "${OUTPUT_DIR}/README.md"

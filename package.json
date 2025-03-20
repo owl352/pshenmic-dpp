@@ -14,10 +14,8 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "build:bin": "./scripts/build.sh",
-    "build:js": "./scripts/build-js.sh",
-    "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
-    "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh"
+    "build:full": "./scripts/build.sh && ./scripts/base64.sh",
+    "build:binary": "./scripts/build.sh"
   },
   "author": "owl352",
   "license": "ISC",
