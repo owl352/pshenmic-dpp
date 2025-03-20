@@ -28,15 +28,38 @@ rust-version = "1.85"
 bincode = { version = "=2.0.0-rc.3" }
 bincode_derive = { version = "=2.0.0-rc.3" }
 pshenmic_dpp_document_batch = { path = "packages/document_batch" }
+pshenmic_dpp_document = { path = "packages/document" }
 pshenmic_dpp_document_search = { path = "packages/cbor-conversation" }
 pshenmic_dpp_identity = { path = "packages/identity" }
 pshenmic_dpp_state_transition = { path = "packages/state_transition" }
 pshenmic_dpp_identity_transitions = { path = "packages/identity_transitions" }
-pshenmic_dpp_data_contract = {path = "packages/data_contract"}
-pshenmic_dpp_enums = {path = "packages/enums"}
+pshenmic_dpp_data_contract = { path = "packages/data_contract" }
+pshenmic_dpp_enums = { path = "packages/enums" }
+
+[features]
+default = ["all"]
+data_contract = []
+document_batch = []
+document_search = []
+document = []
+enums = []
+identity = []
+identity_transitions = []
+state_transition = []
+all = [
+    "data_contract",
+    "document",
+    "document_batch",
+    "document_search",
+    "enums",
+    "identity",
+    "identity_transitions",
+    "state_transition"
+]
 
 [profile.release]
 lto = true
 opt-level = 'z'
 strip = true
 codegen-units = 1
+panic = "abort"
