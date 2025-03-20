@@ -15,7 +15,7 @@
   "scripts": {
     "tsc": "tsc",
     "build:full": "./scripts/build.sh && ./scripts/base64.sh",
-    "build:binary": "./scripts/build.sh"
+    "build:raw": "./scripts/build.sh"
   },
   "author": "owl352",
   "license": "ISC",
