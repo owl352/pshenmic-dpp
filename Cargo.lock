@@ -1325,6 +1325,7 @@ dependencies = [
  "bincode",
  "bincode_derive",
  "pshenmic_dpp_data_contract",
+ "pshenmic_dpp_document",
  "pshenmic_dpp_document_batch",
  "pshenmic_dpp_document_search",
  "pshenmic_dpp_enums",

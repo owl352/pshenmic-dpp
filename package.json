@@ -1,7 +1,13 @@
 {
   "name": "pshenmic-dpp",
   "version": "1.0.3",
-  "main": "dist/wasm/pshenmic_dpp.js",
+  "main": "wasm/pshenmic_dpp.js",
+  "types": "wasm/pshenmic_dpp.d.ts",
+  "files": [
+    "pshenmic_dpp_bg.wasm",
+    "pshenmic_dpp.js",
+    "pshenmic_dpp.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/owl352/pshenmic-dpp"

@@ -15,7 +15,3 @@ pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_public_key = {path = "../public_key"}
 pshenmic_dpp_state_transition = {path = "../state_transition"}
 pshenmic_dpp_enums = {path = "../enums"}
-
-[profile.release]
-lto = true
-opt-level = 'z'
