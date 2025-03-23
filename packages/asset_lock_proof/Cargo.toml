@@ -1,5 +1,5 @@
 [package]
-name = "pshenmic_dpp_identity_transitions"
+name = "pshenmic_dpp_asset_lock_proof"
 version = "0.1.0"
 edition = "2024"
 
@@ -12,11 +12,8 @@ dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-
     "state-transition-signing"
 ]}
 pshenmic_dpp_utils = {path = "../utils"}
-pshenmic_dpp_public_key = {path = "../public_key"}
-pshenmic_dpp_state_transition = {path = "../state_transition"}
 pshenmic_dpp_enums = {path = "../enums"}
-pshenmic_dpp_asset_lock_proof = {path = "../asset_lock_proof"}
-
-[profile.release]
-lto = true
-opt-level = 'z'
+js-sys = "0.3.77"
+serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+serde = "1.0.219"
+bytes = "1.10.1"
