@@ -1334,6 +1334,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pshenmic_dpp_asset_lock_proof"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "dpp",
+ "js-sys",
+ "pshenmic_dpp_enums",
+ "pshenmic_dpp_utils",
+ "serde",
+ "serde-wasm-bindgen",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "pshenmic_dpp_data_contract"
 version = "0.1.0"
 dependencies = [
@@ -1404,6 +1418,7 @@ name = "pshenmic_dpp_identity_transitions"
 version = "0.1.0"
 dependencies = [
  "dpp",
+ "pshenmic_dpp_asset_lock_proof",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_state_transition",

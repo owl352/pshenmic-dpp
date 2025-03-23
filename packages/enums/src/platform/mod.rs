@@ -10,8 +10,10 @@ use dpp::version::v8::PLATFORM_V8;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "PlatformVersionWASM")]
+#[derive(Default)]
 #[allow(non_camel_case_types)]
 pub enum PlatformVersionWASM {
+    #[default]
     PLATFORM_V1,
     PLATFORM_V2,
     PLATFORM_V3,
