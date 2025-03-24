@@ -16,6 +16,7 @@ use pshenmic_dpp_utils::identifier_from_js_value;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
+#[derive(Clone)]
 #[wasm_bindgen(js_name = "DocumentTransitionsWASM")]
 pub struct DocumentTransitionWASM(DocumentTransition);
 

@@ -26,7 +26,7 @@ impl From<StateTransitionWASM> for StateTransition {
 
 #[wasm_bindgen]
 impl StateTransitionWASM {
-    #[wasm_bindgen(js_name=sign)]
+    #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,
         private_key: PrivateKeyWASM,
@@ -54,7 +54,7 @@ impl StateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=signByPrivateKey)]
+    #[wasm_bindgen(js_name = "signByPrivateKey")]
     pub fn sign_by_private_key(
         &mut self,
         private_key: PrivateKeyWASM,
@@ -77,14 +77,14 @@ impl StateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=toBytes)]
+    #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().expect("Serialization failed");
 
         Ok(JsValue::from(bytes.clone()))
     }
 
-    #[wasm_bindgen(js_name=fromBytes)]
+    #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
         let st = StateTransition::deserialize_from_bytes(bytes.as_slice());
 
