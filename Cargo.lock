@@ -542,6 +542,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "data_contract_transitions"
+version = "0.1.0"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_data_contract",
+ "pshenmic_dpp_enums",
+ "pshenmic_dpp_identity",
+ "pshenmic_dpp_state_transition",
+ "pshenmic_dpp_utils",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "der"
 version = "0.7.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
