@@ -1365,6 +1365,7 @@ dependencies = [
  "pshenmic_dpp_enums",
  "pshenmic_dpp_state_transition",
  "pshenmic_dpp_utils",
+ "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
 

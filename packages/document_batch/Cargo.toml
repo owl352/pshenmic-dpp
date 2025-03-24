@@ -15,6 +15,8 @@ pshenmic_dpp_state_transition = {path = "../state_transition"}
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "document-json-conversion",
 ]}
+serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+
 
 
 [profile.release]
