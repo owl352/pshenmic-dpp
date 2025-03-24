@@ -1,15 +1,12 @@
 use crate::document_base_transition::DocumentBaseTransitionWASM;
+use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_create_transition;
 use crate::prefunded_voting_balance::PrefundedVotingBalanceWasm;
-use crate::transition::DocumentTransitionWASM;
 use dpp::dashcore::hashes::serde::Serialize;
 use dpp::prelude::IdentityNonce;
-use dpp::state_transition::StateTransition;
+use dpp::state_transition::documents_batch_transition::DocumentCreateTransition;
 use dpp::state_transition::documents_batch_transition::document_create_transition::v0::v0_methods::DocumentCreateTransitionV0Methods;
 use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
-use dpp::state_transition::documents_batch_transition::{
-    DocumentCreateTransition, DocumentsBatchTransition,
-};
 use pshenmic_dpp_document::DocumentWASM;
 use pshenmic_dpp_utils::{ToSerdeJSONExt, identifier_from_js_value};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -113,6 +110,7 @@ impl DocumentCreateTransitionWASM {
         self.0.clear_prefunded_voting_balance()
     }
 
+    #[wasm_bindgen(js_name = "toDocumentTransition")]
     pub fn to_document_transition(&self) -> DocumentTransitionWASM {
         let rs_transition = DocumentTransition::from(self.0.clone());
 

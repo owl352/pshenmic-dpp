@@ -1,4 +1,4 @@
-use crate::transition::DocumentTransitionWASM;
+use crate::document_transition::DocumentTransitionWASM;
 use dpp::identity::KeyID;
 use dpp::platform_value::BinaryData;
 use dpp::prelude::UserFeeIncrease;
@@ -14,11 +14,11 @@ use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-mod create;
 mod document_base_transition;
+mod document_transition;
 mod generators;
 mod prefunded_voting_balance;
-mod transition;
+mod transitions;
 
 #[derive(Debug, Clone, PartialEq)]
 #[wasm_bindgen(js_name=DocumentBatchWASM)]
@@ -102,7 +102,7 @@ impl DocumentBatchWASM {
 
         match rs_transition {
             StateTransition::DocumentsBatch(batch) => Ok(DocumentBatchWASM(batch)),
-            _ => Err(JsValue::from("invalid state transition content")),
+            _ => Err(JsValue::from("invalid state document_transition content")),
         }
     }
 }
