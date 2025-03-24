@@ -40,18 +40,13 @@ impl DataContractWASM {
         full_validation: bool,
         platform_version: PlatformVersionWASM,
     ) -> Result<DataContractWASM, JsValue> {
-        let value = js_value.with_serde_to_platform_value();
+        let value = js_value.with_serde_to_platform_value()?;
 
-        match value {
-            Ok(v) => {
-                let v0_contract =
-                    DataContractV0::from_value(v, full_validation, &platform_version.into())
-                        .with_js_error()?;
+        let v0_contract =
+            DataContractV0::from_value(value, full_validation, &platform_version.into())
+                .with_js_error()?;
 
-                Ok(DataContractWASM(DataContract::V0(v0_contract)))
-            }
-            Err(err) => Err(err),
-        }
+        Ok(DataContractWASM(DataContract::V0(v0_contract)))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
@@ -65,12 +60,9 @@ impl DataContractWASM {
             full_validation,
             &platform_version.into(),
         )
-        .with_js_error();
+        .with_js_error()?;
 
-        match rs_data_contract {
-            Ok(rs_data_contract) => Ok(DataContractWASM(rs_data_contract)),
-            Err(err) => Err(err),
-        }
+        Ok(DataContractWASM(rs_data_contract))
     }
 
     #[wasm_bindgen(js_name = "toBytes")]
@@ -88,19 +80,19 @@ impl DataContractWASM {
             .0
             .clone()
             .to_value(&platform_version.into())
-            .with_js_error();
+            .with_js_error()?;
 
-        match value {
-            Ok(v) => Ok(serde_wasm_bindgen::to_value(&v).unwrap()),
-            Err(err) => Err(err),
-        }
+        serde_wasm_bindgen::to_value(&value).map_err(JsValue::from)
     }
 
     #[wasm_bindgen(js_name = "getSchema")]
-    pub fn get_schema(&self) -> JsValue {
+    pub fn get_schema(&self) -> Result<JsValue, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
-        self.0.document_schemas().serialize(&serializer).unwrap()
+        self.0
+            .document_schemas()
+            .serialize(&serializer)
+            .map_err(JsValue::from)
     }
 
     #[wasm_bindgen(js_name = "getDataContractVersion")]
@@ -119,21 +111,19 @@ impl DataContractWASM {
     }
 
     #[wasm_bindgen(js_name = "getConfig")]
-    pub fn get_config(&self) -> JsValue {
+    pub fn get_config(&self) -> Result<JsValue, JsValue> {
         self.0
             .config()
             .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .unwrap()
+            .map_err(JsValue::from)
     }
 
     #[wasm_bindgen(js_name = "toJson")]
     pub fn to_json(&self, platform_version: PlatformVersionWASM) -> Result<JsValue, JsValue> {
-        let json = self.0.to_json(&platform_version.into()).with_js_error();
+        let json = self.0.to_json(&platform_version.into()).with_js_error()?;
 
-        match json {
-            Ok(json) => Ok(json.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?),
-            Err(err) => Err(err),
-        }
+        json.serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(JsValue::from)
     }
 }
 
