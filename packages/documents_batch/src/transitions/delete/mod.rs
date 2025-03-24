@@ -1,8 +1,7 @@
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
-use crate::generators::{generate_delete_transition, generate_replace_transition};
-use dpp::document::Document;
-use dpp::prelude::{IdentityNonce, Revision};
+use crate::generators::generate_delete_transition;
+use dpp::prelude::IdentityNonce;
 use dpp::state_transition::documents_batch_transition::DocumentDeleteTransition;
 use dpp::state_transition::documents_batch_transition::document_delete_transition::v0::v0_methods::DocumentDeleteTransitionV0Methods;
 use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
@@ -30,7 +29,7 @@ impl From<DocumentDeleteTransitionWasm> for DocumentDeleteTransition {
 impl DocumentDeleteTransitionWasm {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        document: DocumentWASM,
+        document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
         js_data_contract_id: JsValue,
@@ -62,5 +61,12 @@ impl DocumentDeleteTransitionWasm {
         let rs_transition = DocumentTransition::from(self.0.clone());
 
         DocumentTransitionWASM::from(rs_transition)
+    }
+
+    #[wasm_bindgen(js_name = "fromDocumentTransition")]
+    pub fn from_document_transition(
+        js_transition: DocumentTransitionWASM,
+    ) -> Result<DocumentDeleteTransitionWasm, JsValue> {
+        js_transition.get_delete_transition()
     }
 }

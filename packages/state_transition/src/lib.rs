@@ -9,6 +9,7 @@ use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
+#[derive(Clone)]
 #[wasm_bindgen(js_name = "StateTransitionWASM")]
 pub struct StateTransitionWASM(StateTransition);
 

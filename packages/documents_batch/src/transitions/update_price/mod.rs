@@ -1,12 +1,13 @@
 use dpp::fee::Credits;
 use dpp::prelude::IdentityNonce;
 use dpp::state_transition::documents_batch_transition::document_transition::document_update_price_transition::v0::v0_methods::DocumentUpdatePriceTransitionV0Methods;
-use dpp::state_transition::documents_batch_transition::document_transition::DocumentUpdatePriceTransition;
+use dpp::state_transition::documents_batch_transition::document_transition::{DocumentTransition, DocumentUpdatePriceTransition};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_document::DocumentWASM;
 use pshenmic_dpp_utils::identifier_from_js_value;
 use crate::document_base_transition::DocumentBaseTransitionWASM;
+use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_update_price_transition;
 
 #[wasm_bindgen(js_name = DocumentUpdatePriceTransitionWASM)]
@@ -21,7 +22,7 @@ impl From<DocumentUpdatePriceTransition> for DocumentUpdatePriceTransitionWASM {
 #[wasm_bindgen]
 impl DocumentUpdatePriceTransitionWASM {
     pub fn new(
-        document: DocumentWASM,
+        document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
         js_data_contract_id: JsValue,
@@ -30,7 +31,7 @@ impl DocumentUpdatePriceTransitionWASM {
         let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
 
         let rs_document_update_price_transition = generate_update_price_transition(
-            document,
+            document.clone(),
             identity_contract_nonce,
             document_type_name,
             data_contract_id,
@@ -60,5 +61,19 @@ impl DocumentUpdatePriceTransitionWASM {
     #[wasm_bindgen(js_name = "setPrice")]
     pub fn set_price(&mut self, price: Credits) {
         self.0.set_price(price)
+    }
+
+    #[wasm_bindgen(js_name = "toDocumentTransition")]
+    pub fn to_document_transition(&self) -> DocumentTransitionWASM {
+        let rs_transition = DocumentTransition::from(self.0.clone());
+
+        DocumentTransitionWASM::from(rs_transition)
+    }
+
+    #[wasm_bindgen(js_name = "fromDocumentTransition")]
+    pub fn from_document_transition(
+        js_transition: DocumentTransitionWASM,
+    ) -> Result<DocumentUpdatePriceTransitionWASM, JsValue> {
+        js_transition.get_update_price_transition()
     }
 }

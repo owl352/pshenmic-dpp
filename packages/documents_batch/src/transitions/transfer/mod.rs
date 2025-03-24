@@ -28,7 +28,7 @@ impl From<DocumentTransferTransitionWASM> for DocumentTransferTransition {
 impl DocumentTransferTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        document: DocumentWASM,
+        document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
         js_data_contract_id: JsValue,
@@ -38,7 +38,7 @@ impl DocumentTransferTransitionWASM {
         let recipient_owner_id = identifier_from_js_value(&js_recipient_owner_id)?;
 
         let rs_transfer_transition = generate_transfer_transition(
-            document,
+            document.clone(),
             identity_contract_nonce,
             document_type_name,
             data_contract_id,
@@ -78,5 +78,12 @@ impl DocumentTransferTransitionWASM {
         let rs_transition = DocumentTransition::from(self.0.clone());
 
         DocumentTransitionWASM::from(rs_transition)
+    }
+
+    #[wasm_bindgen(js_name = "fromDocumentTransition")]
+    pub fn from_document_transition(
+        js_transition: DocumentTransitionWASM,
+    ) -> Result<DocumentTransferTransitionWASM, JsValue> {
+        js_transition.get_transfer_transition()
     }
 }

@@ -32,7 +32,7 @@ impl From<DocumentCreateTransition> for DocumentCreateTransitionWASM {
 impl DocumentCreateTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        document: DocumentWASM,
+        document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
         js_data_contract_id: JsValue,
@@ -115,5 +115,12 @@ impl DocumentCreateTransitionWASM {
         let rs_transition = DocumentTransition::from(self.0.clone());
 
         DocumentTransitionWASM::from(rs_transition)
+    }
+
+    #[wasm_bindgen(js_name = "fromDocumentTransition")]
+    pub fn from_document_transition(
+        js_transition: DocumentTransitionWASM,
+    ) -> Result<DocumentCreateTransitionWASM, JsValue> {
+        js_transition.get_create_transition()
     }
 }

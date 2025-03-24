@@ -52,7 +52,9 @@ impl DocumentsBatchWASM {
 
         let transitions: Vec<DocumentTransition> = document_transitions
             .iter()
-            .map(|document_transition| DocumentTransition::from(document_transition.clone()))
+            .map(|document_transition| {
+                DocumentTransition::from(document_transition.clone().clone())
+            })
             .collect();
 
         Ok(DocumentsBatchWASM(DocumentsBatchTransition::V0(
@@ -121,7 +123,7 @@ impl DocumentsBatchWASM {
     pub fn set_transitions(&mut self, transitions: Vec<DocumentTransitionWASM>) {
         let rs_transitions = transitions
             .iter()
-            .map(|transition| DocumentTransition::from(transition.clone()))
+            .map(|transition| DocumentTransition::from(transition.clone().clone()))
             .collect();
 
         self.0.set_transitions(rs_transitions);
@@ -151,9 +153,9 @@ impl DocumentsBatchWASM {
 
     #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
-        state_transition: StateTransitionWASM,
+        state_transition: &StateTransitionWASM,
     ) -> Result<DocumentsBatchWASM, JsValue> {
-        let rs_transition: StateTransition = state_transition.into();
+        let rs_transition: StateTransition = StateTransition::from(state_transition.clone());
 
         match rs_transition {
             StateTransition::DocumentsBatch(batch) => Ok(DocumentsBatchWASM(batch)),
