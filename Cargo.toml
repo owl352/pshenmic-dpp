@@ -33,6 +33,7 @@ pshenmic_dpp_identity = { path = "packages/identity" }
 pshenmic_dpp_state_transition = { path = "packages/state_transition" }
 pshenmic_dpp_identity_transitions = { path = "packages/identity_transitions" }
 pshenmic_dpp_data_contract = {path = "packages/data_contract"}
+pshenmic_dpp_data_contract_transitions = {path = "packages/data_contract_transitions"}
 pshenmic_dpp_enums = {path = "packages/enums"}
 
 [profile.release]

@@ -1,5 +1,5 @@
 [package]
-name = "data_contract_transitions"
+name = "pshenmic_dpp_data_contract_transitions"
 version = "0.1.0"
 edition = "2024"
 
@@ -9,7 +9,6 @@ dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-
     "state-transition-signing"
 ]}
 pshenmic_dpp_data_contract = {path = "../data_contract"}
-pshenmic_dpp_identity = {path = "../identity"}
 pshenmic_dpp_enums = {path = "../enums"}
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_state_transition = {path = "../state_transition"}

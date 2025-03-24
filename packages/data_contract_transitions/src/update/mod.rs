@@ -20,12 +20,12 @@ pub struct DataContractUpdateTransitionWASM(DataContractUpdateTransition);
 impl DataContractUpdateTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        data_contract: DataContractWASM,
+        data_contract: &DataContractWASM,
         identity_nonce: IdentityNonce,
         platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractUpdateTransitionWASM, JsValue> {
         let rs_transition = DataContractUpdateTransition::try_from_platform_versioned(
-            (DataContract::from(data_contract), identity_nonce),
+            (DataContract::from(data_contract.clone()), identity_nonce),
             &platform_version
                 .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
                 .into(),
@@ -69,12 +69,12 @@ impl DataContractUpdateTransitionWASM {
     #[wasm_bindgen(js_name = "setDataContract")]
     pub fn set_data_contract(
         &mut self,
-        data_contract: DataContractWASM,
+        data_contract: &DataContractWASM,
         platform_version_wasm: Option<PlatformVersionWASM>,
     ) -> Result<(), JsValue> {
         let data_contract_serialization_format =
             DataContractInSerializationFormat::try_from_platform_versioned(
-                DataContract::from(data_contract),
+                DataContract::from(data_contract.clone()),
                 &platform_version_wasm
                     .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
                     .into(),
@@ -118,9 +118,9 @@ impl DataContractUpdateTransitionWASM {
 
     #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
-        state_transition: StateTransitionWASM,
+        state_transition: &StateTransitionWASM,
     ) -> Result<DataContractUpdateTransitionWASM, JsValue> {
-        let rs_transition = StateTransition::from(state_transition);
+        let rs_transition = StateTransition::from(state_transition.clone());
 
         match rs_transition {
             StateTransition::DataContractUpdate(state_transition) => {

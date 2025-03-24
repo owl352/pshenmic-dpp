@@ -11,8 +11,8 @@ use pshenmic_dpp_data_contract::DataContractWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "DataContractCreateTransitionWASM")]
 pub struct DataContractCreateTransitionWASM(DataContractCreateTransition);
@@ -21,12 +21,12 @@ pub struct DataContractCreateTransitionWASM(DataContractCreateTransition);
 impl DataContractCreateTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        data_contract: DataContractWASM,
+        data_contract: &DataContractWASM,
         platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractCreateTransitionWASM, JsValue> {
         let rs_data_contract_transition: Result<DataContractCreateTransition, ProtocolError> =
             DataContractCreateTransition::try_from_platform_versioned(
-                DataContract::from(data_contract),
+                DataContract::from(data_contract.clone()),
                 &platform_version
                     .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
                     .into(),
@@ -121,9 +121,9 @@ impl DataContractCreateTransitionWASM {
 
     #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
-        state_transition: StateTransitionWASM,
+        state_transition: &StateTransitionWASM,
     ) -> Result<DataContractCreateTransitionWASM, JsValue> {
-        let rs_transition = StateTransition::from(state_transition);
+        let rs_transition = StateTransition::from(state_transition.clone());
 
         match rs_transition {
             StateTransition::DataContractCreate(state_transition) => {
