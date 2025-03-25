@@ -24,15 +24,18 @@ impl DataContractUpdateTransitionWASM {
         identity_nonce: IdentityNonce,
         platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractUpdateTransitionWASM, JsValue> {
-        let rs_data_contract_update_transition = DataContractUpdateTransition::try_from_platform_versioned(
-            (DataContract::from(data_contract.clone()), identity_nonce),
-            &platform_version
-                .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
-                .into(),
-        )
-        .with_js_error()?;
+        let rs_data_contract_update_transition =
+            DataContractUpdateTransition::try_from_platform_versioned(
+                (DataContract::from(data_contract.clone()), identity_nonce),
+                &platform_version
+                    .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
+                    .into(),
+            )
+            .with_js_error()?;
 
-        Ok(DataContractUpdateTransitionWASM(rs_data_contract_update_transition))
+        Ok(DataContractUpdateTransitionWASM(
+            rs_data_contract_update_transition,
+        ))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
