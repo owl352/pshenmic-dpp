@@ -15,7 +15,3 @@ dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-
     "document-value-conversion"
 ]}
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
-
-[profile.release]
-lto = true
-opt-level = 'z'

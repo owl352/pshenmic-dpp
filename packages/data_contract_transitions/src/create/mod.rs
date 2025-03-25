@@ -1,3 +1,4 @@
+use dpp::ProtocolError;
 use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
 use dpp::prelude::{DataContract, IdentityNonce};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
@@ -7,7 +8,9 @@ use dpp::state_transition::data_contract_create_transition::{
     DataContractCreateTransition, DataContractCreateTransitionV0,
 };
 use dpp::validation::operations::ProtocolValidationOperation;
-use dpp::version::{FeatureVersion, ProtocolVersion, TryFromPlatformVersioned};
+use dpp::version::{
+    FeatureVersion, ProtocolVersion, TryFromPlatformVersioned, TryIntoPlatformVersioned,
+};
 use pshenmic_dpp_data_contract::DataContractWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
@@ -26,19 +29,28 @@ impl DataContractCreateTransitionWASM {
         identity_nonce: IdentityNonce,
         platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractCreateTransitionWASM, JsValue> {
-        let mut rs_data_contract_transition_v0: DataContractCreateTransitionV0 =
-            DataContractCreateTransitionV0::try_from_platform_versioned(
-                DataContract::from(data_contract.clone()),
-                &platform_version
-                    .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
-                    .into(),
-            )
-            .with_js_error()?;
+        let rs_data_contract: DataContract = data_contract.clone().into();
 
-        rs_data_contract_transition_v0.identity_nonce = identity_nonce;
+        let rs_data_contract_in_serialized: Result<
+            DataContractInSerializationFormat,
+            ProtocolError,
+        > = rs_data_contract.try_into_platform_versioned(
+            &platform_version
+                .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
+                .into(),
+        );
+
+        let rs_data_contract_create_transition_v0: DataContractCreateTransitionV0 =
+            DataContractCreateTransitionV0 {
+                data_contract: rs_data_contract_in_serialized.with_js_error()?,
+                identity_nonce,
+                user_fee_increase: 0,
+                signature_public_key_id: 0,
+                signature: Default::default(),
+            };
 
         let rs_data_contract_transition =
-            DataContractCreateTransition::V0(rs_data_contract_transition_v0);
+            DataContractCreateTransition::V0(rs_data_contract_create_transition_v0);
 
         Ok(DataContractCreateTransitionWASM(
             rs_data_contract_transition,
@@ -47,12 +59,12 @@ impl DataContractCreateTransitionWASM {
 
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<DataContractCreateTransitionWASM, JsValue> {
-        let rs_data_contract_transition: DataContractCreateTransition =
+        let rs_data_contract_create_transition: DataContractCreateTransition =
             DataContractCreateTransition::deserialize_from_bytes(bytes.as_slice())
                 .with_js_error()?;
 
         Ok(DataContractCreateTransitionWASM(
-            rs_data_contract_transition,
+            rs_data_contract_create_transition,
         ))
     }
 

@@ -24,7 +24,7 @@ impl DataContractUpdateTransitionWASM {
         identity_nonce: IdentityNonce,
         platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractUpdateTransitionWASM, JsValue> {
-        let rs_transition = DataContractUpdateTransition::try_from_platform_versioned(
+        let rs_data_contract_update_transition = DataContractUpdateTransition::try_from_platform_versioned(
             (DataContract::from(data_contract.clone()), identity_nonce),
             &platform_version
                 .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
@@ -32,17 +32,17 @@ impl DataContractUpdateTransitionWASM {
         )
         .with_js_error()?;
 
-        Ok(DataContractUpdateTransitionWASM(rs_transition))
+        Ok(DataContractUpdateTransitionWASM(rs_data_contract_update_transition))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<DataContractUpdateTransitionWASM, JsValue> {
-        let rs_data_contract_transition: DataContractUpdateTransition =
+        let rs_data_contract_update_transition: DataContractUpdateTransition =
             DataContractUpdateTransition::deserialize_from_bytes(bytes.as_slice())
                 .with_js_error()?;
 
         Ok(DataContractUpdateTransitionWASM(
-            rs_data_contract_transition,
+            rs_data_contract_update_transition,
         ))
     }
 

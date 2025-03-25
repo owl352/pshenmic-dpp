@@ -15,11 +15,12 @@ WASM_BINARY_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm"
 # Create directory in dist to save transpiled wasm code and TS typings
 mkdir -p $DIST_WASM_DIR
 
-## Converting wasm into base64 and saving it to dist folder
 
 rm -rf $DIST_WASM_BINARY_BASE_64
 rm -rf $DIST_WASM_BINARY_RAW
 rm -rf $DIST_WASM_JS
+
+## Converting wasm into base64 and saving it to dist folder
 
 if [[ "${RAW}" == "true" ]]; then
   cp $WASM_BINARY_PATH $DIST_WASM_BINARY_RAW
@@ -35,4 +36,4 @@ echo "Transpiling wasm ES Modules to CommonJS"
 cp $WASM_JS_CODE_PATH $DIST_WASM_JS
 
 echo "Cleaning wasm build"
-rm -rf $WASM_DIR
+#rm -rf $WASM_DIR

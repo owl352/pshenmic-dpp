@@ -128,13 +128,13 @@ impl DataContractWASM {
     }
 
     #[wasm_bindgen(js_name = "generateId")]
-    pub fn generate_id(&mut self, identity_nonce: IdentityNonce) {
-        let data_contract_id = DataContract::generate_data_contract_id_v0(
-            self.0.owner_id().to_buffer(),
-            identity_nonce,
-        );
+    pub fn generate_id(
+        js_owner_id: JsValue,
+        identity_nonce: IdentityNonce,
+    ) -> Result<Vec<u8>, JsValue> {
+        let owner_id = identifier_from_js_value(&js_owner_id)?;
 
-        self.0.set_id(data_contract_id);
+        Ok(DataContract::generate_data_contract_id_v0(owner_id, identity_nonce).to_vec())
     }
 
     #[wasm_bindgen(js_name = "setId")]
