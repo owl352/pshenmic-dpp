@@ -20,7 +20,7 @@ crate-type = ["cdylib", "lib"]
 
 [package]
 name = "pshenmic-dpp"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2024"
 rust-version = "1.85"
 
