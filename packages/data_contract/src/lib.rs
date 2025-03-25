@@ -1,18 +1,18 @@
 use dpp::dashcore::hashes::serde::Serialize;
-use dpp::data_contract::accessors::v0::DataContractV0Getters;
+use dpp::data_contract::accessors::v0::{DataContractV0Getters, DataContractV0Setters};
 use dpp::data_contract::conversion::json::DataContractJsonConversionMethodsV0;
 use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethodsV0;
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
 use dpp::data_contract::{DataContract, DataContractV0};
-use dpp::platform_value::string_encoding::Encoding::Base58;
+use dpp::prelude::IdentityNonce;
 use dpp::serialization::{
     PlatformDeserializableWithPotentialValidationFromVersionedStructure,
     PlatformSerializableWithPlatformVersion,
 };
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
-use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
+use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -40,18 +40,13 @@ impl DataContractWASM {
         full_validation: bool,
         platform_version: PlatformVersionWASM,
     ) -> Result<DataContractWASM, JsValue> {
-        let value = js_value.with_serde_to_platform_value();
+        let value = js_value.with_serde_to_platform_value()?;
 
-        match value {
-            Ok(v) => {
-                let v0_contract =
-                    DataContractV0::from_value(v, full_validation, &platform_version.into())
-                        .with_js_error()?;
+        let v0_contract =
+            DataContractV0::from_value(value, full_validation, &platform_version.into())
+                .with_js_error()?;
 
-                Ok(DataContractWASM(DataContract::V0(v0_contract)))
-            }
-            Err(err) => Err(err),
-        }
+        Ok(DataContractWASM(DataContract::V0(v0_contract)))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
@@ -65,12 +60,9 @@ impl DataContractWASM {
             full_validation,
             &platform_version.into(),
         )
-        .with_js_error();
+        .with_js_error()?;
 
-        match rs_data_contract {
-            Ok(rs_data_contract) => Ok(DataContractWASM(rs_data_contract)),
-            Err(err) => Err(err),
-        }
+        Ok(DataContractWASM(rs_data_contract))
     }
 
     #[wasm_bindgen(js_name = "toBytes")]
@@ -84,23 +76,24 @@ impl DataContractWASM {
 
     #[wasm_bindgen(js_name = "toValue")]
     pub fn to_value(&self, platform_version: PlatformVersionWASM) -> Result<JsValue, JsValue> {
-        let value = self
-            .0
-            .clone()
-            .to_value(&platform_version.into())
-            .with_js_error();
-
-        match value {
-            Ok(v) => Ok(serde_wasm_bindgen::to_value(&v).unwrap()),
-            Err(err) => Err(err),
-        }
-    }
-
-    #[wasm_bindgen(js_name = "getSchema")]
-    pub fn get_schema(&self) -> JsValue {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
-        self.0.document_schemas().serialize(&serializer).unwrap()
+        self.0
+            .clone()
+            .to_value(&platform_version.into())
+            .with_js_error()?
+            .serialize(&serializer)
+            .map_err(JsValue::from)
+    }
+
+    #[wasm_bindgen(js_name = "getSchemas")]
+    pub fn get_schemas(&self) -> Result<JsValue, JsValue> {
+        let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+
+        self.0
+            .document_schemas()
+            .serialize(&serializer)
+            .map_err(JsValue::from)
     }
 
     #[wasm_bindgen(js_name = "getDataContractVersion")]
@@ -108,32 +101,54 @@ impl DataContractWASM {
         self.0.version()
     }
 
-    #[wasm_bindgen(js_name = "getDataContractIdentifier")]
-    pub fn get_data_contract_identifier(&self) -> JsValue {
-        JsValue::from_str(&*self.0.id().to_string(Base58))
+    #[wasm_bindgen(js_name = "getId")]
+    pub fn get_id(&self) -> Vec<u8> {
+        self.0.id().to_vec()
     }
 
     #[wasm_bindgen(js_name = "getOwnerId")]
-    pub fn get_owner_id(&self) -> JsValue {
-        JsValue::from_str(&*self.0.owner_id().to_string(Base58))
+    pub fn get_owner_id(&self) -> Vec<u8> {
+        self.0.owner_id().to_vec()
     }
 
     #[wasm_bindgen(js_name = "getConfig")]
-    pub fn get_config(&self) -> JsValue {
+    pub fn get_config(&self) -> Result<JsValue, JsValue> {
         self.0
             .config()
             .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .unwrap()
+            .map_err(JsValue::from)
     }
 
     #[wasm_bindgen(js_name = "toJson")]
     pub fn to_json(&self, platform_version: PlatformVersionWASM) -> Result<JsValue, JsValue> {
-        let json = self.0.to_json(&platform_version.into()).with_js_error();
+        let json = self.0.to_json(&platform_version.into()).with_js_error()?;
 
-        match json {
-            Ok(json) => Ok(json.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?),
-            Err(err) => Err(err),
-        }
+        json.serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(JsValue::from)
+    }
+
+    #[wasm_bindgen(js_name = "generateId")]
+    pub fn generate_id(
+        js_owner_id: JsValue,
+        identity_nonce: IdentityNonce,
+    ) -> Result<Vec<u8>, JsValue> {
+        let owner_id = identifier_from_js_value(&js_owner_id)?;
+
+        Ok(DataContract::generate_data_contract_id_v0(owner_id, identity_nonce).to_vec())
+    }
+
+    #[wasm_bindgen(js_name = "setId")]
+    pub fn set_id(&mut self, js_data_contract_id: JsValue) -> Result<(), JsValue> {
+        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
+
+        Ok(self.0.set_id(data_contract_id))
+    }
+
+    #[wasm_bindgen(js_name = "setOwnerId")]
+    pub fn set_owner_id(&mut self, js_owner_id: JsValue) -> Result<(), JsValue> {
+        let owner_id = identifier_from_js_value(&js_owner_id)?;
+
+        Ok(self.0.set_owner_id(owner_id))
     }
 }
 

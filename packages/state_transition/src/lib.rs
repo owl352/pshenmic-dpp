@@ -9,6 +9,7 @@ use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
+#[derive(Clone)]
 #[wasm_bindgen(js_name = "StateTransitionWASM")]
 pub struct StateTransitionWASM(StateTransition);
 
@@ -29,11 +30,11 @@ impl StateTransitionWASM {
     #[wasm_bindgen(js_name=sign)]
     pub fn sign(
         &mut self,
-        private_key: PrivateKeyWASM,
-        public_key: IdentityPublicKeyWASM,
+        private_key: &PrivateKeyWASM,
+        public_key: &IdentityPublicKeyWASM,
     ) -> Result<JsValue, JsValue> {
         let sig = self.0.sign(
-            &public_key.into(),
+            &public_key.clone().into(),
             private_key.get_key_bytes().as_slice(),
             &MockBLS {},
         );
@@ -57,7 +58,7 @@ impl StateTransitionWASM {
     #[wasm_bindgen(js_name=signByPrivateKey)]
     pub fn sign_by_private_key(
         &mut self,
-        private_key: PrivateKeyWASM,
+        private_key: &PrivateKeyWASM,
         key_type: KeyTypeWASM,
     ) -> JsValue {
         let _sig = self
@@ -79,7 +80,7 @@ impl StateTransitionWASM {
 
     #[wasm_bindgen(js_name=toBytes)]
     pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
-        let bytes = self.0.serialize_to_bytes().expect("Serialization failed");
+        let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
         Ok(JsValue::from(bytes.clone()))
     }

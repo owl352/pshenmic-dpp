@@ -1325,6 +1325,7 @@ dependencies = [
  "bincode",
  "bincode_derive",
  "pshenmic_dpp_data_contract",
+ "pshenmic_dpp_data_contract_transitions",
  "pshenmic_dpp_document_batch",
  "pshenmic_dpp_document_search",
  "pshenmic_dpp_enums",
@@ -1341,6 +1342,18 @@ dependencies = [
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_data_contract_transitions"
+version = "0.1.0"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_data_contract",
+ "pshenmic_dpp_enums",
+ "pshenmic_dpp_state_transition",
+ "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
 

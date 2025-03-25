@@ -2,6 +2,7 @@
 #![no_main]
 
 pub use pshenmic_dpp_data_contract;
+pub use pshenmic_dpp_data_contract_transitions;
 pub use pshenmic_dpp_document_batch;
 pub use pshenmic_dpp_document_search;
 pub use pshenmic_dpp_enums;
