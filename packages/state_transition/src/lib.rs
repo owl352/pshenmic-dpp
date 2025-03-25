@@ -1,4 +1,5 @@
 use dpp::identity::KeyType;
+use dpp::prelude::IdentityPublicKey;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::StateTransition;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
@@ -31,10 +32,10 @@ impl StateTransitionWASM {
     pub fn sign(
         &mut self,
         private_key: PrivateKeyWASM,
-        public_key: IdentityPublicKeyWASM,
+        public_key: &IdentityPublicKeyWASM,
     ) -> Result<JsValue, JsValue> {
         let sig = self.0.sign(
-            &public_key.into(),
+            &IdentityPublicKey::from(public_key.clone()),
             private_key.get_key_bytes().as_slice(),
             &MockBLS {},
         );
@@ -80,7 +81,7 @@ impl StateTransitionWASM {
 
     #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
-        let bytes = self.0.serialize_to_bytes().expect("Serialization failed");
+        let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
         Ok(JsValue::from(bytes.clone()))
     }

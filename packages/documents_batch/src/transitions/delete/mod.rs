@@ -6,7 +6,6 @@ use dpp::state_transition::documents_batch_transition::DocumentDeleteTransition;
 use dpp::state_transition::documents_batch_transition::document_delete_transition::v0::v0_methods::DocumentDeleteTransitionV0Methods;
 use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
 use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_utils::identifier_from_js_value;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -32,15 +31,11 @@ impl DocumentDeleteTransitionWasm {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_data_contract_id: JsValue,
     ) -> Result<DocumentDeleteTransitionWasm, JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
-
         let rs_delete_transition = generate_delete_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name.to_string(),
-            data_contract_id,
         );
 
         Ok(DocumentDeleteTransitionWasm(rs_delete_transition))

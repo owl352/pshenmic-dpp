@@ -6,7 +6,7 @@ use dpp::state_transition::documents_batch_transition::DocumentReplaceTransition
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_utils::{identifier_from_js_value, ToSerdeJSONExt};
+use pshenmic_dpp_utils::ToSerdeJSONExt;
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::generators::generate_replace_transition;
 use crate::document_transition::DocumentTransitionWASM;
@@ -33,15 +33,11 @@ impl DocumentReplaceTransitionWasm {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_data_contract_id: JsValue,
     ) -> Result<DocumentReplaceTransitionWasm, JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
-
         let rs_update_transition = generate_replace_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name.to_string(),
-            data_contract_id,
         );
 
         Ok(DocumentReplaceTransitionWasm(rs_update_transition))

@@ -20,22 +20,25 @@ impl DocumentWASM {
         js_raw_document: JsValue,
         js_document_type_name: &str,
         js_revision: u64,
-        js_data_contract_id: &str,
-        js_owner_id: &str,
-    ) -> Self {
+        js_data_contract_id: JsValue,
+        js_owner_id: JsValue,
+    ) -> Result<DocumentWASM, JsValue> {
         let revision = Revision::from(js_revision);
 
         let document = js_raw_document
             .with_serde_to_platform_value_map()
-            .expect("cannot convert document to platform value map");
+            .map_err(JsValue::from)?;
 
-        DocumentWASM::new(
+        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
+        let owner_id = identifier_from_js_value(&js_owner_id)?;
+
+        Ok(DocumentWASM::new(
             document,
             js_document_type_name,
             revision,
-            js_data_contract_id,
-            js_owner_id,
-        )
+            data_contract_id,
+            owner_id,
+        ))
     }
 
     #[wasm_bindgen(js_name=getId)]

@@ -31,17 +31,14 @@ impl DocumentTransferTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_data_contract_id: JsValue,
         js_recipient_owner_id: JsValue,
     ) -> Result<DocumentTransferTransitionWASM, JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
         let recipient_owner_id = identifier_from_js_value(&js_recipient_owner_id)?;
 
         let rs_transfer_transition = generate_transfer_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
             recipient_owner_id,
         );
 

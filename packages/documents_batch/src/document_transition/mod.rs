@@ -17,7 +17,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Clone)]
-#[wasm_bindgen(js_name = "DocumentTransitionsWASM")]
+#[wasm_bindgen(js_name = "DocumentTransitionWASM")]
 pub struct DocumentTransitionWASM(DocumentTransition);
 
 impl From<DocumentTransition> for DocumentTransitionWASM {

@@ -82,7 +82,7 @@ impl IdentityPublicKeyInCreationWASM {
             self.0.security_level().into(),
             self.0.key_type().into(),
             self.0.read_only(),
-            self.0.data().to_vec(),
+            self.0.data().to_string(Hex).as_str(),
             None,
         )
     }

@@ -38,7 +38,7 @@ impl IdentityPublicKeyWASM {
         security_level: SecurityLevelWASM,
         key_type: KeyTypeWASM,
         read_only: bool,
-        binary_data: Vec<u8>,
+        binary_data: &str,
         disabled_at: Option<TimestampMillis>,
     ) -> Self {
         IdentityPublicKeyWASM(IdentityPublicKey::from(IdentityPublicKeyV0 {
@@ -47,8 +47,8 @@ impl IdentityPublicKeyWASM {
             security_level: SecurityLevel::from(security_level),
             contract_bounds: None,
             key_type: KeyType::from(key_type),
-            read_only: read_only,
-            data: BinaryData::from(binary_data),
+            read_only,
+            data: BinaryData::from_string(binary_data, Hex).unwrap(),
             disabled_at,
         }))
     }

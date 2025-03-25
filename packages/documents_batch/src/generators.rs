@@ -18,14 +18,13 @@ pub fn generate_create_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
-    data_contract_id: Identifier,
 ) -> DocumentCreateTransition {
     DocumentCreateTransition::V0(DocumentCreateTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
             id: document.get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
+            data_contract_id: document.get_data_contract_id(),
         }),
         entropy: document.get_entropy().unwrap(),
         data: document.get_properties(),
@@ -37,14 +36,13 @@ pub fn generate_delete_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
-    data_contract_id: Identifier,
 ) -> DocumentDeleteTransition {
     DocumentDeleteTransition::V0(DocumentDeleteTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
             id: document.get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
+            data_contract_id: document.get_data_contract_id(),
         }),
     })
 }
@@ -53,14 +51,13 @@ pub fn generate_replace_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
-    data_contract_id: Identifier,
 ) -> DocumentReplaceTransition {
     DocumentReplaceTransition::V0(DocumentReplaceTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
             id: document.get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
+            data_contract_id: document.get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         data: document.get_properties(),
@@ -71,7 +68,7 @@ pub fn generate_transfer_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
-    data_contract_id: Identifier,
+
     recipient_owner_id: Identifier,
 ) -> DocumentTransferTransition {
     DocumentTransferTransition::V0(DocumentTransferTransitionV0 {
@@ -79,7 +76,7 @@ pub fn generate_transfer_transition(
             id: document.get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
+            data_contract_id: document.get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         recipient_owner_id,
@@ -90,7 +87,7 @@ pub fn generate_update_price_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
-    data_contract_id: Identifier,
+
     price: Credits,
 ) -> DocumentUpdatePriceTransition {
     DocumentUpdatePriceTransition::V0(DocumentUpdatePriceTransitionV0 {
@@ -98,7 +95,7 @@ pub fn generate_update_price_transition(
             id: document.get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
+            data_contract_id: document.get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         price,
@@ -109,7 +106,7 @@ pub fn generate_purchase_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
-    data_contract_id: Identifier,
+
     price: Credits,
 ) -> DocumentPurchaseTransition {
     DocumentPurchaseTransition::V0(DocumentPurchaseTransitionV0 {
@@ -117,7 +114,7 @@ pub fn generate_purchase_transition(
             id: document.get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
+            data_contract_id: document.get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         price: price,

@@ -12,7 +12,7 @@ use dpp::state_transition::documents_batch_transition::{
 };
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
 use pshenmic_dpp_state_transition::StateTransitionWASM;
-use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
+use pshenmic_dpp_utils::{IntoWasm, WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -23,7 +23,7 @@ mod prefunded_voting_balance;
 mod transitions;
 
 #[derive(Debug, Clone, PartialEq)]
-#[wasm_bindgen(js_name=DocumentBatchWASM)]
+#[wasm_bindgen(js_name=DocumentsBatchWASM)]
 pub struct DocumentsBatchWASM(DocumentsBatchTransition);
 
 impl From<DocumentsBatchTransition> for DocumentsBatchWASM {
@@ -42,7 +42,7 @@ impl From<DocumentsBatchWASM> for DocumentsBatchTransition {
 impl DocumentsBatchWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        document_transitions: Vec<DocumentTransitionWASM>,
+        document_transitions: js_sys::Array,
         js_owner_id: JsValue,
         user_fee_increase: UserFeeIncrease,
         signature_public_key_id: KeyID,
@@ -52,7 +52,12 @@ impl DocumentsBatchWASM {
 
         let transitions: Vec<DocumentTransition> = document_transitions
             .iter()
-            .map(|document_transition| {
+            .map(|js_document_transition| {
+                let document_transition: DocumentTransitionWASM = js_document_transition
+                    .to_wasm::<DocumentTransitionWASM>("DocumentTransitionWASM")
+                    .unwrap()
+                    .clone();
+
                 DocumentTransition::from(document_transition.clone().clone())
             })
             .collect();

@@ -5,7 +5,6 @@ use dpp::state_transition::documents_batch_transition::document_transition::{Doc
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_utils::identifier_from_js_value;
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_update_price_transition;
@@ -25,16 +24,12 @@ impl DocumentUpdatePriceTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_data_contract_id: JsValue,
         price: Credits,
     ) -> Result<DocumentUpdatePriceTransitionWASM, JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
-
         let rs_document_update_price_transition = generate_update_price_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id,
             price,
         );
 

@@ -8,7 +8,7 @@ use dpp::state_transition::documents_batch_transition::DocumentCreateTransition;
 use dpp::state_transition::documents_batch_transition::document_create_transition::v0::v0_methods::DocumentCreateTransitionV0Methods;
 use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
 use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_utils::{ToSerdeJSONExt, identifier_from_js_value};
+use pshenmic_dpp_utils::ToSerdeJSONExt;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};
 
@@ -35,15 +35,11 @@ impl DocumentCreateTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_data_contract_id: JsValue,
     ) -> Result<DocumentCreateTransitionWASM, JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
-
         let rs_create_transition = generate_create_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name.to_string(),
-            data_contract_id,
         );
 
         Ok(DocumentCreateTransitionWASM(rs_create_transition))
