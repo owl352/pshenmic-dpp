@@ -1,7 +1,6 @@
 use crate::DocumentWASM;
 use dpp::identifier::Identifier;
 use dpp::platform_value::Value;
-use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::prelude::Revision;
 use dpp::util::entropy_generator;
 use dpp::util::entropy_generator::EntropyGenerator;
@@ -12,11 +11,9 @@ impl DocumentWASM {
         document: BTreeMap<String, Value>,
         document_type_name: &str,
         revision: u64,
-        data_contract_id: &str,
-        owner_id: &str,
+        data_contract_id: Identifier,
+        owner_id: Identifier,
     ) -> Self {
-        let owner_id = Identifier::from_string(owner_id, Base58).unwrap();
-        let data_contract_id = Identifier::from_string(data_contract_id, Base58).unwrap();
         let revision = Revision::from(revision);
 
         let entropy = entropy_generator::DefaultEntropyGenerator

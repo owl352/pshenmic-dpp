@@ -47,7 +47,7 @@ impl IdentityPublicKeyWASM {
             security_level: SecurityLevel::from(security_level),
             contract_bounds: None,
             key_type: KeyType::from(key_type),
-            read_only: read_only,
+            read_only,
             data: BinaryData::from_string(binary_data, Hex).unwrap(),
             disabled_at,
         }))
@@ -118,9 +118,8 @@ impl IdentityPublicKeyWASM {
     }
 
     #[wasm_bindgen(js_name = setData)]
-    pub fn set_data(&mut self, binary_data: &str) {
-        let data = BinaryData::from_string(binary_data, Hex).unwrap();
-        self.0.set_data(data)
+    pub fn set_data(&mut self, binary_data: Vec<u8>) {
+        self.0.set_data(BinaryData::from(binary_data))
     }
 
     #[wasm_bindgen(js_name = setDisabledAt)]

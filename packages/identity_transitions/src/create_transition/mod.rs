@@ -82,7 +82,9 @@ impl IdentityCreateTransitionWASM {
 
         match rs_st {
             StateTransition::IdentityCreate(st) => Ok(IdentityCreateTransitionWASM(st)),
-            _ => Err(JsValue::from_str(&"Invalid state transition type)")),
+            _ => Err(JsValue::from_str(
+                &"Invalid state document_transition type)",
+            )),
         }
     }
 
