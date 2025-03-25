@@ -1,10 +1,11 @@
-use dpp::ProtocolError;
 use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
-use dpp::prelude::DataContract;
+use dpp::prelude::{DataContract, IdentityNonce};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::StateTransition;
-use dpp::state_transition::data_contract_create_transition::DataContractCreateTransition;
 use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV0;
+use dpp::state_transition::data_contract_create_transition::{
+    DataContractCreateTransition, DataContractCreateTransitionV0,
+};
 use dpp::validation::operations::ProtocolValidationOperation;
 use dpp::version::{FeatureVersion, ProtocolVersion, TryFromPlatformVersioned};
 use pshenmic_dpp_data_contract::DataContractWASM;
@@ -22,20 +23,26 @@ impl DataContractCreateTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         data_contract: &DataContractWASM,
+        identity_nonce: IdentityNonce,
         platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractCreateTransitionWASM, JsValue> {
-        let rs_data_contract_transition: Result<DataContractCreateTransition, ProtocolError> =
-            DataContractCreateTransition::try_from_platform_versioned(
+        let mut rs_data_contract_transition_v0: DataContractCreateTransitionV0 =
+            DataContractCreateTransitionV0::try_from_platform_versioned(
                 DataContract::from(data_contract.clone()),
                 &platform_version
                     .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
                     .into(),
-            );
+            )
+            .with_js_error()?;
 
-        match rs_data_contract_transition {
-            Ok(transition) => Ok(DataContractCreateTransitionWASM(transition)),
-            Err(err) => Err(JsValue::from(err.to_string())),
-        }
+        rs_data_contract_transition_v0.identity_nonce = identity_nonce;
+
+        let rs_data_contract_transition =
+            DataContractCreateTransition::V0(rs_data_contract_transition_v0);
+
+        Ok(DataContractCreateTransitionWASM(
+            rs_data_contract_transition,
+        ))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
