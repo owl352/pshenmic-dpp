@@ -1,6 +1,6 @@
 const assert = require('assert');
 const initWasm = require('./utils/wasm')
-const {identifier, identityBytesWithoutKeys} = require("./mocks/Identity");
+const {identifier, identityBytesWithoutKeys, identifierBytes} = require("./mocks/Identity");
 const {keyId, purpose, securityLevel, keyType, binaryData} = require("./mocks/PublicKey");
 
 let wasm
@@ -32,8 +32,48 @@ describe('Identity', function () {
 
 
   describe('getters', function () {
-    it("should generate public key from values with type ECDSA_SECP256K1 and return all fields", function () {
+    it("should get id buffer", function () {
+      const identity = new wasm.IdentityWASM(identifier)
 
+      assert.deepEqual(Array.from(identity.getId()), identifierBytes)
+    })
+
+    it("should get balance", function () {
+      const identity = new wasm.IdentityWASM(identifier)
+
+      assert.deepEqual(identity.getBalance(), BigInt(0))
+    })
+
+    it("should get revision", function () {
+      const identity = new wasm.IdentityWASM(identifier)
+
+      assert.deepEqual(identity.getRevision(), BigInt(0))
+    })
+
+    it("should get public keys", function () {
+      const identity = new wasm.IdentityWASM(identifier)
+
+      const pubKey = new wasm.IdentityPublicKeyWASM(
+        keyId,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      const pubKey2 = new wasm.IdentityPublicKeyWASM(
+        keyId+1,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      identity.addPublicKey(pubKey)
+      identity.addPublicKey(pubKey2)
+
+
+      assert.equal(identity.getPublicKeys().length, 2)
     })
   })
 
@@ -55,5 +95,22 @@ describe('Identity', function () {
 
       assert.deepEqual(identity.getPublicKeyById(keyId).toBytes(), pubKey.toBytes())
     })
+
+    it("should allows to set balance", function () {
+      const identity = new wasm.IdentityWASM(identifier)
+
+      identity.setBalance(BigInt(1000))
+
+      assert.equal(identity.getBalance(), BigInt(1000))
+    })
+
+    it("should allows to set revision", function () {
+      const identity = new wasm.IdentityWASM(identifier)
+
+      identity.setRevision(BigInt(1000))
+
+      assert.equal(identity.getRevision(), BigInt(1000))
+    })
+
   })
 })
