@@ -46,8 +46,8 @@ impl IdentityWASM {
     }
 
     #[wasm_bindgen(js_name = "addPublicKey")]
-    pub fn set_public_key(&mut self, public_key: IdentityPublicKeyWASM) {
-        self.0.add_public_key(public_key.into());
+    pub fn add_public_key(&mut self, public_key: &IdentityPublicKeyWASM) {
+        self.0.add_public_key(public_key.clone().into());
     }
 
     // GETTERS
