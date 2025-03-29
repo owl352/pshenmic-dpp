@@ -1,19 +1,20 @@
-const assert = require('assert');
+const assert = require('assert')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {keyId, purpose, securityLevel, keyType, binaryData, securityLevelSetted, keyIdSetted, purposeSetted,
+const {
+  keyId, purpose, securityLevel, keyType, binaryData, securityLevelSetted, keyIdSetted, purposeSetted,
   keyTypeSetted, binaryDataSetted
 } = require('./mocks/PublicKey')
 
 let wasm
 
 describe('PublicKey', function () {
-
   before(async function () {
     wasm = initWasm()
   })
 
   describe('conversations', function () {
-    it("should generate public key from values with type ECDSA_SECP256K1", function () {
+    it('should generate public key from values with type ECDSA_SECP256K1', function () {
       const pubKey = new wasm.IdentityPublicKeyWASM(
         keyId,
         purpose,
@@ -25,7 +26,7 @@ describe('PublicKey', function () {
       assert.notEqual(pubKey.__wbg_ptr, 0)
     })
 
-    it("should generate public key from values with type ECDSA_SECP256K1 and generate new from self bytes", function () {
+    it('should generate public key from values with type ECDSA_SECP256K1 and generate new from self bytes', function () {
       const pubKey = new wasm.IdentityPublicKeyWASM(
         keyId,
         purpose,
@@ -53,9 +54,9 @@ describe('PublicKey', function () {
       assert.notEqual(pubKey.__wbg_ptr, 0)
       assert.notEqual(newPubKey.__wbg_ptr, 0)
     })
-  });
+  })
   describe('getters', function () {
-    it("should generate public key from values with type ECDSA_SECP256K1 and return all fields", function () {
+    it('should generate public key from values with type ECDSA_SECP256K1 and return all fields', function () {
       const pubKey = new wasm.IdentityPublicKeyWASM(
         keyId,
         purpose,
@@ -74,7 +75,7 @@ describe('PublicKey', function () {
   })
 
   describe('setters', function () {
-    it("should generate public key from values with type ECDSA_SECP256K1 and return all fields and set another fields", function () {
+    it('should generate public key from values with type ECDSA_SECP256K1 and return all fields and set another fields', function () {
       const pubKey = new wasm.IdentityPublicKeyWASM(
         keyId,
         purpose,
@@ -98,4 +99,4 @@ describe('PublicKey', function () {
       assert.equal(pubKey.getData(), binaryDataSetted)
     })
   })
-});
+})
