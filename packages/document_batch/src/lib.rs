@@ -92,7 +92,7 @@ impl DocumentBatchWASM {
         let data_contract_id = document.rs_get_data_contract_id();
         let document_type_name = document.get_document_type_name();
         let owner_id = document.rs_get_owner_id();
-        
+
         match document.get_entropy() {
             Some(_entropy) => Ok(match batch_type {
                 BatchType::CREATE => {
