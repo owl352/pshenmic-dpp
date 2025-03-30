@@ -89,9 +89,10 @@ impl DocumentBatchWASM {
         document: DocumentWASM,
         identity_contract_nonce: IdentityNonce,
     ) -> Result<DocumentBatchWASM, JsValue> {
-        let data_contract_id = document.get_data_contract_id();
+        let data_contract_id = document.rs_get_data_contract_id();
         let document_type_name = document.get_document_type_name();
-
+        let owner_id = document.rs_get_owner_id();
+        
         match document.get_entropy() {
             Some(_entropy) => Ok(match batch_type {
                 BatchType::CREATE => {
@@ -104,7 +105,7 @@ impl DocumentBatchWASM {
 
                     DocumentBatchWASM {
                         batch: DocumentsBatchTransition::V0(DocumentsBatchTransitionV0 {
-                            owner_id: document.get_owner_id(),
+                            owner_id,
                             transitions: [DocumentTransition::Create(create_transition)].to_vec(),
                             user_fee_increase: 0,
                             signature_public_key_id: 0,
@@ -123,7 +124,7 @@ impl DocumentBatchWASM {
 
                     DocumentBatchWASM {
                         batch: DocumentsBatchTransition::V0(DocumentsBatchTransitionV0 {
-                            owner_id: document.get_owner_id(),
+                            owner_id,
                             transitions: [DocumentTransition::Delete(delete_transition)].to_vec(),
                             user_fee_increase: 0,
                             signature_public_key_id: 0,
@@ -142,7 +143,7 @@ impl DocumentBatchWASM {
 
                     DocumentBatchWASM {
                         batch: DocumentsBatchTransition::V0(DocumentsBatchTransitionV0 {
-                            owner_id: document.get_owner_id(),
+                            owner_id,
                             transitions: [DocumentTransition::Replace(replace_transition)].to_vec(),
                             user_fee_increase: 0,
                             signature_public_key_id: 0,
