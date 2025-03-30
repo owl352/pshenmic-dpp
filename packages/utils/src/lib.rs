@@ -274,7 +274,7 @@ pub fn generate_document_id_v0(
     owner_id: &Identifier,
     document_type_name: &str,
     entropy: &[u8],
-) -> Identifier {
+) -> Result<Identifier, JsValue> {
     let mut buf: Vec<u8> = vec![];
 
     buf.extend_from_slice(&contract_id.to_buffer());
@@ -282,7 +282,7 @@ pub fn generate_document_id_v0(
     buf.extend_from_slice(document_type_name.as_bytes());
     buf.extend_from_slice(entropy);
 
-    Identifier::from_bytes(&hash_double_to_vec(&buf)).unwrap()
+    Identifier::from_bytes(&hash_double_to_vec(&buf)).map_err(|e| JsValue::from(e.to_string()))
 }
 
 #[wasm_bindgen(raw_module = "../identifier_utils/Identifier.js")]
