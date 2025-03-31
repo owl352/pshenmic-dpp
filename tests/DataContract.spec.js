@@ -96,16 +96,6 @@ describe('DataContract', function () {
     })
   })
 
-  describe('static', function () {
-    it('should allow to generate id', function () {
-      const id = wasm.DataContractWASM.generateId('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL', BigInt(4))
-
-      const valueId = base58.decode('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
-
-      assert.deepEqual(id, valueId)
-    })
-  })
-
   describe('setters', function () {
     it('should allow to set id', function () {
       const dataContract = new wasm.DataContractWASM(value, true)
@@ -125,6 +115,16 @@ describe('DataContract', function () {
       dataContract.setOwnerId('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
 
       assert.deepEqual(dataContract.getOwnerId(), valueId)
+    })
+  })
+
+  describe('static', function () {
+    it('should allow to generate id', function () {
+      const id = wasm.DataContractWASM.generateId('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL', BigInt(4))
+
+      const valueId = base58.decode('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
+
+      assert.deepEqual(id, valueId)
     })
   })
 })

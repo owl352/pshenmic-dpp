@@ -91,12 +91,12 @@ impl DataContractCreateTransitionWASM {
     #[wasm_bindgen(js_name = "setDataContract")]
     pub fn set_data_contract(
         &mut self,
-        data_contract: DataContractWASM,
+        data_contract: &DataContractWASM,
         platform_version_wasm: Option<PlatformVersionWASM>,
     ) -> Result<(), JsValue> {
         let data_contract_serialization_format =
             DataContractInSerializationFormat::try_from_platform_versioned(
-                DataContract::from(data_contract),
+                DataContract::from(data_contract.clone()),
                 &platform_version_wasm
                     .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
                     .into(),

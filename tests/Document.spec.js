@@ -220,4 +220,12 @@ describe('Document', function () {
       assert.deepEqual(documentInstance.getDocumentTypeName(), newDocumentTypeName)
     })
   })
+
+  describe('static', function () {
+    it('should allow to generate id', () => {
+      const generatedId = wasm.DocumentWASM.generateId('note', ownerId, dataContractId)
+
+      assert.equal(Array.from(generatedId).length, 32)
+    })
+  })
 })
