@@ -2,6 +2,7 @@ const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 const { wif, bytes } = require('./mocks/PrivateKey')
+const { fromHexString } = require('./utils/hex')
 
 let wasm
 
@@ -26,7 +27,7 @@ describe('PrivateKey', function () {
     it('should allow to create PrivateKey from wif and write value in bytes', function () {
       const pkey = new wasm.PrivateKeyWASM(wif)
 
-      assert.deepEqual(pkey.getKeyBytes(), Uint8Array.from(bytes))
+      assert.deepEqual(pkey.getKeyBytes(), fromHexString(bytes))
     })
   })
 })

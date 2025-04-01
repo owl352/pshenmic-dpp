@@ -1,6 +1,5 @@
 module.exports = {
-  value: require('./value.json'),
-  bytes: require('./bytes'),
-  id: require('./id'),
-  ownerId: require('./ownerId')
+  value: require('./DataContract.json'),
+  id: '4fJLR2GYTPFdomuTVvNy3VRrvWgvkKPzqehEBpNf2nk6',
+  ownerId: '11111111111111111111111111111111'
 }

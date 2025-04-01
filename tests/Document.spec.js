@@ -2,15 +2,20 @@ const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 const {
-  document, dataContractId, ownerId, documentTypeName, revision, documentBytes, schema, idBytes, id, ownerIdBytes,
-  dataContractIdBytes, document2
+  document, dataContractId, ownerId, documentTypeName, revision, dataContractValue, id, document2
 } = require('./mocks/Document')
+const { fromHexString } = require('./utils/hex')
+const { base58 } = require('@scure/base')
 
 let wasm
+
+let documentBytes
 
 describe('Document', function () {
   before(async function () {
     wasm = initWasm()
+
+    documentBytes = '00840b5cec9f0401b1950610e85dcb26829122ac8853464e1e2c7e38ed22b48903ab321b19457b1c16b12762509276d47d952f582d978cbd8b50bbfc2fd8a7767d01000001305475746f7269616c20434920546573742040205475652c203037204a616e20323032352031353a32373a353020474d5400'
   })
 
   describe('conversations', function () {
@@ -27,12 +32,12 @@ describe('Document', function () {
     })
 
     it('should allows to create Document from bytes and convert to bytes', function () {
-      const dataContract = new wasm.DataContractWASM(schema, false)
-      const documentInstance = wasm.DocumentWASM.fromBytes(documentBytes, dataContract, 'note')
+      const dataContract = new wasm.DataContractWASM(dataContractValue, false)
+      const documentInstance = wasm.DocumentWASM.fromBytes(fromHexString(documentBytes), dataContract, 'note')
 
       const bytes = documentInstance.toBytes(dataContract, 'note')
 
-      assert.deepEqual(Array.from(bytes), documentBytes)
+      assert.deepEqual(bytes, fromHexString(documentBytes))
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
   })
@@ -41,19 +46,19 @@ describe('Document', function () {
     it('should return document id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(Array.from(documentInstance.getId()), idBytes)
+      assert.deepEqual(documentInstance.getId(), base58.decode(id))
     })
 
     it('should return owner id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(Array.from(documentInstance.getOwnerId()), ownerIdBytes)
+      assert.deepEqual(documentInstance.getOwnerId(), base58.decode(ownerId))
     })
 
     it('should return data contract id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(Array.from(documentInstance.getDataContractId()), dataContractIdBytes)
+      assert.deepEqual(documentInstance.getDataContractId(), base58.decode(dataContractId))
     })
 
     it('should return properties', () => {
@@ -81,7 +86,7 @@ describe('Document', function () {
 
       documentInstance.setId(ownerId)
 
-      assert.deepEqual(Array.from(documentInstance.getId()), ownerIdBytes)
+      assert.deepEqual(documentInstance.getId(), base58.decode(ownerId))
     })
 
     it('should allow to set document owner id', () => {
@@ -89,7 +94,7 @@ describe('Document', function () {
 
       documentInstance.setOwnerId(id)
 
-      assert.deepEqual(Array.from(documentInstance.getOwnerId()), idBytes)
+      assert.deepEqual(documentInstance.getOwnerId(), base58.decode(id))
     })
 
     it('should allow to set entropy', () => {
