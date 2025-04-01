@@ -36,4 +36,7 @@ echo "Transpiling wasm ES Modules to CommonJS"
 cp $WASM_JS_CODE_PATH $DIST_WASM_JS
 
 echo "Cleaning wasm build"
-#rm -rf $WASM_DIR
+rm -rf $WASM_DIR
+
+echo "Total build size: "
+du -sh $DIST_WASM_DIR

@@ -11,7 +11,8 @@
     "build:js": "./scripts/build-js.sh",
     "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
-    "tests": "babel dist --out-dir dist/cjs && mocha ./tests/*.spec.js"
+    "babel": "babel dist --out-dir dist/cjs",
+    "tests": "mocha ./tests/*.spec.js"
   },
   "author": "owl352",
   "license": "ISC",
