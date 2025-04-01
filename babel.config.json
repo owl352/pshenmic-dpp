@@ -14,5 +14,6 @@
         "corejs": "3.6.5"
       }
     ]
-  ]
+  ],
+  "plugins": ["@babel/transform-runtime", "@babel/plugin-transform-modules-commonjs"]
 }

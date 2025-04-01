@@ -2,6 +2,7 @@
   "name": "pshenmic-dpp",
   "version": "1.0.4",
   "main": "dist/wasm/pshenmic_dpp.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/owl352/pshenmic-dpp"
@@ -11,7 +12,7 @@
     "build:js": "./scripts/build-js.sh",
     "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
-    "tests": "babel tests --out-dir lib --copy-files && mocha ./lib/*.spec.js"
+    "tests": "babel --plugins @babel/plugin-transform-modules-commonjs dist --out-dir dist && mocha ./tests/*.spec.js"
   },
   "author": "owl352",
   "license": "ISC",
@@ -19,6 +20,8 @@
   "devDependencies": {
     "@babel/cli": "^7.27.0",
     "@babel/core": "^7.26.10",
+    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
+    "@babel/plugin-transform-runtime": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
     "@scure/base": "^1.2.4",
     "core-js": "^3.41.0",
