@@ -11,7 +11,7 @@
     "build:js": "./scripts/build-js.sh",
     "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
-    "babel": "babel dist --out-dir dist/cjs",
+    "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.js"
   },
   "author": "owl352",
@@ -27,5 +27,6 @@
     "core-js": "^3.41.0",
     "mocha": "^11.1.0",
     "standard": "^17.1.2"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
