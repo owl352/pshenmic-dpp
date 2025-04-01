@@ -3,6 +3,7 @@
 /.yarn
 /.idea
 /wasm
+/dist/cjs
 package-lock.json
 yarn.lock
 node_modules
