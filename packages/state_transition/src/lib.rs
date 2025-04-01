@@ -1,7 +1,9 @@
+use dpp::dashcore::secp256k1::hashes::hex::Case::Upper;
+use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::identity::KeyType;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition;
-use dpp::util::hash::hash_double_to_vec;
+use dpp::util::hash::hash_to_hex_string;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
@@ -9,6 +11,7 @@ use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use sha2::{Digest, Sha256};
 
 #[derive(Clone)]
 #[wasm_bindgen(js_name = "StateTransitionWASM")]
@@ -97,16 +100,15 @@ impl StateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name=getHash)]
-    pub fn get_hash(&self, skip_signature: bool) -> Result<Vec<u8>, JsValue> {
+    pub fn get_hash(&self, skip_signature: bool) -> Result<String, JsValue> {
         if skip_signature {
-            Ok(hash_double_to_vec(
-                &self.0.signable_bytes().with_js_error()?,
-            ))
+            let payload = &self.0.signable_bytes().with_js_error()?;
+
+            Ok(Sha256::digest(payload).to_hex_string(Upper))
         } else {
-            Ok(hash_double_to_vec(
-                dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0)
-                    .with_js_error()?,
-            ))
+            let payload = dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0).with_js_error()?;
+
+            Ok(Sha256::digest(payload).to_hex_string(Upper))
         }
     }
 }
