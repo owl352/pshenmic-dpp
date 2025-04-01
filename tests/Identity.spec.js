@@ -11,7 +11,7 @@ describe('Identity', function () {
     wasm = initWasm()
   })
 
-  describe('conversations', function () {
+  describe('conversions', function () {
     it('should generate identity from identifier', async function () {
       const identity = new wasm.IdentityWASM(identifier)
 

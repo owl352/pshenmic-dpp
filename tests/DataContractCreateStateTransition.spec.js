@@ -18,7 +18,7 @@ describe('DataContract Create Transition', function () {
     ]
   })
 
-  describe('conversations', function () {
+  describe('conversions', function () {
     it('should allow to create transitions from data contract', () => {
       const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
 
