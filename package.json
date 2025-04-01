@@ -11,7 +11,8 @@
     "build:bin": "./scripts/build.sh",
     "build:js": "./scripts/build-js.sh",
     "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
-    "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh"
+    "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
+    "tests": "mocha ./tests/*.spec.js"
   },
   "author": "owl352",
   "license": "ISC",

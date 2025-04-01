@@ -41,6 +41,10 @@ jobs:
       run: |
         yarn
 
+    - name: Run tests
+      run: |
+        yarn tests
+
     - name: Build JS bundle
       run: |
         yarn build:full
