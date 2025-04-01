@@ -1,5 +1,5 @@
 const wasm = require('../../dist/wasm/pshenmic_dpp')
-const wasmBytes = require('../../dist/wasm/pshenmic_dpp_bg')
+const {default: wasmBytes} = require('../../dist/wasm/pshenmic_dpp_bg')
 
 module.exports = () => {
   const binaryString = atob(wasmBytes)
