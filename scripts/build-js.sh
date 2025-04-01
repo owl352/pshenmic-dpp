@@ -27,7 +27,7 @@ if [[ "${RAW}" == "true" ]]; then
 else
   echo "Converting wasm binary into base64 module"
   WASM_BUILD_BASE_64=$(base64 -i "$WASM_BINARY_PATH")
-  echo 'module.exports = "'${WASM_BUILD_BASE_64}'"' > "$DIST_WASM_BINARY_BASE_64"
+  echo 'export default "'${WASM_BUILD_BASE_64}'"' > "$DIST_WASM_BINARY_BASE_64"
 fi
 
 echo "Copying ES module to dist"
