@@ -11,7 +11,7 @@ describe('PrivateKey', function () {
     wasm = initWasm()
   })
 
-  describe('conversions', function () {
+  describe('serialization / deserialization', function () {
     it('should allows to create PrivateKey from wif', function () {
       const pkey = new wasm.PrivateKeyWASM(wif)
 

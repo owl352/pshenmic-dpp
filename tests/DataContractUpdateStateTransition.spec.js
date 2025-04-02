@@ -1,24 +1,18 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const { value } = require('./mocks/DataContract')
+const { value, dataContractsBytes } = require('./mocks/DataContract')
 const { PlatformVersionWASM } = require('../dist/cjs/wasm/pshenmic_dpp')
 const { fromHexString } = require('./utils/hex')
 
 let wasm
 
-let dataContractsBytes
-
 describe('DataContract Updatet Transition', function () {
   before(async function () {
     wasm = initWasm()
-
-    dataContractsBytes = [
-      '00ea8920edea52fa400de2ccc43052b2821f45585241a2875d4250e35d4ce937c800000000000101000001ab321b19457b1c16b12762509276d47d952f582d978cbd8b50bbfc2fd8a7767d0001046e6f7465160312047479706512066f626a656374120a70726f70657274696573160112076d65737361676516021204747970651206737472696e671208706f736974696f6e030012146164646974696f6e616c50726f706572746965731300'
-    ]
   })
 
-  describe('conversions', function () {
+  describe('serialization / deserialization', function () {
     it('should allow to create transitions from data contract', () => {
       const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
 

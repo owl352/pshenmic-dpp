@@ -2,23 +2,19 @@ const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 const {
-  document, dataContractId, ownerId, documentTypeName, revision, dataContractValue, id, document2
+  document, dataContractId, ownerId, documentTypeName, revision, dataContractValue, id, document2, documentBytes
 } = require('./mocks/Document')
 const { fromHexString } = require('./utils/hex')
 const { base58 } = require('@scure/base')
 
 let wasm
 
-let documentBytes
-
 describe('Document', function () {
   before(async function () {
     wasm = initWasm()
-
-    documentBytes = '00840b5cec9f0401b1950610e85dcb26829122ac8853464e1e2c7e38ed22b48903ab321b19457b1c16b12762509276d47d952f582d978cbd8b50bbfc2fd8a7767d01000001305475746f7269616c20434920546573742040205475652c203037204a616e20323032352031353a32373a353020474d5400'
   })
 
-  describe('conversions', function () {
+  describe('serialization / deserialization', function () {
     it('should allows to create Document from values', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId)
 

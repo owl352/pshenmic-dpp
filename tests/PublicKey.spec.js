@@ -13,7 +13,7 @@ describe('PublicKey', function () {
     wasm = initWasm()
   })
 
-  describe('conversions', function () {
+  describe('serialization / deserialization', function () {
     it('should generate public key from values with type ECDSA_SECP256K1', function () {
       const pubKey = new wasm.IdentityPublicKeyWASM(
         keyId,

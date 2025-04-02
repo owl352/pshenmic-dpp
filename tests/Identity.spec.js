@@ -1,7 +1,7 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const { identifier, identityBytesWithoutKeys, identifierBytes } = require('./mocks/Identity')
+const { identifier, identityBytesWithoutKeys, identifierBytes, balance, revision } = require('./mocks/Identity')
 const { keyId, purpose, securityLevel, keyType, binaryData } = require('./mocks/PublicKey')
 
 let wasm
@@ -11,7 +11,7 @@ describe('Identity', function () {
     wasm = initWasm()
   })
 
-  describe('conversions', function () {
+  describe('serialization / deserialization', function () {
     it('should generate identity from identifier', async function () {
       const identity = new wasm.IdentityWASM(identifier)
 
@@ -97,17 +97,17 @@ describe('Identity', function () {
     it('should allows to set balance', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      identity.setBalance(BigInt(1000))
+      identity.setBalance(balance)
 
-      assert.equal(identity.getBalance(), BigInt(1000))
+      assert.equal(identity.getBalance(), balance)
     })
 
     it('should allows to set revision', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      identity.setRevision(BigInt(1000))
+      identity.setRevision(revision)
 
-      assert.equal(identity.getRevision(), BigInt(1000))
+      assert.equal(identity.getRevision(), revision)
     })
   })
 })
