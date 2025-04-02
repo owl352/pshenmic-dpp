@@ -2,8 +2,8 @@ const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 const {
-  keyId, purpose, securityLevel, keyType, binaryData, securityLevelSetted, keyIdSetted, purposeSetted,
-  keyTypeSetted, binaryDataSetted
+  keyId, purpose, securityLevel, keyType, binaryData, securityLevelSet, keyIdSet, purposeSet,
+  keyTypeSet, binaryDataSet
 } = require('./mocks/PublicKey')
 
 let wasm
@@ -84,19 +84,19 @@ describe('PublicKey', function () {
         false,
         binaryData)
 
-      pubKey.setKeyId(keyIdSetted)
-      pubKey.setPurpose(purposeSetted)
-      pubKey.setSecurityLevel(securityLevelSetted)
-      pubKey.setKeyType(keyTypeSetted)
+      pubKey.setKeyId(keyIdSet)
+      pubKey.setPurpose(purposeSet)
+      pubKey.setSecurityLevel(securityLevelSet)
+      pubKey.setKeyType(keyTypeSet)
       pubKey.setReadOnly(true)
-      pubKey.setData(binaryDataSetted)
+      pubKey.setData(binaryDataSet)
 
-      assert.equal(pubKey.getKeyId(), keyIdSetted)
-      assert.equal(pubKey.getPurpose(), purposeSetted)
-      assert.equal(pubKey.getSecurityLevel(), securityLevelSetted)
-      assert.equal(pubKey.getKeyType(), keyTypeSetted)
+      assert.equal(pubKey.getKeyId(), keyIdSet)
+      assert.equal(pubKey.getPurpose(), purposeSet)
+      assert.equal(pubKey.getSecurityLevel(), securityLevelSet)
+      assert.equal(pubKey.getKeyType(), keyTypeSet)
       assert.equal(pubKey.getReadOnly(), true)
-      assert.equal(pubKey.getData(), binaryDataSetted)
+      assert.equal(pubKey.getData(), binaryDataSet)
     })
   })
 })
