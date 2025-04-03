@@ -1,9 +1,9 @@
+use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::identity::identity_public_key::accessors::v0::{
     IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
 };
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, TimestampMillis};
-use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Hex;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
@@ -131,9 +131,12 @@ impl IdentityPublicKeyWASM {
 
     #[wasm_bindgen(js_name = "hash")]
     pub fn hash(&self) -> Result<Vec<u8>, JsValue> {
-        self.0.public_key_hash().with_js_error().map(|slice| slice.to_vec())
+        self.0
+            .public_key_hash()
+            .with_js_error()
+            .map(|slice| slice.to_vec())
     }
-    
+
     #[wasm_bindgen(js_name = toBytes)]
     pub fn to_byes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()

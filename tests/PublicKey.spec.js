@@ -54,6 +54,20 @@ describe('PublicKey', function () {
       assert.notEqual(pubKey.__wbg_ptr, 0)
       assert.notEqual(newPubKey.__wbg_ptr, 0)
     })
+
+    it('should return hash of key', function () {
+      const pubKey = new wasm.IdentityPublicKeyWASM(
+        keyId,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      const hash = pubKey.hash()
+
+      assert.deepEqual(hash, Uint8Array.from([211, 114, 240, 150, 37, 159, 114, 104, 110, 24, 102, 61, 125, 181, 248, 98, 52, 221, 111, 85]))
+    })
   })
   describe('getters', function () {
     it('should generate public key from values with type ECDSA_SECP256K1 and return all fields', function () {
