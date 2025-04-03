@@ -1,3 +1,4 @@
+use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::identity::identity_public_key::accessors::v0::{
     IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
 };
@@ -126,6 +127,14 @@ impl IdentityPublicKeyWASM {
     #[wasm_bindgen(js_name = setDisabledAt)]
     pub fn set_disabled_at(&mut self, disabled_at: u64) {
         self.0.set_disabled_at(disabled_at)
+    }
+
+    #[wasm_bindgen(js_name = "hash")]
+    pub fn hash(&self) -> Result<Vec<u8>, JsValue> {
+        self.0
+            .public_key_hash()
+            .with_js_error()
+            .map(|slice| slice.to_vec())
     }
 
     #[wasm_bindgen(js_name = toBytes)]
