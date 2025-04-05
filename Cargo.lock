@@ -1339,6 +1339,7 @@ name = "pshenmic_dpp_data_contract"
 version = "0.1.0"
 dependencies = [
  "dpp",
+ "js-sys",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
