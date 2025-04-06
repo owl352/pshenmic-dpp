@@ -1,4 +1,5 @@
 use dpp::dashcore::PrivateKey;
+use dpp::dashcore::key::Secp256k1;
 use pshenmic_dpp_enums::network::NetworkWASM;
 use std::str::FromStr;
 use wasm_bindgen::JsValue;
@@ -57,5 +58,12 @@ impl PrivateKeyWASM {
     #[wasm_bindgen(js_name = "getKeyString")]
     pub fn to_string(&self) -> String {
         self.0.to_string()
+    }
+
+    #[wasm_bindgen(js_name = "getPublicKeyHash")]
+    pub fn get_public_key_hash(&self) -> String {
+        let secp = Secp256k1::new();
+
+        self.0.public_key(&secp).pubkey_hash().to_hex()
     }
 }
