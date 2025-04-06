@@ -30,17 +30,6 @@ impl PrivateKeyWASM {
             Err(err) => Err(err),
         }
     }
-
-    #[wasm_bindgen(js_name = "fromString")]
-    pub fn from_string(key: String) -> Result<Self, JsValue> {
-        let pk =
-            PrivateKey::from_str(key.as_str()).map_err(|err| JsValue::from_str(&*err.to_string()));
-
-        match pk {
-            Ok(pk) => Ok(PrivateKeyWASM(pk)),
-            Err(err) => Err(err),
-        }
-    }
 }
 
 #[wasm_bindgen]
@@ -53,11 +42,6 @@ impl PrivateKeyWASM {
     #[wasm_bindgen(js_name = "getKeyBytes")]
     pub fn get_key_bytes(&self) -> Vec<u8> {
         self.0.to_bytes()
-    }
-
-    #[wasm_bindgen(js_name = "getKeyString")]
-    pub fn to_string(&self) -> String {
-        self.0.to_string()
     }
 
     #[wasm_bindgen(js_name = "getPublicKeyHash")]

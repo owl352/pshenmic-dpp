@@ -5,6 +5,7 @@ const {
   keyId, purpose, securityLevel, keyType, binaryData, securityLevelSet, keyIdSet, purposeSet,
   keyTypeSet, binaryDataSet
 } = require('./mocks/PublicKey')
+const { wif } = require('./mocks/PrivateKey')
 
 let wasm
 
@@ -85,6 +86,20 @@ describe('PublicKey', function () {
       assert.equal(pubKey.getKeyType(), keyType)
       assert.equal(pubKey.getReadOnly(), false)
       assert.equal(pubKey.getData(), binaryData)
+    })
+
+    it('should allow to validate private key', function () {
+      const pubKey = new wasm.IdentityPublicKeyWASM(
+        keyId,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      const privateKey = new wasm.PrivateKeyWASM(wif)
+
+      assert.equal(pubKey.validatePrivateKey(privateKey.getKeyBytes(), wasm.NetworkWASM.DASH), false)
     })
   })
 
