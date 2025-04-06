@@ -7,7 +7,7 @@ members = [
     "packages/enums",
     "packages/mock_bls",
     "packages/private_key",
-    "packages/public_key",
+    "packages/identity_public_key",
     "packages/utils",
     "packages/identity",
     "packages/identity_transitions",
@@ -25,6 +25,7 @@ edition = "2024"
 rust-version = "1.85"
 
 [dependencies]
+wee_alloc = "0.4.5"
 bincode = { version = "=2.0.0-rc.3" }
 bincode_derive = { version = "=2.0.0-rc.3" }
 pshenmic_dpp_document_batch = { path = "packages/document_batch" }
@@ -37,7 +38,8 @@ pshenmic_dpp_data_contract_transitions = {path = "packages/data_contract_transit
 pshenmic_dpp_enums = {path = "packages/enums"}
 
 [profile.release]
-lto = true
+lto = "fat"
 opt-level = 'z'
-strip = true
+strip = "symbols"
 codegen-units = 1
+panic = "abort"

@@ -1,3 +1,4 @@
+use dpp::dashcore::Network;
 use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::identity::identity_public_key::accessors::v0::{
     IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
@@ -10,6 +11,7 @@ use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
+use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -57,6 +59,23 @@ impl IdentityPublicKeyWASM {
 
 #[wasm_bindgen]
 impl IdentityPublicKeyWASM {
+    #[wasm_bindgen(js_name = "validatePrivateKey")]
+    pub fn validate_private_key(
+        &self,
+        js_private_key_bytes: Vec<u8>,
+        js_network: NetworkWASM,
+    ) -> Result<bool, JsValue> {
+        let mut private_key_bytes = [0u8; 32];
+        let len = js_private_key_bytes.len().min(32);
+        private_key_bytes[..len].copy_from_slice(&js_private_key_bytes[..len]);
+
+        let network = Network::from(js_network);
+
+        self.0
+            .validate_private_key_bytes(&private_key_bytes, network)
+            .with_js_error()
+    }
+
     #[wasm_bindgen(js_name = getKeyId)]
     pub fn get_key_id(&self) -> u32 {
         self.0.id()
