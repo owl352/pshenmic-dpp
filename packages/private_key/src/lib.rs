@@ -1,7 +1,6 @@
 use dpp::dashcore::PrivateKey;
 use dpp::dashcore::key::Secp256k1;
 use pshenmic_dpp_enums::network::NetworkWASM;
-use std::str::FromStr;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
