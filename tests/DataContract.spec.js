@@ -18,20 +18,20 @@ describe('DataContract', function () {
   })
 
   describe('serialization / deserialization', function () {
-    it('should allows to create DataContract from value without full validation', function () {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+    it('should allows to create DataContract from schema without full validation', function () {
+      const dataContract = new wasm.DataContractWASM(value.ownerId, BigInt(2), value.documentSchemas, null, false)
 
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
 
-    it('should allows to create DataContract from value with full validation', function () {
-      const dataContract = new wasm.DataContractWASM(value, true, PlatformVersionWASM.PLATFORM_V1)
+    it('should allows to create DataContract from schema with full validation', function () {
+      const dataContract = new wasm.DataContractWASM(value.ownerId, BigInt(2), value.documentSchemas, null, true)
 
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
 
     it('should allows to create DataContract from value with full validation and without platform version', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
@@ -39,7 +39,7 @@ describe('DataContract', function () {
     it('should allows to convert DataContract to bytes and from bytes', function () {
       const [dataContractBytes] = dataContractsBytes
 
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContract.toBytes(), fromHexString(dataContractBytes))
 
@@ -54,7 +54,7 @@ describe('DataContract', function () {
       const [dataContractBytes] = dataContractsBytes
 
       const dataContractFromBytes = wasm.DataContractWASM.fromBytes(fromHexString(dataContractBytes), false, PlatformVersionWASM.PLATFORM_V1)
-      const dataContractFromValue = new wasm.DataContractWASM(value, true)
+      const dataContractFromValue = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContractFromBytes.toValue(), dataContractFromValue.toValue())
     })
@@ -63,13 +63,13 @@ describe('DataContract', function () {
       const [dataContractBytes] = dataContractsBytes
 
       const dataContractFromBytes = wasm.DataContractWASM.fromBytes(fromHexString(dataContractBytes), true)
-      const dataContractFromValue = new wasm.DataContractWASM(value, true)
+      const dataContractFromValue = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContractFromBytes.toValue(), dataContractFromValue.toValue())
     })
 
     it('should allow to get json', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContract.toJson(), value)
     })
@@ -77,31 +77,31 @@ describe('DataContract', function () {
 
   describe('getters', function () {
     it('should allow to get schemas', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getSchemas(), value.documentSchemas)
+      assert.deepEqual(dataContract.getSchema(), value.documentSchemas)
     })
 
     it('should allow to get version', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getDataContractVersion(), value.version)
+      assert.deepEqual(dataContract.getVersion(), value.version)
     })
 
     it('should allow to get id', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContract.getId(), base58.decode(id))
     })
 
     it('should allow to get owner id', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContract.getOwnerId(), base58.decode(ownerId))
     })
 
     it('should allow to get config', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       assert.deepEqual(dataContract.getConfig(), value.config)
     })
@@ -109,7 +109,7 @@ describe('DataContract', function () {
 
   describe('setters', function () {
     it('should allow to set id', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       const valueId = base58.decode('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
 
@@ -119,13 +119,47 @@ describe('DataContract', function () {
     })
 
     it('should allow to set owner id', function () {
-      const dataContract = new wasm.DataContractWASM(value, true)
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
       const valueId = base58.decode('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
 
       dataContract.setOwnerId('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
 
       assert.deepEqual(dataContract.getOwnerId(), valueId)
+    })
+
+    it('should allow to set version', function () {
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
+
+      dataContract.setVersion(20)
+
+      assert.equal(dataContract.getVersion(), 20)
+    })
+
+    it('should allow to set config', function () {
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
+
+      const oldConfig = dataContract.getConfig()
+
+      const newConfig = { ...oldConfig, canBeDeleted: !oldConfig.canBeDeleted }
+
+      dataContract.setConfig(newConfig)
+
+      assert.deepEqual(dataContract.getConfig(), newConfig)
+    })
+
+    it('should allow to set schema', function () {
+      const dataContract = wasm.DataContractWASM.fromValue(value, true)
+
+      const oldSchema = dataContract.getSchema()
+
+      const newSchema = {
+        pupup: oldSchema.withdrawal
+      }
+
+      dataContract.setSchema(newSchema)
+
+      assert.deepEqual(dataContract.getSchema(), newSchema)
     })
   })
 

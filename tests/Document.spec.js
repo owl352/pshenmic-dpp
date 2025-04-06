@@ -28,7 +28,7 @@ describe('Document', function () {
     })
 
     it('should allows to create Document from bytes and convert to bytes', function () {
-      const dataContract = new wasm.DataContractWASM(dataContractValue, false)
+      const dataContract = wasm.DataContractWASM.fromValue(dataContractValue, false)
       const documentInstance = wasm.DocumentWASM.fromBytes(fromHexString(documentBytes), dataContract, 'note')
 
       const bytes = documentInstance.toBytes(dataContract, 'note')

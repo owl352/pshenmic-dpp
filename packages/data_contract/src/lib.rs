@@ -45,6 +45,7 @@ impl DataContractWASM {
         identity_nonce: IdentityNonce,
         js_schema: JsValue,
         js_definitions: Option<js_sys::Object>,
+        full_validation: bool,
         js_platform_version: Option<PlatformVersionWASM>,
     ) -> Result<DataContractWASM, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
@@ -115,7 +116,8 @@ impl DataContractWASM {
             .map_err(|err| JsValue::from(err.to_string()))?;
 
         Ok(DataContractWASM(
-            DataContract::from_value(contract_value, true, &platform_version).with_js_error()?,
+            DataContract::from_value(contract_value, full_validation, &platform_version)
+                .with_js_error()?,
         ))
     }
 
@@ -171,7 +173,7 @@ impl DataContractWASM {
             .map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(js_name = "getSchemas")]
+    #[wasm_bindgen(js_name = "getSchema")]
     pub fn get_schemas(&self) -> Result<JsValue, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
@@ -182,7 +184,7 @@ impl DataContractWASM {
     }
 
     #[wasm_bindgen(js_name = "getVersion")]
-    pub fn get_data_contract_version(&self) -> u32 {
+    pub fn get_version(&self) -> u32 {
         self.0.version()
     }
 

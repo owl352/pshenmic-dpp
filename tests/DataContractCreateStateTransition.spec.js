@@ -14,7 +14,7 @@ describe('DataContract Create Transition', function () {
 
   describe('serialization / deserialization', function () {
     it('should allow to create transitions from data contract', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -23,7 +23,7 @@ describe('DataContract Create Transition', function () {
     })
 
     it('should allow to convert transitions to bytes and create from bytes', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -38,7 +38,7 @@ describe('DataContract Create Transition', function () {
     })
 
     it('should allow to convert data contract transition to state transitions and create data contract transition from state transition', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -52,7 +52,7 @@ describe('DataContract Create Transition', function () {
 
   describe('getters', function () {
     it('should allow to get feature version', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -60,7 +60,7 @@ describe('DataContract Create Transition', function () {
     })
 
     it('should allow to verify protocol version', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -68,7 +68,7 @@ describe('DataContract Create Transition', function () {
     })
 
     it('should allow to verify incorrect protocol version', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -81,7 +81,7 @@ describe('DataContract Create Transition', function () {
     })
 
     it('should allow to get data contract', () => {
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
@@ -95,7 +95,7 @@ describe('DataContract Create Transition', function () {
     it('should allow to set the data contract', () => {
       const [dataContractBytes] = dataContractsBytes
 
-      const dataContract = new wasm.DataContractWASM(value, false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
