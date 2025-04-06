@@ -1438,7 +1438,6 @@ version = "0.1.0"
 dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
- "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
 
