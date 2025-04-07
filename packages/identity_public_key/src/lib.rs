@@ -148,8 +148,8 @@ impl IdentityPublicKeyWASM {
         self.0.set_disabled_at(disabled_at)
     }
 
-    #[wasm_bindgen(js_name = "hash")]
-    pub fn hash(&self) -> Result<Vec<u8>, JsValue> {
+    #[wasm_bindgen(js_name = "getPublicKeyHash")]
+    pub fn public_key_hash(&self) -> Result<Vec<u8>, JsValue> {
         self.0
             .public_key_hash()
             .with_js_error()

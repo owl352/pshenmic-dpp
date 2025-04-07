@@ -9,8 +9,8 @@ pub struct PrivateKeyWASM(PrivateKey);
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
-    #[wasm_bindgen(constructor)]
-    pub fn new(wif: &str) -> Result<Self, JsValue> {
+    #[wasm_bindgen(js_name = "fromWIF")]
+    pub fn from_wif(wif: &str) -> Result<Self, JsValue> {
         let pk = PrivateKey::from_wif(wif).map_err(|err| JsValue::from_str(&*err.to_string()));
 
         match pk {
@@ -33,13 +33,13 @@ impl PrivateKeyWASM {
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
-    #[wasm_bindgen(js_name = "getKeyWIF")]
-    pub fn get_key_wif(&self) -> String {
+    #[wasm_bindgen(js_name = "getWIF")]
+    pub fn get_wif(&self) -> String {
         self.0.to_wif()
     }
 
-    #[wasm_bindgen(js_name = "getKeyBytes")]
-    pub fn get_key_bytes(&self) -> Vec<u8> {
+    #[wasm_bindgen(js_name = "getBytes")]
+    pub fn get_bytes(&self) -> Vec<u8> {
         self.0.to_bytes()
     }
 

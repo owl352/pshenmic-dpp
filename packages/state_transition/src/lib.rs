@@ -35,7 +35,7 @@ impl StateTransitionWASM {
     ) -> Result<JsValue, JsValue> {
         let sig = self.0.sign(
             &public_key.clone().into(),
-            private_key.get_key_bytes().as_slice(),
+            private_key.get_bytes().as_slice(),
             &MockBLS {},
         );
 
@@ -64,7 +64,7 @@ impl StateTransitionWASM {
         let _sig = self
             .0
             .sign_by_private_key(
-                &private_key.get_key_bytes().as_slice(),
+                &private_key.get_bytes().as_slice(),
                 KeyType::from(key_type),
                 &MockBLS {},
             )

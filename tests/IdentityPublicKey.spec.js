@@ -65,7 +65,7 @@ describe('PublicKey', function () {
         false,
         binaryData)
 
-      const hash = pubKey.hash()
+      const hash = pubKey.getPublicKeyHash()
 
       assert.deepEqual(hash, Uint8Array.from([211, 114, 240, 150, 37, 159, 114, 104, 110, 24, 102, 61, 125, 181, 248, 98, 52, 221, 111, 85]))
     })
@@ -97,9 +97,9 @@ describe('PublicKey', function () {
         false,
         binaryData)
 
-      const privateKey = new wasm.PrivateKeyWASM(wif)
+      const privateKey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(pubKey.validatePrivateKey(privateKey.getKeyBytes(), wasm.NetworkWASM.DASH), false)
+      assert.equal(pubKey.validatePrivateKey(privateKey.getBytes(), wasm.NetworkWASM.DASH), false)
     })
   })
 
