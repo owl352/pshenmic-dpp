@@ -44,3 +44,11 @@ jobs:
     - name: Build JS bundle
       run: |
         yarn build:full
+
+    - name: Babel
+      run: |
+        yarn babel
+
+    - name: Run tests
+      run: |
+        yarn tests

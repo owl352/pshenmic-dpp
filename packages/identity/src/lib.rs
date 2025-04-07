@@ -34,7 +34,7 @@ impl IdentityWASM {
     pub fn set_id(&mut self, js_identifier: JsValue) {
         let identifier = identifier_from_js_value(&js_identifier);
 
-        self.0.set_id(identifier.unwrap());
+        Ok(self.0.set_id(identifier))
     }
 
     #[wasm_bindgen(js_name = "setBalance")]
@@ -48,22 +48,15 @@ impl IdentityWASM {
     }
 
     #[wasm_bindgen(js_name = "addPublicKey")]
-    pub fn set_public_key(&mut self, public_key: IdentityPublicKeyWASM) {
-        self.0.add_public_key(public_key.into());
+    pub fn add_public_key(&mut self, public_key: &IdentityPublicKeyWASM) {
+        self.0.add_public_key(public_key.clone().into());
     }
 
     // GETTERS
 
-    #[wasm_bindgen(js_name = "getRawId")]
-    pub fn get_raw_id(&self) -> Vec<u8> {
-        self.0.id().to_vec()
-    }
-
     #[wasm_bindgen(js_name = "getId")]
-    pub fn get_id(&self) -> String {
-        let id = self.0.id();
-
-        id.to_string(Base58)
+    pub fn get_id(&self) -> Vec<u8> {
+        self.0.id().to_vec()
     }
 
     #[wasm_bindgen(js_name = "getBalance")]
@@ -83,10 +76,15 @@ impl IdentityWASM {
     }
 
     #[wasm_bindgen(js_name = "getPublicKeys")]
-    pub fn get_public_keys(&self) -> JsValue {
-        let keys = self.0.public_keys();
+    pub fn get_public_keys(&self) -> Vec<IdentityPublicKeyWASM> {
+        let keys = self
+            .0
+            .public_keys()
+            .iter()
+            .map(|(_index, key)| IdentityPublicKeyWASM::from(key.clone()))
+            .collect();
 
-        serde_wasm_bindgen::to_value(keys).unwrap()
+        keys
     }
 
     #[wasm_bindgen(js_name = "toBytes")]

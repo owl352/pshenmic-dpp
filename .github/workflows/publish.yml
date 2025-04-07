@@ -36,6 +36,14 @@ jobs:
         run: |
           yarn build:full
 
+      - name: Babel
+        run: |
+          yarn babel
+
+      - name: Run tests
+        run: |
+          yarn tests
+
       - name: Publish package to NPM
         run: yarn publish
         env:

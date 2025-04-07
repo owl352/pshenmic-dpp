@@ -31,11 +31,11 @@ impl StateTransitionWASM {
     #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,
-        private_key: PrivateKeyWASM,
+        private_key: &PrivateKeyWASM,
         public_key: &IdentityPublicKeyWASM,
     ) -> Result<JsValue, JsValue> {
         let sig = self.0.sign(
-            &IdentityPublicKey::from(public_key.clone()),
+            &public_key.clone().into(),
             private_key.get_key_bytes().as_slice(),
             &MockBLS {},
         );
@@ -59,7 +59,7 @@ impl StateTransitionWASM {
     #[wasm_bindgen(js_name = "signByPrivateKey")]
     pub fn sign_by_private_key(
         &mut self,
-        private_key: PrivateKeyWASM,
+        private_key: &PrivateKeyWASM,
         key_type: KeyTypeWASM,
     ) -> JsValue {
         let _sig = self
