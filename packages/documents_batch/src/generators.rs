@@ -21,13 +21,13 @@ pub fn generate_create_transition(
 ) -> DocumentCreateTransition {
     DocumentCreateTransition::V0(DocumentCreateTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
-            id: document.get_id(),
+            id: document.rs_get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: document.get_data_contract_id(),
+            data_contract_id: document.rs_get_data_contract_id(),
         }),
-        entropy: document.get_entropy().unwrap(),
-        data: document.get_properties(),
+        entropy: document.rs_get_entropy().unwrap(),
+        data: document.rs_get_properties(),
         prefunded_voting_balance: None,
     })
 }
@@ -39,10 +39,10 @@ pub fn generate_delete_transition(
 ) -> DocumentDeleteTransition {
     DocumentDeleteTransition::V0(DocumentDeleteTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
-            id: document.get_id(),
+            id: document.rs_get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: document.get_data_contract_id(),
+            data_contract_id: document.rs_get_data_contract_id(),
         }),
     })
 }
@@ -54,13 +54,13 @@ pub fn generate_replace_transition(
 ) -> DocumentReplaceTransition {
     DocumentReplaceTransition::V0(DocumentReplaceTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
-            id: document.get_id(),
+            id: document.rs_get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: document.get_data_contract_id(),
+            data_contract_id: document.rs_get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
-        data: document.get_properties(),
+        data: document.rs_get_properties(),
     })
 }
 
@@ -73,10 +73,10 @@ pub fn generate_transfer_transition(
 ) -> DocumentTransferTransition {
     DocumentTransferTransition::V0(DocumentTransferTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
-            id: document.get_id(),
+            id: document.rs_get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: document.get_data_contract_id(),
+            data_contract_id: document.rs_get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         recipient_owner_id,
@@ -92,10 +92,10 @@ pub fn generate_update_price_transition(
 ) -> DocumentUpdatePriceTransition {
     DocumentUpdatePriceTransition::V0(DocumentUpdatePriceTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
-            id: document.get_id(),
+            id: document.rs_get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: document.get_data_contract_id(),
+            data_contract_id: document.rs_get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         price,
@@ -111,10 +111,10 @@ pub fn generate_purchase_transition(
 ) -> DocumentPurchaseTransition {
     DocumentPurchaseTransition::V0(DocumentPurchaseTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
-            id: document.get_id(),
+            id: document.rs_get_id(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: document.get_data_contract_id(),
+            data_contract_id: document.rs_get_data_contract_id(),
         }),
         revision: document.get_revision().unwrap(),
         price: price,

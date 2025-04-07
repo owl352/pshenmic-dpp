@@ -31,8 +31,8 @@ impl IdentityWASM {
     }
 
     #[wasm_bindgen(js_name = "setId")]
-    pub fn set_id(&mut self, js_identifier: JsValue) {
-        let identifier = identifier_from_js_value(&js_identifier);
+    pub fn set_id(&mut self, js_identifier: JsValue) -> Result<(), JsValue> {
+        let identifier = identifier_from_js_value(&js_identifier)?;
 
         Ok(self.0.set_id(identifier))
     }

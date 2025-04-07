@@ -118,8 +118,10 @@ impl IdentityPublicKeyWASM {
     }
 
     #[wasm_bindgen(js_name = setData)]
-    pub fn set_data(&mut self, binary_data: Vec<u8>) {
-        self.0.set_data(BinaryData::from(binary_data))
+    pub fn set_data(&mut self, binary_data: &str) {
+        let data = BinaryData::from_string(binary_data, Hex).unwrap();
+
+        self.0.set_data(data)
     }
 
     #[wasm_bindgen(js_name = setDisabledAt)]
