@@ -33,8 +33,7 @@ impl StateTransitionWASM {
         private_key: &PrivateKeyWASM,
         public_key: &IdentityPublicKeyWASM,
     ) -> Result<Vec<u8>, JsValue> {
-        let sig = self
-            .0
+        self.0
             .sign(
                 &public_key.clone().into(),
                 private_key.get_key_bytes().as_slice(),
