@@ -1,5 +1,4 @@
 use dpp::identity::KeyType;
-use dpp::prelude::IdentityPublicKey;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::StateTransition;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
