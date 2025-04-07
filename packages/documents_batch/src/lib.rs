@@ -16,11 +16,11 @@ use pshenmic_dpp_utils::{IntoWasm, WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-mod document_base_transition;
-mod document_transition;
-mod generators;
-mod prefunded_voting_balance;
-mod transitions;
+pub mod document_base_transition;
+pub mod document_transition;
+pub mod generators;
+pub mod prefunded_voting_balance;
+pub mod transitions;
 
 #[derive(Debug, Clone, PartialEq)]
 #[wasm_bindgen(js_name=DocumentsBatchWASM)]
@@ -46,7 +46,7 @@ impl DocumentsBatchWASM {
         js_owner_id: JsValue,
         user_fee_increase: UserFeeIncrease,
         signature_public_key_id: KeyID,
-        signature: Vec<u8>,
+        signature: Option<Vec<u8>>,
     ) -> Result<DocumentsBatchWASM, JsValue> {
         let owner_id = identifier_from_js_value(&js_owner_id)?;
 
@@ -68,7 +68,7 @@ impl DocumentsBatchWASM {
                 transitions,
                 user_fee_increase,
                 signature_public_key_id,
-                signature: BinaryData::from(signature),
+                signature: BinaryData::from(signature.unwrap_or(Vec::new())),
             },
         )))
     }

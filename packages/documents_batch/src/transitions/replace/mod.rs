@@ -11,36 +11,36 @@ use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::generators::generate_replace_transition;
 use crate::document_transition::DocumentTransitionWASM;
 
-#[wasm_bindgen(js_name = "DocumentReplaceTransitionWasm")]
-pub struct DocumentReplaceTransitionWasm(DocumentReplaceTransition);
+#[wasm_bindgen(js_name = "DocumentReplaceTransitionWASM")]
+pub struct DocumentReplaceTransitionWASM(DocumentReplaceTransition);
 
-impl From<DocumentReplaceTransition> for DocumentReplaceTransitionWasm {
+impl From<DocumentReplaceTransition> for DocumentReplaceTransitionWASM {
     fn from(document_replace: DocumentReplaceTransition) -> Self {
-        DocumentReplaceTransitionWasm(document_replace)
+        DocumentReplaceTransitionWASM(document_replace)
     }
 }
 
-impl From<DocumentReplaceTransitionWasm> for DocumentReplaceTransition {
-    fn from(document_replace: DocumentReplaceTransitionWasm) -> Self {
+impl From<DocumentReplaceTransitionWASM> for DocumentReplaceTransition {
+    fn from(document_replace: DocumentReplaceTransitionWASM) -> Self {
         document_replace.0
     }
 }
 
 #[wasm_bindgen]
-impl DocumentReplaceTransitionWasm {
+impl DocumentReplaceTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-    ) -> Result<DocumentReplaceTransitionWasm, JsValue> {
+    ) -> Result<DocumentReplaceTransitionWASM, JsValue> {
         let rs_update_transition = generate_replace_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name.to_string(),
         );
 
-        Ok(DocumentReplaceTransitionWasm(rs_update_transition))
+        Ok(DocumentReplaceTransitionWASM(rs_update_transition))
     }
 
     #[wasm_bindgen(js_name = "getData")]
@@ -87,7 +87,7 @@ impl DocumentReplaceTransitionWasm {
     #[wasm_bindgen(js_name = "fromDocumentTransition")]
     pub fn from_document_transition(
         js_transition: DocumentTransitionWASM,
-    ) -> Result<DocumentReplaceTransitionWasm, JsValue> {
+    ) -> Result<DocumentReplaceTransitionWASM, JsValue> {
         js_transition.get_replace_transition()
     }
 }

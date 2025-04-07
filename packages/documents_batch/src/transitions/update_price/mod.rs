@@ -9,7 +9,7 @@ use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_update_price_transition;
 
-#[wasm_bindgen(js_name = DocumentUpdatePriceTransitionWASM)]
+#[wasm_bindgen(js_name = "DocumentUpdatePriceTransitionWASM")]
 pub struct DocumentUpdatePriceTransitionWASM(DocumentUpdatePriceTransition);
 
 impl From<DocumentUpdatePriceTransition> for DocumentUpdatePriceTransitionWASM {
@@ -20,6 +20,7 @@ impl From<DocumentUpdatePriceTransition> for DocumentUpdatePriceTransitionWASM {
 
 #[wasm_bindgen]
 impl DocumentUpdatePriceTransitionWASM {
+    #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,

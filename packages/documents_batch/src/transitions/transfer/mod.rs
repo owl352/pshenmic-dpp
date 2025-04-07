@@ -9,7 +9,7 @@ use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_transfer_transition;
 
-#[wasm_bindgen(js_name = "DocumentsTransferTransitionWASM")]
+#[wasm_bindgen(js_name = "DocumentTransferTransitionWASM")]
 pub struct DocumentTransferTransitionWASM(DocumentTransferTransition);
 
 impl From<DocumentTransferTransition> for DocumentTransferTransitionWASM {

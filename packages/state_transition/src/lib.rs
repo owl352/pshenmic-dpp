@@ -32,27 +32,21 @@ impl StateTransitionWASM {
         &mut self,
         private_key: &PrivateKeyWASM,
         public_key: &IdentityPublicKeyWASM,
-    ) -> Result<JsValue, JsValue> {
-        let sig = self.0.sign(
-            &public_key.clone().into(),
-            private_key.get_key_bytes().as_slice(),
-            &MockBLS {},
-        );
+    ) -> Result<Vec<u8>, JsValue> {
+        let sig = self
+            .0
+            .sign(
+                &public_key.clone().into(),
+                private_key.get_key_bytes().as_slice(),
+                &MockBLS {},
+            )
+            .with_js_error()?;
 
-        let bytes = match sig {
-            Ok(_sig) => {
-                self.0.set_signature(self.0.signature().clone());
-                self.0
-                    .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
-                self.0.serialize_to_bytes()
-            }
-            Err(e) => wasm_bindgen::throw_str(&e.to_string()),
-        };
+        self.0.set_signature(self.0.signature().clone());
+        self.0
+            .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
 
-        match bytes {
-            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
-            Err(e) => Ok(JsValue::from_str(&format!("{}", e))),
-        }
+        self.0.serialize_to_bytes().with_js_error()
     }
 
     #[wasm_bindgen(js_name = "signByPrivateKey")]
@@ -60,7 +54,7 @@ impl StateTransitionWASM {
         &mut self,
         private_key: &PrivateKeyWASM,
         key_type: KeyTypeWASM,
-    ) -> JsValue {
+    ) -> Result<Vec<u8>, JsValue> {
         let _sig = self
             .0
             .sign_by_private_key(
@@ -70,12 +64,7 @@ impl StateTransitionWASM {
             )
             .with_js_error();
 
-        let bytes = self.0.serialize_to_bytes().with_js_error();
-
-        match bytes {
-            Ok(bytes) => JsValue::from(bytes.clone()),
-            Err(err) => err,
-        }
+        self.0.serialize_to_bytes().with_js_error()
     }
 
     #[wasm_bindgen(js_name = "toBytes")]

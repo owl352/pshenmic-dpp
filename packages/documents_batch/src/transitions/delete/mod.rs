@@ -10,35 +10,35 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "DocumentDeleteTransitionWASM")]
-pub struct DocumentDeleteTransitionWasm(DocumentDeleteTransition);
+pub struct DocumentDeleteTransitionWASM(DocumentDeleteTransition);
 
-impl From<DocumentDeleteTransition> for DocumentDeleteTransitionWasm {
+impl From<DocumentDeleteTransition> for DocumentDeleteTransitionWASM {
     fn from(document_delete_transition: DocumentDeleteTransition) -> Self {
-        DocumentDeleteTransitionWasm(document_delete_transition)
+        DocumentDeleteTransitionWASM(document_delete_transition)
     }
 }
 
-impl From<DocumentDeleteTransitionWasm> for DocumentDeleteTransition {
-    fn from(document_delete_transition: DocumentDeleteTransitionWasm) -> Self {
+impl From<DocumentDeleteTransitionWASM> for DocumentDeleteTransition {
+    fn from(document_delete_transition: DocumentDeleteTransitionWASM) -> Self {
         document_delete_transition.0
     }
 }
 
 #[wasm_bindgen]
-impl DocumentDeleteTransitionWasm {
+impl DocumentDeleteTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-    ) -> Result<DocumentDeleteTransitionWasm, JsValue> {
+    ) -> Result<DocumentDeleteTransitionWASM, JsValue> {
         let rs_delete_transition = generate_delete_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name.to_string(),
         );
 
-        Ok(DocumentDeleteTransitionWasm(rs_delete_transition))
+        Ok(DocumentDeleteTransitionWASM(rs_delete_transition))
     }
 
     #[wasm_bindgen(js_name = "getBase")]
@@ -61,7 +61,7 @@ impl DocumentDeleteTransitionWasm {
     #[wasm_bindgen(js_name = "fromDocumentTransition")]
     pub fn from_document_transition(
         js_transition: DocumentTransitionWASM,
-    ) -> Result<DocumentDeleteTransitionWasm, JsValue> {
+    ) -> Result<DocumentDeleteTransitionWASM, JsValue> {
         js_transition.get_delete_transition()
     }
 }
