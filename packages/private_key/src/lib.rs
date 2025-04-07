@@ -20,7 +20,9 @@ impl PrivateKeyWASM {
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
-    pub fn from_bytes(bytes: Vec<u8>, network: NetworkWASM) -> Result<Self, JsValue> {
+    pub fn from_bytes(bytes: Vec<u8>, js_network: JsValue) -> Result<Self, JsValue> {
+        let network = NetworkWASM::try_from(js_network)?;
+
         let pk = PrivateKey::from_slice(bytes.as_slice(), network.into())
             .map_err(|err| JsValue::from_str(&*err.to_string()));
 

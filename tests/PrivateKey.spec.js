@@ -19,7 +19,7 @@ describe('PrivateKey', function () {
     })
 
     it('should allows to create PrivateKey from bytes', function () {
-      const pkey = wasm.PrivateKeyWASM.fromBytes(fromHexString(bytes))
+      const pkey = wasm.PrivateKeyWASM.fromBytes(fromHexString(bytes), 'Mainnet')
 
       assert.notEqual(pkey.__wbg_ptr, 0)
     })

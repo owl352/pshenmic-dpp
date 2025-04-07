@@ -81,9 +81,9 @@ describe('PublicKey', function () {
         binaryData)
 
       assert.equal(pubKey.getKeyId(), keyId)
-      assert.equal(pubKey.getPurpose(), purpose)
-      assert.equal(pubKey.getSecurityLevel(), securityLevel)
-      assert.equal(pubKey.getKeyType(), keyType)
+      assert.equal(pubKey.getPurpose(), 'AUTHENTICATION')
+      assert.equal(pubKey.getSecurityLevel(), 'CRITICAL')
+      assert.equal(pubKey.getKeyType(), 'ECDSA_SECP256K1')
       assert.equal(pubKey.getReadOnly(), false)
       assert.equal(pubKey.getData(), binaryData)
     })
@@ -99,7 +99,7 @@ describe('PublicKey', function () {
 
       const privateKey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(pubKey.validatePrivateKey(privateKey.getBytes(), wasm.NetworkWASM.DASH), false)
+      assert.equal(pubKey.validatePrivateKey(privateKey.getBytes(), wasm.NetworkWASM.Mainnet), false)
     })
   })
 
@@ -121,9 +121,9 @@ describe('PublicKey', function () {
       pubKey.setData(binaryDataSet)
 
       assert.equal(pubKey.getKeyId(), keyIdSet)
-      assert.equal(pubKey.getPurpose(), purposeSet)
-      assert.equal(pubKey.getSecurityLevel(), securityLevelSet)
-      assert.equal(pubKey.getKeyType(), keyTypeSet)
+      assert.equal(pubKey.getPurpose(), 'ENCRYPTION')
+      assert.equal(pubKey.getSecurityLevel(), 'HIGH')
+      assert.equal(pubKey.getKeyType(), 'ECDSA_HASH160')
       assert.equal(pubKey.getReadOnly(), true)
       assert.equal(pubKey.getData(), binaryDataSet)
     })
