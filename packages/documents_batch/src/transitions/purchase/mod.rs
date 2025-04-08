@@ -54,7 +54,7 @@ impl DocumentPurchaseTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "setBase")]
-    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) { 
+    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) {
         self.0.set_base(base.into())
     }
 
