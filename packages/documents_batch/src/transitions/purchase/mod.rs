@@ -43,22 +43,27 @@ impl DocumentPurchaseTransitionWASM {
         Ok(DocumentPurchaseTransitionWASM(rs_purchase_transition))
     }
 
-    #[wasm_bindgen(js_name = "getBase")]
+    #[wasm_bindgen(getter = "base")]
     pub fn get_base(&self) -> DocumentBaseTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(js_name = "getPrice")]
+    #[wasm_bindgen(getter = "price")]
     pub fn get_price(&self) -> Credits {
         self.0.price()
     }
 
-    #[wasm_bindgen(js_name = "setBase")]
-    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) {
-        self.0.set_base(base.into())
+    #[wasm_bindgen(getter = "revision")]
+    pub fn get_revision(&self) -> Revision {
+        self.0.revision()
     }
 
-    #[wasm_bindgen(js_name = "setRevision")]
+    #[wasm_bindgen(setter = "base")]
+    pub fn set_base(&mut self, base: &DocumentBaseTransitionWASM) {
+        self.0.set_base(base.clone().into())
+    }
+
+    #[wasm_bindgen(setter = "revision")]
     pub fn set_revision(&mut self, revision: Revision) {
         self.0.set_revision(revision);
     }

@@ -46,46 +46,46 @@ impl DocumentBaseTransitionWASM {
         )))
     }
 
-    #[wasm_bindgen(js_name = "getId")]
+    #[wasm_bindgen(getter = "id")]
     pub fn get_id(&self) -> Vec<u8> {
         self.0.id().to_vec()
     }
 
-    #[wasm_bindgen(js_name = "getIdentityContractNonce")]
+    #[wasm_bindgen(getter = "identityContractNonce")]
     pub fn get_identity_contract_nonce(&self) -> IdentityNonce {
         self.0.identity_contract_nonce()
     }
 
-    #[wasm_bindgen(js_name = "getDataContractId")]
+    #[wasm_bindgen(getter = "dataContractId")]
     pub fn get_data_contract_id(&self) -> Vec<u8> {
         self.0.data_contract_id().to_vec()
     }
 
-    #[wasm_bindgen(js_name = "getDocumentTypeName")]
+    #[wasm_bindgen(getter = "documentTypeName")]
     pub fn get_document_type_name(&self) -> String {
         self.0.document_type_name().to_string()
     }
 
-    #[wasm_bindgen(js_name = "setId")]
+    #[wasm_bindgen(setter = "id")]
     pub fn set_id(&mut self, js_id: JsValue) -> Result<(), JsValue> {
         let id = identifier_from_js_value(&js_id)?;
 
         Ok(self.0.set_id(id))
     }
 
-    #[wasm_bindgen(js_name = "setIdentityContractNonce")]
+    #[wasm_bindgen(setter = "identityContractNonce")]
     pub fn set_identity_contract_nonce(&mut self, nonce: IdentityNonce) {
         self.0.set_identity_contract_nonce(nonce)
     }
 
-    #[wasm_bindgen(js_name = "setDataContractId")]
+    #[wasm_bindgen(setter = "dataContractId")]
     pub fn set_data_contract_id(&mut self, js_data_contract_id: JsValue) -> Result<(), JsValue> {
         let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
 
         Ok(self.0.set_data_contract_id(data_contract_id))
     }
 
-    #[wasm_bindgen(js_name = "setDocumentTypeName")]
+    #[wasm_bindgen(setter = "documentTypeName")]
     pub fn set_document_type_name(&mut self, document_type_name: String) {
         self.0.set_document_type_name(document_type_name)
     }

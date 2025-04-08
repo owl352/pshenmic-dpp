@@ -41,14 +41,14 @@ impl DocumentDeleteTransitionWASM {
         Ok(DocumentDeleteTransitionWASM(rs_delete_transition))
     }
 
-    #[wasm_bindgen(js_name = "getBase")]
+    #[wasm_bindgen(getter = "base")]
     pub fn get_base(&self) -> DocumentBaseTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(js_name = "setBase")]
-    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) {
-        self.0.set_base(base.into())
+    #[wasm_bindgen(setter = "base")]
+    pub fn set_base(&mut self, base: &DocumentBaseTransitionWASM) {
+        self.0.set_base(base.clone().into())
     }
 
     #[wasm_bindgen(js_name = "toDocumentTransition")]

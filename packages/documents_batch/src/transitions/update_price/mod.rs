@@ -39,22 +39,22 @@ impl DocumentUpdatePriceTransitionWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "getBase")]
+    #[wasm_bindgen(getter = "base")]
     pub fn get_base(&self) -> DocumentBaseTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(js_name = "getPrice")]
+    #[wasm_bindgen(getter = "price")]
     pub fn get_price(&self) -> Credits {
         self.0.price()
     }
 
-    #[wasm_bindgen(js_name = "setBase")]
-    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) {
-        self.0.set_base(base.into())
+    #[wasm_bindgen(setter = "base")]
+    pub fn set_base(&mut self, base: &DocumentBaseTransitionWASM) {
+        self.0.set_base(base.clone().into())
     }
 
-    #[wasm_bindgen(js_name = "setPrice")]
+    #[wasm_bindgen(setter = "price")]
     pub fn set_price(&mut self, price: Credits) {
         self.0.set_price(price)
     }

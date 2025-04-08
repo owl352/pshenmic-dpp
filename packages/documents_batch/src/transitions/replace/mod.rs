@@ -43,36 +43,36 @@ impl DocumentReplaceTransitionWASM {
         Ok(DocumentReplaceTransitionWASM(rs_update_transition))
     }
 
-    #[wasm_bindgen(js_name = "getData")]
+    #[wasm_bindgen(getter = "data")]
     pub fn get_data(&self) -> Result<JsValue, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
         self.0.data().serialize(&serializer).map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(js_name = "getBase")]
+    #[wasm_bindgen(getter = "base")]
     pub fn get_base(&self) -> DocumentBaseTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(js_name = "getRevision")]
+    #[wasm_bindgen(getter = "revision")]
     pub fn get_revision(&self) -> Revision {
         self.0.revision()
     }
 
-    #[wasm_bindgen(js_name = "setData")]
+    #[wasm_bindgen(setter = "data")]
     pub fn set_data(&mut self, js_data: JsValue) -> Result<(), JsValue> {
         let data = js_data.with_serde_to_platform_value_map()?;
 
         Ok(self.0.set_data(data))
     }
 
-    #[wasm_bindgen(js_name = "setBase")]
-    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) {
-        self.0.set_base(base.into())
+    #[wasm_bindgen(setter = "base")]
+    pub fn set_base(&mut self, base: &DocumentBaseTransitionWASM) {
+        self.0.set_base(base.clone().into())
     }
 
-    #[wasm_bindgen(js_name = "setRevision")]
+    #[wasm_bindgen(setter = "revision")]
     pub fn set_revision(&mut self, revision: Revision) {
         self.0.set_revision(revision);
     }
