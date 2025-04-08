@@ -1,5 +1,5 @@
 use dpp::fee::Credits;
-use dpp::prelude::IdentityNonce;
+use dpp::prelude::{IdentityNonce, Revision};
 use dpp::state_transition::documents_batch_transition::document_transition::document_purchase_transition::v0::v0_methods::DocumentPurchaseTransitionV0Methods;
 use dpp::state_transition::documents_batch_transition::document_transition::{DocumentPurchaseTransition, DocumentTransition};
 use wasm_bindgen::JsValue;
@@ -54,8 +54,13 @@ impl DocumentPurchaseTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "setBase")]
-    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) {
+    pub fn set_base(&mut self, base: DocumentBaseTransitionWASM) { 
         self.0.set_base(base.into())
+    }
+
+    #[wasm_bindgen(js_name = "setRevision")]
+    pub fn set_revision(&mut self, revision: Revision) {
+        self.0.set_revision(revision);
     }
 
     #[wasm_bindgen(js_name = "toDocumentTransition")]

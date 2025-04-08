@@ -50,7 +50,7 @@ impl DocumentTransferTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(js_name = "getRecipientOwnerId")]
+    #[wasm_bindgen(js_name = "getRecipientId")]
     pub fn get_recipient_owner_id(&self) -> Vec<u8> {
         self.0.recipient_owner_id().to_vec()
     }
@@ -60,7 +60,7 @@ impl DocumentTransferTransitionWASM {
         self.0.set_base(base.into())
     }
 
-    #[wasm_bindgen(js_name = "setRecipientOwnerId")]
+    #[wasm_bindgen(js_name = "setRecipientId")]
     pub fn set_recipient_owner_id(
         &mut self,
         js_recipient_owner_id: JsValue,
