@@ -36,7 +36,7 @@ impl StateTransitionWASM {
         self.0
             .sign(
                 &public_key.clone().into(),
-                private_key.get_key_bytes().as_slice(),
+                private_key.get_bytes().as_slice(),
                 &MockBLS {},
             )
             .with_js_error()?;
