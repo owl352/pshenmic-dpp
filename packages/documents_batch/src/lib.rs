@@ -73,7 +73,7 @@ impl DocumentsBatchWASM {
         )))
     }
 
-    #[wasm_bindgen(js_name = "getTransitions")]
+    #[wasm_bindgen(getter = "transitions")]
     pub fn get_transitions(&self) -> Vec<DocumentTransitionWASM> {
         let rs_transitions = self.0.transitions();
 
@@ -83,27 +83,27 @@ impl DocumentsBatchWASM {
             .collect()
     }
 
-    #[wasm_bindgen(js_name = "getSignature")]
+    #[wasm_bindgen(getter = "signature")]
     pub fn get_signature(&self) -> Vec<u8> {
         self.0.signature().to_vec()
     }
 
-    #[wasm_bindgen(js_name = "getSignaturePublicKeyId")]
+    #[wasm_bindgen(getter = "signaturePublicKeyId")]
     pub fn get_signature_public_key_id(&self) -> KeyID {
         self.0.signature_public_key_id()
     }
 
-    #[wasm_bindgen(js_name = "getAllPurchasesAmount")]
+    #[wasm_bindgen(getter = "allPurchasesAmount")]
     pub fn get_all_purchases_amount(&self) -> Result<Option<Credits>, JsValue> {
         self.0.all_purchases_amount().with_js_error()
     }
 
-    #[wasm_bindgen(js_name = "getOwnerId")]
+    #[wasm_bindgen(getter = "ownerId")]
     pub fn get_owner_id(&self) -> Vec<u8> {
         self.0.owner_id().to_vec()
     }
 
-    #[wasm_bindgen(js_name = "getModifiedDataIds")]
+    #[wasm_bindgen(getter = "modifiedDataIds")]
     pub fn get_modified_data_ids(&self) -> Result<JsValue, JsValue> {
         let vec_of_ids: Vec<Vec<u8>> = self
             .0
@@ -115,7 +115,7 @@ impl DocumentsBatchWASM {
         serde_wasm_bindgen::to_value(&vec_of_ids).map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(js_name = "getAllConflictingIndexCollateralVotingFunds")]
+    #[wasm_bindgen(getter = "allConflictingIndexCollateralVotingFunds")]
     pub fn get_all_conflicting_index_collateral_voting_funds(
         &self,
     ) -> Result<Option<Credits>, JsValue> {
@@ -124,7 +124,7 @@ impl DocumentsBatchWASM {
             .with_js_error()
     }
 
-    #[wasm_bindgen(js_name = "setTransitions")]
+    #[wasm_bindgen(setter = "transitions")]
     pub fn set_transitions(&mut self, transitions: Vec<DocumentTransitionWASM>) {
         let rs_transitions = transitions
             .iter()
@@ -134,12 +134,12 @@ impl DocumentsBatchWASM {
         self.0.set_transitions(rs_transitions);
     }
 
-    #[wasm_bindgen(js_name = "setSignature")]
+    #[wasm_bindgen(setter = "signature")]
     pub fn set_signature(&mut self, js_signature: Vec<u8>) {
         self.0.set_signature(BinaryData::from(js_signature))
     }
 
-    #[wasm_bindgen(js_name = "setSignaturePublicKeyId")]
+    #[wasm_bindgen(setter = "signaturePublicKeyId")]
     pub fn set_signature_public_key_id(&mut self, key_id: KeyID) {
         self.0.set_signature_public_key_id(key_id)
     }

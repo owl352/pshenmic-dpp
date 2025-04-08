@@ -57,7 +57,7 @@ describe('DocumentsTransitions', function () {
 
         const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
 
-        const deserializedTransitions = deserializedBatch.getTransitions()
+        const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
@@ -119,7 +119,7 @@ describe('DocumentsTransitions', function () {
 
         const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
 
-        const deserializedTransitions = deserializedBatch.getTransitions()
+        const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
@@ -181,7 +181,7 @@ describe('DocumentsTransitions', function () {
 
         const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
 
-        const deserializedTransitions = deserializedBatch.getTransitions()
+        const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
@@ -243,7 +243,7 @@ describe('DocumentsTransitions', function () {
 
         const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
 
-        const deserializedTransitions = deserializedBatch.getTransitions()
+        const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
@@ -305,7 +305,7 @@ describe('DocumentsTransitions', function () {
 
         const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
 
-        const deserializedTransitions = deserializedBatch.getTransitions()
+        const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
@@ -367,7 +367,7 @@ describe('DocumentsTransitions', function () {
 
         const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
 
-        const deserializedTransitions = deserializedBatch.getTransitions()
+        const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
