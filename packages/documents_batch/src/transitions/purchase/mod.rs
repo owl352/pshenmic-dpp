@@ -63,6 +63,13 @@ impl DocumentPurchaseTransitionWASM {
         self.0.set_base(base.clone().into())
     }
 
+    #[wasm_bindgen(setter = "price")]
+    pub fn set_price(&mut self, price: Credits) {
+        match self.0 {
+            DocumentPurchaseTransition::V0(ref mut v0) => v0.price = price,
+        }
+    }
+
     #[wasm_bindgen(setter = "revision")]
     pub fn set_revision(&mut self, revision: Revision) {
         self.0.set_revision(revision);

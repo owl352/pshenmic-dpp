@@ -103,7 +103,7 @@ impl DocumentTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = "transferTransition")]
+    #[wasm_bindgen(getter = "transferTransition")]
     pub fn get_transfer_transition(&self) -> Result<DocumentTransferTransitionWASM, JsValue> {
         match self.0.clone() {
             DocumentTransition::Transfer(transfer) => {
@@ -113,7 +113,7 @@ impl DocumentTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = "updatePriceTransition")]
+    #[wasm_bindgen(getter = "updatePriceTransition")]
     pub fn get_update_price_transition(
         &self,
     ) -> Result<DocumentUpdatePriceTransitionWASM, JsValue> {

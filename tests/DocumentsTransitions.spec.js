@@ -1,7 +1,7 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {document, documentTypeName, revision, dataContractId, ownerId, id} = require('./mocks/Document')
+const { document, documentTypeName, revision, dataContractId, ownerId, id } = require('./mocks/Document')
 
 let wasm
 
@@ -470,7 +470,7 @@ describe('DocumentsTransitions', function () {
         assert.equal(updatePriceTransition.base.constructor.name, 'DocumentBaseTransitionWASM')
       })
 
-      it('get recipient', () => {
+      it('get price', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const updatePriceTransition = new wasm.DocumentUpdatePriceTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
 
@@ -486,7 +486,7 @@ describe('DocumentsTransitions', function () {
         assert.equal(purchaseTransition.base.constructor.name, 'DocumentBaseTransitionWASM')
       })
 
-      it('get recipient', () => {
+      it('get price', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
 
@@ -501,7 +501,7 @@ describe('DocumentsTransitions', function () {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
-        const newData = {"message": "bebra"}
+        const newData = { message: 'bebra' }
 
         createTransition.data = newData
 
@@ -550,22 +550,156 @@ describe('DocumentsTransitions', function () {
     })
 
     describe('document Delete transition', function () {
+      it('set base', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const deleteTransition = new wasm.DocumentDeleteTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
+        const newBase = new wasm.DocumentBaseTransitionWASM(
+          documentInstance.getId(),
+          BigInt(12350),
+          'bbbbb',
+          dataContractId
+        )
+
+        deleteTransition.base = newBase
+
+        assert.equal(deleteTransition.base.identityContractNonce, newBase.identityContractNonce)
+        assert.notEqual(newBase.__wbg_ptr, 0)
+      })
     })
 
     describe('document Replace transition', function () {
+      it('set data', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
+        const newData = { message: 'bebra' }
+
+        replaceTransition.data = newData
+
+        assert.deepEqual(replaceTransition.data, newData)
+      })
+
+      it('set base', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1), 'preorder')
+
+        const newBase = new wasm.DocumentBaseTransitionWASM(
+          documentInstance.getId(),
+          BigInt(12350),
+          'bbbbb',
+          dataContractId
+        )
+
+        replaceTransition.base = newBase
+
+        assert.equal(replaceTransition.base.identityContractNonce, newBase.identityContractNonce)
+        assert.notEqual(newBase.__wbg_ptr, 0)
+      })
+
+      it('set revision', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1), 'preorder')
+
+        replaceTransition.revision = BigInt(11)
+
+        assert.equal(replaceTransition.revision, BigInt(11))
+      })
     })
 
     describe('document Transfer transition', function () {
+      it('set base', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), 'preorder', Array.from(documentInstance.getOwnerId()))
 
+        const newBase = new wasm.DocumentBaseTransitionWASM(
+          documentInstance.getId(),
+          BigInt(12350),
+          'bbbbb',
+          dataContractId
+        )
+
+        transferTransition.base = newBase
+
+        assert.equal(transferTransition.base.identityContractNonce, newBase.identityContractNonce)
+        assert.notEqual(newBase.__wbg_ptr, 0)
+      })
+
+      it('set recipient', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), 'preorder', Array.from(documentInstance.getOwnerId()))
+
+        const newRecipient = new Uint8Array(32)
+
+        transferTransition.recipientId = newRecipient
+
+        assert.deepEqual(transferTransition.recipientId, newRecipient)
+      })
     })
 
     describe('document Update Price transition', function () {
+      it('set base', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const updatePriceTransition = new wasm.DocumentUpdatePriceTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
 
+        const newBase = new wasm.DocumentBaseTransitionWASM(
+          documentInstance.getId(),
+          BigInt(12350),
+          'bbbbb',
+          dataContractId
+        )
+
+        updatePriceTransition.base = newBase
+
+        assert.equal(updatePriceTransition.base.identityContractNonce, newBase.identityContractNonce)
+        assert.notEqual(newBase.__wbg_ptr, 0)
+      })
+
+      it('set price', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const updatePriceTransition = new wasm.DocumentUpdatePriceTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
+
+        updatePriceTransition.price = BigInt(1111)
+
+        assert.deepEqual(updatePriceTransition.price, BigInt(1111))
+      })
     })
 
     describe('document Purchase transition', function () {
+      it('set base', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
+
+        const newBase = new wasm.DocumentBaseTransitionWASM(
+          documentInstance.getId(),
+          BigInt(12350),
+          'bbbbb',
+          dataContractId
+        )
+
+        purchaseTransition.base = newBase
+
+        assert.equal(purchaseTransition.base.identityContractNonce, newBase.identityContractNonce)
+        assert.notEqual(newBase.__wbg_ptr, 0)
+      })
+
+      it('set price', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
+
+        purchaseTransition.price = BigInt(1111)
+
+        assert.deepEqual(purchaseTransition.price, BigInt(1111))
+      })
+
+      it('set revision', () => {
+        const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+        const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
+
+        purchaseTransition.revision = BigInt(1111)
+
+        assert.deepEqual(purchaseTransition.revision, BigInt(1111))
+      })
     })
   })
 })

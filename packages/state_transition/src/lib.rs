@@ -55,7 +55,7 @@ impl StateTransitionWASM {
         js_key_type: JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let key_type = KeyTypeWASM::try_from(js_key_type)?;
-        
+
         let _sig = self
             .0
             .sign_by_private_key(
