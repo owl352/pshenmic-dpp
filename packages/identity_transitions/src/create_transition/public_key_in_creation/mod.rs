@@ -11,6 +11,7 @@ use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "IdentityPublicKeyInCreationWASM")]
@@ -75,12 +76,12 @@ impl IdentityPublicKeyInCreationWASM {
     }
 
     #[wasm_bindgen(js_name = toIdentityPublicKey)]
-    pub fn to_identity_public_key(&self) -> IdentityPublicKeyWASM {
+    pub fn to_identity_public_key(&self) -> Result<IdentityPublicKeyWASM, JsValue> {
         IdentityPublicKeyWASM::new(
             self.0.id(),
-            self.0.purpose().into(),
-            self.0.security_level().into(),
-            self.0.key_type().into(),
+            JsValue::from(PurposeWASM::from(self.0.purpose())),
+            JsValue::from(SecurityLevelWASM::from(self.0.security_level())),
+            JsValue::from(KeyTypeWASM::from(self.0.key_type())),
             self.0.read_only(),
             self.0.data().to_string(Hex).as_str(),
             None,
@@ -93,18 +94,18 @@ impl IdentityPublicKeyInCreationWASM {
     }
 
     #[wasm_bindgen(js_name = getPurpose)]
-    pub fn get_purpose(&self) -> PurposeWASM {
-        PurposeWASM::from(self.0.purpose())
+    pub fn get_purpose(&self) -> String {
+        PurposeWASM::from(self.0.purpose()).into()
     }
 
     #[wasm_bindgen(js_name = getSecurityLevel)]
-    pub fn get_security_level(&self) -> SecurityLevelWASM {
-        SecurityLevelWASM::from(self.0.security_level())
+    pub fn get_security_level(&self) -> String {
+        SecurityLevelWASM::from(self.0.security_level()).into()
     }
 
     #[wasm_bindgen(js_name = getKeyType)]
-    pub fn get_key_type(&self) -> KeyTypeWASM {
-        KeyTypeWASM::from(self.0.key_type())
+    pub fn get_key_type(&self) -> String {
+        KeyTypeWASM::from(self.0.key_type()).into()
     }
 
     #[wasm_bindgen(js_name = getReadOnly)]
@@ -123,14 +124,17 @@ impl IdentityPublicKeyInCreationWASM {
     }
 
     #[wasm_bindgen(js_name = setPurpose)]
-    pub fn set_purpose(&mut self, purpose: PurposeWASM) {
-        self.0.set_purpose(Purpose::from(purpose))
+    pub fn set_purpose(&mut self, js_purpose: JsValue) -> Result<(), JsValue> {
+        let purpose = PurposeWASM::try_from(js_purpose)?;
+        Ok(self.0.set_purpose(Purpose::from(purpose)))
     }
 
     #[wasm_bindgen(js_name = setSecurityLevel)]
-    pub fn set_security_level(&mut self, security_level: SecurityLevelWASM) {
-        self.0
-            .set_security_level(SecurityLevel::from(security_level))
+    pub fn set_security_level(&mut self, js_security_level: JsValue) -> Result<(), JsValue> {
+        let security_level = SecurityLevelWASM::try_from(js_security_level)?;
+        Ok(self
+            .0
+            .set_security_level(SecurityLevel::from(security_level)))
     }
 
     #[wasm_bindgen(js_name = setReadOnly)]

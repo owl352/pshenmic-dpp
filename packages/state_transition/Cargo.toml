@@ -8,7 +8,7 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
-pshenmic_dpp_public_key = {path = "../public_key"}
+pshenmic_dpp_public_key = {path = "../identity_public_key" }
 pshenmic_dpp_private_key = {path = "../private_key"}
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_mock_bls = {path = "../mock_bls"}
