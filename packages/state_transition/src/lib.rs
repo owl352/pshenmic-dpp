@@ -35,7 +35,7 @@ impl StateTransitionWASM {
     ) -> Result<JsValue, JsValue> {
         let sig = self.0.sign(
             &public_key.clone().into(),
-            private_key.get_key_bytes().as_slice(),
+            private_key.get_bytes().as_slice(),
             &MockBLS {},
         );
 
@@ -59,23 +59,20 @@ impl StateTransitionWASM {
     pub fn sign_by_private_key(
         &mut self,
         private_key: &PrivateKeyWASM,
-        key_type: KeyTypeWASM,
-    ) -> JsValue {
+        js_key_type: JsValue,
+    ) -> Result<Vec<u8>, JsValue> {
+        let key_type = KeyTypeWASM::try_from(js_key_type)?;
+
         let _sig = self
             .0
             .sign_by_private_key(
-                &private_key.get_key_bytes().as_slice(),
+                &private_key.get_bytes().as_slice(),
                 KeyType::from(key_type),
                 &MockBLS {},
             )
             .with_js_error();
 
-        let bytes = self.0.serialize_to_bytes().with_js_error();
-
-        match bytes {
-            Ok(bytes) => JsValue::from(bytes.clone()),
-            Err(err) => err,
-        }
+        self.0.serialize_to_bytes().with_js_error()
     }
 
     #[wasm_bindgen(js_name=toBytes)]

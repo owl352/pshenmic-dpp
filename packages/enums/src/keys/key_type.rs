@@ -1,4 +1,5 @@
 use dpp::identity::KeyType;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[allow(non_camel_case_types)]
@@ -9,6 +10,48 @@ pub enum KeyTypeWASM {
     ECDSA_HASH160 = 2,
     BIP13_SCRIPT_HASH = 3,
     EDDSA_25519_HASH160 = 4,
+}
+
+impl TryFrom<JsValue> for KeyTypeWASM {
+    type Error = JsValue;
+    fn try_from(value: JsValue) -> Result<Self, Self::Error> {
+        match value.is_string() {
+            true => match value.as_string() {
+                None => Err(JsValue::from("cannot read value from enum")),
+                Some(enum_val) => match enum_val.as_str() {
+                    "ECDSA_SECP256K1" => Ok(KeyTypeWASM::ECDSA_SECP256K1),
+                    "BLS12_381" => Ok(KeyTypeWASM::BLS12_381),
+                    "ECDSA_HASH160" => Ok(KeyTypeWASM::ECDSA_HASH160),
+                    "BIP13_SCRIPT_HASH" => Ok(KeyTypeWASM::BIP13_SCRIPT_HASH),
+                    "EDDSA_25519_HASH160" => Ok(KeyTypeWASM::EDDSA_25519_HASH160),
+                    _ => Err(JsValue::from("unsupported key type")),
+                },
+            },
+            false => match value.as_f64() {
+                None => Err(JsValue::from("cannot read value from enum")),
+                Some(enum_val) => match enum_val as u8 {
+                    0 => Ok(KeyTypeWASM::ECDSA_SECP256K1),
+                    1 => Ok(KeyTypeWASM::BLS12_381),
+                    2 => Ok(KeyTypeWASM::ECDSA_HASH160),
+                    3 => Ok(KeyTypeWASM::BIP13_SCRIPT_HASH),
+                    4 => Ok(KeyTypeWASM::EDDSA_25519_HASH160),
+                    _ => Err(JsValue::from("unsupported key type")),
+                },
+            },
+        }
+    }
+}
+
+impl From<KeyTypeWASM> for String {
+    fn from(value: KeyTypeWASM) -> Self {
+        match value {
+            KeyTypeWASM::ECDSA_SECP256K1 => String::from("ECDSA_SECP256K1"),
+            KeyTypeWASM::BLS12_381 => String::from("BLS12_381"),
+            KeyTypeWASM::ECDSA_HASH160 => String::from("ECDSA_HASH160"),
+            KeyTypeWASM::BIP13_SCRIPT_HASH => String::from("BIP13_SCRIPT_HASH"),
+            KeyTypeWASM::EDDSA_25519_HASH160 => String::from("EDDSA_25519_HASH160"),
+        }
+    }
 }
 
 impl From<KeyTypeWASM> for KeyType {
