@@ -3,7 +3,6 @@ use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::identity::KeyType;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition;
-use dpp::util::hash::hash_to_hex_string;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
