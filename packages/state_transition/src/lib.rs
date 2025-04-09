@@ -109,6 +109,7 @@ impl StateTransitionWASM {
             payload = dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0)
                 .with_js_error()?;
         }
+
         Ok(Sha256::digest(payload).to_hex_string(Lower))
     }
 
