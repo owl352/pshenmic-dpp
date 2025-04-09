@@ -27,13 +27,14 @@ if [[ "${RAW}" == "true" ]]; then
 else
   echo "Converting wasm binary into base64 module"
   WASM_BUILD_BASE_64=$(base64 -i "$WASM_BINARY_PATH")
-  echo 'module.exports = "'${WASM_BUILD_BASE_64}'"' > "$DIST_WASM_BINARY_BASE_64"
+  echo 'export default "'${WASM_BUILD_BASE_64}'"' > "$DIST_WASM_BINARY_BASE_64"
 fi
 
-## Transpile ES Modules code to Common JS
-## and save directly to dist folder to avoid re-generating TS declarations
-echo "Transpiling wasm ES Modules to CommonJS"
+echo "Copying ES module to dist"
 cp $WASM_JS_CODE_PATH $DIST_WASM_JS
 
 echo "Cleaning wasm build"
-#rm -rf $WASM_DIR
+rm -rf $WASM_DIR
+
+echo "Total build size: "
+du -sh $DIST_WASM_DIR
