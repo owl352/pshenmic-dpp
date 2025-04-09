@@ -169,7 +169,7 @@ impl IdentityPublicKeyWASM {
             .public_key_hash()
             .with_js_error()
             .map(|slice| slice.to_vec())?
-            .to_hex_string(Case::Upper);
+            .to_hex_string(Case::Lower);
 
         Ok(hash)
     }
