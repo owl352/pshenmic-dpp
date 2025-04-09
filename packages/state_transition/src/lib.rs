@@ -1,9 +1,13 @@
 use dpp::dashcore::secp256k1::hashes::hex::Case::Upper;
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
-use dpp::identity::KeyType;
+use dpp::identity::{KeyID, KeyType};
+use dpp::platform_value::BinaryData;
+use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition;
+use pshenmic_dpp_enums::actions::ActionType;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
+use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
@@ -30,7 +34,7 @@ impl From<StateTransitionWASM> for StateTransition {
 
 #[wasm_bindgen]
 impl StateTransitionWASM {
-    #[wasm_bindgen(js_name=sign)]
+    #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,
         private_key: &PrivateKeyWASM,
@@ -58,7 +62,7 @@ impl StateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=signByPrivateKey)]
+    #[wasm_bindgen(js_name = "signByPrivateKey")]
     pub fn sign_by_private_key(
         &mut self,
         private_key: &PrivateKeyWASM,
@@ -78,14 +82,14 @@ impl StateTransitionWASM {
         self.0.serialize_to_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name=toBytes)]
+    #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
         Ok(JsValue::from(bytes.clone()))
     }
 
-    #[wasm_bindgen(js_name=fromBytes)]
+    #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
         let st = StateTransition::deserialize_from_bytes(bytes.as_slice());
 
@@ -95,7 +99,7 @@ impl StateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=getHash)]
+    #[wasm_bindgen(js_name = "getHash")]
     pub fn get_hash(&self, skip_signature: bool) -> Result<String, JsValue> {
         if skip_signature {
             let payload = &self.0.signable_bytes().with_js_error()?;
@@ -107,5 +111,79 @@ impl StateTransitionWASM {
 
             Ok(Sha256::digest(payload).to_hex_string(Upper))
         }
+    }
+
+    #[wasm_bindgen(js_name = "getActionType")]
+    pub fn get_action_type(&self) -> String {
+        match self.0 {
+            StateTransition::DataContractCreate(_) => ActionType::DATA_CONTRACT_CREATE.into(),
+            StateTransition::DataContractUpdate(_) => ActionType::DATA_CONTRACT_UPDATE.into(),
+            StateTransition::IdentityTopUp(_) => ActionType::IDENTITY_TOP_UP.into(),
+            StateTransition::IdentityCreate(_) => ActionType::IDENTITY_CREATE.into(),
+            StateTransition::IdentityUpdate(_) => ActionType::IDENTITY_UPDATE.into(),
+            StateTransition::IdentityCreditTransfer(_) => {
+                ActionType::IDENTITY_CREDIT_TRANSFER.into()
+            }
+            StateTransition::DocumentsBatch(_) => ActionType::DOCUMENTS_BATCH.into(),
+            StateTransition::IdentityCreditWithdrawal(_) => {
+                ActionType::IDENTITY_CREDIT_WITHDRAWAL.into()
+            }
+            StateTransition::MasternodeVote(_) => ActionType::MASTERNODE_VOTE.into(),
+        }
+    }
+
+    #[wasm_bindgen(js_name = "getOwnerId")]
+    pub fn get_owner_id(&self) -> Vec<u8> {
+        self.0.owner_id().to_vec()
+    }
+
+    #[wasm_bindgen(getter = "signature")]
+    pub fn get_signature(&self) -> Vec<u8> {
+        self.0.signature().to_vec()
+    }
+
+    #[wasm_bindgen(getter = "signaturePublicKeyId")]
+    pub fn get_signature_public_key_id(&self) -> Option<KeyID> {
+        self.0.signature_public_key_id()
+    }
+
+    #[wasm_bindgen(getter = "userFeeIncrease")]
+    pub fn get_user_fee_increase(&self) -> UserFeeIncrease {
+        self.0.user_fee_increase()
+    }
+
+    #[wasm_bindgen(js_name = "getName")]
+    pub fn get_name(&self) -> String {
+        self.0.name()
+    }
+
+    #[wasm_bindgen(js_name = "getPurposeRequirement")]
+    pub fn get_purpose_requirement(&self) -> Option<Vec<String>> {
+        let requirements = self.0.purpose_requirement();
+
+        match requirements {
+            None => None,
+            Some(req) => Some(
+                req.iter()
+                    .map(|purpose| PurposeWASM::from(purpose.clone()))
+                    .map(String::from)
+                    .collect(),
+            ),
+        }
+    }
+
+    #[wasm_bindgen(setter = "signature")]
+    pub fn set_signature(&mut self, signature: Vec<u8>) {
+        self.0.set_signature(BinaryData::from(signature))
+    }
+
+    #[wasm_bindgen(setter = "signaturePublicKeyId")]
+    pub fn set_signature_public_key_id(&mut self, key_id: KeyID) {
+        self.0.set_signature_public_key_id(key_id)
+    }
+
+    #[wasm_bindgen(setter = "userFeeIncrease")]
+    pub fn set_user_fee_increase(&mut self, user_fee_increase: UserFeeIncrease) {
+        self.0.set_user_fee_increase(user_fee_increase)
     }
 }
