@@ -8,9 +8,9 @@ use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_utils::WithJsError;
+use sha2::{Digest, Sha256};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use sha2::{Digest, Sha256};
 
 #[derive(Clone)]
 #[wasm_bindgen(js_name = "StateTransitionWASM")]
@@ -102,7 +102,8 @@ impl StateTransitionWASM {
 
             Ok(Sha256::digest(payload).to_hex_string(Upper))
         } else {
-            let payload = dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0).with_js_error()?;
+            let payload = dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0)
+                .with_js_error()?;
 
             Ok(Sha256::digest(payload).to_hex_string(Upper))
         }
