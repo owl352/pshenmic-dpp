@@ -1,4 +1,4 @@
-use dpp::dashcore::secp256k1::hashes::hex::Case::{Lower};
+use dpp::dashcore::secp256k1::hashes::hex::Case::Lower;
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::identity::{KeyID, KeyType};
 use dpp::platform_value::BinaryData;
