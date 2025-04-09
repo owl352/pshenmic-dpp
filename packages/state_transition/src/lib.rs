@@ -1,11 +1,10 @@
-use dpp::dashcore::secp256k1::hashes::hex::Case::{Lower, Upper};
+use dpp::dashcore::secp256k1::hashes::hex::Case::{Lower};
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::identity::{KeyID, KeyType};
 use dpp::platform_value::BinaryData;
 use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition;
-use pshenmic_dpp_enums::actions::ActionType;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
@@ -115,21 +114,7 @@ impl StateTransitionWASM {
 
     #[wasm_bindgen(js_name = "getActionType")]
     pub fn get_action_type(&self) -> String {
-        match self.0 {
-            StateTransition::DataContractCreate(_) => ActionType::DATA_CONTRACT_CREATE.into(),
-            StateTransition::DataContractUpdate(_) => ActionType::DATA_CONTRACT_UPDATE.into(),
-            StateTransition::IdentityTopUp(_) => ActionType::IDENTITY_TOP_UP.into(),
-            StateTransition::IdentityCreate(_) => ActionType::IDENTITY_CREATE.into(),
-            StateTransition::IdentityUpdate(_) => ActionType::IDENTITY_UPDATE.into(),
-            StateTransition::IdentityCreditTransfer(_) => {
-                ActionType::IDENTITY_CREDIT_TRANSFER.into()
-            }
-            StateTransition::DocumentsBatch(_) => ActionType::DOCUMENTS_BATCH.into(),
-            StateTransition::IdentityCreditWithdrawal(_) => {
-                ActionType::IDENTITY_CREDIT_WITHDRAWAL.into()
-            }
-            StateTransition::MasternodeVote(_) => ActionType::MASTERNODE_VOTE.into(),
-        }
+        self.0.name()
     }
 
     #[wasm_bindgen(js_name = "getOwnerId")]
@@ -150,11 +135,6 @@ impl StateTransitionWASM {
     #[wasm_bindgen(getter = "userFeeIncrease")]
     pub fn get_user_fee_increase(&self) -> UserFeeIncrease {
         self.0.user_fee_increase()
-    }
-
-    #[wasm_bindgen(js_name = "getName")]
-    pub fn get_name(&self) -> String {
-        self.0.name()
     }
 
     #[wasm_bindgen(js_name = "getPurposeRequirement")]
