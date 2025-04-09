@@ -1,4 +1,4 @@
-use dpp::dashcore::secp256k1::hashes::hex::Case::Upper;
+use dpp::dashcore::secp256k1::hashes::hex::Case::{Lower, Upper};
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::identity::{KeyID, KeyType};
 use dpp::platform_value::BinaryData;
@@ -101,16 +101,15 @@ impl StateTransitionWASM {
 
     #[wasm_bindgen(js_name = "getHash")]
     pub fn get_hash(&self, skip_signature: bool) -> Result<String, JsValue> {
+        let payload: Vec<u8>;
+
         if skip_signature {
-            let payload = &self.0.signable_bytes().with_js_error()?;
-
-            Ok(Sha256::digest(payload).to_hex_string(Upper))
+            payload = self.0.signable_bytes().with_js_error()?;
         } else {
-            let payload = dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0)
+            payload = dpp::serialization::PlatformSerializable::serialize_to_bytes(&self.0)
                 .with_js_error()?;
-
-            Ok(Sha256::digest(payload).to_hex_string(Upper))
         }
+        Ok(Sha256::digest(payload).to_hex_string(Lower))
     }
 
     #[wasm_bindgen(js_name = "getActionType")]
