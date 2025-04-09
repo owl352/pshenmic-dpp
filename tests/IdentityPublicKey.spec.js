@@ -6,6 +6,7 @@ const {
   keyTypeSet, binaryDataSet
 } = require('./mocks/PublicKey')
 const { wif } = require('./mocks/PrivateKey')
+const { toHexString } = require('./utils/hex')
 
 let wasm
 
@@ -67,7 +68,7 @@ describe('PublicKey', function () {
 
       const hash = pubKey.getPublicKeyHash()
 
-      assert.deepEqual(hash, Uint8Array.from([211, 114, 240, 150, 37, 159, 114, 104, 110, 24, 102, 61, 125, 181, 248, 98, 52, 221, 111, 85]))
+      assert.deepEqual(hash.toLowerCase(), toHexString([211, 114, 240, 150, 37, 159, 114, 104, 110, 24, 102, 61, 125, 181, 248, 98, 52, 221, 111, 85]))
     })
   })
   describe('getters', function () {

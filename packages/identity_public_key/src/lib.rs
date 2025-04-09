@@ -1,4 +1,5 @@
 use dpp::dashcore::Network;
+use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::identity::identity_public_key::accessors::v0::{
     IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
@@ -162,11 +163,15 @@ impl IdentityPublicKeyWASM {
     }
 
     #[wasm_bindgen(js_name = "getPublicKeyHash")]
-    pub fn public_key_hash(&self) -> Result<Vec<u8>, JsValue> {
-        self.0
+    pub fn public_key_hash(&self) -> Result<String, JsValue> {
+        let hash = self
+            .0
             .public_key_hash()
             .with_js_error()
-            .map(|slice| slice.to_vec())
+            .map(|slice| slice.to_vec())?
+            .to_hex_string(Case::Upper);
+
+        Ok(hash)
     }
 
     #[wasm_bindgen(js_name = toBytes)]
