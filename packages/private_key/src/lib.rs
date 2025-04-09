@@ -1,5 +1,7 @@
 use dpp::dashcore::PrivateKey;
+use dpp::dashcore::hashes::hex::FromHex;
 use dpp::dashcore::key::Secp256k1;
+use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use pshenmic_dpp_enums::network::NetworkWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -24,12 +26,21 @@ impl PrivateKeyWASM {
         let network = NetworkWASM::try_from(js_network)?;
 
         let pk = PrivateKey::from_slice(bytes.as_slice(), network.into())
-            .map_err(|err| JsValue::from_str(&*err.to_string()));
+            .map_err(|err| JsValue::from_str(&*err.to_string()))?;
 
-        match pk {
-            Ok(pk) => Ok(PrivateKeyWASM(pk)),
-            Err(err) => Err(err),
-        }
+        Ok(PrivateKeyWASM(pk))
+    }
+
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex_key: &str, js_network: JsValue) -> Result<Self, JsValue> {
+        let network = NetworkWASM::try_from(js_network)?;
+
+        let bytes = Vec::from_hex(hex_key).map_err(|err| JsValue::from(err.to_string()))?;
+
+        let pk = PrivateKey::from_slice(bytes.as_slice(), network.into())
+            .map_err(|err| JsValue::from_str(&*err.to_string()))?;
+
+        Ok(PrivateKeyWASM(pk))
     }
 }
 
@@ -43,6 +54,11 @@ impl PrivateKeyWASM {
     #[wasm_bindgen(js_name = "getBytes")]
     pub fn get_bytes(&self) -> Vec<u8> {
         self.0.to_bytes()
+    }
+
+    #[wasm_bindgen(js_name = "getHex")]
+    pub fn get_hex(&self) -> String {
+        self.0.to_bytes().to_hex_string(Case::Upper)
     }
 
     #[wasm_bindgen(js_name = "getPublicKeyHash")]
