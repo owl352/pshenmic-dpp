@@ -44,7 +44,7 @@ impl DocumentsBatchWASM {
     pub fn new(
         document_transitions: js_sys::Array,
         js_owner_id: JsValue,
-        user_fee_increase: UserFeeIncrease,
+        user_fee_increase: Option<UserFeeIncrease>,
         signature_public_key_id: Option<KeyID>,
         signature: Option<Vec<u8>>,
     ) -> Result<DocumentsBatchWASM, JsValue> {
@@ -66,7 +66,7 @@ impl DocumentsBatchWASM {
             DocumentsBatchTransitionV0 {
                 owner_id,
                 transitions,
-                user_fee_increase,
+                user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: signature_public_key_id.unwrap_or(0),
                 signature: BinaryData::from(signature.unwrap_or(Vec::new())),
             },
