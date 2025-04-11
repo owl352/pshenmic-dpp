@@ -19,15 +19,18 @@ impl TryFrom<JsValue> for PurposeWASM {
         match value.is_string() {
             true => match value.as_string() {
                 None => Err(JsValue::from("cannot read value from enum")),
-                Some(enum_val) => match enum_val.as_str() {
-                    "AUTHENTICATION" => Ok(PurposeWASM::AUTHENTICATION),
-                    "ENCRYPTION" => Ok(PurposeWASM::ENCRYPTION),
-                    "DECRYPTION" => Ok(PurposeWASM::DECRYPTION),
-                    "TRANSFER" => Ok(PurposeWASM::TRANSFER),
-                    "SYSTEM" => Ok(PurposeWASM::SYSTEM),
-                    "VOTING" => Ok(PurposeWASM::VOTING),
-                    "OWNER" => Ok(PurposeWASM::OWNER),
-                    _ => Err(JsValue::from("unsupported key type")),
+                Some(enum_val) => match enum_val.to_lowercase().as_str() {
+                    "authentication" => Ok(PurposeWASM::AUTHENTICATION),
+                    "encryption" => Ok(PurposeWASM::ENCRYPTION),
+                    "decryption" => Ok(PurposeWASM::DECRYPTION),
+                    "transfer" => Ok(PurposeWASM::TRANSFER),
+                    "system" => Ok(PurposeWASM::SYSTEM),
+                    "voting" => Ok(PurposeWASM::VOTING),
+                    "owner" => Ok(PurposeWASM::OWNER),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported purpose value ({})",
+                        enum_val
+                    ))),
                 },
             },
             false => match value.as_f64() {
@@ -40,7 +43,10 @@ impl TryFrom<JsValue> for PurposeWASM {
                     4 => Ok(PurposeWASM::SYSTEM),
                     5 => Ok(PurposeWASM::VOTING),
                     6 => Ok(PurposeWASM::OWNER),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported purpose value ({})",
+                        enum_val
+                    ))),
                 },
             },
         }
