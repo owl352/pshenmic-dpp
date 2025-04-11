@@ -16,11 +16,11 @@ impl TryFrom<JsValue> for NetworkWASM {
         match value.is_string() {
             true => match value.as_string() {
                 None => Err(JsValue::from("cannot read value from enum")),
-                Some(enum_val) => match enum_val.as_str() {
-                    "Mainnet" => Ok(NetworkWASM::Mainnet),
-                    "Testnet" => Ok(NetworkWASM::Testnet),
-                    "Devnet" => Ok(NetworkWASM::Devnet),
-                    "Regtest" => Ok(NetworkWASM::Regtest),
+                Some(enum_val) => match enum_val.to_lowercase().as_str() {
+                    "mainnet" => Ok(NetworkWASM::Mainnet),
+                    "testnet" => Ok(NetworkWASM::Testnet),
+                    "devnet" => Ok(NetworkWASM::Devnet),
+                    "regtest" => Ok(NetworkWASM::Regtest),
                     _ => Err(JsValue::from("unsupported key type")),
                 },
             },

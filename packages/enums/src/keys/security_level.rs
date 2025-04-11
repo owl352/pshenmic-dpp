@@ -16,11 +16,11 @@ impl TryFrom<JsValue> for SecurityLevelWASM {
         match value.is_string() {
             true => match value.as_string() {
                 None => Err(JsValue::from("cannot read value from enum")),
-                Some(enum_val) => match enum_val.as_str() {
-                    "MASTER" => Ok(SecurityLevelWASM::MASTER),
-                    "CRITICAL" => Ok(SecurityLevelWASM::CRITICAL),
-                    "HIGH" => Ok(SecurityLevelWASM::HIGH),
-                    "MEDIUM" => Ok(SecurityLevelWASM::MEDIUM),
+                Some(enum_val) => match enum_val.to_lowercase().as_str() {
+                    "master" => Ok(SecurityLevelWASM::MASTER),
+                    "critical" => Ok(SecurityLevelWASM::CRITICAL),
+                    "high" => Ok(SecurityLevelWASM::HIGH),
+                    "medium" => Ok(SecurityLevelWASM::MEDIUM),
                     _ => Err(JsValue::from("unsupported key type")),
                 },
             },
