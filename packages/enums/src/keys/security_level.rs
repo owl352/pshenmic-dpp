@@ -21,7 +21,7 @@ impl TryFrom<JsValue> for SecurityLevelWASM {
                     "critical" => Ok(SecurityLevelWASM::CRITICAL),
                     "high" => Ok(SecurityLevelWASM::HIGH),
                     "medium" => Ok(SecurityLevelWASM::MEDIUM),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from("unsupported enum value")),
                 },
             },
             false => match value.as_f64() {
@@ -31,7 +31,7 @@ impl TryFrom<JsValue> for SecurityLevelWASM {
                     1 => Ok(SecurityLevelWASM::CRITICAL),
                     2 => Ok(SecurityLevelWASM::HIGH),
                     3 => Ok(SecurityLevelWASM::MEDIUM),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from("unsupported enum value")),
                 },
             },
         }

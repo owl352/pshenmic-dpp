@@ -24,7 +24,7 @@ impl TryFrom<JsValue> for KeyTypeWASM {
                     "ecdsa_hash160" => Ok(KeyTypeWASM::ECDSA_HASH160),
                     "bip13_script_hash" => Ok(KeyTypeWASM::BIP13_SCRIPT_HASH),
                     "eddsa_25519_hash160" => Ok(KeyTypeWASM::EDDSA_25519_HASH160),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from("unsupported enum value")),
                 },
             },
             false => match value.as_f64() {
@@ -35,7 +35,7 @@ impl TryFrom<JsValue> for KeyTypeWASM {
                     2 => Ok(KeyTypeWASM::ECDSA_HASH160),
                     3 => Ok(KeyTypeWASM::BIP13_SCRIPT_HASH),
                     4 => Ok(KeyTypeWASM::EDDSA_25519_HASH160),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from("unsupported enum value")),
                 },
             },
         }

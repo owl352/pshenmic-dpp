@@ -27,7 +27,7 @@ impl TryFrom<JsValue> for PurposeWASM {
                     "system" => Ok(PurposeWASM::SYSTEM),
                     "voting" => Ok(PurposeWASM::VOTING),
                     "owner" => Ok(PurposeWASM::OWNER),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from("unsupported enum value")),
                 },
             },
             false => match value.as_f64() {
@@ -40,7 +40,7 @@ impl TryFrom<JsValue> for PurposeWASM {
                     4 => Ok(PurposeWASM::SYSTEM),
                     5 => Ok(PurposeWASM::VOTING),
                     6 => Ok(PurposeWASM::OWNER),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from("unsupported enum value")),
                 },
             },
         }
