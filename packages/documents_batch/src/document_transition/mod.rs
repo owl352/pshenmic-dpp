@@ -33,8 +33,8 @@ impl From<DocumentTransitionWASM> for DocumentTransition {
 #[wasm_bindgen]
 impl DocumentTransitionWASM {
     #[wasm_bindgen(getter = "actionType")]
-    pub fn get_action_type(&self) -> BatchTypeWASM {
-        self.0.action_type().into()
+    pub fn get_action_type(&self) -> String {
+        BatchTypeWASM::from(self.0.action_type()).into()
     }
 
     #[wasm_bindgen(getter = "dataContractId")]

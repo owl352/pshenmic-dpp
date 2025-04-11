@@ -12,6 +12,20 @@ pub enum BatchTypeWASM {
     IgnoreWhileBumpingRevision,
 }
 
+impl From<BatchTypeWASM> for String {
+    fn from(value: BatchTypeWASM) -> Self {
+        match value {
+            BatchTypeWASM::Create => String::from("create"),
+            BatchTypeWASM::Replace => String::from("replace"),
+            BatchTypeWASM::Delete => String::from("delete"),
+            BatchTypeWASM::Transfer => String::from("transfer"),
+            BatchTypeWASM::Purchase => String::from("purchase"),
+            BatchTypeWASM::UpdatePrice => String::from("update_price"),
+            BatchTypeWASM::IgnoreWhileBumpingRevision => String::from("ignore_bumping_revision"),
+        }
+    }
+}
+
 impl From<DocumentTransitionActionType> for BatchTypeWASM {
     fn from(action_type: DocumentTransitionActionType) -> Self {
         match action_type {

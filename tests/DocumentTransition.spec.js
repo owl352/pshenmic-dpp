@@ -29,7 +29,7 @@ describe('PrivateKey', function () {
     it('should allow to get action type', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
-      assert.equal(documentTransition.actionType, 0)
+      assert.equal(documentTransition.actionType, 'create')
     })
 
     it('should allow to get dataContractId', function () {
