@@ -7,14 +7,15 @@ use dpp::platform_value::Value;
 use dpp::prelude::{BlockHeight, CoreBlockHeight, Revision};
 use std::collections::BTreeMap;
 use wasm_bindgen::prelude::wasm_bindgen;
+use pshenmic_dpp_identifier::IdentifierWASM;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone)]
 #[wasm_bindgen(js_name = DocumentWASM)]
 pub struct DocumentWASM {
-    id: Identifier,
-    owner_id: Identifier,
+    id: IdentifierWASM,
+    owner_id: IdentifierWASM,
     revision: Option<Revision>,
-    data_contract_id: Identifier,
+    data_contract_id: IdentifierWASM,
     document_type_name: String,
     properties: BTreeMap<String, Value>,
     created_at: Option<TimestampMillis>,
@@ -32,8 +33,8 @@ pub struct DocumentWASM {
 impl From<DocumentWASM> for Document {
     fn from(wasm_doc: DocumentWASM) -> Self {
         Document::V0(DocumentV0 {
-            id: wasm_doc.id,
-            owner_id: wasm_doc.owner_id,
+            id: wasm_doc.id.into(),
+            owner_id: wasm_doc.owner_id.into(),
             properties: wasm_doc.properties,
             revision: wasm_doc.revision,
             created_at: wasm_doc.created_at,
@@ -52,10 +53,10 @@ impl From<DocumentWASM> for Document {
 impl From<Document> for DocumentWASM {
     fn from(doc: Document) -> Self {
         DocumentWASM {
-            id: doc.id(),
-            owner_id: doc.owner_id(),
+            id: doc.id().into(),
+            owner_id: doc.owner_id().into(),
             revision: doc.revision(),
-            data_contract_id: Default::default(),
+            data_contract_id: Identifier::default().into(),
             document_type_name: "".to_string(),
             properties: doc.properties().clone(),
             created_at: doc.created_at(),
@@ -80,10 +81,10 @@ impl DocumentWASM {
         entropy: Option<[u8; 32]>,
     ) -> Self {
         DocumentWASM {
-            id: document.id(),
-            owner_id: document.owner_id(),
+            id: document.id().into(),
+            owner_id: document.owner_id().into(),
             revision: document.revision(),
-            data_contract_id,
+            data_contract_id: data_contract_id.into(),
             document_type_name,
             properties: document.properties().clone(),
             created_at: document.created_at(),

@@ -3,6 +3,7 @@ use dpp::prelude::Identifier;
 use pshenmic_dpp_utils::identifier_from_js_value;
 use wasm_bindgen::prelude::*;
 
+#[derive(Copy, Clone)]
 #[wasm_bindgen(js_name = "IdentifierWASM")]
 pub struct IdentifierWASM(Identifier);
 

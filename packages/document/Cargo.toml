@@ -9,6 +9,7 @@ crate-type = ["cdylib", "lib"]
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
 pshenmic_dpp_utils = {path = "../utils"}
+pshenmic_dpp_identifier = { path = "../identifier" }
 pshenmic_dpp_enums = {path = "../enums"}
 pshenmic_dpp_data_contract = {path = "../data_contract"}
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
