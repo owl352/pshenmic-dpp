@@ -27,35 +27,28 @@ impl From<StateTransitionWASM> for StateTransition {
 
 #[wasm_bindgen]
 impl StateTransitionWASM {
-    #[wasm_bindgen(js_name=sign)]
+    #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,
         private_key: &PrivateKeyWASM,
         public_key: &IdentityPublicKeyWASM,
-    ) -> Result<JsValue, JsValue> {
-        let sig = self.0.sign(
-            &public_key.clone().into(),
-            private_key.get_bytes().as_slice(),
-            &MockBLS {},
-        );
+    ) -> Result<Vec<u8>, JsValue> {
+        self.0
+            .sign(
+                &public_key.clone().into(),
+                private_key.get_bytes().as_slice(),
+                &MockBLS {},
+            )
+            .with_js_error()?;
 
-        let bytes = match sig {
-            Ok(_sig) => {
-                self.0.set_signature(self.0.signature().clone());
-                self.0
-                    .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
-                self.0.serialize_to_bytes()
-            }
-            Err(e) => wasm_bindgen::throw_str(&e.to_string()),
-        };
+        self.0.set_signature(self.0.signature().clone());
+        self.0
+            .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
 
-        match bytes {
-            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
-            Err(e) => Ok(JsValue::from_str(&format!("{}", e))),
-        }
+        self.0.serialize_to_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name=signByPrivateKey)]
+    #[wasm_bindgen(js_name = "signByPrivateKey")]
     pub fn sign_by_private_key(
         &mut self,
         private_key: &PrivateKeyWASM,
@@ -75,14 +68,14 @@ impl StateTransitionWASM {
         self.0.serialize_to_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name=toBytes)]
+    #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
         Ok(JsValue::from(bytes.clone()))
     }
 
-    #[wasm_bindgen(js_name=fromBytes)]
+    #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
         let st = StateTransition::deserialize_from_bytes(bytes.as_slice());
 
