@@ -1,4 +1,3 @@
-use std::fmt::format;
 use dpp::identity::Purpose;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
