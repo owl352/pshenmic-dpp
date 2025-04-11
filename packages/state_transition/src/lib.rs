@@ -98,7 +98,7 @@ impl StateTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = "getHash")]
+    #[wasm_bindgen(js_name = "hash")]
     pub fn get_hash(&self, skip_signature: bool) -> Result<String, JsValue> {
         let payload: Vec<u8>;
 
