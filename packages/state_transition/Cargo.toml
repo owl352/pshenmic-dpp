@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"], default-features = false }
 pshenmic_dpp_public_key = {path = "../identity_public_key" }
 pshenmic_dpp_private_key = {path = "../private_key"}
 pshenmic_dpp_utils = {path = "../utils"}

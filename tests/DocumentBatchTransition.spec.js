@@ -17,7 +17,7 @@ describe('PrivateKey', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], Array.from(documentInstance.getOwnerId()), 1, 1)
+      const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], Array.from(documentInstance.getOwnerId()), 1)
 
       assert.notEqual(documentInstance.__wbg_ptr, 0)
       assert.notEqual(createTransition.__wbg_ptr, 0)
