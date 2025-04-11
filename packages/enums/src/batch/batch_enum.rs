@@ -20,8 +20,8 @@ impl From<BatchTypeWASM> for String {
             BatchTypeWASM::Delete => String::from("delete"),
             BatchTypeWASM::Transfer => String::from("transfer"),
             BatchTypeWASM::Purchase => String::from("purchase"),
-            BatchTypeWASM::UpdatePrice => String::from("update_price"),
-            BatchTypeWASM::IgnoreWhileBumpingRevision => String::from("ignore_bumping_revision"),
+            BatchTypeWASM::UpdatePrice => String::from("updatePrice"),
+            BatchTypeWASM::IgnoreWhileBumpingRevision => String::from("ignoreBumpingRevision"),
         }
     }
 }
