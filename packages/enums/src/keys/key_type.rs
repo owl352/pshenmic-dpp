@@ -35,7 +35,10 @@ impl TryFrom<JsValue> for KeyTypeWASM {
                     2 => Ok(KeyTypeWASM::ECDSA_HASH160),
                     3 => Ok(KeyTypeWASM::BIP13_SCRIPT_HASH),
                     4 => Ok(KeyTypeWASM::EDDSA_25519_HASH160),
-                    _ => Err(JsValue::from(format!("unsupported key type ({})", enum_val))),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported key type ({})",
+                        enum_val
+                    ))),
                 },
             },
         }

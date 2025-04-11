@@ -21,7 +21,10 @@ impl TryFrom<JsValue> for NetworkWASM {
                     "testnet" => Ok(NetworkWASM::Testnet),
                     "devnet" => Ok(NetworkWASM::Devnet),
                     "regtest" => Ok(NetworkWASM::Regtest),
-                    _ => Err(JsValue::from(format!("unsupported network name ({})", enum_val))),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported network name ({})",
+                        enum_val
+                    ))),
                 },
             },
             false => match value.as_f64() {
@@ -31,7 +34,10 @@ impl TryFrom<JsValue> for NetworkWASM {
                     1 => Ok(NetworkWASM::Testnet),
                     2 => Ok(NetworkWASM::Devnet),
                     3 => Ok(NetworkWASM::Regtest),
-                    _ => Err(JsValue::from(format!("unsupported network name ({})", enum_val))),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported network name ({})",
+                        enum_val
+                    ))),
                 },
             },
         }

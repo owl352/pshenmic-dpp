@@ -21,7 +21,10 @@ impl TryFrom<JsValue> for SecurityLevelWASM {
                     "critical" => Ok(SecurityLevelWASM::CRITICAL),
                     "high" => Ok(SecurityLevelWASM::HIGH),
                     "medium" => Ok(SecurityLevelWASM::MEDIUM),
-                    _ => Err(JsValue::from(format!("unsupported security level value ({})", enum_val))),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported security level value ({})",
+                        enum_val
+                    ))),
                 },
             },
             false => match value.as_f64() {
@@ -31,7 +34,10 @@ impl TryFrom<JsValue> for SecurityLevelWASM {
                     1 => Ok(SecurityLevelWASM::CRITICAL),
                     2 => Ok(SecurityLevelWASM::HIGH),
                     3 => Ok(SecurityLevelWASM::MEDIUM),
-                    _ => Err(JsValue::from(format!("unsupported security level value ({})", enum_val))),
+                    _ => Err(JsValue::from(format!(
+                        "unsupported security level value ({})",
+                        enum_val
+                    ))),
                 },
             },
         }
