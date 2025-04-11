@@ -1334,8 +1334,6 @@ dependencies = [
 name = "pshenmic-dpp"
 version = "1.0.4"
 dependencies = [
- "bincode",
- "bincode_derive",
  "pshenmic_dpp_data_contract",
  "pshenmic_dpp_data_contract_transitions",
  "pshenmic_dpp_document_search",
@@ -1424,7 +1422,6 @@ dependencies = [
  "dpp",
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_utils",
- "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
 
@@ -1486,7 +1483,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "dpp",
- "itertools",
  "js-sys",
  "serde",
  "serde-wasm-bindgen",
