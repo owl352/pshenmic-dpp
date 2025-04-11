@@ -24,7 +24,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 mod generators;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone)]
 #[wasm_bindgen(js_name=DocumentBatchWASM)]
 pub struct DocumentBatchWASM {
     batch: DocumentsBatchTransition,

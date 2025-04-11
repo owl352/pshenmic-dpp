@@ -16,6 +16,7 @@ use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError, identifier_from_js_value};
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use pshenmic_dpp_identifier::IdentifierWASM;
 
 #[wasm_bindgen]
 impl DocumentWASM {
@@ -24,9 +25,9 @@ impl DocumentWASM {
         js_raw_document: JsValue,
         js_document_type_name: &str,
         js_revision: u64,
-        js_data_contract_id: JsValue,
-        js_owner_id: JsValue,
-        js_document_id: JsValue,
+        js_data_contract_id: IdentifierWASM,
+        js_owner_id: IdentifierWASM,
+        js_document_id: Option<IdentifierWASM>,
     ) -> Result<DocumentWASM, JsValue> {
         let revision = Revision::from(js_revision);
 
@@ -34,33 +35,30 @@ impl DocumentWASM {
             .with_serde_to_platform_value_map()
             .expect("cannot convert document to platform value map");
 
-        let owner_id = identifier_from_js_value(&js_owner_id)?;
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
         let revision = Revision::from(revision);
 
         let entropy = entropy_generator::DefaultEntropyGenerator
             .generate()
             .unwrap();
 
-        let document_id: Identifier = {
-            if JsValue::UNDEFINED == js_document_id {
+        let document_id: IdentifierWASM = match js_document_id {
+            None => {
                 pshenmic_dpp_utils::generate_document_id_v0(
-                    &data_contract_id,
-                    &owner_id,
+                    &js_data_contract_id.into(),
+                    &js_owner_id.into(),
                     js_document_type_name,
                     &entropy,
-                )
-            } else {
-                identifier_from_js_value(&js_document_id)
-            }
-        }?;
+                )?.into()
+            },
+            Some(document_id) => document_id
+        };
 
         Ok(DocumentWASM {
-            owner_id,
+            owner_id: js_owner_id,
             entropy: Some(entropy),
             id: document_id,
             document_type_name: js_document_type_name.to_string(),
-            data_contract_id,
+            data_contract_id: js_data_contract_id,
             properties: document,
             revision: Some(revision),
             created_at: None,
@@ -76,8 +74,8 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=getId)]
-    pub fn get_id(&self) -> Vec<u8> {
-        self.id.to_vec()
+    pub fn get_id(&self) -> IdentifierWASM {
+        self.id
     }
 
     #[wasm_bindgen(js_name=getEntropy)]
@@ -89,13 +87,13 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=getDataContractId)]
-    pub fn get_data_contract_id(&self) -> Vec<u8> {
-        self.data_contract_id.to_vec()
+    pub fn get_data_contract_id(&self) -> IdentifierWASM {
+        self.data_contract_id
     }
 
     #[wasm_bindgen(js_name=getOwnerId)]
-    pub fn get_owner_id(&self) -> Vec<u8> {
-        self.owner_id.to_vec()
+    pub fn get_owner_id(&self) -> IdentifierWASM {
+        self.owner_id
     }
 
     #[wasm_bindgen(js_name=getProperties)]
@@ -167,8 +165,8 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=setId)]
-    pub fn set_id(&mut self, id: JsValue) {
-        self.id = identifier_from_js_value(&id).unwrap()
+    pub fn set_id(&mut self, id: IdentifierWASM) {
+        self.id = id
     }
 
     #[wasm_bindgen(js_name=setEntropy)]
@@ -188,8 +186,8 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=setOwnerId)]
-    pub fn set_owner_id(&mut self, id: JsValue) {
-        self.owner_id = identifier_from_js_value(&id).unwrap()
+    pub fn set_owner_id(&mut self, id: IdentifierWASM) {
+        self.owner_id = id
     }
 
     #[wasm_bindgen(js_name=setProperties)]
@@ -339,15 +337,15 @@ impl DocumentWASM {
 
 impl DocumentWASM {
     pub fn rs_get_owner_id(&self) -> Identifier {
-        self.owner_id
+        self.owner_id.into()
     }
 
     pub fn rs_get_id(&self) -> Identifier {
-        self.id
+        self.id.into()
     }
 
     pub fn rs_get_data_contract_id(&self) -> Identifier {
-        self.data_contract_id
+        self.data_contract_id.into()
     }
 
     pub fn rs_get_entropy(&self) -> Option<[u8; 32]> {

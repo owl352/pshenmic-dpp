@@ -1,13 +1,13 @@
 use dpp::identifier::Identifier;
 use dpp::identity::accessors::{IdentityGettersV0, IdentitySettersV0};
 use dpp::identity::{Identity, KeyID};
-use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
+use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use pshenmic_dpp_identifier::IdentifierWASM;
 
 #[wasm_bindgen(js_name = "IdentityWASM")]
 pub struct IdentityWASM(Identity);
@@ -15,24 +15,19 @@ pub struct IdentityWASM(Identity);
 #[wasm_bindgen]
 impl IdentityWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(js_identifier: String) -> Result<IdentityWASM, JsValue> {
-        let identifier = Identifier::from_string(&*js_identifier, Base58);
-
+    pub fn new(js_identifier: &IdentifierWASM) -> Result<IdentityWASM, JsValue> {
+        let identifier: Identifier = js_identifier.clone().into();
+        
         let identity =
-            Identity::create_basic_identity(identifier.unwrap(), PlatformVersion::first())
-                .with_js_error();
+            Identity::create_basic_identity(identifier, PlatformVersion::first())
+                .with_js_error()?;
 
-        match identity {
-            Ok(identity) => Ok(IdentityWASM(identity)),
-            Err(err) => Err(err),
-        }
+        Ok(IdentityWASM(identity))
     }
 
     #[wasm_bindgen(js_name = "setId")]
-    pub fn set_id(&mut self, js_identifier: JsValue) -> Result<(), JsValue> {
-        let identifier = identifier_from_js_value(&js_identifier)?;
-
-        Ok(self.0.set_id(identifier))
+    pub fn set_id(&mut self, js_identifier: &IdentifierWASM){
+        self.0.set_id(js_identifier.clone().into())
     }
 
     #[wasm_bindgen(js_name = "setBalance")]
@@ -53,8 +48,8 @@ impl IdentityWASM {
     // GETTERS
 
     #[wasm_bindgen(js_name = "getId")]
-    pub fn get_id(&self) -> Vec<u8> {
-        self.0.id().to_vec()
+    pub fn get_id(&self) -> IdentifierWASM {
+        self.0.id().into()
     }
 
     #[wasm_bindgen(js_name = "getBalance")]

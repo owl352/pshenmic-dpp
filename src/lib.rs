@@ -12,6 +12,7 @@ pub use pshenmic_dpp_data_contract_transitions;
 pub use pshenmic_dpp_document_batch;
 pub use pshenmic_dpp_document_search;
 pub use pshenmic_dpp_enums;
+pub use pshenmic_dpp_identifier;
 pub use pshenmic_dpp_identity;
 pub use pshenmic_dpp_identity_transitions;
 pub use pshenmic_dpp_state_transition;
