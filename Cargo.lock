@@ -1476,6 +1476,7 @@ dependencies = [
  "pshenmic_dpp_private_key",
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_utils",
+ "sha2",
  "wasm-bindgen",
 ]
 

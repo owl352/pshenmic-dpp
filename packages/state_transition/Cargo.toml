@@ -16,3 +16,4 @@ pshenmic_dpp_enums = {path = "../enums"}
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "state-transition-signing"
 ]}
+sha2 = "0.10.8"
