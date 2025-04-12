@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"], default-features = false }
 pshenmic_dpp_public_key = {path = "../identity_public_key" }
 pshenmic_dpp_private_key = {path = "../private_key"}
 pshenmic_dpp_utils = {path = "../utils"}
@@ -16,3 +16,4 @@ pshenmic_dpp_enums = {path = "../enums"}
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "state-transition-signing"
 ]}
+sha2 = "0.10.8"

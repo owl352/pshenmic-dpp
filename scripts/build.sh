@@ -9,6 +9,8 @@ PROFILE=release
 
 OUTPUT_FILE="${PWD}/wasm/pshenmic_dpp_bg.wasm"
 
+RUSTFLAGS="-C target-feature=+crt-static -C embed-bitcode=no -C metadata=reduced -C link-dead-code=no -C panic=abort"
+
 BUILD_COMMAND="cargo build --config net.git-fetch-with-cli=true --target=${TARGET} ${PROFILE_ARG}"
 BINDGEN_COMMAND="wasm-bindgen --out-dir=${OUTPUT_DIR} --target=web --omit-default-module-path ${PWD}/target/${TARGET}/${PROFILE}/pshenmic_dpp.wasm"
 

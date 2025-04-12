@@ -24,6 +24,14 @@ describe('PrivateKey', function () {
       assert.notEqual(pkey.__wbg_ptr, 0)
     })
 
+    it('should allows to create PrivateKey from hex', function () {
+      const pkey = wasm.PrivateKeyWASM.fromBytes(fromHexString(bytes), 'Mainnet')
+
+      const pkeyFromHex = wasm.PrivateKeyWASM.fromHex(bytes, 'Mainnet')
+
+      assert.deepEqual(pkey.getBytes(), pkeyFromHex.getBytes())
+    })
+
     it('should allow to create PrivateKey from wif and read value in wif', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
@@ -48,6 +56,12 @@ describe('PrivateKey', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
       assert.equal(toHexString(pkey.getBytes()), bytes)
+    })
+
+    it('should allow to get key hex', function () {
+      const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
+
+      assert.equal(pkey.getHex().toLowerCase(), bytes)
     })
 
     it('should allow to get public key hash', function () {
