@@ -58,8 +58,8 @@ impl IdentityPublicKeyInCreationWASM {
         security_level: SecurityLevelWASM,
         key_type: KeyTypeWASM,
         read_only: bool,
-        binary_data: &str,
-        signature: &str,
+        binary_data: Vec<u8>,
+        signature: Vec<u8>,
     ) -> IdentityPublicKeyInCreationWASM {
         IdentityPublicKeyInCreationWASM(IdentityPublicKeyInCreation::V0(
             IdentityPublicKeyInCreationV0 {
@@ -69,8 +69,8 @@ impl IdentityPublicKeyInCreationWASM {
                 security_level: SecurityLevel::from(security_level),
                 contract_bounds: None,
                 read_only,
-                data: BinaryData::from_string(binary_data, Hex).unwrap(),
-                signature: BinaryData::from_string(signature, Hex).unwrap(),
+                data: BinaryData::from(binary_data),
+                signature: BinaryData::from(signature),
             },
         ))
     }
@@ -143,8 +143,8 @@ impl IdentityPublicKeyInCreationWASM {
     }
 
     #[wasm_bindgen(js_name = setData)]
-    pub fn set_data(&mut self, binary_data: &str) {
-        let data = BinaryData::from_string(binary_data, Hex).unwrap();
+    pub fn set_data(&mut self, binary_data: Vec<u8>) {
+        let data = BinaryData::from(binary_data);
         self.0.set_data(data)
     }
 }

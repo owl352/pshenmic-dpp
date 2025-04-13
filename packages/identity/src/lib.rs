@@ -1,10 +1,13 @@
 use dpp::identifier::Identifier;
 use dpp::identity::accessors::{IdentityGettersV0, IdentitySettersV0};
 use dpp::identity::{Identity, KeyID};
+use dpp::platform_value::string_encoding::Encoding::Base58;
+use dpp::prelude::IdentityPublicKey;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use pshenmic_dpp_utils::WithJsError;
+use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
+use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_identifier::IdentifierWASM;
@@ -17,7 +20,7 @@ impl IdentityWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(js_identifier: &IdentifierWASM) -> Result<IdentityWASM, JsValue> {
         let identifier: Identifier = js_identifier.clone().into();
-        
+
         let identity =
             Identity::create_basic_identity(identifier, PlatformVersion::first())
                 .with_js_error()?;
@@ -91,5 +94,11 @@ impl IdentityWASM {
             Ok(identity) => Ok(IdentityWASM(identity)),
             Err(err) => Err(err),
         }
+    }
+}
+
+impl IdentityWASM {
+    pub fn get_rs_public_keys(&self) -> BTreeMap<KeyID, IdentityPublicKey> {
+        self.0.public_keys().clone()
     }
 }

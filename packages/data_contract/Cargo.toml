@@ -13,7 +13,6 @@ pshenmic_dpp_enums = {path = "../enums"}
 pshenmic_dpp_identifier = { path = "../identifier" }
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "data-contract-json-conversion",
-    "platform-value"
 ]}
 js-sys = "0.3.53"
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
