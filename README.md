@@ -1,5 +1,9 @@
 # PSHENMIC-DPP
+### **AT THIS MOMENT MODULE UNDER DEVELOPMENT**
+
 ## General
+Pshenmic-dpp is package with rust bindings for JS 
+
 That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
 Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it
 ___
