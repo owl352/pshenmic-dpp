@@ -8,13 +8,31 @@ Each structure from rs-dpp is represented by a separate package, so you can buil
 **At this moment available structs:**
 - `Document`
 - `DocumentsBatch`
+- `DocumentsBaseTransition`
+- `DocumentsTransition`
+- `PrefundedVotingBalance`
+- DocumentsTransitions:
+  - `DocuemntCreateTransition`
+  - `DocuemntDeleteTransition`
+  - `DocuemntPurchaseTransition`
+  - `DocuemntReplaceTransition`
+  - `DocumentTransferTransition`
+  - `DocumentUpdatePriceTransition`
 - `IdentityPublicKey`
+- `IdentityCreateTransition`
+- `IdentityPublicKeyInCreationWASM`
 - `PrivateKey`
 - `Identity`
 - `StateTransition`
-- `IdentityTransitions`
 - `DataContract`
 - `Enums`
+
+**At this moment available static methods**
+- `objectToCbor`
+- `cborToObject`
+- `generateId` for data contract class
+- `generateId` for document class
+- 
 
 ## How to build
 Default scripts allows to build full module
@@ -43,7 +61,7 @@ for (let i = 0; i < binaryString.length; i++) {
 
 wasm.initSync({module: bytes.buffer})
 
-const document = wasm.DocumentWASM.new(
+const document = new wasm.DocumentWASM(
     {
         "name": "MyPool",
         "type": "EVONODE",
@@ -56,7 +74,7 @@ const document = wasm.DocumentWASM.new(
     "B7kcE1juMBWEWkuYRJhVdAE2e6RaevrGxRsa1DrLCpQH"
 )
 
-const pubKey = wasm.IdentityPublicKeyWASM.new(
+const pubKey = new wasm.IdentityPublicKeyWASM(
     1,
     wasm.Purpose.AUTHENTICATION,
     wasm.SecurityLevel.HIGH,
@@ -65,15 +83,18 @@ const pubKey = wasm.IdentityPublicKeyWASM.new(
     'your_binary_data_in_hex'
 )
 
-const privKey = wasm.PrivateKeyWASM.new('wif_key')
+const privKey = new wasm.PrivateKeyWASM('your_wif_key')
 
-const batch = wasm.DocumentBatchWASM.new(
-    wasm.BatchType.CREATE,
-    document,
-    BigInt(3),
-)
+const createTransition = new wasm.DocumentCreateTransitionWASM(document, BigInt(1), 'preorder')
 
-batch.sign(privKey, pubKey)
+const documentTransition = createTransition.toDocumentTransition()
 
-console.log(toHexString(batch.toBuffer()))
+const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], Array.from(documentInstance.getOwnerId()), 1)
+
+const st = batchTransition.toStateTransition()
+
+st.sign(privKey, pubKey)
+
+console.log(toHexString(st.toBytes()))
+console.log(st.hash(false))
 ```
