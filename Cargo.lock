@@ -1347,7 +1347,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_data_contract"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "js-sys",
@@ -1359,7 +1359,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_data_contract_transitions"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_data_contract",
@@ -1371,7 +1371,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_document"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_data_contract",
@@ -1383,7 +1383,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_document_search"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "base64",
  "ciborium 0.2.2",
@@ -1395,7 +1395,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_documents_batch"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "js-sys",
@@ -1409,7 +1409,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_enums"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "wasm-bindgen",
@@ -1417,7 +1417,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_identity"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_public_key",
@@ -1427,7 +1427,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_identity_transitions"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
@@ -1439,14 +1439,14 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_mock_bls"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
 ]
 
 [[package]]
 name = "pshenmic_dpp_private_key"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
@@ -1455,7 +1455,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_public_key"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
@@ -1465,7 +1465,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_state_transition"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
@@ -1479,7 +1479,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic_dpp_utils"
-version = "0.1.0"
+version = "1.0.4"
 dependencies = [
  "anyhow",
  "dpp",
