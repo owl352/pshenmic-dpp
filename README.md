@@ -73,12 +73,6 @@ yarn tests
 import * as wasm from '../wasm/pshenmic_dpp';
 import wasmBytes from "../wasm/pshenmic_dpp_bg"
 
-function toHexString(byteArray) {
-  return Array.prototype.map.call(byteArray, function(byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-  }).join('');
-}
-
 let binaryString = atob(wasmBytes);
 let bytes = new Uint8Array(binaryString.length);
 for (let i = 0; i < binaryString.length; i++) {
@@ -121,6 +115,6 @@ const st = batchTransition.toStateTransition()
 
 st.sign(privKey, pubKey)
 
-console.log(toHexString(st.toBytes()))
+console.log(st.toBytes())
 console.log(st.hash(false))
 ```
