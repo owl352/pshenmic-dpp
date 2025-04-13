@@ -260,8 +260,13 @@ impl DocumentWASM {
         &self,
         data_contract: &DataContractWASM,
         type_name: String,
-        platform_version: PlatformVersionWASM,
+        js_platform_version: JsValue,
     ) -> Result<Vec<u8>, JsValue> {
+        let platform_version = match js_platform_version.is_undefined() {
+            true => PlatformVersionWASM::PLATFORM_V1,
+            false => PlatformVersionWASM::try_from(js_platform_version)?,
+        };
+
         let rs_document: Document = Document::from(self.clone());
 
         let document_type_ref = data_contract
@@ -281,8 +286,13 @@ impl DocumentWASM {
         bytes: Vec<u8>,
         data_contract: &DataContractWASM,
         type_name: String,
-        platform_version: PlatformVersionWASM,
+        js_platform_version: JsValue,
     ) -> Result<DocumentWASM, JsValue> {
+        let platform_version = match js_platform_version.is_undefined() {
+            true => PlatformVersionWASM::PLATFORM_V1,
+            false => PlatformVersionWASM::try_from(js_platform_version)?,
+        };
+
         let document_type_ref = match data_contract.get_document_type_ref_by_name(type_name) {
             Ok(type_ref) => Ok(type_ref),
             Err(err) => Err(JsValue::from_str(err.to_string().as_str())),

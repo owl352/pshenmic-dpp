@@ -27,18 +27,19 @@ impl DataContractCreateTransitionWASM {
     pub fn new(
         data_contract: &DataContractWASM,
         identity_nonce: IdentityNonce,
-        platform_version: Option<PlatformVersionWASM>,
+        js_platform_version: JsValue,
     ) -> Result<DataContractCreateTransitionWASM, JsValue> {
         let rs_data_contract: DataContract = data_contract.clone().into();
+
+        let platform_version = match js_platform_version.is_undefined() {
+            true => PlatformVersionWASM::PLATFORM_V1,
+            false => PlatformVersionWASM::try_from(js_platform_version)?,
+        };
 
         let rs_data_contract_in_serialized: Result<
             DataContractInSerializationFormat,
             ProtocolError,
-        > = rs_data_contract.try_into_platform_versioned(
-            &platform_version
-                .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
-                .into(),
-        );
+        > = rs_data_contract.try_into_platform_versioned(&platform_version.into());
 
         let rs_data_contract_create_transition_v0: DataContractCreateTransitionV0 =
             DataContractCreateTransitionV0 {
@@ -92,14 +93,17 @@ impl DataContractCreateTransitionWASM {
     pub fn set_data_contract(
         &mut self,
         data_contract: &DataContractWASM,
-        platform_version_wasm: Option<PlatformVersionWASM>,
+        js_platform_version: JsValue,
     ) -> Result<(), JsValue> {
+        let platform_version = match js_platform_version.is_undefined() {
+            true => PlatformVersionWASM::PLATFORM_V1,
+            false => PlatformVersionWASM::try_from(js_platform_version)?,
+        };
+
         let data_contract_serialization_format =
             DataContractInSerializationFormat::try_from_platform_versioned(
                 DataContract::from(data_contract.clone()),
-                &platform_version_wasm
-                    .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
-                    .into(),
+                &platform_version.into(),
             )
             .with_js_error()?;
 
@@ -111,9 +115,14 @@ impl DataContractCreateTransitionWASM {
     #[wasm_bindgen(js_name = "getDataContract")]
     pub fn get_data_contract(
         &self,
-        platform_version_wasm: Option<PlatformVersionWASM>,
+        js_platform_version: JsValue,
         full_validation: Option<bool>,
     ) -> Result<DataContractWASM, JsValue> {
+        let platform_version = match js_platform_version.is_undefined() {
+            true => PlatformVersionWASM::PLATFORM_V1,
+            false => PlatformVersionWASM::try_from(js_platform_version)?,
+        };
+
         let rs_data_contract_serialization_format = self.0.data_contract();
 
         let mut validation_operations: Vec<ProtocolValidationOperation> = Vec::new();
@@ -122,9 +131,7 @@ impl DataContractCreateTransitionWASM {
             rs_data_contract_serialization_format.clone(),
             full_validation.unwrap_or(false),
             &mut validation_operations,
-            &platform_version_wasm
-                .unwrap_or(PlatformVersionWASM::PLATFORM_V1)
-                .into(),
+            &platform_version.into(),
         )
         .with_js_error()?;
 
