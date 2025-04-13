@@ -16,11 +16,11 @@ use dpp::serialization::{
 };
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_identifier::IdentifierWASM;
 
 #[wasm_bindgen(js_name = "DataContractWASM")]
 #[derive(Clone)]
@@ -284,7 +284,8 @@ impl DataContractWASM {
         js_owner_id: IdentifierWASM,
         identity_nonce: IdentityNonce,
     ) -> IdentifierWASM {
-        DataContract::generate_data_contract_id_v0(Identifier::from(js_owner_id), identity_nonce).into()
+        DataContract::generate_data_contract_id_v0(Identifier::from(js_owner_id), identity_nonce)
+            .into()
     }
 }
 

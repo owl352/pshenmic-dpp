@@ -12,11 +12,11 @@ use dpp::util::entropy_generator;
 use dpp::util::entropy_generator::EntropyGenerator;
 use pshenmic_dpp_data_contract::DataContractWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError, identifier_from_js_value};
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_identifier::IdentifierWASM;
 
 #[wasm_bindgen]
 impl DocumentWASM {
@@ -42,15 +42,14 @@ impl DocumentWASM {
             .unwrap();
 
         let document_id: IdentifierWASM = match js_document_id {
-            None => {
-                pshenmic_dpp_utils::generate_document_id_v0(
-                    &js_data_contract_id.into(),
-                    &js_owner_id.into(),
-                    js_document_type_name,
-                    &entropy,
-                )?.into()
-            },
-            Some(document_id) => document_id
+            None => pshenmic_dpp_utils::generate_document_id_v0(
+                &js_data_contract_id.into(),
+                &js_owner_id.into(),
+                js_document_type_name,
+                &entropy,
+            )?
+            .into(),
+            Some(document_id) => document_id,
         };
 
         Ok(DocumentWASM {

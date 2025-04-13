@@ -1,16 +1,15 @@
 use dpp::identifier::Identifier;
 use dpp::identity::accessors::{IdentityGettersV0, IdentitySettersV0};
 use dpp::identity::{Identity, KeyID};
-use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::prelude::IdentityPublicKey;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::version::PlatformVersion;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
+use pshenmic_dpp_utils::WithJsError;
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_identifier::IdentifierWASM;
 
 #[wasm_bindgen(js_name = "IdentityWASM")]
 pub struct IdentityWASM(Identity);
@@ -21,15 +20,14 @@ impl IdentityWASM {
     pub fn new(js_identifier: &IdentifierWASM) -> Result<IdentityWASM, JsValue> {
         let identifier: Identifier = js_identifier.clone().into();
 
-        let identity =
-            Identity::create_basic_identity(identifier, PlatformVersion::first())
-                .with_js_error()?;
+        let identity = Identity::create_basic_identity(identifier, PlatformVersion::first())
+            .with_js_error()?;
 
         Ok(IdentityWASM(identity))
     }
 
     #[wasm_bindgen(js_name = "setId")]
-    pub fn set_id(&mut self, js_identifier: &IdentifierWASM){
+    pub fn set_id(&mut self, js_identifier: &IdentifierWASM) {
         self.0.set_id(js_identifier.clone().into())
     }
 

@@ -5,9 +5,9 @@ use dpp::identifier::Identifier;
 use dpp::identity::TimestampMillis;
 use dpp::platform_value::Value;
 use dpp::prelude::{BlockHeight, CoreBlockHeight, Revision};
+use pshenmic_dpp_identifier::IdentifierWASM;
 use std::collections::BTreeMap;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_identifier::IdentifierWASM;
 
 #[derive(Clone)]
 #[wasm_bindgen(js_name = DocumentWASM)]
