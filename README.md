@@ -1,9 +1,33 @@
 # PSHENMIC-DPP
-
-
-
+## General
 That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
 Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it
+___
+## How To Install
+`yarn add pshenmic-dpp`
+___
+## Manual Building
+### Install dependencies
+`yarn`
+
+### Build JS
+`yarn build:full`
+
+**NOTE. If you want to use ES6 module without CJS, you need to run `yarn babel`**
+
+### Build with binary instead base64
+`yarn build:raw`
+Now you can import `.js` with base64 buffer for WebAssembly module, or binary which smaller
+___
+## Why you need to use `pshenmic-dpp` instead `wasm-dpp`
+
+- `pshenmic-dpp` weighs much less, currently taking up only 2.8 mb in base64 format
+- You can build only necessary modules by removing imports from `lib.rs` before building
+- More accurately replicates `rs-dpp`
+- Some sugar, like enums, which you can pass in string with any case or just use numbers
+___
+
+## Current features
 
 **At this moment available structs:**
 - `Document`
@@ -34,11 +58,9 @@ Each structure from rs-dpp is represented by a separate package, so you can buil
 - `generateId` for document class
 - 
 
-## How to build
-Default scripts allows to build full module
+## How to run unit tests
 ```
-yarn
-yarn build:full
+yarn tests
 ```
 
 ## Example
