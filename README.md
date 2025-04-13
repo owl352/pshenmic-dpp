@@ -5,7 +5,9 @@
 Pshenmic-dpp is package with rust bindings for JS 
 
 That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
-Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it
+Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it.
+
+One of the advantages of this module is that you can build `.wasm` file not with all modules, but only with the ones you are interested in + minimal dependencies for them
 ___
 ## How To Install
 `yarn add pshenmic-dpp`
