@@ -29,16 +29,19 @@ impl TryFrom<JsValue> for PlatformVersionWASM {
         match value.is_string() {
             true => match value.as_string() {
                 None => Err(JsValue::from("cannot read value from enum")),
-                Some(enum_val) => match enum_val.as_str() {
-                    "PLATFORM_V1" => Ok(PlatformVersionWASM::PLATFORM_V1),
-                    "PLATFORM_V2" => Ok(PlatformVersionWASM::PLATFORM_V2),
-                    "PLATFORM_V3" => Ok(PlatformVersionWASM::PLATFORM_V3),
-                    "PLATFORM_V4" => Ok(PlatformVersionWASM::PLATFORM_V4),
-                    "PLATFORM_V5" => Ok(PlatformVersionWASM::PLATFORM_V5),
-                    "PLATFORM_V6" => Ok(PlatformVersionWASM::PLATFORM_V6),
-                    "PLATFORM_V7" => Ok(PlatformVersionWASM::PLATFORM_V7),
-                    "PLATFORM_V8" => Ok(PlatformVersionWASM::PLATFORM_V8),
-                    _ => Err(JsValue::from("unsupported key type")),
+                Some(enum_val) => match enum_val.to_lowercase().as_str() {
+                    "platform_v1" => Ok(PlatformVersionWASM::PLATFORM_V1),
+                    "platform_v2" => Ok(PlatformVersionWASM::PLATFORM_V2),
+                    "platform_v3" => Ok(PlatformVersionWASM::PLATFORM_V3),
+                    "platform_v4" => Ok(PlatformVersionWASM::PLATFORM_V4),
+                    "platform_v5" => Ok(PlatformVersionWASM::PLATFORM_V5),
+                    "platform_v6" => Ok(PlatformVersionWASM::PLATFORM_V6),
+                    "platform_v7" => Ok(PlatformVersionWASM::PLATFORM_V7),
+                    "platform_v8" => Ok(PlatformVersionWASM::PLATFORM_V8),
+                    _ => Err(JsValue::from(format!(
+                        "unknown platform version value: {}",
+                        enum_val
+                    ))),
                 },
             },
             false => match value.as_f64() {
@@ -52,7 +55,10 @@ impl TryFrom<JsValue> for PlatformVersionWASM {
                     5 => Ok(PlatformVersionWASM::PLATFORM_V6),
                     6 => Ok(PlatformVersionWASM::PLATFORM_V7),
                     7 => Ok(PlatformVersionWASM::PLATFORM_V8),
-                    _ => Err(JsValue::from("unsupported key type")),
+                    _ => Err(JsValue::from(format!(
+                        "unknown platform version value: {}",
+                        enum_val
+                    ))),
                 },
             },
         }
