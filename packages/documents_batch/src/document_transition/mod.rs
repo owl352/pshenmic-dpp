@@ -10,7 +10,7 @@ use dpp::state_transition::documents_batch_transition::document_transition::{
     DocumentTransition, DocumentTransitionV0Methods,
 };
 use pshenmic_dpp_enums::batch::batch_enum::BatchTypeWASM;
-use pshenmic_dpp_utils::identifier_from_js_value;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -38,13 +38,13 @@ impl DocumentTransitionWASM {
     }
 
     #[wasm_bindgen(getter = "dataContractId")]
-    pub fn get_data_contract_id(&self) -> Vec<u8> {
-        self.0.data_contract_id().to_vec()
+    pub fn get_data_contract_id(&self) -> IdentifierWASM {
+        self.0.data_contract_id().into()
     }
 
     #[wasm_bindgen(getter = "id")]
-    pub fn get_id(&self) -> Vec<u8> {
-        self.0.get_id().to_vec()
+    pub fn get_id(&self) -> IdentifierWASM {
+        self.0.get_id().into()
     }
 
     #[wasm_bindgen(getter = "documentTypeName")]
@@ -126,10 +126,8 @@ impl DocumentTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "dataContractId")]
-    pub fn set_data_contract_id(&mut self, js_data_contract_id: JsValue) -> Result<(), JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
-
-        Ok(self.0.set_data_contract_id(data_contract_id))
+    pub fn set_data_contract_id(&mut self, js_data_contract_id: &IdentifierWASM) {
+        self.0.set_data_contract_id(js_data_contract_id.into())
     }
 
     #[wasm_bindgen(setter = "revision")]

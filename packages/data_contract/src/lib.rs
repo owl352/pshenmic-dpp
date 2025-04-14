@@ -42,7 +42,7 @@ impl From<DataContractWASM> for DataContract {
 impl DataContractWASM {
     #[wasm_bindgen(constructor)]
     pub fn from_js_values(
-        js_owner_id: IdentifierWASM,
+        js_owner_id: &IdentifierWASM,
         identity_nonce: IdentityNonce,
         js_schema: JsValue,
         js_definitions: Option<js_sys::Object>,
@@ -230,12 +230,12 @@ impl DataContractWASM {
     }
 
     #[wasm_bindgen(js_name = "setId")]
-    pub fn set_id(&mut self, js_data_contract_id: IdentifierWASM) {
+    pub fn set_id(&mut self, js_data_contract_id: &IdentifierWASM) {
         self.0.set_id(js_data_contract_id.into())
     }
 
     #[wasm_bindgen(js_name = "setOwnerId")]
-    pub fn set_owner_id(&mut self, js_owner_id: IdentifierWASM) {
+    pub fn set_owner_id(&mut self, js_owner_id: &IdentifierWASM) {
         self.0.set_owner_id(js_owner_id.into())
     }
 
@@ -312,7 +312,7 @@ impl DataContractWASM {
 
     #[wasm_bindgen(js_name = "generateId")]
     pub fn generate_id(
-        js_owner_id: IdentifierWASM,
+        js_owner_id: &IdentifierWASM,
         identity_nonce: IdentityNonce,
     ) -> IdentifierWASM {
         DataContract::generate_data_contract_id_v0(Identifier::from(js_owner_id), identity_nonce)

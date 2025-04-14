@@ -11,8 +11,9 @@ use dpp::state_transition::documents_batch_transition::{
     DocumentsBatchTransition, DocumentsBatchTransitionV0,
 };
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
-use pshenmic_dpp_utils::{IntoWasm, WithJsError, identifier_from_js_value};
+use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -43,13 +44,11 @@ impl DocumentsBatchWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         document_transitions: js_sys::Array,
-        js_owner_id: JsValue,
+        js_owner_id: &IdentifierWASM,
         user_fee_increase: Option<UserFeeIncrease>,
         signature_public_key_id: Option<KeyID>,
         signature: Option<Vec<u8>>,
     ) -> Result<DocumentsBatchWASM, JsValue> {
-        let owner_id = identifier_from_js_value(&js_owner_id)?;
-
         let transitions: Vec<DocumentTransition> = document_transitions
             .iter()
             .map(|js_document_transition| {
@@ -64,7 +63,7 @@ impl DocumentsBatchWASM {
 
         Ok(DocumentsBatchWASM(DocumentsBatchTransition::V0(
             DocumentsBatchTransitionV0 {
-                owner_id,
+                owner_id: js_owner_id.into(),
                 transitions,
                 user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: signature_public_key_id.unwrap_or(0),
@@ -99,20 +98,17 @@ impl DocumentsBatchWASM {
     }
 
     #[wasm_bindgen(getter = "ownerId")]
-    pub fn get_owner_id(&self) -> Vec<u8> {
-        self.0.owner_id().to_vec()
+    pub fn get_owner_id(&self) -> IdentifierWASM {
+        self.0.owner_id().into()
     }
 
     #[wasm_bindgen(getter = "modifiedDataIds")]
-    pub fn get_modified_data_ids(&self) -> Result<JsValue, JsValue> {
-        let vec_of_ids: Vec<Vec<u8>> = self
-            .0
+    pub fn get_modified_data_ids(&self) -> Vec<IdentifierWASM> {
+        self.0
             .modified_data_ids()
             .iter()
-            .map(|id| id.to_vec())
-            .collect();
-
-        serde_wasm_bindgen::to_value(&vec_of_ids).map_err(JsValue::from)
+            .map(|id| id.clone().into())
+            .collect()
     }
 
     #[wasm_bindgen(getter = "allConflictingIndexCollateralVotingFunds")]

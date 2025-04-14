@@ -19,13 +19,27 @@ impl From<Identifier> for IdentifierWASM {
     }
 }
 
+impl From<&IdentifierWASM> for Identifier {
+    fn from(identifier: &IdentifierWASM) -> Self {
+        identifier.clone().into()
+    }
+}
+
+impl TryFrom<JsValue> for IdentifierWASM {
+    type Error = JsValue;
+    fn try_from(value: JsValue) -> Result<Self, Self::Error> {
+        let identifier = identifier_from_js_value(&value)?;
+        Ok(identifier.into())
+    }
+}
+
 #[wasm_bindgen]
 impl IdentifierWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(js_identifier: JsValue) -> Result<IdentifierWASM, JsValue> {
         let identifier = identifier_from_js_value(&js_identifier)?;
 
-        Ok(IdentifierWASM(identifier))
+        Ok(identifier.into())
     }
 
     #[wasm_bindgen(js_name = "getBase58")]

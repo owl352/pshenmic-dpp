@@ -4,7 +4,7 @@ use dpp::state_transition::documents_batch_transition::document_transition::{Doc
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_utils::identifier_from_js_value;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_transfer_transition;
@@ -31,15 +31,13 @@ impl DocumentTransferTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_recipient_owner_id: JsValue,
+        js_recipient_owner_id: &IdentifierWASM,
     ) -> Result<DocumentTransferTransitionWASM, JsValue> {
-        let recipient_owner_id = identifier_from_js_value(&js_recipient_owner_id)?;
-
         let rs_transfer_transition = generate_transfer_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name,
-            recipient_owner_id,
+            js_recipient_owner_id.into(),
         );
 
         Ok(DocumentTransferTransitionWASM(rs_transfer_transition))
@@ -51,8 +49,8 @@ impl DocumentTransferTransitionWASM {
     }
 
     #[wasm_bindgen(getter = "recipientId")]
-    pub fn get_recipient_owner_id(&self) -> Vec<u8> {
-        self.0.recipient_owner_id().to_vec()
+    pub fn get_recipient_owner_id(&self) -> IdentifierWASM {
+        self.0.recipient_owner_id().into()
     }
 
     #[wasm_bindgen(setter = "base")]
@@ -61,13 +59,8 @@ impl DocumentTransferTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "recipientId")]
-    pub fn set_recipient_owner_id(
-        &mut self,
-        js_recipient_owner_id: JsValue,
-    ) -> Result<(), JsValue> {
-        let recipient_owner_id = identifier_from_js_value(&js_recipient_owner_id)?;
-
-        Ok(self.0.set_recipient_owner_id(recipient_owner_id))
+    pub fn set_recipient_owner_id(&mut self, js_recipient_owner_id: &IdentifierWASM) {
+        self.0.set_recipient_owner_id(js_recipient_owner_id.into())
     }
 
     #[wasm_bindgen(js_name = "toDocumentTransition")]

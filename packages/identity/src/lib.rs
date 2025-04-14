@@ -18,7 +18,7 @@ pub struct IdentityWASM(Identity);
 impl IdentityWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(js_identifier: &IdentifierWASM) -> Result<IdentityWASM, JsValue> {
-        let identifier: Identifier = js_identifier.clone().into();
+        let identifier: Identifier = js_identifier.into();
 
         let identity = Identity::create_basic_identity(identifier, PlatformVersion::first())
             .with_js_error()?;
@@ -28,7 +28,7 @@ impl IdentityWASM {
 
     #[wasm_bindgen(js_name = "setId")]
     pub fn set_id(&mut self, js_identifier: &IdentifierWASM) {
-        self.0.set_id(js_identifier.clone().into())
+        self.0.set_id(js_identifier.into())
     }
 
     #[wasm_bindgen(js_name = "setBalance")]
