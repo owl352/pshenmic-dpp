@@ -31,13 +31,13 @@ impl DocumentTransferTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_recipient_owner_id: &IdentifierWASM,
+        js_recipient_owner_id: &JsValue,
     ) -> Result<DocumentTransferTransitionWASM, JsValue> {
         let rs_transfer_transition = generate_transfer_transition(
             document.clone(),
             identity_contract_nonce,
             document_type_name,
-            js_recipient_owner_id.into(),
+            IdentifierWASM::try_from(js_recipient_owner_id)?.into(),
         );
 
         Ok(DocumentTransferTransitionWASM(rs_transfer_transition))
@@ -59,8 +59,13 @@ impl DocumentTransferTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "recipientId")]
-    pub fn set_recipient_owner_id(&mut self, js_recipient_owner_id: &IdentifierWASM) {
-        self.0.set_recipient_owner_id(js_recipient_owner_id.into())
+    pub fn set_recipient_owner_id(
+        &mut self,
+        js_recipient_owner_id: &JsValue,
+    ) -> Result<(), JsValue> {
+        self.0
+            .set_recipient_owner_id(IdentifierWASM::try_from(js_recipient_owner_id)?.into());
+        Ok(())
     }
 
     #[wasm_bindgen(js_name = "toDocumentTransition")]

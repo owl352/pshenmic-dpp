@@ -16,13 +16,20 @@ describe('Document', function () {
 
   describe('serialization / deserialization', function () {
     it('should allows to create Document from values', function () {
-      const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId)
+      const dataContractIdentifier = new wasm.IdentifierWASM(dataContractId)
+      const ownerIdentifier = new wasm.IdentifierWASM(ownerId)
+
+      const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractIdentifier, ownerIdentifier)
 
       assert.notEqual(documentInstance.__wbg_ptr, 0)
     })
 
     it('should allows to create Document from values with custom id', function () {
-      const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
+      const dataContractIdentifier = new wasm.IdentifierWASM(dataContractId)
+      const ownerIdentifier = new wasm.IdentifierWASM(ownerId)
+      const identifier = new wasm.IdentifierWASM(id)
+
+      const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractIdentifier, ownerIdentifier, identifier)
 
       assert.notEqual(documentInstance.__wbg_ptr, 0)
     })

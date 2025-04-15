@@ -26,16 +26,16 @@ impl From<DocumentBaseTransitionWASM> for DocumentBaseTransition {
 impl DocumentBaseTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        js_document_id: &IdentifierWASM,
+        js_document_id: &JsValue,
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
-        js_data_contract_id: &IdentifierWASM,
+        js_data_contract_id: &JsValue,
     ) -> Result<DocumentBaseTransitionWASM, JsValue> {
         let rs_base_v0 = DocumentBaseTransitionV0 {
-            id: js_document_id.into(),
+            id: IdentifierWASM::try_from(js_document_id)?.into(),
             identity_contract_nonce,
             document_type_name,
-            data_contract_id: js_data_contract_id.into(),
+            data_contract_id: IdentifierWASM::try_from(js_data_contract_id)?.into(),
         };
 
         Ok(DocumentBaseTransitionWASM(DocumentBaseTransition::from(
@@ -64,8 +64,9 @@ impl DocumentBaseTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "id")]
-    pub fn set_id(&mut self, js_id: &IdentifierWASM) {
-        self.0.set_id(js_id.into())
+    pub fn set_id(&mut self, js_id: &JsValue) -> Result<(), JsValue> {
+        self.0.set_id(IdentifierWASM::try_from(js_id)?.into());
+        Ok(())
     }
 
     #[wasm_bindgen(setter = "identityContractNonce")]
@@ -74,8 +75,10 @@ impl DocumentBaseTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "dataContractId")]
-    pub fn set_data_contract_id(&mut self, js_data_contract_id: &IdentifierWASM) {
-        self.0.set_data_contract_id(js_data_contract_id.into())
+    pub fn set_data_contract_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
+        self.0
+            .set_data_contract_id(IdentifierWASM::try_from(js_data_contract_id)?.into());
+        Ok(())
     }
 
     #[wasm_bindgen(setter = "documentTypeName")]

@@ -126,8 +126,10 @@ impl DocumentTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "dataContractId")]
-    pub fn set_data_contract_id(&mut self, js_data_contract_id: &IdentifierWASM) {
-        self.0.set_data_contract_id(js_data_contract_id.into())
+    pub fn set_data_contract_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
+        Ok(self
+            .0
+            .set_data_contract_id(IdentifierWASM::try_from(js_data_contract_id)?.into()))
     }
 
     #[wasm_bindgen(setter = "revision")]

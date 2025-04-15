@@ -1,4 +1,3 @@
-use dpp::identifier::Identifier;
 use dpp::identity::accessors::{IdentityGettersV0, IdentitySettersV0};
 use dpp::identity::{Identity, KeyID};
 use dpp::prelude::IdentityPublicKey;
@@ -17,18 +16,20 @@ pub struct IdentityWASM(Identity);
 #[wasm_bindgen]
 impl IdentityWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(js_identifier: &IdentifierWASM) -> Result<IdentityWASM, JsValue> {
-        let identifier: Identifier = js_identifier.into();
+    pub fn new(js_identifier: &JsValue) -> Result<IdentityWASM, JsValue> {
+        let identifier: IdentifierWASM = js_identifier.try_into()?;
 
-        let identity = Identity::create_basic_identity(identifier, PlatformVersion::first())
+        let identity = Identity::create_basic_identity(identifier.into(), PlatformVersion::first())
             .with_js_error()?;
 
         Ok(IdentityWASM(identity))
     }
 
     #[wasm_bindgen(js_name = "setId")]
-    pub fn set_id(&mut self, js_identifier: &IdentifierWASM) {
-        self.0.set_id(js_identifier.into())
+    pub fn set_id(&mut self, js_identifier: &JsValue) -> Result<(), JsValue> {
+        Ok(self
+            .0
+            .set_id(IdentifierWASM::try_from(js_identifier)?.into()))
     }
 
     #[wasm_bindgen(js_name = "setBalance")]

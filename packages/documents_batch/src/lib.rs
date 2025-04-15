@@ -44,11 +44,13 @@ impl DocumentsBatchWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         document_transitions: js_sys::Array,
-        js_owner_id: &IdentifierWASM,
+        js_owner_id: &JsValue,
         user_fee_increase: Option<UserFeeIncrease>,
         signature_public_key_id: Option<KeyID>,
         signature: Option<Vec<u8>>,
     ) -> Result<DocumentsBatchWASM, JsValue> {
+        let owner_id = IdentifierWASM::try_from(js_owner_id)?;
+
         let transitions: Vec<DocumentTransition> = document_transitions
             .iter()
             .map(|js_document_transition| {
@@ -63,7 +65,7 @@ impl DocumentsBatchWASM {
 
         Ok(DocumentsBatchWASM(DocumentsBatchTransition::V0(
             DocumentsBatchTransitionV0 {
-                owner_id: js_owner_id.into(),
+                owner_id: owner_id.into(),
                 transitions,
                 user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: signature_public_key_id.unwrap_or(0),

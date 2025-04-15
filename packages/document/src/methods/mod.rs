@@ -25,10 +25,13 @@ impl DocumentWASM {
         js_raw_document: JsValue,
         js_document_type_name: &str,
         js_revision: u64,
-        js_data_contract_id: &IdentifierWASM,
-        js_owner_id: &IdentifierWASM,
+        js_data_contract_id: &JsValue,
+        js_owner_id: &JsValue,
         js_document_id: JsValue,
     ) -> Result<DocumentWASM, JsValue> {
+        let data_contract_id = IdentifierWASM::try_from(js_data_contract_id)?;
+        let owner_id = IdentifierWASM::try_from(js_owner_id)?;
+
         let revision = Revision::from(js_revision);
 
         let document = js_raw_document
@@ -43,8 +46,8 @@ impl DocumentWASM {
 
         let document_id: IdentifierWASM = match js_document_id.is_undefined() {
             true => pshenmic_dpp_utils::generate_document_id_v0(
-                &js_data_contract_id.into(),
-                &js_owner_id.into(),
+                &data_contract_id.into(),
+                &owner_id.into(),
                 js_document_type_name,
                 &entropy,
             )?
@@ -53,11 +56,11 @@ impl DocumentWASM {
         };
 
         Ok(DocumentWASM {
-            owner_id: js_owner_id.clone(),
+            owner_id,
             entropy: Some(entropy),
             id: document_id,
             document_type_name: js_document_type_name.to_string(),
-            data_contract_id: js_data_contract_id.clone(),
+            data_contract_id,
             properties: document,
             revision: Some(revision),
             created_at: None,
@@ -164,8 +167,9 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=setId)]
-    pub fn set_id(&mut self, id: &IdentifierWASM) {
-        self.id = id.clone()
+    pub fn set_id(&mut self, id: &JsValue) -> Result<(), JsValue> {
+        self.id = IdentifierWASM::try_from(id)?.clone();
+        Ok(())
     }
 
     #[wasm_bindgen(js_name=setEntropy)]
@@ -185,8 +189,9 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(js_name=setOwnerId)]
-    pub fn set_owner_id(&mut self, id: &IdentifierWASM) {
-        self.owner_id = id.clone()
+    pub fn set_owner_id(&mut self, id: &JsValue) -> Result<(), JsValue> {
+        self.owner_id = IdentifierWASM::try_from(id)?.clone();
+        Ok(())
     }
 
     #[wasm_bindgen(js_name=setProperties)]
@@ -311,10 +316,13 @@ impl DocumentWASM {
     #[wasm_bindgen(js_name=generateId)]
     pub fn generate_id(
         js_document_type_name: &str,
-        js_owner_id: &IdentifierWASM,
-        js_data_contract_id: &IdentifierWASM,
+        js_owner_id: &JsValue,
+        js_data_contract_id: &JsValue,
         opt_entropy: Option<Vec<u8>>,
     ) -> Result<Vec<u8>, JsValue> {
+        let owner_id = IdentifierWASM::try_from(js_owner_id)?;
+        let data_contract_id = IdentifierWASM::try_from(js_data_contract_id)?;
+
         let entropy: [u8; 32] = match opt_entropy {
             Some(entropy_vec) => {
                 let mut entropy = [0u8; 32];
@@ -329,8 +337,8 @@ impl DocumentWASM {
         };
 
         let identifier = pshenmic_dpp_utils::generate_document_id_v0(
-            &js_data_contract_id.into(),
-            &js_owner_id.into(),
+            &data_contract_id.into(),
+            &owner_id.into(),
             js_document_type_name,
             &entropy,
         );

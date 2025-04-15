@@ -1,6 +1,6 @@
 use dpp::platform_value::string_encoding::Encoding::{Base58, Base64, Hex};
 use dpp::prelude::Identifier;
-use pshenmic_dpp_utils::identifier_from_js_value;
+use pshenmic_dpp_utils::{IntoWasm, get_class_name, identifier_from_js_value};
 use wasm_bindgen::prelude::*;
 
 #[derive(Copy, Clone)]
@@ -28,8 +28,19 @@ impl From<&IdentifierWASM> for Identifier {
 impl TryFrom<JsValue> for IdentifierWASM {
     type Error = JsValue;
     fn try_from(value: JsValue) -> Result<Self, Self::Error> {
-        let identifier = identifier_from_js_value(&value)?;
-        Ok(identifier.into())
+        let identifier = match get_class_name(&value).as_str() {
+            "IdentifierWASM" => value.to_wasm::<IdentifierWASM>("IdentifierWASM")?.clone(),
+            _ => identifier_from_js_value(&value)?.into(),
+        };
+
+        Ok(identifier)
+    }
+}
+
+impl TryFrom<&JsValue> for IdentifierWASM {
+    type Error = JsValue;
+    fn try_from(value: &JsValue) -> Result<Self, Self::Error> {
+        IdentifierWASM::try_from(value.clone())
     }
 }
 
@@ -42,22 +53,22 @@ impl IdentifierWASM {
         Ok(identifier.into())
     }
 
-    #[wasm_bindgen(js_name = "getBase58")]
+    #[wasm_bindgen(js_name = "base58")]
     pub fn get_base58(&self) -> String {
         self.0.to_string(Base58)
     }
 
-    #[wasm_bindgen(js_name = "getBase64")]
+    #[wasm_bindgen(js_name = "base64")]
     pub fn get_base64(&self) -> String {
         self.0.to_string(Base64)
     }
 
-    #[wasm_bindgen(js_name = "getHex")]
+    #[wasm_bindgen(js_name = "hex")]
     pub fn get_hex(&self) -> String {
         self.0.to_string(Hex)
     }
 
-    #[wasm_bindgen(js_name = "getBytes")]
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn get_bytes(&self) -> Vec<u8> {
         self.0.to_vec()
     }
