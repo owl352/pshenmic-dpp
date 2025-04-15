@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.0.4"
+version = "1.0.5"
 edition = "2024"
 rust-version = "1.85"
 
@@ -22,7 +22,7 @@ members = [
     , "packages/data_contract_transitions"]
 
 [workspace.package]
-version = "1.0.4"
+version = "1.0.5"
 
 [lib]
 crate-type = ["cdylib", "lib"]
