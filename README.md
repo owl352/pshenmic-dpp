@@ -1,26 +1,72 @@
 # PSHENMIC-DPP
+### **AT THIS MOMENT MODULE UNDER DEVELOPMENT**
 
-
+## General
+Pshenmic-dpp is package with rust bindings for JS 
 
 That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
-Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it
+Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it.
+
+One of the advantages of this module is that you can build `.wasm` file not with all modules, but only with the ones you are interested in + minimal dependencies for them
+___
+## How To Install
+`yarn add pshenmic-dpp`
+___
+## Manual Building
+### Install dependencies
+`yarn`
+
+### Build JS
+`yarn build:full`
+
+**NOTE. If you want to use ES6 module without CJS, you need to run `yarn babel`**
+
+### Build with binary instead base64
+`yarn build:raw`
+Now you can import `.js` with base64 buffer for WebAssembly module, or binary which smaller
+___
+## Why you need to use `pshenmic-dpp` instead `wasm-dpp`
+
+- `pshenmic-dpp` weighs much less, currently taking up only 2.8 mb in base64 format
+- You can build only necessary modules by removing imports from `lib.rs` before building
+- More accurately replicates `rs-dpp`
+- Some sugar, like enums, which you can pass in string with any case or just use numbers
+___
+
+## Current features
 
 **At this moment available structs:**
 - `Document`
 - `DocumentsBatch`
+- `DocumentsBaseTransition`
+- `DocumentsTransition`
+- `PrefundedVotingBalance`
+- DocumentsTransitions:
+  - `DocuemntCreateTransition`
+  - `DocuemntDeleteTransition`
+  - `DocuemntPurchaseTransition`
+  - `DocuemntReplaceTransition`
+  - `DocumentTransferTransition`
+  - `DocumentUpdatePriceTransition`
 - `IdentityPublicKey`
+- `IdentityCreateTransition`
+- `IdentityPublicKeyInCreationWASM`
 - `PrivateKey`
 - `Identity`
 - `StateTransition`
-- `IdentityTransitions`
 - `DataContract`
 - `Enums`
 
-## How to build
-Default scripts allows to build full module
+**At this moment available static methods**
+- `objectToCbor`
+- `cborToObject`
+- `generateId` for data contract class
+- `generateId` for document class
+- 
+
+## How to run unit tests
 ```
-yarn
-yarn build:full
+yarn tests
 ```
 
 ## Example
@@ -28,12 +74,6 @@ yarn build:full
 ```js
 import * as wasm from '../wasm/pshenmic_dpp';
 import wasmBytes from "../wasm/pshenmic_dpp_bg"
-
-function toHexString(byteArray) {
-  return Array.prototype.map.call(byteArray, function(byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-  }).join('');
-}
 
 let binaryString = atob(wasmBytes);
 let bytes = new Uint8Array(binaryString.length);
@@ -43,7 +83,7 @@ for (let i = 0; i < binaryString.length; i++) {
 
 wasm.initSync({module: bytes.buffer})
 
-const document = wasm.DocumentWASM.new(
+const document = new wasm.DocumentWASM(
     {
         "name": "MyPool",
         "type": "EVONODE",
@@ -56,7 +96,7 @@ const document = wasm.DocumentWASM.new(
     "B7kcE1juMBWEWkuYRJhVdAE2e6RaevrGxRsa1DrLCpQH"
 )
 
-const pubKey = wasm.IdentityPublicKeyWASM.new(
+const pubKey = new wasm.IdentityPublicKeyWASM(
     1,
     wasm.Purpose.AUTHENTICATION,
     wasm.SecurityLevel.HIGH,
@@ -65,15 +105,18 @@ const pubKey = wasm.IdentityPublicKeyWASM.new(
     'your_binary_data_in_hex'
 )
 
-const privKey = wasm.PrivateKeyWASM.new('wif_key')
+const privKey = new wasm.PrivateKeyWASM('your_wif_key')
 
-const batch = wasm.DocumentBatchWASM.new(
-    wasm.BatchType.CREATE,
-    document,
-    BigInt(3),
-)
+const createTransition = new wasm.DocumentCreateTransitionWASM(document, BigInt(1), 'preorder')
 
-batch.sign(privKey, pubKey)
+const documentTransition = createTransition.toDocumentTransition()
 
-console.log(toHexString(batch.toBuffer()))
+const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], Array.from(documentInstance.getOwnerId()), 1)
+
+const st = batchTransition.toStateTransition()
+
+st.sign(privKey, pubKey)
+
+console.log(st.toBytes())
+console.log(st.hash(false))
 ```

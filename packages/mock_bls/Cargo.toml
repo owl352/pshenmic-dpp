@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic_dpp_mock_bls"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 
 [lib]
@@ -10,7 +10,3 @@ crate-type = ["cdylib", "lib"]
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "bls-signatures",
 ]}
-
-[profile.release]
-lto = true
-opt-level = 'z'

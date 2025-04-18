@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic_dpp_data_contract"
-version = "0.1.0"
+version.workspace = true
 edition = "2024"
 
 [lib]
@@ -11,11 +11,7 @@ wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_enums = {path = "../enums"}
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
-    "data-contract-json-conversion"
+    "data-contract-json-conversion",
 ]}
+js-sys = "0.3.53"
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
-#serde = { version = "1.0.219", features = ["derive"] }
-
-[profile.release]
-lto = true
-opt-level = 'z'

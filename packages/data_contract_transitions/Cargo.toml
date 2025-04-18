@@ -1,19 +1,14 @@
 [package]
-name = "pshenmic_dpp_public_key"
-version = "0.1.0"
+name = "pshenmic_dpp_data_contract_transitions"
+version.workspace = true
 edition = "2024"
-
-[lib]
-crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
-    "identity-value-conversion",
+    "state-transition-signing"
 ]}
+pshenmic_dpp_data_contract = {path = "../data_contract"}
 pshenmic_dpp_enums = {path = "../enums"}
 pshenmic_dpp_utils = {path = "../utils"}
-
-[profile.release]
-lto = true
-opt-level = 'z'
+pshenmic_dpp_state_transition = {path = "../state_transition"}

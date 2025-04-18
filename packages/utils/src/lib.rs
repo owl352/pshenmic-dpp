@@ -4,10 +4,9 @@ use anyhow::{Context, anyhow, bail};
 use dpp::ProtocolError;
 use dpp::identifier::Identifier;
 use dpp::platform_value::Value;
-use dpp::platform_value::string_encoding::Encoding;
+use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::util::hash::hash_double_to_vec;
-use itertools::Itertools;
-use js_sys::Function;
+use js_sys::{Function, Uint8Array};
 use serde::de::DeserializeOwned;
 use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
@@ -274,7 +273,7 @@ pub fn generate_document_id_v0(
     owner_id: &Identifier,
     document_type_name: &str,
     entropy: &[u8],
-) -> Identifier {
+) -> Result<Identifier, JsValue> {
     let mut buf: Vec<u8> = vec![];
 
     buf.extend_from_slice(&contract_id.to_buffer());
@@ -282,7 +281,7 @@ pub fn generate_document_id_v0(
     buf.extend_from_slice(document_type_name.as_bytes());
     buf.extend_from_slice(entropy);
 
-    Identifier::from_bytes(&hash_double_to_vec(&buf)).unwrap()
+    Identifier::from_bytes(&hash_double_to_vec(&buf)).map_err(|e| JsValue::from(e.to_string()))
 }
 
 #[wasm_bindgen(raw_module = "../identifier_utils/Identifier.js")]
@@ -325,18 +324,21 @@ pub fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier, JsValu
         ));
     }
 
-    let value: serde_json::Value = js_value.with_serde_to_json_value()?;
-    match value {
-        serde_json::Value::Array(arr) => {
-            let bytes: Vec<u8> = arr.into_iter().map(value_to_u8).try_collect()?;
-            Identifier::from_bytes(&bytes)
-                .map_err(ProtocolError::ValueError)
-                .with_js_error()
-        }
-        serde_json::Value::String(string) => Identifier::from_string(&string, Encoding::Base58)
+    match js_value.is_string() {
+        true => Identifier::from_string(js_value.as_string().unwrap_or("".into()).as_str(), Base58)
             .map_err(ProtocolError::ValueError)
             .with_js_error(),
-        _ => Err(JsValue::from_str("Invalid ID. Expected array or string")),
+        false => match js_value.is_object() || js_value.is_array() {
+            true => {
+                let uint8_array = Uint8Array::from(js_value.clone());
+                let bytes = uint8_array.to_vec();
+
+                Identifier::from_bytes(&bytes)
+                    .map_err(ProtocolError::ValueError)
+                    .with_js_error()
+            }
+            false => Err(JsValue::from_str("Invalid ID. Expected array or string")),
+        },
     }
 }
 

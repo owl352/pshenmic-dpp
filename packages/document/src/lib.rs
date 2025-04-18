@@ -1,4 +1,4 @@
-mod methods;
+pub mod methods;
 
 use dpp::document::{Document, DocumentV0, DocumentV0Getters};
 use dpp::identifier::Identifier;

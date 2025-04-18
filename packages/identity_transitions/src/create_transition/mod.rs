@@ -112,13 +112,15 @@ impl IdentityCreateTransitionWASM {
 
     #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
-        st: StateTransitionWASM,
+        st: &StateTransitionWASM,
     ) -> Result<IdentityCreateTransitionWASM, JsValue> {
-        let rs_st: StateTransition = st.into();
+        let rs_st: StateTransition = st.clone().into();
 
         match rs_st {
             StateTransition::IdentityCreate(st) => Ok(IdentityCreateTransitionWASM(st)),
-            _ => Err(JsValue::from_str(&"Invalid state transition type)")),
+            _ => Err(JsValue::from_str(
+                &"Invalid state document_transition type)",
+            )),
         }
     }
 }
