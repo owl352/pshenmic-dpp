@@ -32,7 +32,7 @@ impl DataContractCreateTransitionWASM {
         let rs_data_contract: DataContract = data_contract.clone().into();
 
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -96,7 +96,7 @@ impl DataContractCreateTransitionWASM {
         js_platform_version: JsValue,
     ) -> Result<(), JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -119,7 +119,7 @@ impl DataContractCreateTransitionWASM {
         full_validation: Option<bool>,
     ) -> Result<DataContractWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 

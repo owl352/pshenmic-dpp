@@ -4,6 +4,9 @@ version = "1.0.5"
 edition = "2024"
 rust-version = "1.85"
 
+[workspace.package]
+version = "1.0.5"
+
 [workspace]
 resolver = "2"
 members = [
@@ -18,11 +21,9 @@ members = [
     "packages/identity",
     "packages/identity_transitions",
     "packages/state_transition",
-    "packages/data_contract"
-    , "packages/data_contract_transitions"]
-
-[workspace.package]
-version = "1.0.5"
+    "packages/data_contract",
+    "packages/asset_lock_proof",
+    "packages/data_contract_transitions"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
