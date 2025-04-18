@@ -47,10 +47,8 @@ impl TryFrom<&JsValue> for IdentifierWASM {
 #[wasm_bindgen]
 impl IdentifierWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(js_identifier: JsValue) -> Result<IdentifierWASM, JsValue> {
-        let identifier = identifier_from_js_value(&js_identifier)?;
-
-        Ok(identifier.into())
+    pub fn new(js_identifier: &JsValue) -> Result<IdentifierWASM, JsValue> {
+        IdentifierWASM::try_from(js_identifier)
     }
 
     #[wasm_bindgen(js_name = "base58")]
