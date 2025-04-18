@@ -1,7 +1,6 @@
-use dpp::bls_signatures::vsss_rs::elliptic_curve::ff::BitViewSized;
 use dpp::dashcore::consensus::deserialize;
 use dpp::dashcore::hashes::Hash;
-use dpp::dashcore::{OutPoint, Txid};
+use dpp::dashcore::OutPoint;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 

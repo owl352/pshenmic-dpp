@@ -1,4 +1,3 @@
-use crate::create_transition::IdentityCreateTransitionWASM;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
@@ -6,7 +5,6 @@ use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTr
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
-use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
@@ -160,7 +158,7 @@ impl IdentityCreditTransferWASM {
         StateTransitionWASM::from(StateTransition::from(self.0.clone()))
     }
 
-    #[wasm_bindgen(js_name = "toStateTransition")]
+    #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
         st: StateTransitionWASM,
     ) -> Result<IdentityCreditTransferWASM, JsValue> {

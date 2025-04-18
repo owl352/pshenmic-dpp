@@ -1,6 +1,5 @@
-use dpp::SerdeParsingError;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::{JsError, JsValue};
+use wasm_bindgen::JsError;
 
 #[wasm_bindgen(js_name = "AssetLockProofTypeWASM")]
 pub enum AssetLockProofTypeWASM {

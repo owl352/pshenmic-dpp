@@ -1,9 +1,7 @@
 mod outpoint;
 
 use crate::chain::outpoint::OutPointWASM;
-use dpp::dashcore::OutPoint;
 use dpp::identity::state_transition::asset_lock_proof::chain::ChainAssetLockProof;
-use pshenmic_dpp_utils::WithJsError;
 use serde::Deserialize;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};

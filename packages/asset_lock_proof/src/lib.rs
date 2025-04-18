@@ -3,7 +3,6 @@ mod instant;
 
 use crate::chain::ChainAssetLockProofWASM;
 use crate::instant::InstantAssetLockProofWASM;
-use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
 use dpp::prelude::AssetLockProof;
 use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
 use wasm_bindgen::prelude::wasm_bindgen;
