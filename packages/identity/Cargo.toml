@@ -12,4 +12,5 @@ dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-
     "identity-serialization"
 ]}
 pshenmic_dpp_public_key = { path = "../identity_public_key" }
+pshenmic_dpp_identifier = { path = "../identifier" }
 pshenmic_dpp_utils = { path = "../utils" }

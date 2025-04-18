@@ -3,7 +3,6 @@ const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 const { value, id, ownerId } = require('./mocks/DataContract')
 const { PlatformVersionWASM } = require('../dist/cjs/wasm/pshenmic_dpp')
-const { base58 } = require('@scure/base')
 const { fromHexString } = require('./utils/hex')
 
 let wasm
@@ -19,13 +18,17 @@ describe('DataContract', function () {
 
   describe('serialization / deserialization', function () {
     it('should allows to create DataContract from schema without full validation', function () {
-      const dataContract = new wasm.DataContractWASM(value.ownerId, BigInt(2), value.documentSchemas, null, false)
+      const identifier = new wasm.IdentifierWASM(value.ownerId)
+
+      const dataContract = new wasm.DataContractWASM(identifier, BigInt(2), value.documentSchemas, null, false)
 
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
 
     it('should allows to create DataContract from schema with full validation', function () {
-      const dataContract = new wasm.DataContractWASM(value.ownerId, BigInt(2), value.documentSchemas, null, true)
+      const identifier = new wasm.IdentifierWASM(value.ownerId)
+
+      const dataContract = new wasm.DataContractWASM(identifier, BigInt(2), value.documentSchemas, null, true)
 
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
@@ -91,13 +94,13 @@ describe('DataContract', function () {
     it('should allow to get id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getId(), base58.decode(id))
+      assert.deepEqual(dataContract.getId().base58(), id)
     })
 
     it('should allow to get owner id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getOwnerId(), base58.decode(ownerId))
+      assert.deepEqual(dataContract.getOwnerId().base58(), ownerId)
     })
 
     it('should allow to get config', function () {
@@ -111,21 +114,21 @@ describe('DataContract', function () {
     it('should allow to set id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      const valueId = base58.decode('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
+      const identifier = new wasm.IdentifierWASM('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
 
-      dataContract.setId(Array.from(valueId))
+      dataContract.setId(identifier)
 
-      assert.deepEqual(dataContract.getId(), valueId)
+      assert.deepEqual(dataContract.getId().base58(), '7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
     })
 
     it('should allow to set owner id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      const valueId = base58.decode('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
+      const identifier = new wasm.IdentifierWASM('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
 
-      dataContract.setOwnerId('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
+      dataContract.setOwnerId(identifier)
 
-      assert.deepEqual(dataContract.getOwnerId(), valueId)
+      assert.deepEqual(dataContract.getOwnerId().base58(), '3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
     })
 
     it('should allow to set version', function () {
@@ -165,11 +168,11 @@ describe('DataContract', function () {
 
   describe('static', function () {
     it('should allow to generate id', function () {
-      const id = wasm.DataContractWASM.generateId('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL', BigInt(4))
+      const identifier = new wasm.IdentifierWASM('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
 
-      const valueId = base58.decode('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
+      const id = wasm.DataContractWASM.generateId(identifier, BigInt(4))
 
-      assert.deepEqual(id, valueId)
+      assert.deepEqual(id.base58(), '7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
     })
   })
 })

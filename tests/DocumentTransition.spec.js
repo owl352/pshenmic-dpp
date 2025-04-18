@@ -8,7 +8,7 @@ let documentInstance
 let createTransition
 let replaceTransition
 
-describe('PrivateKey', function () {
+describe('DocumentTransition', function () {
   before(async function () {
     wasm = initWasm()
 
@@ -35,13 +35,13 @@ describe('PrivateKey', function () {
     it('should allow to get dataContractId', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
-      assert.deepEqual(documentTransition.dataContractId, documentInstance.getDataContractId())
+      assert.deepEqual(documentTransition.dataContractId.base58(), documentInstance.getDataContractId().base58())
     })
 
     it('should allow to get id', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
-      assert.deepEqual(documentTransition.id, documentInstance.getId())
+      assert.deepEqual(documentTransition.id.base58(), documentInstance.getId().base58())
     })
 
     it('should allow to get documentTypeName', function () {
@@ -75,7 +75,7 @@ describe('PrivateKey', function () {
 
       documentTransition.dataContractId = new Uint8Array(32)
 
-      assert.deepEqual(documentTransition.dataContractId, new Uint8Array(32))
+      assert.deepEqual(documentTransition.dataContractId.bytes(), new Uint8Array(32))
     })
 
     it('should allow to set identityContractNonce', function () {
