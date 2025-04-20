@@ -7,6 +7,7 @@ use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable}
 use dpp::state_transition::StateTransition;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
@@ -111,8 +112,8 @@ impl StateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "getOwnerId")]
-    pub fn get_owner_id(&self) -> Vec<u8> {
-        self.0.owner_id().to_vec()
+    pub fn get_owner_id(&self) -> IdentifierWASM {
+        self.0.owner_id().into()
     }
 
     #[wasm_bindgen(getter = "signature")]
