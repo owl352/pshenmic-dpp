@@ -16,7 +16,8 @@ use dpp::serialization::{
 };
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
-use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError, identifier_from_js_value};
+use pshenmic_dpp_identifier::IdentifierWASM;
+use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -41,7 +42,7 @@ impl From<DataContractWASM> for DataContract {
 impl DataContractWASM {
     #[wasm_bindgen(constructor)]
     pub fn from_js_values(
-        js_owner_id: JsValue,
+        js_owner_id: &JsValue,
         identity_nonce: IdentityNonce,
         js_schema: JsValue,
         js_definitions: Option<js_sys::Object>,
@@ -50,9 +51,9 @@ impl DataContractWASM {
     ) -> Result<DataContractWASM, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
-        let owner_id = identifier_from_js_value(&js_owner_id)?;
+        let owner_id: IdentifierWASM = js_owner_id.clone().try_into()?;
 
-        let owner_id_value = Value::from(owner_id.to_string(Base58));
+        let owner_id_value = Value::from(owner_id.get_base58());
 
         let schema: Value = serde_wasm_bindgen::from_value(js_schema)?;
 
@@ -75,7 +76,8 @@ impl DataContractWASM {
 
         let definitions_value = Value::from(definitions);
 
-        let data_contract_id = DataContract::generate_data_contract_id_v0(owner_id, identity_nonce);
+        let data_contract_id =
+            DataContract::generate_data_contract_id_v0(owner_id.get_bytes(), identity_nonce);
 
         let data_contract_id_value = Value::from(data_contract_id.to_string(Base58));
 
@@ -211,13 +213,13 @@ impl DataContractWASM {
     }
 
     #[wasm_bindgen(js_name = "getId")]
-    pub fn get_id(&self) -> Vec<u8> {
-        self.0.id().to_vec()
+    pub fn get_id(&self) -> IdentifierWASM {
+        self.0.id().into()
     }
 
     #[wasm_bindgen(js_name = "getOwnerId")]
-    pub fn get_owner_id(&self) -> Vec<u8> {
-        self.0.owner_id().to_vec()
+    pub fn get_owner_id(&self) -> IdentifierWASM {
+        self.0.owner_id().into()
     }
 
     #[wasm_bindgen(js_name = "getConfig")]
@@ -229,17 +231,17 @@ impl DataContractWASM {
     }
 
     #[wasm_bindgen(js_name = "setId")]
-    pub fn set_id(&mut self, js_data_contract_id: JsValue) -> Result<(), JsValue> {
-        let data_contract_id = identifier_from_js_value(&js_data_contract_id)?;
-
-        Ok(self.0.set_id(data_contract_id))
+    pub fn set_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
+        self.0
+            .set_id(IdentifierWASM::try_from(js_data_contract_id)?.into());
+        Ok(())
     }
 
     #[wasm_bindgen(js_name = "setOwnerId")]
-    pub fn set_owner_id(&mut self, js_owner_id: JsValue) -> Result<(), JsValue> {
-        let owner_id = identifier_from_js_value(&js_owner_id)?;
-
-        Ok(self.0.set_owner_id(owner_id))
+    pub fn set_owner_id(&mut self, js_owner_id: &JsValue) -> Result<(), JsValue> {
+        self.0
+            .set_owner_id(IdentifierWASM::try_from(js_owner_id)?.into());
+        Ok(())
     }
 
     #[wasm_bindgen(js_name = "setVersion")]
@@ -315,12 +317,14 @@ impl DataContractWASM {
 
     #[wasm_bindgen(js_name = "generateId")]
     pub fn generate_id(
-        js_owner_id: JsValue,
+        js_owner_id: &JsValue,
         identity_nonce: IdentityNonce,
-    ) -> Result<Vec<u8>, JsValue> {
-        let owner_id = identifier_from_js_value(&js_owner_id)?;
-
-        Ok(DataContract::generate_data_contract_id_v0(owner_id, identity_nonce).to_vec())
+    ) -> Result<IdentifierWASM, JsValue> {
+        Ok(DataContract::generate_data_contract_id_v0(
+            IdentifierWASM::try_from(js_owner_id)?.get_bytes(),
+            identity_nonce,
+        )
+        .into())
     }
 }
 

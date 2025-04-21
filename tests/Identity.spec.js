@@ -34,7 +34,7 @@ describe('Identity', function () {
     it('should get id buffer', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      assert.deepEqual(Array.from(identity.getId()), identifierBytes)
+      assert.deepEqual(identity.getId().bytes(), Uint8Array.from(identifierBytes))
     })
 
     it('should get balance', function () {

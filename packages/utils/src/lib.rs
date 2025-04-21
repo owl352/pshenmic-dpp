@@ -221,9 +221,6 @@ pub fn get_bool_from_options(
     }
 }
 
-#[allow(dead_code)]
-#[deprecated(note = "This function is marked as unused.")]
-#[allow(deprecated)]
 pub fn get_class_name(value: &JsValue) -> String {
     js_sys::Object::get_prototype_of(value)
         .constructor()
