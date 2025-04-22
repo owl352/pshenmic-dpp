@@ -1460,6 +1460,7 @@ dependencies = [
  "dpp",
  "pshenmic_dpp_asset_lock_proof",
  "pshenmic_dpp_enums",
+ "pshenmic_dpp_identifier",
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_state_transition",
  "pshenmic_dpp_utils",

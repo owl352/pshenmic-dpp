@@ -1,16 +1,20 @@
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
+use dpp::identity::KeyID;
 use dpp::identity::state_transition::AssetLockProved;
 use dpp::platform_value::string_encoding::Encoding::Base58;
+use dpp::prelude::{IdentityNonce, Revision, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
+use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{StateTransition, StateTransitionLike};
 use dpp::version::PlatformVersion;
+use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 
 #[wasm_bindgen(js_name = "IdentityCreateTransitionWASM")]
 #[derive(Clone)]
@@ -75,19 +79,9 @@ impl IdentityCreateTransitionWASM {
         self.0.identity_id().to_string(Base58)
     }
 
-    #[wasm_bindgen(js_name = "getUserFeeIncrease")]
+    #[wasm_bindgen(getter = "userFeeIncrease")]
     pub fn get_user_fee_increase(&self) -> u16 {
         self.0.user_fee_increase()
-    }
-
-    #[wasm_bindgen(js_name = "setSignature")]
-    pub fn set_signature(&mut self, signature: Vec<u8>) {
-        self.0.set_signature_bytes(signature)
-    }
-
-    #[wasm_bindgen(js_name = "setUserFeeIncrease")]
-    pub fn set_user_fee_increase(&mut self, amount: u16) {
-        self.0.set_user_fee_increase(amount)
     }
 
     #[wasm_bindgen(js_name = "getSignature")]
@@ -100,9 +94,24 @@ impl IdentityCreateTransitionWASM {
         self.0.signable_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name = "getAssetLock")]
+    #[wasm_bindgen(getter = "assetLock")]
     pub fn get_asset_lock_proof(&self) -> AssetLockProofWASM {
         AssetLockProofWASM::from(self.0.asset_lock_proof().clone())
+    }
+
+    #[wasm_bindgen(setter = "userFeeIncrease")]
+    pub fn set_user_fee_increase(&mut self, amount: u16) {
+        self.0.set_user_fee_increase(amount)
+    }
+
+    #[wasm_bindgen(js_name = "setSignature")]
+    pub fn set_signature(&mut self, signature: Vec<u8>) {
+        self.0.set_signature_bytes(signature)
+    }
+
+    #[wasm_bindgen(setter = "assetLock")]
+    pub fn set_asset_lock_proof(&mut self, proof: AssetLockProofWASM) -> Result<(), JsValue> {
+        self.0.set_asset_lock_proof(proof.into()).with_js_error()
     }
 
     #[wasm_bindgen(js_name = "toStateTransition")]

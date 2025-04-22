@@ -1,7 +1,6 @@
 use dpp::state_transition::identity_credit_withdrawal_transition::IdentityCreditWithdrawalTransition;
 use dpp::state_transition::identity_credit_withdrawal_transition::v0::IdentityCreditWithdrawalTransitionV0;
-use dpp::state_transition::identity_update_transition::IdentityUpdateTransition;
-use dpp::state_transition::identity_update_transition::v0::IdentityUpdateTransitionV0;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "IdentityCreditWithdrawalTransitionWASM")]
@@ -10,7 +9,7 @@ pub struct IdentityCreditWithdrawalTransitionWASM(IdentityCreditWithdrawalTransi
 #[wasm_bindgen]
 impl IdentityCreditWithdrawalTransitionWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(js_identifier: IdentitiferWASM) -> IdentityCreditWithdrawalTransitionWASM {
+    pub fn new(js_identifier: IdentifierWASM) -> IdentityCreditWithdrawalTransitionWASM {
         IdentityCreditWithdrawalTransitionWASM(
             IdentityCreditWithdrawalTransition::V0(IdentityCreditWithdrawalTransitionV0 {
                 identity_id: Default::default(),

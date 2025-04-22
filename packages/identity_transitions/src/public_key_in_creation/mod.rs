@@ -29,6 +29,12 @@ impl From<IdentityPublicKeyInCreationWASM> for IdentityPublicKeyInCreation {
     }
 }
 
+impl From<&IdentityPublicKeyInCreationWASM> for IdentityPublicKeyInCreation {
+    fn from(value: &IdentityPublicKeyInCreationWASM) -> Self {
+        value.0.clone()
+    }
+}
+
 impl From<IdentityPublicKeyInCreationWASM> for IdentityPublicKey {
     fn from(value: IdentityPublicKeyInCreationWASM) -> Self {
         let contract_bounds = match value.0.contract_bounds() {

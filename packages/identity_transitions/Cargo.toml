@@ -13,7 +13,7 @@ dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-
 ]}
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_public_key = {path = "../identity_public_key" }
-pshenmic_dpp_identifier = {path = "../identity" }
+pshenmic_dpp_identifier = {path = "../identifier" }
 pshenmic_dpp_state_transition = {path = "../state_transition"}
 pshenmic_dpp_enums = {path = "../enums"}
 pshenmic_dpp_asset_lock_proof = {path = "../asset_lock_proof"}
