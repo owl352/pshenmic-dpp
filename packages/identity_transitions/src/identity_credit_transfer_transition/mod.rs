@@ -1,16 +1,19 @@
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Base58;
+use dpp::prelude::Identifier;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = IdentityCreditTransferWASM)]
+#[derive(Clone)]
 pub struct IdentityCreditTransferWASM(IdentityCreditTransferTransition);
 
 #[wasm_bindgen]
@@ -18,11 +21,11 @@ impl IdentityCreditTransferWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         amount: u64,
-        js_sender: JsValue,
-        js_recipient: JsValue,
+        js_sender: &JsValue,
+        js_recipient: &JsValue,
         nonce: u64,
         platform_version_wasm: Option<PlatformVersionWASM>,
-    ) -> Self {
+    ) -> Result<IdentityCreditTransferWASM, JsValue> {
         let rs_transfer_transition_creation = IdentityCreditTransferTransition::default_versioned(
             &platform_version_wasm.unwrap_or_default().into(),
         )
@@ -33,22 +36,16 @@ impl IdentityCreditTransferWASM {
             Err(err) => wasm_bindgen::throw_val(err),
         };
 
-        let sender = match identifier_from_js_value(&js_sender) {
-            Ok(sender) => sender,
-            Err(err) => wasm_bindgen::throw_val(err),
-        };
+        let sender: Identifier = IdentifierWASM::try_from(js_sender)?.into();
 
-        let recipient = match identifier_from_js_value(&js_recipient) {
-            Ok(recipient) => recipient,
-            Err(err) => wasm_bindgen::throw_val(err),
-        };
+        let recipient: Identifier = IdentifierWASM::try_from(js_recipient)?.into();
 
         rs_transition.set_recipient_id(recipient);
         rs_transition.set_identity_id(sender);
         rs_transition.set_amount(amount);
         rs_transition.set_nonce(nonce);
 
-        IdentityCreditTransferWASM(rs_transition)
+        Ok(IdentityCreditTransferWASM(rs_transition))
     }
 
     #[wasm_bindgen(js_name = "toBytes")]
@@ -69,23 +66,17 @@ impl IdentityCreditTransferWASM {
     }
 
     #[wasm_bindgen(js_name = "setRecipientId")]
-    pub fn set_recipient_id(&mut self, js_recipient: JsValue) {
-        let recipient = match identifier_from_js_value(&js_recipient) {
-            Ok(recipient) => recipient,
-            Err(err) => wasm_bindgen::throw_val(err),
-        };
+    pub fn set_recipient_id(&mut self, js_recipient: &JsValue) -> Result<(), JsValue> {
+        let recipient: Identifier = IdentifierWASM::try_from(js_recipient)?.into();
 
-        self.0.set_recipient_id(recipient)
+        Ok(self.0.set_recipient_id(recipient))
     }
 
-    #[wasm_bindgen(js_name = "setIdentityId")]
-    pub fn set_identity_id(&mut self, js_sender: JsValue) {
-        let sender = match identifier_from_js_value(&js_sender) {
-            Ok(sender) => sender,
-            Err(err) => wasm_bindgen::throw_val(err),
-        };
+    #[wasm_bindgen(js_name = "setSenderId")]
+    pub fn set_sender_id(&mut self, js_sender: &JsValue) -> Result<(), JsValue> {
+        let sender: Identifier = IdentifierWASM::try_from(js_sender)?.into();
 
-        self.0.set_identity_id(sender)
+        Ok(self.0.set_identity_id(sender))
     }
 
     #[wasm_bindgen(js_name = "setAmount")]
@@ -134,13 +125,13 @@ impl IdentityCreditTransferWASM {
     }
 
     #[wasm_bindgen(js_name = "getRecipientId")]
-    pub fn get_recipient_id(&self) -> String {
-        self.0.recipient_id().to_string(Base58)
+    pub fn get_recipient_id(&self) -> IdentifierWASM {
+        self.0.recipient_id().into()
     }
 
     #[wasm_bindgen(js_name = "getIdentityId")]
-    pub fn get_identity_id(&self) -> String {
-        self.0.identity_id().to_string(Base58)
+    pub fn get_identity_id(&self) -> IdentifierWASM {
+        self.0.identity_id().into()
     }
 
     #[wasm_bindgen(js_name = "getAmount")]

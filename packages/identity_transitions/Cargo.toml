@@ -1,7 +1,7 @@
 [package]
 name = "pshenmic_dpp_identity_transitions"
-version.workspace = true
 edition = "2024"
+version.workspace = true
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -12,6 +12,7 @@ dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-
     "state-transition-signing"
 ]}
 pshenmic_dpp_utils = {path = "../utils"}
+pshenmic_dpp_core_script = {path = "../core_script"}
 pshenmic_dpp_public_key = {path = "../identity_public_key" }
 pshenmic_dpp_identifier = {path = "../identifier" }
 pshenmic_dpp_state_transition = {path = "../state_transition"}

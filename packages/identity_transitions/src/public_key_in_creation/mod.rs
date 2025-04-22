@@ -15,6 +15,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "IdentityPublicKeyInCreationWASM")]
+#[derive(Clone)]
 pub struct IdentityPublicKeyInCreationWASM(IdentityPublicKeyInCreation);
 
 impl From<IdentityPublicKeyInCreation> for IdentityPublicKeyInCreationWASM {
@@ -26,12 +27,6 @@ impl From<IdentityPublicKeyInCreation> for IdentityPublicKeyInCreationWASM {
 impl From<IdentityPublicKeyInCreationWASM> for IdentityPublicKeyInCreation {
     fn from(value: IdentityPublicKeyInCreationWASM) -> Self {
         value.0
-    }
-}
-
-impl From<&IdentityPublicKeyInCreationWASM> for IdentityPublicKeyInCreation {
-    fn from(value: &IdentityPublicKeyInCreationWASM) -> Self {
-        value.0.clone()
     }
 }
 

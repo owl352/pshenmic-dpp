@@ -17,6 +17,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "IdentityUpdateTransitionWASM")]
+#[derive(Clone)]
 pub struct IdentityUpdateTransitionWASM(IdentityUpdateTransition);
 
 #[wasm_bindgen]
@@ -112,8 +113,8 @@ impl IdentityUpdateTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "identityIdentifier")]
-    pub fn set_identity_identifier(&mut self, identity_id: IdentifierWASM) {
-        self.0.set_identity_id(identity_id.into());
+    pub fn set_identity_identifier(&mut self, identity_id: &IdentifierWASM) {
+        self.0.set_identity_id(identity_id.clone().into());
     }
 
     #[wasm_bindgen(setter = "publicKeyIdsToAdd")]
@@ -122,7 +123,7 @@ impl IdentityUpdateTransitionWASM {
         public_key_ids: Vec<IdentityPublicKeyInCreationWASM>,
     ) {
         let keys: Vec<IdentityPublicKeyInCreation> =
-            public_key_ids.iter().map(|id| id.into()).collect();
+            public_key_ids.iter().map(|id| id.clone().into()).collect();
 
         self.0.set_public_keys_to_add(keys)
     }

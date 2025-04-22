@@ -1,12 +1,9 @@
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
-use dpp::identity::KeyID;
 use dpp::identity::state_transition::AssetLockProved;
 use dpp::platform_value::string_encoding::Encoding::Base58;
-use dpp::prelude::{IdentityNonce, Revision, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
-use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{StateTransition, StateTransitionLike};
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
@@ -75,8 +72,8 @@ impl IdentityCreateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "getIdentifier")]
-    pub fn get_identity_id(&self) -> String {
-        self.0.identity_id().to_string(Base58)
+    pub fn get_identity_id(&self) -> IdentifierWASM {
+        self.0.identity_id().into()
     }
 
     #[wasm_bindgen(getter = "userFeeIncrease")]

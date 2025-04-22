@@ -23,7 +23,7 @@ members = [
     "packages/state_transition",
     "packages/data_contract",
     "packages/asset_lock_proof",
-    "packages/data_contract_transitions"]
+    "packages/data_contract_transitions", "packages/core_script"]
 
 [lib]
 crate-type = ["cdylib", "lib"]

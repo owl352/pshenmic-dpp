@@ -9,6 +9,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "AssetLockProofWASM")]
+#[derive(Clone)]
 pub struct AssetLockProofWASM(AssetLockProof);
 
 impl From<AssetLockProofWASM> for AssetLockProof {

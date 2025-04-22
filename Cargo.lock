@@ -1361,6 +1361,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "pshenmic_dpp_core_script"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "pshenmic_dpp_data_contract"
 version = "1.0.5"
 dependencies = [
@@ -1459,6 +1467,7 @@ version = "1.0.5"
 dependencies = [
  "dpp",
  "pshenmic_dpp_asset_lock_proof",
+ "pshenmic_dpp_core_script",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
  "pshenmic_dpp_public_key",
