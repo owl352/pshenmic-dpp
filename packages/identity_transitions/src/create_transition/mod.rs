@@ -4,13 +4,13 @@ use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable}
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
 use dpp::state_transition::{StateTransition, StateTransitionLike};
-use dpp::version::PlatformVersion;
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 
 #[wasm_bindgen(js_name = "IdentityCreateTransitionWASM")]
 #[derive(Clone)]
@@ -31,34 +31,25 @@ impl From<IdentityCreateTransitionWASM> for IdentityCreateTransition {
 #[wasm_bindgen]
 impl IdentityCreateTransitionWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(platform_version: u32) -> Result<IdentityCreateTransitionWASM, JsValue> {
-        let platform_version =
-            &PlatformVersion::get(platform_version).map_err(|e| JsValue::from(e.to_string()))?;
+    pub fn new(js_platform_version: JsValue) -> Result<IdentityCreateTransitionWASM, JsValue> {
+        let platform_version = PlatformVersionWASM::try_from(js_platform_version)?;
 
-        IdentityCreateTransition::default_versioned(platform_version)
+        IdentityCreateTransition::default_versioned(&platform_version.into())
             .map(Into::into)
             .map_err(|err| JsValue::from_str(&*err.to_string()))
     }
 
     #[wasm_bindgen(js_name = "toBytes")]
-    pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
-        let bytes = self.0.serialize_to_bytes().with_js_error();
-
-        match bytes {
-            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
-            Err(err) => Err(err),
-        }
+    pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
+        self.0.serialize_to_bytes().with_js_error()
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityCreateTransitionWASM, JsValue> {
         let rs_transition =
-            IdentityCreateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error();
+            IdentityCreateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
 
-        match rs_transition {
-            Ok(rs_st) => Ok(IdentityCreateTransitionWASM(rs_st)),
-            Err(err) => Err(err),
-        }
+        Ok(IdentityCreateTransitionWASM(rs_transition))
     }
 
     #[wasm_bindgen(js_name = "defaultVersioned")]

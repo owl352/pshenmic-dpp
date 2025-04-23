@@ -56,12 +56,9 @@ impl IdentityCreditTransferWASM {
     pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityCreditTransferWASM, JsValue> {
         let rs_transition =
             IdentityCreditTransferTransition::deserialize_from_bytes(bytes.as_slice())
-                .with_js_error();
+                .with_js_error()?;
 
-        match rs_transition {
-            Ok(transition) => Ok(IdentityCreditTransferWASM(transition)),
-            Err(err) => wasm_bindgen::throw_val(err),
-        }
+        Ok(IdentityCreditTransferWASM(rs_transition))
     }
 
     #[wasm_bindgen(js_name = "setRecipientId")]

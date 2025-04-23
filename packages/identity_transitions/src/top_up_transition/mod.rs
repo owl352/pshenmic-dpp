@@ -1,7 +1,7 @@
 use dpp::identifier::Identifier;
 use dpp::identity::state_transition::{AssetLockProved, OptionallyAssetLockProved};
 use dpp::prelude::UserFeeIncrease;
-use dpp::serialization::Signable;
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_topup_transition::IdentityTopUpTransition;
 use dpp::state_transition::identity_topup_transition::accessors::IdentityTopUpTransitionAccessorsV0;
 use dpp::state_transition::identity_topup_transition::v0::IdentityTopUpTransitionV0;
@@ -107,6 +107,20 @@ impl IdentityTopUpTransitionWASM {
     #[wasm_bindgen(setter = "signature")]
     pub fn set_signature(&mut self, signature: Vec<u8>) {
         self.0.set_signature_bytes(signature)
+    }
+
+    #[wasm_bindgen(js_name = "toBytes")]
+    pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
+        self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityTopUpTransitionWASM, JsValue> {
+        let rs_transition =
+            IdentityTopUpTransition::deserialize_from_bytes(bytes.as_slice())
+                .with_js_error()?;
+
+        Ok(IdentityTopUpTransitionWASM(rs_transition))
     }
 
     #[wasm_bindgen(js_name = "toStateTransition")]

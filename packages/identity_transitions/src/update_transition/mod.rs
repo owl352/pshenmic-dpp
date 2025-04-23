@@ -2,12 +2,13 @@ use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::KeyID;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::prelude::{IdentityNonce, Revision, UserFeeIncrease};
-use dpp::serialization::Signable;
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_update_transition::IdentityUpdateTransition;
 use dpp::state_transition::identity_update_transition::accessors::IdentityUpdateTransitionAccessorsV0;
 use dpp::state_transition::identity_update_transition::v0::IdentityUpdateTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
@@ -15,6 +16,7 @@ use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use crate::identity_credit_transfer_transition::IdentityCreditTransferWASM;
 
 #[wasm_bindgen(js_name = "IdentityUpdateTransitionWASM")]
 #[derive(Clone)]
@@ -161,6 +163,20 @@ impl IdentityUpdateTransitionWASM {
     #[wasm_bindgen(setter = "signaturePublicKeyId")]
     pub fn set_signature_public_key_id(&mut self, signature_public_key_id: KeyID) {
         self.0.set_signature_public_key_id(signature_public_key_id)
+    }
+
+    #[wasm_bindgen(js_name = "toBytes")]
+    pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
+        self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityUpdateTransitionWASM, JsValue> {
+        let rs_transition =
+            IdentityUpdateTransition::deserialize_from_bytes(bytes.as_slice())
+                .with_js_error()?;
+
+        Ok(IdentityUpdateTransitionWASM(rs_transition))
     }
 
     #[wasm_bindgen(js_name = "toStateTransition")]
