@@ -1,5 +1,4 @@
 use dpp::platform_value::BinaryData;
-use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::prelude::Identifier;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
@@ -8,7 +7,7 @@ use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, Stat
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
-use pshenmic_dpp_utils::{WithJsError, identifier_from_js_value};
+use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 

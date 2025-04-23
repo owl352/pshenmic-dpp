@@ -9,8 +9,8 @@ use dpp::state_transition::documents_batch_transition::document_create_transitio
 use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
 use pshenmic_dpp_document::DocumentWASM;
 use pshenmic_dpp_utils::ToSerdeJSONExt;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "DocumentCreateTransitionWASM")]
 #[derive(Clone)]

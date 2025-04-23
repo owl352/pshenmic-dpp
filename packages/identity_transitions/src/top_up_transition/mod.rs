@@ -1,7 +1,6 @@
 use dpp::identifier::Identifier;
-use dpp::identity::KeyID;
 use dpp::identity::state_transition::{AssetLockProved, OptionallyAssetLockProved};
-use dpp::prelude::{IdentityNonce, Revision, UserFeeIncrease};
+use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::Signable;
 use dpp::state_transition::identity_topup_transition::IdentityTopUpTransition;
 use dpp::state_transition::identity_topup_transition::accessors::IdentityTopUpTransitionAccessorsV0;
