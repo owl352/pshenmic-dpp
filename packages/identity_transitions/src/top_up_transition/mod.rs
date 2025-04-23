@@ -117,8 +117,7 @@ impl IdentityTopUpTransitionWASM {
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityTopUpTransitionWASM, JsValue> {
         let rs_transition =
-            IdentityTopUpTransition::deserialize_from_bytes(bytes.as_slice())
-                .with_js_error()?;
+            IdentityTopUpTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
 
         Ok(IdentityTopUpTransitionWASM(rs_transition))
     }

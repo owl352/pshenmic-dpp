@@ -5,12 +5,12 @@ use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
 use dpp::state_transition::{StateTransition, StateTransitionLike};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
+use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 
 #[wasm_bindgen(js_name = "IdentityCreateTransitionWASM")]
 #[derive(Clone)]
