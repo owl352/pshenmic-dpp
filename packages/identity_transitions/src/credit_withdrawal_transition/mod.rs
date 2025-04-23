@@ -1,11 +1,15 @@
 use dpp::identity::KeyID;
+use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::Identifier;
 use dpp::prelude::{IdentityNonce, UserFeeIncrease};
 use dpp::serialization::Signable;
 use dpp::state_transition::identity_credit_withdrawal_transition::IdentityCreditWithdrawalTransition;
+use dpp::state_transition::identity_credit_withdrawal_transition::accessors::IdentityCreditWithdrawalTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_withdrawal_transition::v0::IdentityCreditWithdrawalTransitionV0;
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_core_script::CoreScriptWASM;
+use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::withdrawal::PoolingWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
@@ -44,6 +48,101 @@ impl IdentityCreditWithdrawalTransitionWASM {
                 signature: Default::default(),
             }),
         ))
+    }
+
+    #[wasm_bindgen(getter = "outputScript")]
+    pub fn get_output_script(&self) -> Option<CoreScriptWASM> {
+        match self.0.output_script() {
+            None => None,
+            Some(script) => Some(script.into()),
+        }
+    }
+
+    #[wasm_bindgen(getter = "pooling")]
+    pub fn get_pooling(&self) -> String {
+        PoolingWASM::from(self.0.pooling()).into()
+    }
+
+    #[wasm_bindgen(getter = "identityId")]
+    pub fn get_identity_id(&self) -> IdentifierWASM {
+        IdentifierWASM::from(self.0.identity_id())
+    }
+
+    #[wasm_bindgen(getter = "userFeeIncrease")]
+    pub fn get_user_fee_increase(&self) -> UserFeeIncrease {
+        self.0.user_fee_increase()
+    }
+
+    #[wasm_bindgen(getter = "nonce")]
+    pub fn get_nonce(&self) -> IdentityNonce {
+        self.0.nonce()
+    }
+
+    #[wasm_bindgen(getter = "amount")]
+    pub fn get_amount(&self) -> u64 {
+        self.0.amount()
+    }
+
+    #[wasm_bindgen(js_name = "getPurposeRequirement")]
+    pub fn get_purpose_requirement(&self) -> Vec<String> {
+        self.0
+            .purpose_requirement()
+            .iter()
+            .map(|purpose| PurposeWASM::from(purpose.clone()).into())
+            .collect()
+    }
+
+    #[wasm_bindgen(js_name = "getModifiedDataIds")]
+    pub fn get_modified_data_ids(&self) -> Vec<IdentifierWASM> {
+        self.0
+            .modified_data_ids()
+            .iter()
+            .map(|id| id.clone().into())
+            .collect()
+    }
+
+    #[wasm_bindgen(js_name = "getOptionalAssetLockProof")]
+    pub fn get_optional_asset_lock_proof(&self) -> JsValue {
+        match self.0.optional_asset_lock_proof() {
+            Some(asset_lock) => JsValue::from(AssetLockProofWASM::from(asset_lock.clone())),
+            None => JsValue::null(),
+        }
+    }
+
+    #[wasm_bindgen(setter = "outputScript")]
+    pub fn set_output_script(&mut self, script: Option<CoreScriptWASM>) {
+        match script {
+            None => self.0.set_output_script(None),
+            Some(script) => self.set_output_script(Some(script.into())),
+        }
+    }
+
+    #[wasm_bindgen(setter = "pooling")]
+    pub fn set_pooling(&mut self, js_pooling: JsValue) -> Result<(), JsValue> {
+        let pooling: PoolingWASM = PoolingWASM::try_from(js_pooling)?;
+        Ok(self.0.set_pooling(pooling.into()))
+    }
+
+    #[wasm_bindgen(setter = "identityId")]
+    pub fn set_identity_id(&mut self, js_identity_id: JsValue) -> Result<(), JsValue> {
+        let identity_id = IdentifierWASM::try_from(js_identity_id)?;
+
+        Ok(self.0.set_identity_id(identity_id.into()))
+    }
+
+    #[wasm_bindgen(setter = "userFeeIncrease")]
+    pub fn set_user_fee_increase(&mut self, user_fee_increase: UserFeeIncrease) {
+        self.0.set_user_fee_increase(user_fee_increase);
+    }
+
+    #[wasm_bindgen(setter = "nonce")]
+    pub fn set_nonce(&mut self, nonce: IdentityNonce) {
+        self.0.set_nonce(nonce)
+    }
+
+    #[wasm_bindgen(setter = "amount")]
+    pub fn set_amount(&mut self, amount: u64) {
+        self.0.set_amount(amount)
     }
 
     #[wasm_bindgen(getter = "signature")]

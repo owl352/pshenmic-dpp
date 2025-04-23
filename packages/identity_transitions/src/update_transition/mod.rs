@@ -57,11 +57,11 @@ impl IdentityUpdateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "getPurposeRequirement")]
-    pub fn get_purpose_requirement(&self) -> Vec<PurposeWASM> {
+    pub fn get_purpose_requirement(&self) -> Vec<String> {
         self.0
             .purpose_requirement()
             .iter()
-            .map(|purpose| purpose.clone().into())
+            .map(|purpose| PurposeWASM::from(purpose.clone()).into())
             .collect()
     }
 

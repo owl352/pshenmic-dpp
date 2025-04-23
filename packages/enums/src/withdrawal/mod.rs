@@ -1,6 +1,8 @@
 use dpp::withdrawal::Pooling;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
+#[wasm_bindgen]
 pub enum PoolingWASM {
     Never = 0,
     IfAvailable = 1,
@@ -13,6 +15,16 @@ impl From<PoolingWASM> for Pooling {
             PoolingWASM::Never => Pooling::Never,
             PoolingWASM::IfAvailable => Pooling::IfAvailable,
             PoolingWASM::Standard => Pooling::Standard,
+        }
+    }
+}
+
+impl From<Pooling> for PoolingWASM {
+    fn from(pooling: Pooling) -> Self {
+        match pooling {
+            Pooling::Never => PoolingWASM::Never,
+            Pooling::IfAvailable => PoolingWASM::IfAvailable,
+            Pooling::Standard => PoolingWASM::Standard,
         }
     }
 }

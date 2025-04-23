@@ -1,6 +1,5 @@
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::state_transition::AssetLockProved;
-use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
