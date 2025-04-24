@@ -1,8 +1,11 @@
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::state_transition::AssetLockProved;
+use dpp::platform_value::BinaryData;
+use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
+use dpp::state_transition::identity_create_transition::v0::IdentityCreateTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{StateTransition, StateTransitionLike};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
@@ -32,7 +35,28 @@ impl From<IdentityCreateTransitionWASM> for IdentityCreateTransition {
 #[wasm_bindgen]
 impl IdentityCreateTransitionWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(js_platform_version: JsValue) -> Result<IdentityCreateTransitionWASM, JsValue> {
+    pub fn new(
+        public_keys: Vec<IdentityPublicKeyInCreationWASM>,
+        asset_lock: &AssetLockProofWASM,
+        user_fee_increase: UserFeeIncrease,
+        signature: Option<Vec<u8>>,
+        js_identity_id: &JsValue,
+    ) -> Result<IdentityCreateTransitionWASM, JsValue> {
+        let identity_id = IdentifierWASM::try_from(js_identity_id)?;
+
+        Ok(IdentityCreateTransitionWASM(IdentityCreateTransition::V0(
+            IdentityCreateTransitionV0 {
+                public_keys: public_keys.iter().map(|key| key.clone().into()).collect(),
+                asset_lock_proof: asset_lock.clone().into(),
+                user_fee_increase,
+                signature: BinaryData::from(signature.unwrap_or(vec![])),
+                identity_id: identity_id.into(),
+            },
+        )))
+    }
+
+    #[wasm_bindgen(js_name = "default")]
+    pub fn default(js_platform_version: JsValue) -> Result<IdentityCreateTransitionWASM, JsValue> {
         let platform_version = PlatformVersionWASM::try_from(js_platform_version)?;
 
         IdentityCreateTransition::default_versioned(&platform_version.into())

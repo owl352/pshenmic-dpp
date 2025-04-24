@@ -8,6 +8,8 @@ use crate::instant::InstantAssetLockProofWASM;
 
 use dpp::prelude::AssetLockProof;
 use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
+use pshenmic_dpp_utils::WithJsError;
+use serde::Serialize;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};
 
@@ -73,12 +75,19 @@ impl AssetLockProofWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = getLockType)]
+    #[wasm_bindgen(js_name = "getLockType")]
     pub fn get_lock_type(&self) -> String {
         match self.0 {
             AssetLockProof::Chain(_) => AssetLockProofTypeWASM::Chain.into(),
             AssetLockProof::Instant(_) => AssetLockProofTypeWASM::Instant.into(),
         }
+    }
+
+    #[wasm_bindgen(js_name = "toObject")]
+    pub fn to_object(&self) -> Result<JsValue, JsValue> {
+        let json_value = self.0.to_raw_object().with_js_error()?;
+
+        Ok(json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?)
     }
 }
 
