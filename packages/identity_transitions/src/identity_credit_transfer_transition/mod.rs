@@ -61,46 +61,46 @@ impl IdentityCreditTransferWASM {
         Ok(IdentityCreditTransferWASM(rs_transition))
     }
 
-    #[wasm_bindgen(js_name = "setRecipientId")]
+    #[wasm_bindgen(setter = "recipientId")]
     pub fn set_recipient_id(&mut self, js_recipient: &JsValue) -> Result<(), JsValue> {
         let recipient: Identifier = IdentifierWASM::try_from(js_recipient)?.into();
 
         Ok(self.0.set_recipient_id(recipient))
     }
 
-    #[wasm_bindgen(js_name = "setSenderId")]
+    #[wasm_bindgen(setter = "senderId")]
     pub fn set_sender_id(&mut self, js_sender: &JsValue) -> Result<(), JsValue> {
         let sender: Identifier = IdentifierWASM::try_from(js_sender)?.into();
 
         Ok(self.0.set_identity_id(sender))
     }
 
-    #[wasm_bindgen(js_name = "setAmount")]
+    #[wasm_bindgen(setter = "amount")]
     pub fn set_amount(&mut self, amount: u64) {
         self.0.set_amount(amount)
     }
 
-    #[wasm_bindgen(js_name = "setNonce")]
+    #[wasm_bindgen(setter = "nonce")]
     pub fn set_nonce(&mut self, nonce: u64) {
         self.0.set_nonce(nonce)
     }
 
-    #[wasm_bindgen(js_name = "setSignature")]
+    #[wasm_bindgen(setter = "signature")]
     pub fn set_signature(&mut self, signature: Vec<u8>) {
         self.0.set_signature_bytes(signature)
     }
 
-    #[wasm_bindgen(js_name = "setSignaturePublicKeyId")]
+    #[wasm_bindgen(setter = "signaturePublicKeyId")]
     pub fn set_signature_public_key_id(&mut self, public_key_id: u32) {
         self.0.set_signature_public_key_id(public_key_id)
     }
 
-    #[wasm_bindgen(js_name = "setUserFeeIncrease")]
+    #[wasm_bindgen(setter = "userFeeIncrease")]
     pub fn set_user_fee_increase(&mut self, amount: u16) {
         self.0.set_user_fee_increase(amount)
     }
 
-    #[wasm_bindgen(js_name = "getSignature")]
+    #[wasm_bindgen(getter = "signature")]
     pub fn get_signature(&self) -> Vec<u8> {
         self.0.signature().to_vec()
     }
@@ -110,32 +110,32 @@ impl IdentityCreditTransferWASM {
         self.0.signable_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name = "getSignaturePublicKeyId")]
+    #[wasm_bindgen(getter = "signaturePublicKeyId")]
     pub fn get_signature_public_key_id(&self) -> u32 {
         self.0.signature_public_key_id()
     }
 
-    #[wasm_bindgen(js_name = "getUserFeeIncrease")]
+    #[wasm_bindgen(getter = "userFeeIncrease")]
     pub fn get_user_fee_increase(&self) -> u16 {
         self.0.user_fee_increase()
     }
 
-    #[wasm_bindgen(js_name = "getRecipientId")]
+    #[wasm_bindgen(getter = "recipientId")]
     pub fn get_recipient_id(&self) -> IdentifierWASM {
         self.0.recipient_id().into()
     }
 
-    #[wasm_bindgen(js_name = "getIdentityId")]
+    #[wasm_bindgen(getter = "senderId")]
     pub fn get_identity_id(&self) -> IdentifierWASM {
         self.0.identity_id().into()
     }
 
-    #[wasm_bindgen(js_name = "getAmount")]
+    #[wasm_bindgen(getter = "amount")]
     pub fn get_amount(&self) -> u64 {
         self.0.amount()
     }
 
-    #[wasm_bindgen(js_name = "getNonce")]
+    #[wasm_bindgen(getter = "nonce")]
     pub fn get_nonce(&self) -> u64 {
         self.0.nonce()
     }

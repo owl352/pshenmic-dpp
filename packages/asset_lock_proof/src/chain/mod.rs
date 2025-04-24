@@ -1,6 +1,4 @@
-mod outpoint;
-
-use crate::chain::outpoint::OutPointWASM;
+use crate::outpoint::OutPointWASM;
 use dpp::identity::state_transition::asset_lock_proof::chain::ChainAssetLockProof;
 use serde::Deserialize;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -57,22 +55,22 @@ impl ChainAssetLockProofWASM {
         })
     }
 
-    #[wasm_bindgen(js_name = "setCoreChainLockedHeight")]
+    #[wasm_bindgen(setter = "setCoreChainLockedHeight")]
     pub fn set_core_chain_locked_height(&mut self, core_chain_locked_height: u32) {
         self.0.core_chain_locked_height = core_chain_locked_height;
     }
 
-    #[wasm_bindgen(js_name = "setOutPoint")]
+    #[wasm_bindgen(setter = "setOutPoint")]
     pub fn set_out_point(&mut self, outpoint: OutPointWASM) {
         self.0.out_point = outpoint.into();
     }
 
-    #[wasm_bindgen(js_name = "getCoreChainLockedHeight")]
+    #[wasm_bindgen(getter = "getCoreChainLockedHeight")]
     pub fn get_core_chain_locked_height(self) -> u32 {
         self.0.core_chain_locked_height
     }
 
-    #[wasm_bindgen(js_name = "getOutPoint")]
+    #[wasm_bindgen(getter = "getOutPoint")]
     pub fn get_out_point(self) -> OutPointWASM {
         self.0.out_point.into()
     }

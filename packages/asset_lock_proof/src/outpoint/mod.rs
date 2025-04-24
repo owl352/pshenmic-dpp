@@ -5,6 +5,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "OutPointWASM")]
+#[derive(Clone)]
 pub struct OutPointWASM(OutPoint);
 
 impl From<OutPoint> for OutPointWASM {
@@ -21,6 +22,7 @@ impl From<OutPointWASM> for OutPoint {
 
 #[wasm_bindgen]
 impl OutPointWASM {
+    #[wasm_bindgen(constructor)]
     pub fn new(raw_out_point: Vec<u8>, vout: u32) -> Result<OutPointWASM, JsValue> {
         let out_point = deserialize(raw_out_point.as_slice());
 
@@ -33,10 +35,12 @@ impl OutPointWASM {
         }
     }
 
+    #[wasm_bindgen(js_name = "getVOUT")]
     pub fn get_vout(self) -> u32 {
         self.0.vout
     }
 
+    #[wasm_bindgen(js_name = "getTXID")]
     pub fn get_tx_id(self) -> Vec<u8> {
         self.0.txid.as_byte_array().to_vec()
     }

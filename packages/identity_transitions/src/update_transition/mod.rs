@@ -1,10 +1,8 @@
-use crate::identity_credit_transfer_transition::IdentityCreditTransferWASM;
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::KeyID;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::prelude::{IdentityNonce, Revision, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
-use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
 use dpp::state_transition::identity_update_transition::IdentityUpdateTransition;
 use dpp::state_transition::identity_update_transition::accessors::IdentityUpdateTransitionAccessorsV0;
 use dpp::state_transition::identity_update_transition::v0::IdentityUpdateTransitionV0;

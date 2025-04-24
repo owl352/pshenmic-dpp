@@ -176,10 +176,7 @@ impl IdentityCreditWithdrawalTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
-    pub fn from_bytes(
-        bytes: Vec<u8>,
-        version: u8,
-    ) -> Result<IdentityCreditWithdrawalTransitionWASM, JsValue> {
+    pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityCreditWithdrawalTransitionWASM, JsValue> {
         let rs_transition =
             IdentityCreditWithdrawalTransition::deserialize_from_bytes(bytes.as_slice())
                 .with_js_error()?;

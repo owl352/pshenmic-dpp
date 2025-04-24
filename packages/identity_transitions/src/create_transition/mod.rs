@@ -3,6 +3,7 @@ use dpp::identity::state_transition::AssetLockProved;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
+use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{StateTransition, StateTransitionLike};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
@@ -52,7 +53,7 @@ impl IdentityCreateTransitionWASM {
         Ok(IdentityCreateTransitionWASM(rs_transition))
     }
 
-    #[wasm_bindgen(js_name = "defaultVersioned")]
+    #[wasm_bindgen(getter = "publicKeys")]
     pub fn get_public_keys(&self) -> Vec<IdentityPublicKeyInCreationWASM> {
         self.0
             .public_keys()
@@ -84,6 +85,15 @@ impl IdentityCreateTransitionWASM {
     #[wasm_bindgen(getter = "assetLock")]
     pub fn get_asset_lock_proof(&self) -> AssetLockProofWASM {
         AssetLockProofWASM::from(self.0.asset_lock_proof().clone())
+    }
+
+    #[wasm_bindgen(setter = "publicKeys")]
+    pub fn set_public_keys(&mut self, keys: Vec<IdentityPublicKeyInCreationWASM>) {
+        self.0.set_public_keys(
+            keys.iter()
+                .map(|key| IdentityPublicKeyInCreation::from(key.clone()))
+                .collect(),
+        )
     }
 
     #[wasm_bindgen(setter = "userFeeIncrease")]

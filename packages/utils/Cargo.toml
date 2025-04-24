@@ -7,12 +7,12 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 anyhow = { version = "1.0.75" }
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", features = [
     "platform-value",
     "document-json-conversion"
-]}
+] }
 js-sys = "0.3.53"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }

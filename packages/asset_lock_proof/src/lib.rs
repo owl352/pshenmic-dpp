@@ -1,8 +1,11 @@
-mod chain;
-mod instant;
+pub mod chain;
+pub mod instant;
+pub mod outpoint;
+mod tx_out;
 
 use crate::chain::ChainAssetLockProofWASM;
 use crate::instant::InstantAssetLockProofWASM;
+
 use dpp::prelude::AssetLockProof;
 use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
 use wasm_bindgen::prelude::wasm_bindgen;
