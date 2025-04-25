@@ -1468,6 +1468,7 @@ name = "pshenmic_dpp_identity_transitions"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "js-sys",
  "pshenmic_dpp_asset_lock_proof",
  "pshenmic_dpp_core_script",
  "pshenmic_dpp_enums",

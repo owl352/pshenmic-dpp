@@ -24,21 +24,34 @@ pub struct IdentityUpdateTransitionWASM(IdentityUpdateTransition);
 impl IdentityUpdateTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        identity_id: IdentifierWASM,
+        js_identity_id: &JsValue,
         revision: Revision,
         nonce: IdentityNonce,
         user_fee_increase: Option<UserFeeIncrease>,
-    ) -> IdentityUpdateTransitionWASM {
-        IdentityUpdateTransitionWASM(IdentityUpdateTransition::V0(IdentityUpdateTransitionV0 {
-            identity_id: identity_id.into(),
-            revision,
-            nonce,
-            add_public_keys: vec![],
-            disable_public_keys: vec![],
-            user_fee_increase: user_fee_increase.unwrap_or(0),
-            signature_public_key_id: 0,
-            signature: Default::default(),
-        }))
+        js_add_public_keys: &js_sys::Array,
+        disable_public_keys: Vec<KeyID>,
+    ) -> Result<IdentityUpdateTransitionWASM, JsValue> {
+        let identity_id = IdentifierWASM::try_from(js_identity_id)?;
+
+        let add_public_keys: Vec<IdentityPublicKeyInCreationWASM> =
+            IdentityPublicKeyInCreationWASM::vec_from_js_value(js_add_public_keys)?;
+
+        Ok(IdentityUpdateTransitionWASM(IdentityUpdateTransition::V0(
+            IdentityUpdateTransitionV0 {
+                identity_id: identity_id.into(),
+                revision,
+                nonce,
+                add_public_keys: add_public_keys
+                    .clone()
+                    .iter()
+                    .map(|key| key.clone().into())
+                    .collect(),
+                disable_public_keys,
+                user_fee_increase: user_fee_increase.unwrap_or(0),
+                signature_public_key_id: 0,
+                signature: Default::default(),
+            },
+        )))
     }
 
     #[wasm_bindgen(getter = "revision")]
@@ -113,19 +126,24 @@ impl IdentityUpdateTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "identityIdentifier")]
-    pub fn set_identity_identifier(&mut self, identity_id: &IdentifierWASM) {
+    pub fn set_identity_identifier(&mut self, js_identity_id: &JsValue) -> Result<(), JsValue> {
+        let identity_id = IdentifierWASM::try_from(js_identity_id)?;
         self.0.set_identity_id(identity_id.clone().into());
+        Ok(())
     }
 
     #[wasm_bindgen(setter = "publicKeyIdsToAdd")]
     pub fn set_public_key_ids_to_add(
         &mut self,
-        public_key_ids: Vec<IdentityPublicKeyInCreationWASM>,
-    ) {
-        let keys: Vec<IdentityPublicKeyInCreation> =
-            public_key_ids.iter().map(|id| id.clone().into()).collect();
+        js_add_public_keys: &js_sys::Array,
+    ) -> Result<(), JsValue> {
+        let add_public_keys: Vec<IdentityPublicKeyInCreationWASM> =
+            IdentityPublicKeyInCreationWASM::vec_from_js_value(js_add_public_keys)?;
 
-        self.0.set_public_keys_to_add(keys)
+        let keys: Vec<IdentityPublicKeyInCreation> =
+            add_public_keys.iter().map(|id| id.clone().into()).collect();
+
+        Ok(self.0.set_public_keys_to_add(keys))
     }
 
     #[wasm_bindgen(setter = "publicKeyIdsToDisable")]

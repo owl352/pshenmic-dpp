@@ -1,6 +1,7 @@
 use dpp::dashcore::OutPoint;
 use dpp::dashcore::consensus::deserialize;
 use dpp::dashcore::hashes::Hash;
+use pshenmic_dpp_utils::IntoWasm;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -17,6 +18,15 @@ impl From<OutPoint> for OutPointWASM {
 impl From<OutPointWASM> for OutPoint {
     fn from(outpoint: OutPointWASM) -> Self {
         outpoint.0
+    }
+}
+
+impl TryFrom<JsValue> for OutPointWASM {
+    type Error = JsValue;
+    fn try_from(value: JsValue) -> Result<Self, Self::Error> {
+        let value = value.to_wasm::<OutPointWASM>("OutPointWASM")?;
+
+        Ok(value.clone())
     }
 }
 
@@ -43,5 +53,16 @@ impl OutPointWASM {
     #[wasm_bindgen(js_name = "getTXID")]
     pub fn get_tx_id(self) -> Vec<u8> {
         self.0.txid.as_byte_array().to_vec()
+    }
+}
+
+impl OutPointWASM {
+    pub fn vec_from_js_value(js_outpoints: &js_sys::Array) -> Result<Vec<OutPointWASM>, JsValue> {
+        let outpoints: Vec<OutPointWASM> = js_outpoints
+            .iter()
+            .map(|key| OutPointWASM::try_from(key))
+            .collect::<Result<Vec<OutPointWASM>, JsValue>>()?;
+
+        Ok(outpoints)
     }
 }

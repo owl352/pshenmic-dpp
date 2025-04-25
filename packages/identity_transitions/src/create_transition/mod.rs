@@ -36,12 +36,14 @@ impl From<IdentityCreateTransitionWASM> for IdentityCreateTransition {
 impl IdentityCreateTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        public_keys: Vec<IdentityPublicKeyInCreationWASM>,
+        js_public_keys: &js_sys::Array,
         asset_lock: &AssetLockProofWASM,
         user_fee_increase: UserFeeIncrease,
         signature: Option<Vec<u8>>,
         js_identity_id: &JsValue,
     ) -> Result<IdentityCreateTransitionWASM, JsValue> {
+        let public_keys: Vec<IdentityPublicKeyInCreationWASM> =
+            IdentityPublicKeyInCreationWASM::vec_from_js_value(js_public_keys)?;
         let identity_id = IdentifierWASM::try_from(js_identity_id)?;
 
         Ok(IdentityCreateTransitionWASM(IdentityCreateTransition::V0(
@@ -112,12 +114,18 @@ impl IdentityCreateTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "publicKeys")]
-    pub fn set_public_keys(&mut self, keys: Vec<IdentityPublicKeyInCreationWASM>) {
+    pub fn set_public_keys(&mut self, js_public_keys: &js_sys::Array) -> Result<(), JsValue> {
+        let public_keys: Vec<IdentityPublicKeyInCreationWASM> =
+            IdentityPublicKeyInCreationWASM::vec_from_js_value(js_public_keys)?;
+
         self.0.set_public_keys(
-            keys.iter()
+            public_keys
+                .iter()
                 .map(|key| IdentityPublicKeyInCreation::from(key.clone()))
                 .collect(),
-        )
+        );
+
+        Ok(())
     }
 
     #[wasm_bindgen(setter = "userFeeIncrease")]

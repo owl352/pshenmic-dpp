@@ -30,11 +30,13 @@ impl InstantLockWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         version: u8,
-        inputs: Vec<OutPointWASM>,
+        js_inputs: &js_sys::Array,
         txid: String,
         cycle_hash: String,
         bls_signature: String,
     ) -> Result<InstantLockWASM, JsValue> {
+        let inputs = OutPointWASM::vec_from_js_value(js_inputs)?;
+
         Ok(InstantLockWASM(InstantLock {
             version,
             inputs: inputs.iter().map(|input| input.clone().into()).collect(),
@@ -81,8 +83,10 @@ impl InstantLockWASM {
     }
 
     #[wasm_bindgen(setter = "inputs")]
-    pub fn set_inputs(&mut self, inputs: Vec<OutPointWASM>) {
+    pub fn set_inputs(&mut self, inputs: &js_sys::Array) -> Result<(), JsValue> {
+        let inputs = OutPointWASM::vec_from_js_value(inputs)?;
         self.0.inputs = inputs.iter().map(|input| input.clone().into()).collect();
+        Ok(())
     }
 
     #[wasm_bindgen(setter = "txid")]

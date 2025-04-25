@@ -11,6 +11,7 @@ wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["se
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "state-transition-signing"
 ]}
+js-sys = "0.3.53"
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_core_script = {path = "../core_script"}
 pshenmic_dpp_public_key = {path = "../identity_public_key" }
