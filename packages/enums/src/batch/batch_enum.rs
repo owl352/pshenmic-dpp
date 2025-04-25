@@ -25,8 +25,8 @@ impl TryFrom<JsValue> for BatchTypeWASM {
                     "delete" => Ok(BatchTypeWASM::Delete),
                     "transfer" => Ok(BatchTypeWASM::Transfer),
                     "purchase" => Ok(BatchTypeWASM::Purchase),
-                    "updatePrice" => Ok(BatchTypeWASM::UpdatePrice),
-                    "ignoreWhileBumpingRevision" => Ok(BatchTypeWASM::IgnoreWhileBumpingRevision),
+                    "updateprice" => Ok(BatchTypeWASM::UpdatePrice),
+                    "ignorewhilebumpingrevision" => Ok(BatchTypeWASM::IgnoreWhileBumpingRevision),
                     _ => Err(JsValue::from(format!(
                         "unknown batch type value: {}",
                         enum_val

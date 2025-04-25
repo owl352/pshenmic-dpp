@@ -13,7 +13,7 @@ use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::withdrawal::PoolingWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
-use pshenmic_dpp_utils::WithJsError;
+use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -28,7 +28,7 @@ impl IdentityCreditWithdrawalTransitionWASM {
         amount: u64,
         core_fee_per_byte: u32,
         js_pooling: JsValue,
-        output_script: CoreScriptWASM,
+        output_script: &CoreScriptWASM,
         nonce: Option<IdentityNonce>,
         user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityCreditWithdrawalTransitionWASM, JsValue> {
@@ -41,7 +41,7 @@ impl IdentityCreditWithdrawalTransitionWASM {
                 amount,
                 core_fee_per_byte,
                 pooling: pooling.into(),
-                output_script: output_script.into(),
+                output_script: output_script.clone().into(),
                 nonce: nonce.unwrap_or(0),
                 user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: 0,
@@ -110,11 +110,18 @@ impl IdentityCreditWithdrawalTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "outputScript")]
-    pub fn set_output_script(&mut self, script: Option<CoreScriptWASM>) {
-        match script {
-            None => self.0.set_output_script(None),
-            Some(script) => self.set_output_script(Some(script.into())),
-        }
+    pub fn set_output_script(&mut self, js_script: &JsValue) -> Result<(), JsValue> {
+        match js_script.is_undefined() {
+            true => self.0.set_output_script(None),
+            false => {
+                let script: CoreScriptWASM = js_script
+                    .to_wasm::<CoreScriptWASM>("CoreScriptWASM")?
+                    .clone();
+                self.0.set_output_script(Some(script.clone().into()))
+            }
+        };
+
+        Ok(())
     }
 
     #[wasm_bindgen(setter = "pooling")]

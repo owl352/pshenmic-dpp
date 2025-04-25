@@ -4,6 +4,7 @@ use dpp::platform_value::string_encoding::Encoding::Base64;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "CoreScriptWASM")]
+#[derive(Clone)]
 pub struct CoreScriptWASM(CoreScript);
 
 impl From<CoreScriptWASM> for CoreScript {

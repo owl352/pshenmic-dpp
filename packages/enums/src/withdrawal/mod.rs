@@ -36,9 +36,9 @@ impl TryFrom<JsValue> for PoolingWASM {
             true => match value.as_string() {
                 None => Err(JsValue::from("cannot read value from enum")),
                 Some(enum_val) => match enum_val.to_lowercase().as_str() {
-                    "Never" => Ok(PoolingWASM::Never),
-                    "IfAvailable" => Ok(PoolingWASM::IfAvailable),
-                    "Standard" => Ok(PoolingWASM::Standard),
+                    "never" => Ok(PoolingWASM::Never),
+                    "ifavailable" => Ok(PoolingWASM::IfAvailable),
+                    "standard" => Ok(PoolingWASM::Standard),
                     _ => Err(JsValue::from(format!(
                         "unsupported pooling value ({})",
                         enum_val
