@@ -23,12 +23,16 @@ impl IdentityCreditTransferWASM {
         js_sender: &JsValue,
         js_recipient: &JsValue,
         nonce: u64,
-        platform_version_wasm: Option<PlatformVersionWASM>,
+        js_platform_version_wasm: &JsValue,
     ) -> Result<IdentityCreditTransferWASM, JsValue> {
-        let rs_transfer_transition_creation = IdentityCreditTransferTransition::default_versioned(
-            &platform_version_wasm.unwrap_or_default().into(),
-        )
-        .with_js_error();
+        let platform_version_wasm = match js_platform_version_wasm.is_undefined() {
+            true => PlatformVersionWASM::PLATFORM_V1,
+            false => PlatformVersionWASM::try_from(js_platform_version_wasm.clone())?,
+        };
+
+        let rs_transfer_transition_creation =
+            IdentityCreditTransferTransition::default_versioned(&platform_version_wasm.into())
+                .with_js_error();
 
         let mut rs_transition = match rs_transfer_transition_creation {
             Ok(rs_transition) => rs_transition,
