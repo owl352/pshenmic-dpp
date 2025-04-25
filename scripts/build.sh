@@ -9,7 +9,7 @@ PROFILE=release
 
 OUTPUT_FILE="${PWD}/wasm/pshenmic_dpp_bg.wasm"
 
-RUSTFLAGS="-С link-arg=-s -С link-arg=-Wl,--gc-sections -C target-feature=+crt-static -C embed-bitcode=no -C metadata=reduced -C link-dead-code=no -C panic=abort"
+RUSTFLAGS="-C target-feature=+crt-static -C embed-bitcode=no -C metadata=reduced -C link-dead-code=no -C panic=abort"
 
 BUILD_COMMAND="cargo build --config net.git-fetch-with-cli=true --target=${TARGET} ${PROFILE_ARG}"
 STRIP_COMMAND=" wasm-snip ${PWD}/target/${TARGET}/${PROFILE}/pshenmic_dpp.wasm -o ${PWD}/target/${TARGET}/${PROFILE}/pshenmic_dpp.wasm --snip-rust-fmt-code --snip-rust-panicking-code"
