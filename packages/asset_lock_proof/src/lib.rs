@@ -5,7 +5,9 @@ mod tx_out;
 
 use crate::chain::ChainAssetLockProofWASM;
 use crate::instant::InstantAssetLockProofWASM;
+use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
 
+use crate::outpoint::OutPointWASM;
 use dpp::prelude::AssetLockProof;
 use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
 use pshenmic_dpp_utils::WithJsError;
@@ -62,15 +64,44 @@ impl From<AssetLockProof> for InstantAssetLockProofWASM {
 #[wasm_bindgen]
 impl AssetLockProofWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
+    pub fn new(
+        asset_lock_proof_type: AssetLockProofTypeWASM,
+    ) -> Result<AssetLockProofWASM, JsValue> {
+        match asset_lock_proof_type {
+            AssetLockProofTypeWASM::Chain => Err(JsValue::from_str(&"ChainLock unavailable")),
+            AssetLockProofTypeWASM::Instant => {
+                Ok(InstantAssetLockProofWASM::from(InstantAssetLockProof::default()).into())
+            }
+        }
+    }
+
+    #[wasm_bindgen(js_name = "createInstantAssetLockProof")]
+    pub fn new_instant_asset_lock_proof(
+        instant_lock: Vec<u8>,
+        transaction: Vec<u8>,
+        output_index: u32,
+    ) -> Result<AssetLockProofWASM, JsValue> {
+        Ok(InstantAssetLockProofWASM::new(instant_lock, transaction, output_index)?.into())
+    }
+
+    #[wasm_bindgen(js_name = "createChainAssetLockProof")]
+    pub fn new_chain_asset_lock_proof(
+        core_chain_locked_height: u32,
+        out_point: &OutPointWASM,
+    ) -> Result<AssetLockProofWASM, JsValue> {
+        Ok(ChainAssetLockProofWASM::new(core_chain_locked_height, out_point)?.into())
+    }
+
+    #[wasm_bindgen(js_name = "fromRawObject")]
+    pub fn from_raw_object(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
         let lock_type = get_type_from_raw_asset_lock_proof(&raw_asset_lock_proof)?;
 
         match lock_type {
             AssetLockProofTypeWASM::Instant => {
-                Ok(InstantAssetLockProofWASM::new(raw_asset_lock_proof)?.into())
+                Ok(InstantAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
             }
             AssetLockProofTypeWASM::Chain => {
-                Ok(ChainAssetLockProofWASM::new(raw_asset_lock_proof)?.into())
+                Ok(ChainAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
             }
         }
     }

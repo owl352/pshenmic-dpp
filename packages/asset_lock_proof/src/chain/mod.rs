@@ -29,7 +29,20 @@ impl From<ChainAssetLockProof> for ChainAssetLockProofWASM {
 #[wasm_bindgen]
 impl ChainAssetLockProofWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(raw_asset_lock_proof: JsValue) -> Result<ChainAssetLockProofWASM, JsValue> {
+    pub fn new(
+        core_chain_locked_height: u32,
+        out_point: &OutPointWASM,
+    ) -> Result<ChainAssetLockProofWASM, JsValue> {
+        Ok(ChainAssetLockProofWASM(ChainAssetLockProof {
+            core_chain_locked_height,
+            out_point: out_point.clone().into(),
+        }))
+    }
+
+    #[wasm_bindgen(js_name = "fromRawObject")]
+    pub fn from_raw_value(
+        raw_asset_lock_proof: JsValue,
+    ) -> Result<ChainAssetLockProofWASM, JsValue> {
         let parameters: ChainAssetLockProofParams =
             serde_wasm_bindgen::from_value(raw_asset_lock_proof)
                 .map_err(|_| JsError::new("invalid raw chain lock proof"))?;
@@ -44,25 +57,14 @@ impl ChainAssetLockProofWASM {
         Ok(ChainAssetLockProofWASM(rs_proof))
     }
 
-    #[wasm_bindgen(js_name = "fromData")]
-    pub fn from_data(
-        core_chain_locked_height: u32,
-        out_point: OutPointWASM,
-    ) -> ChainAssetLockProofWASM {
-        ChainAssetLockProofWASM(ChainAssetLockProof {
-            core_chain_locked_height,
-            out_point: out_point.into(),
-        })
-    }
-
     #[wasm_bindgen(setter = "setCoreChainLockedHeight")]
     pub fn set_core_chain_locked_height(&mut self, core_chain_locked_height: u32) {
         self.0.core_chain_locked_height = core_chain_locked_height;
     }
 
     #[wasm_bindgen(setter = "setOutPoint")]
-    pub fn set_out_point(&mut self, outpoint: OutPointWASM) {
-        self.0.out_point = outpoint.into();
+    pub fn set_out_point(&mut self, outpoint: &OutPointWASM) {
+        self.0.out_point = outpoint.clone().into();
     }
 
     #[wasm_bindgen(getter = "getCoreChainLockedHeight")]

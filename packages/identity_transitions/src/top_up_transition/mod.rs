@@ -21,7 +21,7 @@ pub struct IdentityTopUpTransitionWASM(IdentityTopUpTransition);
 impl IdentityTopUpTransitionWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        asset_lock_proof: AssetLockProofWASM,
+        asset_lock_proof: &AssetLockProofWASM,
         js_identity_id: JsValue,
         user_fee_increase: UserFeeIncrease,
     ) -> Result<IdentityTopUpTransitionWASM, JsValue> {
@@ -29,7 +29,7 @@ impl IdentityTopUpTransitionWASM {
 
         Ok(IdentityTopUpTransitionWASM(IdentityTopUpTransition::V0(
             IdentityTopUpTransitionV0 {
-                asset_lock_proof: asset_lock_proof.into(),
+                asset_lock_proof: asset_lock_proof.clone().into(),
                 identity_id,
                 user_fee_increase,
                 signature: Default::default(),

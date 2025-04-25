@@ -3,6 +3,8 @@ mod instant_lock;
 use crate::instant::instant_lock::InstantLockWASM;
 use crate::outpoint::OutPointWASM;
 use crate::tx_out::TxOutWASM;
+use dpp::dashcore::consensus::deserialize;
+use dpp::dashcore::{InstantLock, Transaction};
 use dpp::identity::state_transition::asset_lock_proof::{
     InstantAssetLockProof, RawInstantLockProof,
 };
@@ -27,9 +29,27 @@ impl From<InstantAssetLockProof> for InstantAssetLockProofWASM {
 #[wasm_bindgen]
 impl InstantAssetLockProofWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(raw_parameters: JsValue) -> Result<InstantAssetLockProofWASM, JsValue> {
+    pub fn new(
+        instant_lock: Vec<u8>,
+        transaction: Vec<u8>,
+        output_index: u32,
+    ) -> Result<InstantAssetLockProofWASM, JsValue> {
+        let instant_lock: InstantLock =
+            deserialize(instant_lock.as_slice()).map_err(|err| JsValue::from(err.to_string()))?;
+        let transaction: Transaction =
+            deserialize(transaction.as_slice()).map_err(|err| JsValue::from(err.to_string()))?;
+
+        Ok(InstantAssetLockProofWASM(InstantAssetLockProof {
+            instant_lock,
+            transaction,
+            output_index,
+        }))
+    }
+
+    #[wasm_bindgen(js_name = "fromRawObject")]
+    pub fn from_raw_value(raw_parameters: JsValue) -> Result<InstantAssetLockProofWASM, JsValue> {
         let raw_instant_lock: RawInstantLockProof = serde_wasm_bindgen::from_value(raw_parameters)
-            .map_err(|_| JsError::new("invalid raw instant lock proof"))?;
+            .map_err(|err| JsValue::from(&err.to_string()))?;
 
         let instant_asset_lock_proof: InstantAssetLockProof = raw_instant_lock
             .try_into()
