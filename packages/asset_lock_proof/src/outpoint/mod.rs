@@ -54,6 +54,16 @@ impl OutPointWASM {
     pub fn get_tx_id(self) -> Vec<u8> {
         self.0.txid.as_byte_array().to_vec()
     }
+    
+    #[wasm_bindgen(js_name = "fromBuffer")]
+    pub fn from_buffer(js_buffer: Vec<u8>) -> OutPointWASM {
+        let mut buffer = [0u8;36];
+        let bytes = js_buffer.as_slice();
+        let len = bytes.len();
+        buffer[..len].copy_from_slice(bytes);
+        
+        OutPointWASM(OutPoint::from(buffer))
+    }
 }
 
 impl OutPointWASM {

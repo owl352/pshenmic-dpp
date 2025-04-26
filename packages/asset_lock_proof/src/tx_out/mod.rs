@@ -21,12 +21,11 @@ impl From<TxOutWASM> for TxOut {
 #[wasm_bindgen]
 impl TxOutWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(value: u64, script_pubkey_hex: String) -> Result<TxOutWASM, JsValue> {
-        Ok(TxOutWASM(TxOut {
+    pub fn new(value: u64, script_pubkey_hex: Vec<u8>) -> TxOutWASM {
+        TxOutWASM(TxOut {
             value,
-            script_pubkey: ScriptBuf::from_hex(&script_pubkey_hex)
-                .map_err(|err| JsValue::from(err.to_string()))?,
-        }))
+            script_pubkey: ScriptBuf::from_bytes(script_pubkey_hex),
+        })
     }
 
     #[wasm_bindgen(getter = "value")]
