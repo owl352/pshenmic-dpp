@@ -43,7 +43,7 @@ impl From<DocumentsBatchWASM> for DocumentsBatchTransition {
 impl DocumentsBatchWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        document_transitions: js_sys::Array,
+        document_transitions: &js_sys::Array,
         js_owner_id: &JsValue,
         user_fee_increase: Option<UserFeeIncrease>,
         signature_public_key_id: Option<KeyID>,
@@ -52,6 +52,7 @@ impl DocumentsBatchWASM {
         let owner_id = IdentifierWASM::try_from(js_owner_id)?;
 
         let transitions: Vec<DocumentTransition> = document_transitions
+            .clone()
             .iter()
             .map(|js_document_transition| {
                 let document_transition: DocumentTransitionWASM = js_document_transition
@@ -123,10 +124,18 @@ impl DocumentsBatchWASM {
     }
 
     #[wasm_bindgen(setter = "transitions")]
-    pub fn set_transitions(&mut self, transitions: Vec<DocumentTransitionWASM>) {
+    pub fn set_transitions(&mut self, transitions: &js_sys::Array) {
         let rs_transitions = transitions
+            .clone()
             .iter()
-            .map(|transition| DocumentTransition::from(transition.clone().clone()))
+            .map(|js_document_transition| {
+                let document_transition: DocumentTransitionWASM = js_document_transition
+                    .to_wasm::<DocumentTransitionWASM>("DocumentTransitionWASM")
+                    .unwrap()
+                    .clone();
+
+                DocumentTransition::from(document_transition.clone().clone())
+            })
             .collect();
 
         self.0.set_transitions(rs_transitions);

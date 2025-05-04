@@ -1,17 +1,21 @@
 [package]
 name = "pshenmic_dpp_identity_transitions"
-version.workspace = true
 edition = "2024"
+version.workspace = true
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "state-transition-signing"
 ]}
+js-sys = "0.3.53"
 pshenmic_dpp_utils = {path = "../utils"}
+pshenmic_dpp_core_script = {path = "../core_script"}
 pshenmic_dpp_public_key = {path = "../identity_public_key" }
+pshenmic_dpp_identifier = {path = "../identifier" }
 pshenmic_dpp_state_transition = {path = "../state_transition"}
 pshenmic_dpp_enums = {path = "../enums"}
+pshenmic_dpp_asset_lock_proof = {path = "../asset_lock_proof"}

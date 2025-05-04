@@ -49,8 +49,17 @@ ___
   - `DocumentTransferTransition`
   - `DocumentUpdatePriceTransition`
 - `IdentityPublicKey`
-- `IdentityCreateTransition`
+- IdentityTransitions:
+  - `IdentityCreateTransition`
+  - `IdentityCreditWithdrawalTransition`
+  - `IdentityCreditTransferTransition`
+  - `IdentityTopUpTransition`
+  - `IdentityUpdateTransition`
 - `IdentityPublicKeyInCreationWASM`
+- `AssetLockProof`
+- `OutPoint`
+- `TxOut`
+- `CoreScript`
 - `PrivateKey`
 - `Identity`
 - `StateTransition`

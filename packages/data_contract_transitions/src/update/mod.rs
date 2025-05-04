@@ -25,7 +25,7 @@ impl DataContractUpdateTransitionWASM {
         js_platform_version: JsValue,
     ) -> Result<DataContractUpdateTransitionWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -79,7 +79,7 @@ impl DataContractUpdateTransitionWASM {
         js_platform_version: JsValue,
     ) -> Result<(), JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -102,7 +102,7 @@ impl DataContractUpdateTransitionWASM {
         js_platform_version: JsValue,
     ) -> Result<DataContractWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 

@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", features = ["serde-serialize"] }
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
     "cbor",
 ]}

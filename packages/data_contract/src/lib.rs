@@ -58,7 +58,7 @@ impl DataContractWASM {
         let schema: Value = serde_wasm_bindgen::from_value(js_schema)?;
 
         let platform_version: PlatformVersion = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1.into(),
+            true => PlatformVersionWASM::default().into(),
             false => PlatformVersionWASM::try_from(js_platform_version)?.into(),
         };
 
@@ -132,7 +132,7 @@ impl DataContractWASM {
         js_platform_version: JsValue,
     ) -> Result<DataContractWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -152,7 +152,7 @@ impl DataContractWASM {
         js_platform_version: JsValue,
     ) -> Result<DataContractWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -169,7 +169,7 @@ impl DataContractWASM {
     #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self, js_platform_version: JsValue) -> Result<Vec<u8>, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -183,7 +183,7 @@ impl DataContractWASM {
     #[wasm_bindgen(js_name = "toValue")]
     pub fn to_value(&self, js_platform_version: JsValue) -> Result<JsValue, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -256,7 +256,7 @@ impl DataContractWASM {
         js_platform_version: JsValue,
     ) -> Result<(), JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -279,7 +279,7 @@ impl DataContractWASM {
         js_platform_version: JsValue,
     ) -> Result<(), JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -305,7 +305,7 @@ impl DataContractWASM {
     #[wasm_bindgen(js_name = "toJson")]
     pub fn to_json(&self, js_platform_version: JsValue) -> Result<JsValue, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 

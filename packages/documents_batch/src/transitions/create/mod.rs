@@ -9,8 +9,8 @@ use dpp::state_transition::documents_batch_transition::document_create_transitio
 use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
 use pshenmic_dpp_document::DocumentWASM;
 use pshenmic_dpp_utils::ToSerdeJSONExt;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "DocumentCreateTransitionWASM")]
 #[derive(Clone)]
@@ -76,7 +76,10 @@ impl DocumentCreateTransitionWASM {
 
     #[wasm_bindgen(setter = "entropy")]
     pub fn set_entropy(&mut self, js_entropy: Vec<u8>) -> Result<(), JsValue> {
-        let entropy: [u8; 32] = js_entropy.as_slice().try_into().map_err(JsError::from)?;
+        let mut entropy = [0u8; 32];
+        let bytes = js_entropy.as_slice();
+        let len = bytes.len().min(32);
+        entropy[..len].copy_from_slice(&bytes[..len]);
 
         Ok(self.0.set_entropy(entropy))
     }

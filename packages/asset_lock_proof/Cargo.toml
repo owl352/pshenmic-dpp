@@ -1,0 +1,19 @@
+[package]
+name = "pshenmic_dpp_asset_lock_proof"
+version.workspace = true
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
+    "state-transition-signing"
+]}
+pshenmic_dpp_utils = {path = "../utils"}
+pshenmic_dpp_enums = {path = "../enums"}
+js-sys = "0.3.53"
+web-sys = {version = "0.3.77", features = ["console"]}
+serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+serde = { version = "1.0.197", features = ["derive"] }

@@ -4,6 +4,9 @@ version = "1.0.5"
 edition = "2024"
 rust-version = "1.85"
 
+[workspace.package]
+version = "1.0.5"
+
 [workspace]
 resolver = "2"
 members = [
@@ -18,17 +21,17 @@ members = [
     "packages/identity",
     "packages/identity_transitions",
     "packages/state_transition",
-    "packages/data_contract"
-    , "packages/data_contract_transitions"]
-
-[workspace.package]
-version = "1.0.5"
+    "packages/data_contract",
+    "packages/asset_lock_proof",
+    "packages/data_contract_transitions", "packages/core_script"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wee_alloc = { version = "0.4.5", default-features = false }
+bincode = "=2.0.0-rc.3"
+bincode_derive = "=2.0.0-rc.3"
 pshenmic_dpp_documents_batch = { path = "packages/documents_batch" }
 pshenmic_dpp_document_search = { path = "packages/cbor_conversation" }
 pshenmic_dpp_identity = { path = "packages/identity" }
@@ -41,7 +44,9 @@ pshenmic_dpp_enums = { path = "packages/enums" }
 
 [profile.release]
 lto = "fat"
-opt-level = 'z'
+opt-level = "z"
 strip = "symbols"
 codegen-units = 1
 panic = "abort"
+incremental = false
+debug = false

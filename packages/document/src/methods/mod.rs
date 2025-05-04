@@ -265,7 +265,7 @@ impl DocumentWASM {
         js_platform_version: JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
@@ -291,7 +291,7 @@ impl DocumentWASM {
         js_platform_version: JsValue,
     ) -> Result<DocumentWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
+            true => PlatformVersionWASM::default(),
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 

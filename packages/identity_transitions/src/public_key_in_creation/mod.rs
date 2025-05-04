@@ -11,9 +11,11 @@ use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_utils::IntoWasm;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
+#[derive(Clone)]
 #[wasm_bindgen(js_name = "IdentityPublicKeyInCreationWASM")]
 pub struct IdentityPublicKeyInCreationWASM(IdentityPublicKeyInCreation);
 
@@ -26,6 +28,16 @@ impl From<IdentityPublicKeyInCreation> for IdentityPublicKeyInCreationWASM {
 impl From<IdentityPublicKeyInCreationWASM> for IdentityPublicKeyInCreation {
     fn from(value: IdentityPublicKeyInCreationWASM) -> Self {
         value.0
+    }
+}
+
+impl TryFrom<JsValue> for IdentityPublicKeyInCreationWASM {
+    type Error = JsValue;
+    fn try_from(value: JsValue) -> Result<Self, Self::Error> {
+        let value =
+            value.to_wasm::<IdentityPublicKeyInCreationWASM>("IdentityPublicKeyInCreationWASM")?;
+
+        Ok(value.clone())
     }
 }
 
@@ -54,15 +66,19 @@ impl IdentityPublicKeyInCreationWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         id: u32,
-        purpose: PurposeWASM,
-        security_level: SecurityLevelWASM,
-        key_type: KeyTypeWASM,
+        js_purpose: JsValue,
+        js_security_level: JsValue,
+        js_key_type: JsValue,
         read_only: bool,
         binary_data: Vec<u8>,
         signature: Vec<u8>,
-    ) -> IdentityPublicKeyInCreationWASM {
-        IdentityPublicKeyInCreationWASM(IdentityPublicKeyInCreation::V0(
-            IdentityPublicKeyInCreationV0 {
+    ) -> Result<IdentityPublicKeyInCreationWASM, JsValue> {
+        let purpose = PurposeWASM::try_from(js_purpose)?;
+        let security_level = SecurityLevelWASM::try_from(js_security_level)?;
+        let key_type = KeyTypeWASM::try_from(js_key_type)?;
+
+        Ok(IdentityPublicKeyInCreationWASM(
+            IdentityPublicKeyInCreation::V0(IdentityPublicKeyInCreationV0 {
                 id,
                 key_type: KeyType::from(key_type),
                 purpose: Purpose::from(purpose),
@@ -71,7 +87,7 @@ impl IdentityPublicKeyInCreationWASM {
                 read_only,
                 data: BinaryData::from(binary_data),
                 signature: BinaryData::from(signature),
-            },
+            }),
         ))
     }
 
@@ -88,48 +104,48 @@ impl IdentityPublicKeyInCreationWASM {
         )
     }
 
-    #[wasm_bindgen(js_name = getKeyId)]
+    #[wasm_bindgen(getter = keyId)]
     pub fn get_key_id(&self) -> u32 {
         self.0.id()
     }
 
-    #[wasm_bindgen(js_name = getPurpose)]
+    #[wasm_bindgen(getter = purpose)]
     pub fn get_purpose(&self) -> String {
         PurposeWASM::from(self.0.purpose()).into()
     }
 
-    #[wasm_bindgen(js_name = getSecurityLevel)]
+    #[wasm_bindgen(getter = securityLevel)]
     pub fn get_security_level(&self) -> String {
         SecurityLevelWASM::from(self.0.security_level()).into()
     }
 
-    #[wasm_bindgen(js_name = getKeyType)]
+    #[wasm_bindgen(getter = keyType)]
     pub fn get_key_type(&self) -> String {
         KeyTypeWASM::from(self.0.key_type()).into()
     }
 
-    #[wasm_bindgen(js_name = getReadOnly)]
+    #[wasm_bindgen(getter = readOnly)]
     pub fn get_read_only(&self) -> bool {
         self.0.read_only()
     }
 
-    #[wasm_bindgen(js_name = getData)]
-    pub fn get_data(&self) -> String {
-        self.0.data().to_string(Hex)
+    #[wasm_bindgen(getter = data)]
+    pub fn get_data(&self) -> Vec<u8> {
+        self.0.data().to_vec()
     }
 
-    #[wasm_bindgen(js_name = setKeyId)]
+    #[wasm_bindgen(setter = keyId)]
     pub fn set_key_id(&mut self, key_id: u32) {
         self.0.set_id(key_id)
     }
 
-    #[wasm_bindgen(js_name = setPurpose)]
+    #[wasm_bindgen(setter = purpose)]
     pub fn set_purpose(&mut self, js_purpose: JsValue) -> Result<(), JsValue> {
         let purpose = PurposeWASM::try_from(js_purpose)?;
         Ok(self.0.set_purpose(Purpose::from(purpose)))
     }
 
-    #[wasm_bindgen(js_name = setSecurityLevel)]
+    #[wasm_bindgen(setter = securityLevel)]
     pub fn set_security_level(&mut self, js_security_level: JsValue) -> Result<(), JsValue> {
         let security_level = SecurityLevelWASM::try_from(js_security_level)?;
         Ok(self
@@ -137,14 +153,34 @@ impl IdentityPublicKeyInCreationWASM {
             .set_security_level(SecurityLevel::from(security_level)))
     }
 
-    #[wasm_bindgen(js_name = setReadOnly)]
+    #[wasm_bindgen(setter = keyType)]
+    pub fn set_key_type(&mut self, key_type: JsValue) -> Result<(), JsValue> {
+        let key_type = KeyTypeWASM::try_from(key_type)?;
+        self.0.set_type(key_type.into());
+        Ok(())
+    }
+
+    #[wasm_bindgen(setter = readOnly)]
     pub fn set_read_only(&mut self, read_only: bool) {
         self.0.set_read_only(read_only)
     }
 
-    #[wasm_bindgen(js_name = setData)]
+    #[wasm_bindgen(setter = data)]
     pub fn set_data(&mut self, binary_data: Vec<u8>) {
         let data = BinaryData::from(binary_data);
         self.0.set_data(data)
+    }
+}
+
+impl IdentityPublicKeyInCreationWASM {
+    pub fn vec_from_js_value(
+        js_add_public_keys: &js_sys::Array,
+    ) -> Result<Vec<IdentityPublicKeyInCreationWASM>, JsValue> {
+        let add_public_keys: Vec<IdentityPublicKeyInCreationWASM> = js_add_public_keys
+            .iter()
+            .map(|key| IdentityPublicKeyInCreationWASM::try_from(key))
+            .collect::<Result<Vec<IdentityPublicKeyInCreationWASM>, JsValue>>()?;
+
+        Ok(add_public_keys)
     }
 }

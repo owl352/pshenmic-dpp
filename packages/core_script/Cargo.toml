@@ -1,0 +1,13 @@
+[package]
+name = "pshenmic_dpp_core_script"
+edition = "2024"
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
+    "state-transition-signing"
+]}
