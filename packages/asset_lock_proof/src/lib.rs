@@ -13,7 +13,7 @@ use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
 use pshenmic_dpp_utils::WithJsError;
 use serde::Serialize;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::{JsError, JsValue};
+use wasm_bindgen::JsValue;
 
 #[wasm_bindgen(js_name = "AssetLockProofWASM")]
 #[derive(Clone)]
@@ -64,9 +64,9 @@ impl From<AssetLockProof> for InstantAssetLockProofWASM {
 #[wasm_bindgen]
 impl AssetLockProofWASM {
     #[wasm_bindgen(constructor)]
-    pub fn new(
-        asset_lock_proof_type: AssetLockProofTypeWASM,
-    ) -> Result<AssetLockProofWASM, JsValue> {
+    pub fn new(js_asset_lock_proof_type: JsValue) -> Result<AssetLockProofWASM, JsValue> {
+        let asset_lock_proof_type = AssetLockProofTypeWASM::try_from(js_asset_lock_proof_type)?;
+
         match asset_lock_proof_type {
             AssetLockProofTypeWASM::Chain => Err(JsValue::from_str(&"ChainLock unavailable")),
             AssetLockProofTypeWASM::Instant => {
@@ -92,19 +92,19 @@ impl AssetLockProofWASM {
         Ok(ChainAssetLockProofWASM::new(core_chain_locked_height, out_point)?.into())
     }
 
-    #[wasm_bindgen(js_name = "fromRawObject")]
-    pub fn from_raw_object(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
-        let lock_type = get_type_from_raw_asset_lock_proof(&raw_asset_lock_proof)?;
-
-        match lock_type {
-            AssetLockProofTypeWASM::Instant => {
-                Ok(InstantAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
-            }
-            AssetLockProofTypeWASM::Chain => {
-                Ok(ChainAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
-            }
-        }
-    }
+    // #[wasm_bindgen(js_name = "fromRawObject")]
+    // pub fn from_raw_object(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
+    //     let lock_type = get_type_from_raw_asset_lock_proof(&raw_asset_lock_proof)?;
+    //
+    //     match lock_type {
+    //         AssetLockProofTypeWASM::Instant => {
+    //             Ok(InstantAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
+    //         }
+    //         AssetLockProofTypeWASM::Chain => {
+    //             Ok(ChainAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
+    //         }
+    //     }
+    // }
 
     #[wasm_bindgen(js_name = "getLockType")]
     pub fn get_lock_type(&self) -> String {
@@ -114,23 +114,20 @@ impl AssetLockProofWASM {
         }
     }
 
+    #[wasm_bindgen(js_name = "getInstantLockProof")]
+    pub fn get_instant_lock(&self) -> InstantAssetLockProofWASM {
+        self.clone().0.into()
+    }
+
+    #[wasm_bindgen(js_name = "getChainLockProof")]
+    pub fn get_chain_lock(&self) -> ChainAssetLockProofWASM {
+        self.clone().0.into()
+    }
+
     #[wasm_bindgen(js_name = "toObject")]
     pub fn to_object(&self) -> Result<JsValue, JsValue> {
         let json_value = self.0.to_raw_object().with_js_error()?;
 
         Ok(json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?)
     }
-}
-
-fn get_type_from_raw_asset_lock_proof(
-    raw_asset_lock_proof: &JsValue,
-) -> Result<AssetLockProofTypeWASM, JsError> {
-    let proof_type = js_sys::Reflect::get(raw_asset_lock_proof, &JsValue::from_str("type"))
-        .map_err(|_| JsError::new("error getting type from raw asset lock"))?
-        .as_f64()
-        .ok_or_else(|| JsError::new("asset lock type must be a number"))?;
-
-    (proof_type as u64)
-        .try_into()
-        .map_err(|_| JsError::new("unrecognized asset lock proof type"))
 }

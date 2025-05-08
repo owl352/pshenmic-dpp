@@ -134,6 +134,11 @@ impl IdentityPublicKeyInCreationWASM {
         self.0.data().to_vec()
     }
 
+    #[wasm_bindgen(getter = signature)]
+    pub fn get_signature(&self) -> Vec<u8> {
+        self.0.signature().to_vec()
+    }
+
     #[wasm_bindgen(setter = keyId)]
     pub fn set_key_id(&mut self, key_id: u32) {
         self.0.set_id(key_id)
@@ -169,6 +174,12 @@ impl IdentityPublicKeyInCreationWASM {
     pub fn set_data(&mut self, binary_data: Vec<u8>) {
         let data = BinaryData::from(binary_data);
         self.0.set_data(data)
+    }
+
+    #[wasm_bindgen(setter = signature)]
+    pub fn set_signature(&mut self, binary_data: Vec<u8>) {
+        let signature = BinaryData::from(binary_data);
+        self.0.set_signature(signature)
     }
 }
 

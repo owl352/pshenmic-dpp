@@ -5,11 +5,19 @@ use crate::outpoint::OutPointWASM;
 use crate::tx_out::TxOutWASM;
 use dpp::dashcore::consensus::deserialize;
 use dpp::dashcore::{InstantLock, Transaction};
-use dpp::identity::state_transition::asset_lock_proof::{
-    InstantAssetLockProof, RawInstantLockProof,
-};
+use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
+use pshenmic_dpp_utils::WithJsError;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::{JsError, JsValue};
+use wasm_bindgen::JsValue;
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct InstantAssetLockProofRAW {
+    instant_lock: Vec<u8>,
+    transaction: Vec<u8>,
+    output_index: u32,
+}
 
 #[wasm_bindgen(js_name = "InstantAssetLockProofWASM")]
 pub struct InstantAssetLockProofWASM(InstantAssetLockProof);
@@ -46,16 +54,27 @@ impl InstantAssetLockProofWASM {
         }))
     }
 
-    #[wasm_bindgen(js_name = "fromRawObject")]
-    pub fn from_raw_value(raw_parameters: JsValue) -> Result<InstantAssetLockProofWASM, JsValue> {
-        let raw_instant_lock: RawInstantLockProof = serde_wasm_bindgen::from_value(raw_parameters)
-            .map_err(|err| JsValue::from(&err.to_string()))?;
+    #[wasm_bindgen(js_name = "fromObject")]
+    pub fn from_object(value: JsValue) -> Result<InstantAssetLockProofWASM, JsValue> {
+        let parameters: InstantAssetLockProofRAW =
+            serde_wasm_bindgen::from_value(value).map_err(|err| JsValue::from(err.to_string()))?;
 
-        let instant_asset_lock_proof: InstantAssetLockProof = raw_instant_lock
-            .try_into()
-            .map_err(|_| JsError::new("object passed is not a raw Instant Lock"))?;
+        InstantAssetLockProofWASM::new(
+            parameters.instant_lock,
+            parameters.transaction,
+            parameters.output_index,
+        )
+    }
 
-        Ok(InstantAssetLockProofWASM(instant_asset_lock_proof))
+    #[wasm_bindgen(js_name = "toObject")]
+    pub fn to_object(&self) -> Result<JsValue, JsValue> {
+        let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+
+        self.0
+            .to_object()
+            .with_js_error()?
+            .serialize(&serializer)
+            .map_err(JsValue::from)
     }
 
     #[wasm_bindgen(js_name = "getOutput")]
@@ -90,7 +109,7 @@ impl InstantAssetLockProofWASM {
     }
 
     #[wasm_bindgen(setter = "instantLock")]
-    pub fn set_instant_lock(&mut self, instant_lock: InstantLockWASM) {
-        self.0.instant_lock = instant_lock.into();
+    pub fn set_instant_lock(&mut self, instant_lock: &InstantLockWASM) {
+        self.0.instant_lock = instant_lock.clone().into();
     }
 }

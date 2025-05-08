@@ -2,7 +2,7 @@ const { Purpose, SecurityLevel, KeyType } = require('../../../dist/cjs/wasm/pshe
 
 module.exports = {
   keyId: 2,
-  purpose: Purpose.AUTHENTICATION,
+  purpose: 'AUTHENTICATION',
   securityLevel: SecurityLevel.CRITICAL,
   keyType: KeyType.ECDSA_SECP256K1,
   binaryData: '036a394312e40e81d928fde2bde7880070e4fa9c1d1d9b168da707ea468afa2b48',
