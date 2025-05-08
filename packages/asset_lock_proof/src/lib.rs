@@ -12,8 +12,8 @@ use dpp::prelude::AssetLockProof;
 use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
 use pshenmic_dpp_utils::WithJsError;
 use serde::Serialize;
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "AssetLockProofWASM")]
 #[derive(Clone)]

@@ -8,8 +8,8 @@ use dpp::dashcore::{InstantLock, Transaction};
 use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
 use pshenmic_dpp_utils::WithJsError;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
