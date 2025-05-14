@@ -28,6 +28,11 @@ impl From<DocumentReplaceTransitionWASM> for DocumentReplaceTransition {
 
 #[wasm_bindgen]
 impl DocumentReplaceTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentReplaceTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,

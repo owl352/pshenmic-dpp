@@ -21,6 +21,11 @@ impl From<TxOutWASM> for TxOut {
 
 #[wasm_bindgen]
 impl TxOutWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TxOutWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(value: u64, script_pubkey: JsValue) -> Result<TxOutWASM, JsValue> {
         let tx_out: Result<TxOut, JsValue> = match script_pubkey.is_array() {

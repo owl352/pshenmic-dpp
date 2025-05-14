@@ -27,6 +27,11 @@ impl From<InstantLock> for InstantLockWASM {
 
 #[wasm_bindgen]
 impl InstantLockWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "InstantLockWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         version: u8,

@@ -17,6 +17,11 @@ pub struct IdentityCreditTransferWASM(IdentityCreditTransferTransition);
 
 #[wasm_bindgen]
 impl IdentityCreditTransferWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityCreditTransferWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         amount: u64,

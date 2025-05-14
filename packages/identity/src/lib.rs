@@ -15,6 +15,11 @@ pub struct IdentityWASM(Identity);
 
 #[wasm_bindgen]
 impl IdentityWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(js_identifier: &JsValue) -> Result<IdentityWASM, JsValue> {
         let identifier: IdentifierWASM = js_identifier.try_into()?;

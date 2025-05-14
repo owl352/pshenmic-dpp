@@ -63,6 +63,11 @@ impl From<IdentityPublicKeyInCreationWASM> for IdentityPublicKey {
 
 #[wasm_bindgen]
 impl IdentityPublicKeyInCreationWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityPublicKeyInCreationWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         id: u32,

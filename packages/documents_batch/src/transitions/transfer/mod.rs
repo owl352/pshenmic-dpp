@@ -26,6 +26,11 @@ impl From<DocumentTransferTransitionWASM> for DocumentTransferTransition {
 
 #[wasm_bindgen]
 impl DocumentTransferTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentTransferTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,
