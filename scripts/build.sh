@@ -35,6 +35,7 @@ if command -v wasm-opt &> /dev/null; then
   wasm-opt \
     --generate-global-effects \
     --enable-bulk-memory \
+    --enable-simd \
     -Oz \
     -tnh \
     --flatten \
