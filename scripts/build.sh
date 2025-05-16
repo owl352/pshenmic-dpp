@@ -34,6 +34,7 @@ if command -v wasm-opt &> /dev/null; then
   echo "Optimizing wasm using Binaryen"
   wasm-opt \
     --generate-global-effects \
+    --enable-bulk-memory \
     -Oz \
     -tnh \
     --flatten \
