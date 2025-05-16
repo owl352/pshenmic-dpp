@@ -2,6 +2,7 @@
   "name": "pshenmic-dpp",
   "version": "1.0.5",
   "main": "dist/wasm/pshenmic_dpp.js",
+  "types": "dist/wasm/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/owl352/pshenmic-dpp"
@@ -27,6 +28,5 @@
     "core-js": "^3.41.0",
     "mocha": "^11.1.0",
     "standard": "^17.1.2"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  }
 }
