@@ -2,7 +2,7 @@ import * as DPP from './pshenmic_dpp';
 
 export * from './pshenmic_dpp';
 
-export class WASM {
+export class DashPlatformProtocolWASM {
     // CLASSES
     AssetLockProofWASM: typeof DPP.AssetLockProofWASM
     ChainAssetLockProofWASM: typeof DPP.ChainAssetLockProofWASM
