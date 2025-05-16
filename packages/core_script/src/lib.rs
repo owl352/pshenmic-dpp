@@ -21,6 +21,11 @@ impl From<CoreScript> for CoreScriptWASM {
 
 #[wasm_bindgen]
 impl CoreScriptWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "CoreScriptWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Self {
         CoreScriptWASM(CoreScript::from_bytes(bytes))

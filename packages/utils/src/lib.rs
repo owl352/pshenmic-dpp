@@ -221,11 +221,13 @@ pub fn get_bool_from_options(
     }
 }
 
-pub fn get_class_name(value: &JsValue) -> String {
-    js_sys::Object::get_prototype_of(value)
-        .constructor()
-        .name()
-        .into()
+pub fn get_class_type(value: &JsValue) -> Result<String, JsValue> {
+    let class_type = js_sys::Reflect::get(&value, &JsValue::from_str("__type"));
+
+    match class_type {
+        Ok(class_type) => Ok(class_type.as_string().unwrap_or("".to_string())),
+        Err(_) => Err(JsValue::from_str(&"")),
+    }
 }
 
 #[allow(dead_code)]

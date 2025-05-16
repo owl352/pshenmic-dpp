@@ -25,6 +25,11 @@ impl From<PrefundedVotingBalanceWASM> for (String, Credits) {
 
 #[wasm_bindgen]
 impl PrefundedVotingBalanceWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "PrefundedVotingBalanceWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(index_name: String, credits: Credits) -> PrefundedVotingBalanceWASM {
         PrefundedVotingBalanceWASM {

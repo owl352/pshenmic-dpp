@@ -19,6 +19,11 @@ pub struct IdentityTopUpTransitionWASM(IdentityTopUpTransition);
 
 #[wasm_bindgen]
 impl IdentityTopUpTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityTopUpTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         asset_lock_proof: &AssetLockProofWASM,

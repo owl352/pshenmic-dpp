@@ -24,6 +24,11 @@ impl From<DocumentBaseTransitionWASM> for DocumentBaseTransition {
 
 #[wasm_bindgen]
 impl DocumentBaseTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentBaseTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_document_id: &JsValue,

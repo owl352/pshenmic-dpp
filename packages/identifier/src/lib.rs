@@ -1,6 +1,6 @@
 use dpp::platform_value::string_encoding::Encoding::{Base58, Base64, Hex};
 use dpp::prelude::Identifier;
-use pshenmic_dpp_utils::{IntoWasm, get_class_name, identifier_from_js_value};
+use pshenmic_dpp_utils::{IntoWasm, get_class_type, identifier_from_js_value};
 use wasm_bindgen::prelude::*;
 
 #[derive(Copy, Clone)]
@@ -28,12 +28,22 @@ impl From<&IdentifierWASM> for Identifier {
 impl TryFrom<JsValue> for IdentifierWASM {
     type Error = JsValue;
     fn try_from(value: JsValue) -> Result<Self, Self::Error> {
-        let identifier = match get_class_name(&value).as_str() {
-            "IdentifierWASM" => value.to_wasm::<IdentifierWASM>("IdentifierWASM")?.clone(),
-            _ => identifier_from_js_value(&value)?.into(),
-        };
-
-        Ok(identifier)
+        match value.is_object() {
+            true => match get_class_type(&value) {
+                Ok(class_type) => match class_type.as_str() {
+                    "IdentifierWASM" => {
+                        Ok(value.to_wasm::<IdentifierWASM>("IdentifierWASM")?.clone())
+                    }
+                    "" => Ok(identifier_from_js_value(&value)?.into()),
+                    _ => Err(Self::Error::from_str(&format!(
+                        "Invalid type of data for identifier (passed {})",
+                        class_type
+                    ))),
+                },
+                Err(_) => Ok(identifier_from_js_value(&value)?.into()),
+            },
+            false => Ok(identifier_from_js_value(&value)?.into()),
+        }
     }
 }
 
@@ -46,6 +56,11 @@ impl TryFrom<&JsValue> for IdentifierWASM {
 
 #[wasm_bindgen]
 impl IdentifierWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentifierWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(js_identifier: &JsValue) -> Result<IdentifierWASM, JsValue> {
         IdentifierWASM::try_from(js_identifier)

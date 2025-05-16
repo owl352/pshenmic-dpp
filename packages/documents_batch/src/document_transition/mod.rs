@@ -32,6 +32,11 @@ impl From<DocumentTransitionWASM> for DocumentTransition {
 
 #[wasm_bindgen]
 impl DocumentTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "actionType")]
     pub fn get_action_type(&self) -> String {
         BatchTypeWASM::from(self.0.action_type()).into()

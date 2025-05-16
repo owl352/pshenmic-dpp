@@ -30,6 +30,11 @@ impl From<DocumentCreateTransition> for DocumentCreateTransitionWASM {
 
 #[wasm_bindgen]
 impl DocumentCreateTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentCreateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,

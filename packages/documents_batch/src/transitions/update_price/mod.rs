@@ -20,6 +20,11 @@ impl From<DocumentUpdatePriceTransition> for DocumentUpdatePriceTransitionWASM {
 
 #[wasm_bindgen]
 impl DocumentUpdatePriceTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentUpdatePriceTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,
