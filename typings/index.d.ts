@@ -1,6 +1,6 @@
 import * as DPP from './pshenmic_dpp';
 
-export default DPP;
+export * from './pshenmic_dpp';
 
 export class WASM {
     // CLASSES
