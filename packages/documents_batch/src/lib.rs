@@ -41,6 +41,11 @@ impl From<DocumentsBatchWASM> for DocumentsBatchTransition {
 
 #[wasm_bindgen]
 impl DocumentsBatchWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentsBatchWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document_transitions: &js_sys::Array,

@@ -28,6 +28,11 @@ impl From<ChainAssetLockProof> for ChainAssetLockProofWASM {
 
 #[wasm_bindgen]
 impl ChainAssetLockProofWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "ChainAssetLockProofWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         core_chain_locked_height: u32,

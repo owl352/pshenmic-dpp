@@ -34,6 +34,11 @@ impl From<StateTransitionWASM> for StateTransition {
 
 #[wasm_bindgen]
 impl StateTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "StateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,

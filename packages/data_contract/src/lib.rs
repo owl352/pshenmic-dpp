@@ -40,6 +40,11 @@ impl From<DataContractWASM> for DataContract {
 
 #[wasm_bindgen]
 impl DataContractWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DataContractWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn from_js_values(
         js_owner_id: &JsValue,

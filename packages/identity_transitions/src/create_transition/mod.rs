@@ -34,6 +34,11 @@ impl From<IdentityCreateTransitionWASM> for IdentityCreateTransition {
 
 #[wasm_bindgen]
 impl IdentityCreateTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityCreateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_public_keys: &js_sys::Array,

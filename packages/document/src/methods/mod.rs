@@ -20,6 +20,11 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl DocumentWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_raw_document: JsValue,

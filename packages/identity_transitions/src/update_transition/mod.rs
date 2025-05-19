@@ -22,6 +22,11 @@ pub struct IdentityUpdateTransitionWASM(IdentityUpdateTransition);
 
 #[wasm_bindgen]
 impl IdentityUpdateTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityUpdateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_identity_id: &JsValue,
