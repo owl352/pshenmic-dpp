@@ -26,6 +26,11 @@ impl From<DocumentDeleteTransitionWASM> for DocumentDeleteTransition {
 
 #[wasm_bindgen]
 impl DocumentDeleteTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentDeleteTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,

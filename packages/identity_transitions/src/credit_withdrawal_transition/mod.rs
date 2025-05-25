@@ -22,6 +22,11 @@ pub struct IdentityCreditWithdrawalTransitionWASM(IdentityCreditWithdrawalTransi
 
 #[wasm_bindgen]
 impl IdentityCreditWithdrawalTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "IdentityCreditWithdrawalTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_identity_id: JsValue,

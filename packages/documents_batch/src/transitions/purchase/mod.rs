@@ -26,6 +26,11 @@ impl From<DocumentPurchaseTransition> for DocumentPurchaseTransitionWASM {
 
 #[wasm_bindgen]
 impl DocumentPurchaseTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DocumentPurchaseTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,
