@@ -1,14 +1,14 @@
-use crate::transitions::create::DocumentCreateTransitionWASM;
-use crate::transitions::delete::DocumentDeleteTransitionWASM;
-use crate::transitions::purchase::DocumentPurchaseTransitionWASM;
-use crate::transitions::replace::DocumentReplaceTransitionWASM;
-use crate::transitions::transfer::DocumentTransferTransitionWASM;
-use crate::transitions::update_price::DocumentUpdatePriceTransitionWASM;
+use crate::document_transitions::create::DocumentCreateTransitionWASM;
+use crate::document_transitions::delete::DocumentDeleteTransitionWASM;
+use crate::document_transitions::purchase::DocumentPurchaseTransitionWASM;
+use crate::document_transitions::replace::DocumentReplaceTransitionWASM;
+use crate::document_transitions::transfer::DocumentTransferTransitionWASM;
+use crate::document_transitions::update_price::DocumentUpdatePriceTransitionWASM;
 use dpp::prelude::{Identifier, IdentityNonce, Revision};
-use dpp::state_transition::documents_batch_transition::document_transition::action_type::TransitionActionTypeGetter;
-use dpp::state_transition::documents_batch_transition::document_transition::{
+use dpp::state_transition::batch_transition::batched_transition::document_transition::{
     DocumentTransition, DocumentTransitionV0Methods,
 };
+use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::DocumentTransitionActionTypeGetter;
 use pshenmic_dpp_enums::batch::batch_enum::BatchTypeWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;

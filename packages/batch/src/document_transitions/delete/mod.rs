@@ -2,9 +2,9 @@ use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_delete_transition;
 use dpp::prelude::IdentityNonce;
-use dpp::state_transition::documents_batch_transition::DocumentDeleteTransition;
-use dpp::state_transition::documents_batch_transition::document_delete_transition::v0::v0_methods::DocumentDeleteTransitionV0Methods;
-use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
+use dpp::state_transition::batch_transition::batched_transition::document_transition::DocumentTransition;
+use dpp::state_transition::batch_transition::document_base_transition::document_base_transition_trait::DocumentBaseTransitionAccessors;
+use dpp::state_transition::batch_transition::DocumentDeleteTransition;
 use pshenmic_dpp_document::DocumentWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -15,12 +15,6 @@ pub struct DocumentDeleteTransitionWASM(DocumentDeleteTransition);
 impl From<DocumentDeleteTransition> for DocumentDeleteTransitionWASM {
     fn from(document_delete_transition: DocumentDeleteTransition) -> Self {
         DocumentDeleteTransitionWASM(document_delete_transition)
-    }
-}
-
-impl From<DocumentDeleteTransitionWASM> for DocumentDeleteTransition {
-    fn from(document_delete_transition: DocumentDeleteTransitionWASM) -> Self {
-        document_delete_transition.0
     }
 }
 
@@ -68,5 +62,11 @@ impl DocumentDeleteTransitionWASM {
         js_transition: DocumentTransitionWASM,
     ) -> Result<DocumentDeleteTransitionWASM, JsValue> {
         js_transition.get_delete_transition()
+    }
+}
+
+impl From<DocumentDeleteTransitionWASM> for DocumentDeleteTransition {
+    fn from(document_delete_transition: DocumentDeleteTransitionWASM) -> Self {
+        document_delete_transition.0
     }
 }

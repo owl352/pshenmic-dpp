@@ -9,7 +9,7 @@ crate-type = ["cdylib", "lib"]
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 anyhow = { version = "1.0.75" }
-dpp = { git = "https://github.com/dashpay/platform", branch = "master", features = [
+dpp = { workspace = true, features = [
     "platform-value",
     "document-json-conversion"
 ] }

@@ -45,7 +45,7 @@ describe('DocumentsTransitions', function () {
         assert.notEqual(batchTransition.__wbg_ptr, 0)
       })
 
-      it('should allow to create state transitions from document and convert state transition to document batch', () => {
+      it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
@@ -107,7 +107,7 @@ describe('DocumentsTransitions', function () {
         assert.notEqual(batchTransition.__wbg_ptr, 0)
       })
 
-      it('should allow to create state transitions from document and convert state transition to document batch', () => {
+      it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const deleteTransition = new wasm.DocumentDeleteTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
@@ -169,7 +169,7 @@ describe('DocumentsTransitions', function () {
         assert.notEqual(batchTransition.__wbg_ptr, 0)
       })
 
-      it('should allow to create state transitions from document and convert state transition to document batch', () => {
+      it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
@@ -231,7 +231,7 @@ describe('DocumentsTransitions', function () {
         assert.notEqual(batchTransition.__wbg_ptr, 0)
       })
 
-      it('should allow to create state transitions from document and convert state transition to document batch', () => {
+      it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), 'preorder', documentInstance.getOwnerId())
 
@@ -293,7 +293,7 @@ describe('DocumentsTransitions', function () {
         assert.notEqual(batchTransition.__wbg_ptr, 0)
       })
 
-      it('should allow to create state transitions from document and convert state transition to document batch', () => {
+      it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const updatePriceTransition = new wasm.DocumentUpdatePriceTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
 
@@ -355,7 +355,7 @@ describe('DocumentsTransitions', function () {
         assert.notEqual(batchTransition.__wbg_ptr, 0)
       })
 
-      it('should allow to create state transitions from document and convert state transition to document batch', () => {
+      it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), 'preorder', BigInt(100))
 

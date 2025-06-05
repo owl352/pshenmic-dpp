@@ -283,6 +283,7 @@ impl DocumentWASM {
         DocumentPlatformConversionMethodsV0::serialize(
             &rs_document,
             document_type_ref,
+            &data_contract.clone().into(),
             &platform_version.into(),
         )
         .with_js_error()

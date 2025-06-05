@@ -1,17 +1,19 @@
 use dpp::fee::Credits;
 use dpp::prelude::{Identifier, IdentityNonce};
-use dpp::state_transition::documents_batch_transition::document_base_transition::DocumentBaseTransition;
-use dpp::state_transition::documents_batch_transition::document_base_transition::v0::DocumentBaseTransitionV0;
-use dpp::state_transition::documents_batch_transition::document_create_transition::DocumentCreateTransitionV0;
-use dpp::state_transition::documents_batch_transition::document_delete_transition::DocumentDeleteTransitionV0;
-use dpp::state_transition::documents_batch_transition::document_replace_transition::DocumentReplaceTransitionV0;
-use dpp::state_transition::documents_batch_transition::{
+use dpp::state_transition::batch_transition::batched_transition::document_purchase_transition::DocumentPurchaseTransitionV0;
+use dpp::state_transition::batch_transition::batched_transition::document_transfer_transition::DocumentTransferTransitionV0;
+use dpp::state_transition::batch_transition::batched_transition::document_update_price_transition::DocumentUpdatePriceTransitionV0;
+use dpp::state_transition::batch_transition::batched_transition::{
+    DocumentPurchaseTransition, DocumentTransferTransition, DocumentUpdatePriceTransition,
+};
+use dpp::state_transition::batch_transition::document_base_transition::DocumentBaseTransition;
+use dpp::state_transition::batch_transition::document_base_transition::v0::DocumentBaseTransitionV0;
+use dpp::state_transition::batch_transition::document_create_transition::DocumentCreateTransitionV0;
+use dpp::state_transition::batch_transition::document_delete_transition::DocumentDeleteTransitionV0;
+use dpp::state_transition::batch_transition::document_replace_transition::DocumentReplaceTransitionV0;
+use dpp::state_transition::batch_transition::{
     DocumentCreateTransition, DocumentDeleteTransition, DocumentReplaceTransition,
 };
-use dpp::state_transition::documents_batch_transition::document_transition::document_transfer_transition::DocumentTransferTransitionV0;
-use dpp::state_transition::documents_batch_transition::document_transition::{DocumentPurchaseTransition, DocumentTransferTransition, DocumentUpdatePriceTransition};
-use dpp::state_transition::documents_batch_transition::document_transition::document_purchase_transition::DocumentPurchaseTransitionV0;
-use dpp::state_transition::documents_batch_transition::document_transition::document_update_price_transition::DocumentUpdatePriceTransitionV0;
 use pshenmic_dpp_document::DocumentWASM;
 
 pub fn generate_create_transition(

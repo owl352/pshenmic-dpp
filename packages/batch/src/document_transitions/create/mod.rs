@@ -1,16 +1,17 @@
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_create_transition;
-use crate::prefunded_voting_balance::PrefundedVotingBalanceWASM;
 use dpp::dashcore::hashes::serde::Serialize;
 use dpp::prelude::IdentityNonce;
-use dpp::state_transition::documents_batch_transition::DocumentCreateTransition;
-use dpp::state_transition::documents_batch_transition::document_create_transition::v0::v0_methods::DocumentCreateTransitionV0Methods;
-use dpp::state_transition::documents_batch_transition::document_transition::DocumentTransition;
+use dpp::state_transition::batch_transition::batched_transition::document_transition::DocumentTransition;
+use dpp::state_transition::batch_transition::document_base_transition::document_base_transition_trait::DocumentBaseTransitionAccessors;
+use dpp::state_transition::batch_transition::document_create_transition::v0::v0_methods::DocumentCreateTransitionV0Methods;
+use dpp::state_transition::batch_transition::DocumentCreateTransition;
 use pshenmic_dpp_document::DocumentWASM;
 use pshenmic_dpp_utils::ToSerdeJSONExt;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use crate::prefunded_voting_balance::PrefundedVotingBalanceWASM;
 
 #[wasm_bindgen(js_name = "DocumentCreateTransitionWASM")]
 #[derive(Clone)]

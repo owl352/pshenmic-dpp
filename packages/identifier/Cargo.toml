@@ -5,5 +5,5 @@ edition = "2024"
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
-dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = []}
+dpp = { workspace = true, features = []}
 pshenmic_dpp_utils = { path = "../utils" }

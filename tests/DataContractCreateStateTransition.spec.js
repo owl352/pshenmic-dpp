@@ -13,7 +13,7 @@ describe('DataContract Create Transition', function () {
   })
 
   describe('serialization / deserialization', function () {
-    it('should allow to create transitions from data contract', () => {
+    it('should allow to create document_transitions from data contract', () => {
       const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
@@ -22,7 +22,7 @@ describe('DataContract Create Transition', function () {
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
 
-    it('should allow to convert transitions to bytes and create from bytes', () => {
+    it('should allow to convert document_transitions to bytes and create from bytes', () => {
       const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
@@ -37,7 +37,7 @@ describe('DataContract Create Transition', function () {
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
 
-    it('should allow to convert data contract transition to state transitions and create data contract transition from state transition', () => {
+    it('should allow to convert data contract transition to state document_transitions and create data contract transition from state transition', () => {
       const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
