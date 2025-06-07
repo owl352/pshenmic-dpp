@@ -1269,6 +1269,7 @@ dependencies = [
  "dpp",
  "js-sys",
  "pshenmic_dpp_document",
+ "pshenmic_dpp_encrypted_note",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_group_state_transition_info",
  "pshenmic_dpp_identifier",
@@ -1333,6 +1334,14 @@ dependencies = [
  "dpp",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_encrypted_note"
+version = "1.0.5"
+dependencies = [
+ "dpp",
  "wasm-bindgen",
 ]
 
@@ -1427,6 +1436,26 @@ dependencies = [
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_utils",
  "sha2",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_token_configuration"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_identifier",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_token_configuration_change_item"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_token_configuration",
+ "pshenmic_dpp_utils",
+ "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
 

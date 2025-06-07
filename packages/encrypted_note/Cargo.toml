@@ -1,0 +1,11 @@
+[package]
+name = "pshenmic_dpp_encrypted_note"
+edition = "2024"
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+dpp = { workspace = true, features = ["document-json-conversion"] }
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }

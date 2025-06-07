@@ -1,7 +1,9 @@
 use crate::token_base_transition::TokenBaseTransitionWASM;
 use dpp::prelude::Identifier;
+use dpp::state_transition::batch_transition::token_base_transition::token_base_transition_accessors::TokenBaseTransitionAccessors;
 use dpp::state_transition::batch_transition::TokenMintTransition;
 use dpp::state_transition::batch_transition::token_mint_transition::TokenMintTransitionV0;
+use dpp::state_transition::batch_transition::token_mint_transition::v0::v0_methods::TokenMintTransitionV0Methods;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -50,5 +52,41 @@ impl TokenMintTransitionWASM {
                 public_note,
             },
         )))
+    }
+
+    #[wasm_bindgen(getter = amount)]
+    pub fn get_amount(&self) -> u64 {
+        self.0.amount()
+    }
+
+    #[wasm_bindgen(getter = base)]
+    pub fn get_base(&self) -> TokenBaseTransitionWASM {
+        self.0.base().clone().into()
+    }
+
+    #[wasm_bindgen(getter = public_note)]
+    pub fn get_public_note(&self) -> Option<String> {
+        self.clone().0.public_note_owned()
+    }
+
+    // TODO: Implement token config and enable this method
+    // #[wasm_bindgen(getter = recipitnId)]
+    // pub fn recipient_id(&self) -> Result<IdentifierWASM, JsValue> {
+    //     Ok(self.0.recipient_id().with_js_error()?.into())
+    // }
+
+    #[wasm_bindgen(setter = amount)]
+    pub fn set_amount(&mut self, amount: u64) {
+        self.0.set_amount(amount)
+    }
+
+    #[wasm_bindgen(setter = base)]
+    pub fn set_base(&mut self, base: TokenBaseTransitionWASM) {
+        self.0.set_base(base.into())
+    }
+
+    #[wasm_bindgen(setter = public_note)]
+    pub fn set_public_note(&mut self, note: Option<String>) {
+        self.0.set_public_note(note)
     }
 }

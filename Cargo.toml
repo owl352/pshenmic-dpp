@@ -27,7 +27,7 @@ members = [
     "packages/state_transition",
     "packages/data_contract",
     "packages/asset_lock_proof",
-    "packages/data_contract_transitions", "packages/core_script", "packages/batch", "packages/group_state_transition_info"]
+    "packages/data_contract_transitions", "packages/core_script", "packages/batch", "packages/group_state_transition_info", "packages/encrypted_note", "packages/token_configuration_change_item", "packages/token_configuration"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
