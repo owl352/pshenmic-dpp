@@ -9,8 +9,8 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "PerpetualDistributionConfigurationConfiguration")]
-    pub fn perpetual_distribution_configuration(js_perpetual_distribution_value: JsValue) -> Self {
+    #[wasm_bindgen(js_name = "PerpetualDistributionConfigurationItem")]
+    pub fn perpetual_distribution_item(js_perpetual_distribution_value: JsValue) -> Self {
         let perpetual_distribution_value: Option<TokenPerpetualDistribution> =
             match js_perpetual_distribution_value.is_undefined() {
                 true => None,
@@ -28,17 +28,17 @@ impl TokenConfigurationChangeItemWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "PerpetualDistributionControlGroupConfiguration")]
-    pub fn perpetual_distribution_control_group(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "PerpetualDistributionControlGroupItem")]
+    pub fn perpetual_distribution_control_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(
-            TokenConfigurationChangeItem::PerpetualDistributionControlGroup(action.clone().into()),
+            TokenConfigurationChangeItem::PerpetualDistributionControlGroup(action_taker.clone().into()),
         )
     }
 
-    #[wasm_bindgen(js_name = "PerpetualDistributionAdminGroupConfiguration")]
-    pub fn perpetual_distribution_admin_group(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "PerpetualDistributionAdminGroupItem")]
+    pub fn perpetual_distribution_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(
-            TokenConfigurationChangeItem::PerpetualDistributionAdminGroup(action.clone().into()),
+            TokenConfigurationChangeItem::PerpetualDistributionAdminGroup(action_taker.clone().into()),
         )
     }
 }

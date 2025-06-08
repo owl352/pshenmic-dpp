@@ -5,31 +5,31 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "MintingAllowChoosingDestinationConfiguration")]
-    pub fn minting_allow_choosing_destination(flag: bool) -> Self {
+    #[wasm_bindgen(js_name = "MintingAllowChoosingDestinationItem")]
+    pub fn minting_allow_choosing_destination_item(flag: bool) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::MintingAllowChoosingDestination(flag),
         )
     }
 
-    #[wasm_bindgen(js_name = "MintingAllowChoosingDestinationControlGroupConfiguration")]
-    pub fn minting_allow_choosing_destination_control_group(
-        action: &AuthorizedActionTakersWASM,
+    #[wasm_bindgen(js_name = "MintingAllowChoosingDestinationControlGroupItem")]
+    pub fn minting_allow_choosing_destination_control_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
     ) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::MintingAllowChoosingDestinationControlGroup(
-                action.clone().into(),
+                action_taker.clone().into(),
             ),
         )
     }
 
-    #[wasm_bindgen(js_name = "MintingAllowChoosingDestinationAdminGroupConfiguration")]
-    pub fn minting_allow_choosing_destination_admin_group(
-        action: &AuthorizedActionTakersWASM,
+    #[wasm_bindgen(js_name = "MintingAllowChoosingDestinationAdminGroupItem")]
+    pub fn minting_allow_choosing_destination_admin_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
     ) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::MintingAllowChoosingDestinationAdminGroup(
-                action.clone().into(),
+                action_taker.clone().into(),
             ),
         )
     }

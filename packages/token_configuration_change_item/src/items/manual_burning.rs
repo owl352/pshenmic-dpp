@@ -5,17 +5,17 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "ManualBurningConfiguration")]
-    pub fn manual_burning(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "ManualBurningItem")]
+    pub fn manual_burning_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::ManualBurning(
-            action.clone().into(),
+            action_taker.clone().into(),
         ))
     }
 
-    #[wasm_bindgen(js_name = "ManualBurningAdminGroupConfiguration")]
-    pub fn manual_burning_admin_group(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "ManualBurningAdminGroupItem")]
+    pub fn manual_burning_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::ManualBurningAdminGroup(
-            action.clone().into(),
+            action_taker.clone().into(),
         ))
     }
 }

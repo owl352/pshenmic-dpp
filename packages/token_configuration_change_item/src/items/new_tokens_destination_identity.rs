@@ -8,8 +8,8 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityConfiguration")]
-    pub fn new_tokens_destination_identity(
+    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityItem")]
+    pub fn new_tokens_destination_identity_item(
         js_identity_id: &JsValue,
     ) -> Result<TokenConfigurationChangeItemWASM, JsValue> {
         let identity_id: Option<Identifier> = match js_identity_id.is_undefined() {
@@ -22,24 +22,24 @@ impl TokenConfigurationChangeItemWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityControlGroupConfiguration")]
-    pub fn new_tokens_destination_identity_control_group(
-        action: &AuthorizedActionTakersWASM,
+    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityControlGroupItem")]
+    pub fn new_tokens_destination_identity_control_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
     ) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::NewTokensDestinationIdentityControlGroup(
-                action.clone().into(),
+                action_taker.clone().into(),
             ),
         )
     }
 
-    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityAdminGroupConfiguration")]
-    pub fn new_tokens_destination_identity_admin_group(
-        action: &AuthorizedActionTakersWASM,
+    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityAdminGroupItem")]
+    pub fn new_tokens_destination_identity_admin_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
     ) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::NewTokensDestinationIdentityAdminGroup(
-                action.clone().into(),
+                action_taker.clone().into(),
             ),
         )
     }

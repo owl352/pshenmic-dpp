@@ -6,22 +6,22 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "MaxSupplyConfiguration")]
-    pub fn max_supply_configuration(supply: Option<TokenAmount>) -> Self {
+    #[wasm_bindgen(js_name = "MaxSupplyItem")]
+    pub fn max_supply_item(supply: Option<TokenAmount>) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::MaxSupply(supply))
     }
 
-    #[wasm_bindgen(js_name = "MaxSupplyControlGroupConfiguration")]
-    pub fn max_supply_control_group(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "MaxSupplyControlGroupItem")]
+    pub fn max_supply_control_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::MaxSupplyControlGroup(
-            action.clone().into(),
+            action_taker.clone().into(),
         ))
     }
 
-    #[wasm_bindgen(js_name = "MaxSupplyAdminGroupConfiguration")]
-    pub fn max_supply_admin_group(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "MaxSupplyAdminGroupItem")]
+    pub fn max_supply_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::MaxSupplyAdminGroup(
-            action.clone().into(),
+            action_taker.clone().into(),
         ))
     }
 }

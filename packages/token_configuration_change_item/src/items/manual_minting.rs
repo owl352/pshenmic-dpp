@@ -5,17 +5,17 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "ManualMintingConfiguration")]
-    pub fn manual_minting(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "ManualMintingItem")]
+    pub fn manual_minting_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::ManualMinting(
-            action.clone().into(),
+            action_taker.clone().into(),
         ))
     }
 
-    #[wasm_bindgen(js_name = "ManualMintingAdminGroupConfiguration")]
-    pub fn manual_minting_admin_group(action: &AuthorizedActionTakersWASM) -> Self {
+    #[wasm_bindgen(js_name = "ManualMintingAdminGroupItem")]
+    pub fn manual_minting_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::ManualMintingAdminGroup(
-            action.clone().into(),
+            action_taker.clone().into(),
         ))
     }
 }
