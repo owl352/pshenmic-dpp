@@ -4,7 +4,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = noChangeConfiguration)]
+    #[wasm_bindgen(js_name = "noChangeConfiguration")]
     pub fn no_changes_configuration() -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::TokenConfigurationNoChange)
     }

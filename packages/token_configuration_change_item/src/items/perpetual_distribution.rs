@@ -9,7 +9,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {
-    #[wasm_bindgen(js_name = "PerpetualDistributionConfiguration")]
+    #[wasm_bindgen(js_name = "PerpetualDistributionConfigurationConfiguration")]
     pub fn perpetual_distribution_configuration(js_perpetual_distribution_value: JsValue) -> Self {
         let perpetual_distribution_value: Option<TokenPerpetualDistribution> =
             match js_perpetual_distribution_value.is_undefined() {
@@ -28,14 +28,14 @@ impl TokenConfigurationChangeItemWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "PerpetualDistributionControlGroup")]
+    #[wasm_bindgen(js_name = "PerpetualDistributionControlGroupConfiguration")]
     pub fn perpetual_distribution_control_group(action: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::PerpetualDistributionControlGroup(action.clone().into()),
         )
     }
 
-    #[wasm_bindgen(js_name = "PerpetualDistributionAdminGroup")]
+    #[wasm_bindgen(js_name = "PerpetualDistributionAdminGroupConfiguration")]
     pub fn perpetual_distribution_admin_group(action: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(
             TokenConfigurationChangeItem::PerpetualDistributionAdminGroup(action.clone().into()),

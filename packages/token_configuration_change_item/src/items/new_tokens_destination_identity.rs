@@ -1,0 +1,46 @@
+use crate::TokenConfigurationChangeItemWASM;
+use dpp::data_contract::associated_token::token_configuration_item::TokenConfigurationChangeItem;
+use dpp::prelude::Identifier;
+use pshenmic_dpp_identifier::IdentifierWASM;
+use pshenmic_dpp_token_configuration::authorized_action_takers::AuthorizedActionTakersWASM;
+use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
+
+#[wasm_bindgen]
+impl TokenConfigurationChangeItemWASM {
+    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityConfiguration")]
+    pub fn new_tokens_destination_identity(
+        js_identity_id: &JsValue,
+    ) -> Result<TokenConfigurationChangeItemWASM, JsValue> {
+        let identity_id: Option<Identifier> = match js_identity_id.is_undefined() {
+            true => None,
+            false => Some(IdentifierWASM::try_from(js_identity_id)?.into()),
+        };
+
+        Ok(TokenConfigurationChangeItemWASM(
+            TokenConfigurationChangeItem::NewTokensDestinationIdentity(identity_id),
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityControlGroupConfiguration")]
+    pub fn new_tokens_destination_identity_control_group(
+        action: &AuthorizedActionTakersWASM,
+    ) -> Self {
+        TokenConfigurationChangeItemWASM(
+            TokenConfigurationChangeItem::NewTokensDestinationIdentityControlGroup(
+                action.clone().into(),
+            ),
+        )
+    }
+
+    #[wasm_bindgen(js_name = "NewTokensDestinationIdentityAdminGroupConfiguration")]
+    pub fn new_tokens_destination_identity_admin_group(
+        action: &AuthorizedActionTakersWASM,
+    ) -> Self {
+        TokenConfigurationChangeItemWASM(
+            TokenConfigurationChangeItem::NewTokensDestinationIdentityAdminGroup(
+                action.clone().into(),
+            ),
+        )
+    }
+}

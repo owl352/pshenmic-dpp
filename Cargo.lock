@@ -1455,6 +1455,7 @@ name = "pshenmic_dpp_token_configuration_change_item"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "pshenmic_dpp_identifier",
  "pshenmic_dpp_token_configuration",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
