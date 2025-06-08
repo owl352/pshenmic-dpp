@@ -11,9 +11,13 @@ impl TokenConfigurationChangeItemWASM {
             action_taker.clone().into(),
         ))
     }
-    
+
     #[wasm_bindgen(js_name = "DestroyFrozenFundsAdminGroupItem")]
-    pub fn destroy_frozen_funds_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
-        TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::DestroyFrozenFundsAdminGroup(action_taker.clone().into()))
+    pub fn destroy_frozen_funds_admin_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
+    ) -> Self {
+        TokenConfigurationChangeItemWASM(
+            TokenConfigurationChangeItem::DestroyFrozenFundsAdminGroup(action_taker.clone().into()),
+        )
     }
 }

@@ -29,16 +29,24 @@ impl TokenConfigurationChangeItemWASM {
     }
 
     #[wasm_bindgen(js_name = "PerpetualDistributionControlGroupItem")]
-    pub fn perpetual_distribution_control_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
+    pub fn perpetual_distribution_control_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
+    ) -> Self {
         TokenConfigurationChangeItemWASM(
-            TokenConfigurationChangeItem::PerpetualDistributionControlGroup(action_taker.clone().into()),
+            TokenConfigurationChangeItem::PerpetualDistributionControlGroup(
+                action_taker.clone().into(),
+            ),
         )
     }
 
     #[wasm_bindgen(js_name = "PerpetualDistributionAdminGroupItem")]
-    pub fn perpetual_distribution_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
+    pub fn perpetual_distribution_admin_group_item(
+        action_taker: &AuthorizedActionTakersWASM,
+    ) -> Self {
         TokenConfigurationChangeItemWASM(
-            TokenConfigurationChangeItem::PerpetualDistributionAdminGroup(action_taker.clone().into()),
+            TokenConfigurationChangeItem::PerpetualDistributionAdminGroup(
+                action_taker.clone().into(),
+            ),
         )
     }
 }

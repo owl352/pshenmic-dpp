@@ -14,18 +14,14 @@ impl TokenConfigurationChangeItemWASM {
     }
 
     #[wasm_bindgen(js_name = "ConventionsAdminGroupItem")]
-    pub fn conventions_admin_group_item(
-        action_taker: &AuthorizedActionTakersWASM,
-    ) -> Self {
+    pub fn conventions_admin_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::ConventionsAdminGroup(
             action_taker.clone().into(),
         ))
     }
 
     #[wasm_bindgen(js_name = "ConventionsControlGroupItem")]
-    pub fn conventions_control_group_item(
-        action_taker: &AuthorizedActionTakersWASM,
-    ) -> Self {
+    pub fn conventions_control_group_item(action_taker: &AuthorizedActionTakersWASM) -> Self {
         TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::ConventionsControlGroup(
             action_taker.clone().into(),
         ))
