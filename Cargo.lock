@@ -1445,6 +1445,8 @@ version = "1.0.5"
 dependencies = [
  "dpp",
  "pshenmic_dpp_identifier",
+ "pshenmic_dpp_utils",
+ "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
 
