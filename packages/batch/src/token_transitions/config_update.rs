@@ -1,8 +1,8 @@
-use dpp::state_transition::batch_transition::token_config_update_transition::TokenConfigUpdateTransitionV0;
+use crate::token_base_transition::TokenBaseTransitionWASM;
 use dpp::state_transition::batch_transition::TokenConfigUpdateTransition;
+use dpp::state_transition::batch_transition::token_config_update_transition::TokenConfigUpdateTransitionV0;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::token_base_transition::TokenBaseTransitionWASM;
 
 #[derive(Debug, Clone, PartialEq)]
 #[wasm_bindgen(js_name = "TokenConfigUpdateTransitionWASM")]
@@ -26,12 +26,13 @@ impl TokenConfigUpdateTransitionWASM {
     pub fn new(
         base: &TokenBaseTransitionWASM,
         public_note: Option<String>,
-        
     ) -> Result<TokenConfigUpdateTransitionWASM, JsValue> {
-        Ok(TokenConfigUpdateTransitionWASM(TokenConfigUpdateTransition::V0(TokenConfigUpdateTransitionV0{
-            base: Default::default(),
-            update_token_configuration_item: Default::default(),
-            public_note: None,
-        })))
+        Ok(TokenConfigUpdateTransitionWASM(
+            TokenConfigUpdateTransition::V0(TokenConfigUpdateTransitionV0 {
+                base: Default::default(),
+                update_token_configuration_item: Default::default(),
+                public_note: None,
+            }),
+        ))
     }
 }

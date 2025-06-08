@@ -3,5 +3,5 @@ pub mod keys;
 pub mod lock_types;
 pub mod network;
 pub mod platform;
-pub mod withdrawal;
 pub mod token;
+pub mod withdrawal;

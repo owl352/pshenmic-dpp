@@ -1,6 +1,6 @@
+use crate::TokenConfigurationChangeItemWASM;
 use dpp::data_contract::associated_token::token_configuration_item::TokenConfigurationChangeItem;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::TokenConfigurationChangeItemWASM;
 
 #[wasm_bindgen]
 impl TokenConfigurationChangeItemWASM {

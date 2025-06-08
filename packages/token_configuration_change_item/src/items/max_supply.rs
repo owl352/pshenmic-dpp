@@ -17,9 +17,11 @@ impl TokenConfigurationChangeItemWASM {
             action.clone().into(),
         ))
     }
-    
+
     #[wasm_bindgen(js_name = "MaxSupplyAdminGroupConfiguration")]
     pub fn max_supply_admin_group(action: &AuthorizedActionTakersWASM) -> Self {
-        TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::MaxSupplyAdminGroup(action.clone().into()))
+        TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem::MaxSupplyAdminGroup(
+            action.clone().into(),
+        ))
     }
 }

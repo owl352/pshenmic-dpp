@@ -30,7 +30,7 @@ impl TokenUnFreezeTransitionWASM {
     pub fn type_name(&self) -> String {
         "TokenUnFreezeTransitionWASM".to_string()
     }
-    
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         base: &TokenBaseTransitionWASM,

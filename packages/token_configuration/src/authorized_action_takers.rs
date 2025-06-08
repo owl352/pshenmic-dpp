@@ -3,7 +3,6 @@ use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-
 #[derive(Clone, Debug, PartialEq)]
 #[wasm_bindgen(js_name = "AuthorizedActionTakersWASM")]
 pub struct AuthorizedActionTakersWASM(AuthorizedActionTakers);

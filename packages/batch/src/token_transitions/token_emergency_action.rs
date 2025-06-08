@@ -32,11 +32,13 @@ impl TokenEmergencyActionTransitionWASM {
         emergency_action: TokenEmergencyActionWASM,
         public_note: Option<String>,
     ) -> TokenEmergencyActionTransitionWASM {
-        TokenEmergencyActionTransitionWASM(TokenEmergencyActionTransition::V0(TokenEmergencyActionTransitionV0{
-            base: base.clone().into(),
-            emergency_action: emergency_action.into(),
-            public_note,
-        }))
+        TokenEmergencyActionTransitionWASM(TokenEmergencyActionTransition::V0(
+            TokenEmergencyActionTransitionV0 {
+                base: base.clone().into(),
+                emergency_action: emergency_action.into(),
+                public_note,
+            },
+        ))
     }
 
     #[wasm_bindgen(getter = "base")]
@@ -48,7 +50,7 @@ impl TokenEmergencyActionTransitionWASM {
     pub fn get_public_note(&self) -> Option<String> {
         self.clone().0.public_note_owned()
     }
-    
+
     #[wasm_bindgen(getter = "emergencyAction")]
     pub fn get_emergency_action(&self) -> TokenEmergencyActionWASM {
         self.0.emergency_action().into()
@@ -63,7 +65,7 @@ impl TokenEmergencyActionTransitionWASM {
     pub fn set_public_note(&mut self, note: Option<String>) {
         self.0.set_public_note(note)
     }
-    
+
     #[wasm_bindgen(setter = "emergencyAction")]
     pub fn set_emergency_action(&mut self, action: TokenEmergencyActionWASM) {
         self.0.set_emergency_action(action.into())

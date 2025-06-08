@@ -5,7 +5,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Debug, Clone, PartialEq)]
 #[wasm_bindgen(js_name = "TokenConfigurationChangeItemWASM")]
-pub struct TokenConfigurationChangeItemWASM (TokenConfigurationChangeItem);
+pub struct TokenConfigurationChangeItemWASM(TokenConfigurationChangeItem);
 
 impl From<TokenConfigurationChangeItemWASM> for TokenConfigurationChangeItem {
     fn from(item: TokenConfigurationChangeItemWASM) -> Self {
