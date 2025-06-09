@@ -1,6 +1,4 @@
-use dpp::data_contract::associated_token::token_distribution_key::{
-    TokenDistributionType, TokenDistributionTypeWithResolvedRecipient,
-};
+use dpp::data_contract::associated_token::token_distribution_key::TokenDistributionType;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 

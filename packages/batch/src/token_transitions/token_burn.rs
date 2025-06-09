@@ -1,14 +1,13 @@
 use crate::token_base_transition::TokenBaseTransitionWASM;
 use dpp::state_transition::batch_transition::token_base_transition::token_base_transition_accessors::TokenBaseTransitionAccessors;
-use dpp::state_transition::batch_transition::{TokenBurnTransition, TokenMintTransition};
+use dpp::state_transition::batch_transition::TokenBurnTransition;
 use dpp::state_transition::batch_transition::token_burn_transition::TokenBurnTransitionV0;
 use dpp::state_transition::batch_transition::token_burn_transition::v0::v0_methods::TokenBurnTransitionV0Methods;
-use dpp::state_transition::batch_transition::token_mint_transition::v0::v0_methods::TokenMintTransitionV0Methods;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Debug, Clone, PartialEq)]
-#[wasm_bindgen(js_name=TokenMintTransitionWASM)]
+#[wasm_bindgen(js_name=TokenBurnTransitionWASM)]
 pub struct TokenBurnTransitionWASM(TokenBurnTransition);
 
 impl From<TokenBurnTransition> for TokenBurnTransitionWASM {

@@ -119,6 +119,15 @@ impl TokenTransitionWASM {
                             )?
                             .clone(),
                     )))
+                },
+                "TokenEmergencyActionTransitionWASM" => {
+                    Ok(TokenTransition::from(TokenEmergencyActionTransition::from(
+                        js_transition
+                            .to_wasm::<TokenEmergencyActionTransitionWASM>(
+                                "TokenEmergencyActionTransitionWASM",
+                            )?
+                            .clone(),
+                    )))
                 }
                 _ => Err(JsValue::from("Bad token transition input")),
             },

@@ -1,4 +1,3 @@
-use dpp::data_contract::GroupContractPosition;
 use dpp::group::GroupStateTransitionInfo;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;

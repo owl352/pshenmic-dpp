@@ -2,8 +2,6 @@ use dpp::state_transition::batch_transition::token_base_transition::token_base_t
 use dpp::state_transition::batch_transition::token_emergency_action_transition::TokenEmergencyActionTransitionV0;
 use dpp::state_transition::batch_transition::token_emergency_action_transition::v0::v0_methods::TokenEmergencyActionTransitionV0Methods;
 use dpp::state_transition::batch_transition::TokenEmergencyActionTransition;
-use dpp::tokens::emergency_action::TokenEmergencyAction;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_enums::token::emergency_action::TokenEmergencyActionWASM;
 use crate::token_base_transition::TokenBaseTransitionWASM;

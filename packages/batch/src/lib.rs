@@ -3,7 +3,7 @@ use crate::document_transition::DocumentTransitionWASM;
 use dpp::fee::Credits;
 use dpp::identity::KeyID;
 use dpp::platform_value::BinaryData;
-use dpp::prelude::{Identifier, IdentityNonce, UserFeeIncrease};
+use dpp::prelude::{IdentityNonce, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::batch_transition::accessors::DocumentsBatchTransitionAccessorsV0;
 use dpp::state_transition::batch_transition::batched_transition::BatchedTransition;

@@ -1,10 +1,7 @@
 use crate::token_base_transition::TokenBaseTransitionWASM;
 use crate::token_pricing_schedule::TokenPricingScheduleWASM;
-use dpp::state_transition::batch_transition::token_direct_purchase_transition::TokenDirectPurchaseTransitionV0;
 use dpp::state_transition::batch_transition::token_set_price_for_direct_purchase_transition::TokenSetPriceForDirectPurchaseTransitionV0;
-use dpp::state_transition::batch_transition::{
-    TokenDirectPurchaseTransition, TokenSetPriceForDirectPurchaseTransition,
-};
+use dpp::state_transition::batch_transition::TokenSetPriceForDirectPurchaseTransition;
 use dpp::state_transition::batch_transition::token_base_transition::token_base_transition_accessors::TokenBaseTransitionAccessors;
 use dpp::state_transition::batch_transition::token_set_price_for_direct_purchase_transition::v0::v0_methods::TokenSetPriceForDirectPurchaseTransitionV0Methods;
 use dpp::tokens::token_pricing_schedule::TokenPricingSchedule;
@@ -58,7 +55,7 @@ impl TokenSetPriceForDirectPurchaseTransitionWASM {
         Ok(TokenSetPriceForDirectPurchaseTransitionWASM(
             TokenSetPriceForDirectPurchaseTransition::V0(
                 TokenSetPriceForDirectPurchaseTransitionV0 {
-                    base: Default::default(),
+                    base: base.clone().into(),
                     price,
                     public_note,
                 },

@@ -1,7 +1,7 @@
 use crate::token_base_transition::TokenBaseTransitionWASM;
 use dpp::identifier::Identifier;
 use dpp::state_transition::batch_transition::token_unfreeze_transition::TokenUnfreezeTransitionV0;
-use dpp::state_transition::batch_transition::{TokenFreezeTransition, TokenUnfreezeTransition};
+use dpp::state_transition::batch_transition::TokenUnfreezeTransition;
 use dpp::state_transition::batch_transition::token_base_transition::token_base_transition_accessors::TokenBaseTransitionAccessors;
 use dpp::state_transition::batch_transition::token_unfreeze_transition::v0::v0_methods::TokenUnfreezeTransitionV0Methods;
 use pshenmic_dpp_identifier::IdentifierWASM;
@@ -9,7 +9,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Debug, Clone, PartialEq)]
-#[wasm_bindgen(js_name=TokenFreezeTransitionWASM)]
+#[wasm_bindgen(js_name=TokenUnFreezeTransitionWASM)]
 pub struct TokenUnFreezeTransitionWASM(TokenUnfreezeTransition);
 
 impl From<TokenUnfreezeTransition> for TokenUnFreezeTransitionWASM {

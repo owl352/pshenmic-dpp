@@ -3,7 +3,6 @@ use crate::token_transition::TokenTransitionWASM;
 use dpp::state_transition::batch_transition::batched_transition::BatchedTransition;
 use dpp::state_transition::batch_transition::batched_transition::document_transition::DocumentTransition;
 use dpp::state_transition::batch_transition::batched_transition::token_transition::TokenTransition;
-use pshenmic_dpp_utils::{IntoWasm, get_class_type};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 

@@ -1,4 +1,3 @@
-use crate::token_transition::TokenTransitionWASM;
 use dpp::group::GroupStateTransitionInfo;
 use dpp::prelude::IdentityNonce;
 use dpp::state_transition::batch_transition::token_base_transition::TokenBaseTransition;

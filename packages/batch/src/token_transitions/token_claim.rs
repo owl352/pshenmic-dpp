@@ -1,4 +1,3 @@
-use dpp::data_contract::associated_token::token_distribution_key::TokenDistributionType;
 use dpp::state_transition::batch_transition::token_base_transition::token_base_transition_accessors::TokenBaseTransitionAccessors;
 use crate::token_base_transition::TokenBaseTransitionWASM;
 use dpp::state_transition::batch_transition::TokenClaimTransition;

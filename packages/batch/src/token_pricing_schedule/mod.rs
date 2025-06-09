@@ -49,8 +49,8 @@ impl TokenPricingScheduleWASM {
     #[wasm_bindgen(js_name = "getScheduleType")]
     pub fn get_scheduled_type(&self) -> String {
         match &self.0 {
-            TokenPricingSchedule::SinglePrice(credits) => String::from("SinglePrice"),
-            TokenPricingSchedule::SetPrices(prices) => String::from("SetPrices"),
+            TokenPricingSchedule::SinglePrice(_) => String::from("SinglePrice"),
+            TokenPricingSchedule::SetPrices(_) => String::from("SetPrices"),
         }
     }
 

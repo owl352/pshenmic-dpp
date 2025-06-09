@@ -1,4 +1,3 @@
-use dpp::data_contract::associated_token::token_perpetual_distribution::distribution_function::DistributionFunction;
 use dpp::data_contract::associated_token::token_perpetual_distribution::reward_distribution_type::RewardDistributionType;
 use dpp::data_contract::associated_token::token_perpetual_distribution::reward_distribution_type::RewardDistributionType::{BlockBasedDistribution, EpochBasedDistribution, TimeBasedDistribution};
 use dpp::prelude::{BlockHeightInterval, EpochInterval, TimestampMillisInterval};
