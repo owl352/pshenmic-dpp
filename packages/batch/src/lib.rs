@@ -19,14 +19,15 @@ use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-mod batched_transition;
-mod document_base_transition;
-mod document_transition;
-mod document_transitions;
-mod generators;
-mod prefunded_voting_balance;
-mod token_base_transition;
-mod token_transition;
+pub mod batched_transition;
+pub mod document_base_transition;
+pub mod document_transition;
+pub mod document_transitions;
+pub mod generators;
+pub mod prefunded_voting_balance;
+pub mod token_base_transition;
+pub mod token_pricing_schedule;
+pub mod token_transition;
 pub mod token_transitions;
 
 #[derive(Debug, Clone, PartialEq)]

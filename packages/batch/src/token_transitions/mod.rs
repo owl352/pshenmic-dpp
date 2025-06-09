@@ -1,4 +1,6 @@
 mod config_update;
+pub mod direct_purchase;
+pub mod set_price_for_direct_purchase;
 pub mod token_burn;
 pub mod token_claim;
 pub mod token_destroy_frozen_funds;
