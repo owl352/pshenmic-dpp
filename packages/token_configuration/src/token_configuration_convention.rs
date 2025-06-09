@@ -16,7 +16,7 @@ use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Debug, Clone, PartialEq)]
-#[wasm_bindgen(js_name = TokenConfigurationConventionWASM)]
+#[wasm_bindgen(js_name = "TokenConfigurationConventionWASM")]
 pub struct TokenConfigurationConventionWASM(TokenConfigurationConvention);
 
 impl From<TokenConfigurationConvention> for TokenConfigurationConventionWASM {

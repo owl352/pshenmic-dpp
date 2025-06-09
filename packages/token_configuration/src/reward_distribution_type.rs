@@ -6,7 +6,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::distribution_function::DistributionFunctionWASM;
 
 #[derive(Clone, Debug, PartialEq)]
-#[wasm_bindgen(js_name = RewardDistributionType)]
+#[wasm_bindgen(js_name = "RewardDistributionTypeWASM")]
 pub struct RewardDistributionTypeWASM(RewardDistributionType);
 
 impl From<RewardDistributionType> for RewardDistributionTypeWASM {

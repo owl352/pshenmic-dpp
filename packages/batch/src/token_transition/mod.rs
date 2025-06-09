@@ -119,7 +119,7 @@ impl TokenTransitionWASM {
                             )?
                             .clone(),
                     )))
-                },
+                }
                 "TokenEmergencyActionTransitionWASM" => {
                     Ok(TokenTransition::from(TokenEmergencyActionTransition::from(
                         js_transition
