@@ -22,6 +22,11 @@ impl From<TokenPerpetualDistribution> for TokenPerpetualDistributionWASM {
 
 #[wasm_bindgen]
 impl TokenPerpetualDistributionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenPerpetualDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         distribution_type: &RewardDistributionTypeWASM,

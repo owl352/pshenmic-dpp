@@ -23,6 +23,11 @@ impl From<TokenConfigurationLocalizationWASM> for TokenConfigurationLocalization
 
 #[wasm_bindgen]
 impl TokenConfigurationLocalizationWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenConfigurationLocalizationWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         should_capitalize: bool,

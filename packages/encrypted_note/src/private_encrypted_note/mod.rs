@@ -21,6 +21,11 @@ impl From<PrivateEncryptedNoteWASM> for PrivateEncryptedNote {
 
 #[wasm_bindgen]
 impl PrivateEncryptedNoteWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "PrivateEncryptedNoteWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         root_encryption_key_index: RootEncryptionKeyIndex,

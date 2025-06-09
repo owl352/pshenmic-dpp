@@ -22,6 +22,11 @@ impl From<GroupStateTransitionInfo> for GroupStateTransitionInfoWASM {
 
 #[wasm_bindgen]
 impl GroupStateTransitionInfoWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "GroupStateTransitionInfoWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         group_contract_position: u16,

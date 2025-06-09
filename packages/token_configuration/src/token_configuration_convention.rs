@@ -1,3 +1,4 @@
+use crate::localization::TokenConfigurationLocalizationWASM;
 use dpp::ProtocolError;
 use dpp::dashcore::hashes::serde::Serialize;
 use dpp::data_contract::associated_token::token_configuration_convention::TokenConfigurationConvention;
@@ -9,7 +10,6 @@ use dpp::data_contract::associated_token::token_configuration_localization::Toke
 use dpp::data_contract::associated_token::token_configuration_localization::v0::TokenConfigurationLocalizationV0;
 use dpp::platform_value::Value;
 use dpp::platform_value::converter::serde_json::BTreeValueJsonConverter;
-use pshenmic_dpp_token_configuration::localization::TokenConfigurationLocalizationWASM;
 use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
@@ -33,6 +33,11 @@ impl From<TokenConfigurationConventionWASM> for TokenConfigurationConvention {
 
 #[wasm_bindgen]
 impl TokenConfigurationConventionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenConfigurationConventionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_localizations: &JsValue,

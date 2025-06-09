@@ -25,6 +25,11 @@ impl From<TokenConfigUpdateTransition> for TokenConfigUpdateTransitionWASM {
 
 #[wasm_bindgen]
 impl TokenConfigUpdateTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenConfigUpdateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         base: &TokenBaseTransitionWASM,

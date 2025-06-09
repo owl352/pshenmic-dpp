@@ -25,6 +25,11 @@ impl From<TokenDirectPurchaseTransition> for TokenDirectPurchaseTransitionWASM {
 
 #[wasm_bindgen]
 impl TokenDirectPurchaseTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenDirectPurchaseTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         base: &TokenBaseTransitionWASM,

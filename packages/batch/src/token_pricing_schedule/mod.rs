@@ -25,6 +25,11 @@ impl From<TokenPricingSchedule> for TokenPricingScheduleWASM {
 
 #[wasm_bindgen]
 impl TokenPricingScheduleWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenPricingScheduleWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "SinglePrice")]
     pub fn single_price(credits: Credits) -> Self {
         Self(TokenPricingSchedule::SinglePrice(credits))

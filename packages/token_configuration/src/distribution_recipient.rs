@@ -21,6 +21,11 @@ impl From<TokenDistributionRecipientWASM> for TokenDistributionRecipient {
 
 #[wasm_bindgen]
 impl TokenDistributionRecipientWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenDistributionRecipientWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "ContractOwner")]
     pub fn contract_owner() -> TokenDistributionRecipientWASM {
         TokenDistributionRecipientWASM(TokenDistributionRecipient::ContractOwner)

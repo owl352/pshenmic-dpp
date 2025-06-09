@@ -20,6 +20,11 @@ impl From<SharedEncryptedNoteWASM> for SharedEncryptedNote {
 
 #[wasm_bindgen]
 impl SharedEncryptedNoteWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "SharedEncryptedNoteWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         sender_key_index: SenderKeyIndex,

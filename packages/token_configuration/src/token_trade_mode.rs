@@ -19,6 +19,11 @@ impl From<TokenTradeModeWASM> for TokenTradeMode {
 
 #[wasm_bindgen]
 impl TokenTradeModeWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenTradeModeWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "NotTradeable")]
     pub fn not_tradeable() -> TokenTradeModeWASM {
         TokenTradeModeWASM(TokenTradeMode::NotTradeable)

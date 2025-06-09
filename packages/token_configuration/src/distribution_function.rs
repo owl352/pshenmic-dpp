@@ -28,6 +28,11 @@ impl From<DistributionFunction> for DistributionFunctionWASM {
 
 #[wasm_bindgen]
 impl DistributionFunctionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "DistributionFunctionWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "FixedAmountDistribution")]
     pub fn fixed_amount_distribution(amount: TokenAmount) -> DistributionFunctionWASM {
         DistributionFunctionWASM(DistributionFunction::FixedAmount { amount })

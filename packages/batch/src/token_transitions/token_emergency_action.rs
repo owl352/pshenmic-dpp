@@ -26,6 +26,11 @@ impl From<TokenEmergencyActionTransition> for TokenEmergencyActionTransitionWASM
 
 #[wasm_bindgen]
 impl TokenEmergencyActionTransitionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenEmergencyActionTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         base: &TokenBaseTransitionWASM,

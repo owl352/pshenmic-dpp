@@ -24,6 +24,11 @@ impl From<RewardDistributionTypeWASM> for RewardDistributionType {
 
 #[wasm_bindgen]
 impl RewardDistributionTypeWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "RewardDistributionTypeWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "BlockBasedDistribution")]
     pub fn block_based_distribution(
         interval: BlockHeightInterval,

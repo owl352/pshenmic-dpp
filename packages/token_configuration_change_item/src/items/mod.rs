@@ -1,7 +1,6 @@
 pub mod conventions;
 pub mod destroy_frozen_funds;
 pub mod emergency_action;
-pub mod entities;
 pub mod freeze;
 pub mod main_control_group;
 pub mod manual_burning;

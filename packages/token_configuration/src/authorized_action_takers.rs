@@ -21,6 +21,11 @@ impl From<AuthorizedActionTakersWASM> for AuthorizedActionTakers {
 
 #[wasm_bindgen]
 impl AuthorizedActionTakersWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "AuthorizedActionTakersWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "NoOne")]
     pub fn no_one() -> Self {
         AuthorizedActionTakersWASM(AuthorizedActionTakers::NoOne)
