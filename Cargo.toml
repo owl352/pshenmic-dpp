@@ -4,6 +4,9 @@ version = "1.0.6"
 edition = "2024"
 rust-version = "1.85"
 
+[workspace.dependencies]
+dpp = { git = "https://github.com/dashpay/platform", tag = "v2.0.0-rc.14", default-features = false }
+
 [workspace.package]
 version = "1.0.5"
 
@@ -11,7 +14,8 @@ version = "1.0.5"
 resolver = "2"
 members = [
     "packages/document",
-    "packages/documents_batch",
+#    "packages/documents_batch",
+    "packages/batch",
     "packages/cbor_conversation",
     "packages/enums",
     "packages/mock_bls",
@@ -23,7 +27,7 @@ members = [
     "packages/state_transition",
     "packages/data_contract",
     "packages/asset_lock_proof",
-    "packages/data_contract_transitions", "packages/core_script"]
+    "packages/data_contract_transitions", "packages/core_script", "packages/batch", "packages/group_state_transition_info", "packages/encrypted_note", "packages/token_configuration_change_item", "packages/token_configuration"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -32,8 +36,9 @@ crate-type = ["cdylib", "lib"]
 wee_alloc = { version = "0.4.5", default-features = false }
 bincode = "=2.0.0-rc.3"
 bincode_derive = "=2.0.0-rc.3"
-pshenmic_dpp_documents_batch = { path = "packages/documents_batch" }
+#pshenmic_dpp_documents_batch = { path = "packages/documents_batch" }
 pshenmic_dpp_document_search = { path = "packages/cbor_conversation" }
+pshenmic_dpp_batch = { path = "packages/batch" }
 pshenmic_dpp_identity = { path = "packages/identity" }
 pshenmic_dpp_identifier = { path = "packages/identifier" }
 pshenmic_dpp_state_transition = { path = "packages/state_transition" }

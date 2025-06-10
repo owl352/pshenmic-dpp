@@ -18,7 +18,7 @@ describe('DocumentTransition', function () {
   })
 
   describe('serialization / deserialization', function () {
-    it('should allow to create from documents transitions', function () {
+    it('should allow to create from documents document_transitions', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
       assert.notEqual(documentTransition.__wbg_ptr, 0)

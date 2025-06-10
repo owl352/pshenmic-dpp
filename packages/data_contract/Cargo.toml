@@ -11,7 +11,7 @@ wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["se
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_enums = {path = "../enums"}
 pshenmic_dpp_identifier = { path = "../identifier" }
-dpp = { git = "https://github.com/dashpay/platform", branch = "master", default-features = false, features = [
+dpp = { workspace = true, features = [
     "data-contract-json-conversion",
 ]}
 js-sys = "0.3.53"

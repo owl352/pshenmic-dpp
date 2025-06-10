@@ -1,4 +1,5 @@
 use dpp::dashcore::hashes::serde::Serialize;
+use dpp::data_contract::DataContract;
 use dpp::data_contract::accessors::v0::{DataContractV0Getters, DataContractV0Setters};
 use dpp::data_contract::config::DataContractConfig;
 use dpp::data_contract::conversion::json::DataContractJsonConversionMethodsV0;
@@ -6,7 +7,6 @@ use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethod
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
-use dpp::data_contract::{DataContract, DataContractV0};
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::platform_value::{Value, ValueMap};
 use dpp::prelude::IdentityNonce;
@@ -143,11 +143,10 @@ impl DataContractWASM {
 
         let value = js_value.with_serde_to_platform_value()?;
 
-        let v0_contract =
-            DataContractV0::from_value(value, full_validation, &platform_version.into())
-                .with_js_error()?;
+        let contract = DataContract::from_value(value, full_validation, &platform_version.into())
+            .with_js_error()?;
 
-        Ok(DataContractWASM(DataContract::V0(v0_contract)))
+        Ok(DataContractWASM(contract))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]

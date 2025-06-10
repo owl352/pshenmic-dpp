@@ -1,0 +1,21 @@
+[package]
+name = "pshenmic_dpp_batch"
+edition = "2024"
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+dpp = { workspace = true, features = ["document-json-conversion"] }
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+pshenmic_dpp_document = { path = "../document" }
+pshenmic_dpp_encrypted_note = { path = "../encrypted_note" }
+pshenmic_dpp_group_state_transition_info = { path = "../group_state_transition_info" }
+pshenmic_dpp_token_configuration_change_item = { path = "../token_configuration_change_item" }
+pshenmic_dpp_enums = { path = "../enums" }
+pshenmic_dpp_identifier = { path = "../identifier" }
+pshenmic_dpp_utils = { path = "../utils" }
+pshenmic_dpp_state_transition = { path = "../state_transition" }
+serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+js-sys = "0.3.53"

@@ -11,7 +11,7 @@ describe('DocumentsBatch', function () {
   })
 
   describe('serialization / deserialization', function () {
-    it('should allow to create from transitions', function () {
+    it('should allow to create from document_transitions', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
       const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
@@ -27,7 +27,7 @@ describe('DocumentsBatch', function () {
   })
 
   describe('getters', function () {
-    it('should allow to get transitions', function () {
+    it('should allow to get document_transitions', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
       const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), 'preorder')
 
