@@ -50,12 +50,12 @@ impl TokenDirectPurchaseTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(getter = token_count)]
+    #[wasm_bindgen(getter = tokenCount)]
     pub fn get_token_count(&self) -> TokenAmount {
         self.0.token_count()
     }
 
-    #[wasm_bindgen(getter = total_agreed_price)]
+    #[wasm_bindgen(getter = totalAgreedPrice)]
     pub fn get_total_agreed_price(&self) -> Credits {
         self.0.total_agreed_price()
     }
@@ -65,12 +65,12 @@ impl TokenDirectPurchaseTransitionWASM {
         self.0.set_base(base.into())
     }
 
-    #[wasm_bindgen(setter = token_count)]
+    #[wasm_bindgen(setter = tokenCount)]
     pub fn set_token_count(&mut self, token_count: TokenAmount) {
         self.0.set_token_count(token_count)
     }
 
-    #[wasm_bindgen(setter = total_agreed_price)]
+    #[wasm_bindgen(setter = totalAgreedPrice)]
     pub fn set_total_agreed_price(&mut self, total_agreed_price: Credits) {
         self.0.set_total_agreed_price(total_agreed_price)
     }

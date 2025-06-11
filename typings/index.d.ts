@@ -19,7 +19,7 @@ export class DashPlatformProtocolWASM {
     DocumentTransitionWASM: typeof DPP.DocumentTransitionWASM
     DocumentUpdatePriceTransitionWASM: typeof DPP.DocumentUpdatePriceTransitionWASM
     DocumentWASM: typeof DPP.DocumentWASM
-    DocumentsBatchWASM: typeof DPP.DocumentsBatchWASM
+    BatchTransitionWASM: typeof DPP.BatchTransitionWASM
     IdentifierWASM: typeof DPP.IdentifierWASM
     IdentityCreateTransitionWASM: typeof DPP.IdentityCreateTransitionWASM
     IdentityCreditTransferWASM: typeof DPP.IdentityCreditTransferWASM

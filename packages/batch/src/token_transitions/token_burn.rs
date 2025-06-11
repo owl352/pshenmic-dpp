@@ -54,7 +54,7 @@ impl TokenBurnTransitionWASM {
         self.0.base().clone().into()
     }
 
-    #[wasm_bindgen(getter = public_note)]
+    #[wasm_bindgen(getter = publicNote)]
     pub fn get_public_note(&self) -> Option<String> {
         self.clone().0.public_note_owned()
     }
@@ -69,7 +69,7 @@ impl TokenBurnTransitionWASM {
         self.0.set_base(base.into())
     }
 
-    #[wasm_bindgen(setter = public_note)]
+    #[wasm_bindgen(setter = publicNote)]
     pub fn set_public_note(&mut self, note: Option<String>) {
         self.0.set_public_note(note)
     }

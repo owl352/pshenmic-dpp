@@ -75,7 +75,8 @@ impl TokenUnFreezeTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "frozenIdentityId")]
-    pub fn set_frozen_identity_id(&mut self, frozen_identity_id: IdentifierWASM) {
-        self.0.set_frozen_identity_id(frozen_identity_id.into())
+    pub fn set_frozen_identity_id(&mut self, js_frozen_identity_id: &JsValue) -> Result<(), JsValue> {
+        self.0.set_frozen_identity_id(IdentifierWASM::try_from(js_frozen_identity_id)?.into());
+        Ok(())
     }
 }

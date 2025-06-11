@@ -14,7 +14,6 @@ version = "1.0.5"
 resolver = "2"
 members = [
     "packages/document",
-#    "packages/documents_batch",
     "packages/batch",
     "packages/cbor_conversation",
     "packages/enums",

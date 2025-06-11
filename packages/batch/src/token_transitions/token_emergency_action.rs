@@ -55,8 +55,8 @@ impl TokenEmergencyActionTransitionWASM {
     }
 
     #[wasm_bindgen(getter = "emergencyAction")]
-    pub fn get_emergency_action(&self) -> TokenEmergencyActionWASM {
-        self.0.emergency_action().into()
+    pub fn get_emergency_action(&self) -> String {
+        TokenEmergencyActionWASM::from(self.0.emergency_action()).into()
     }
 
     #[wasm_bindgen(setter = "base")]
