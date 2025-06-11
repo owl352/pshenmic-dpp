@@ -7,10 +7,10 @@ extern crate wee_alloc;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+pub use pshenmic_dpp_batch;
 pub use pshenmic_dpp_data_contract;
 pub use pshenmic_dpp_data_contract_transitions;
 pub use pshenmic_dpp_document_search;
-pub use pshenmic_dpp_batch;
 pub use pshenmic_dpp_enums;
 pub use pshenmic_dpp_identifier;
 pub use pshenmic_dpp_identity;
