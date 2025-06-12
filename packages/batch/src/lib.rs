@@ -31,7 +31,7 @@ pub mod token_transition;
 pub mod token_transitions;
 
 #[derive(Debug, Clone, PartialEq)]
-#[wasm_bindgen(js_name=BatchWASM)]
+#[wasm_bindgen(js_name=BatchTransitionWASM)]
 pub struct BatchTransitionWASM(BatchTransition);
 
 impl From<BatchTransition> for BatchTransitionWASM {
@@ -69,8 +69,8 @@ impl BatchTransitionWASM {
 
     #[wasm_bindgen(js_name = "fromV1BatchedTransitions")]
     pub fn from_v1_batched_transitions(
-        owner_id: &JsValue,
         js_batched_transitions: &js_sys::Array,
+        owner_id: &JsValue,
         user_fee_increase: UserFeeIncrease,
         signature_public_key_id: Option<u32>,
         signature: Option<Vec<u8>>,

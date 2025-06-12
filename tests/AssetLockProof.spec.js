@@ -19,6 +19,7 @@ describe('AssetLockProof', function () {
 
     it('shouldn\'t allow to get chain lock proof via constructor', () => {
       try {
+        // eslint-disable-next-line
         new wasm.AssetLockProofWASM('chain')
       } catch (e) {
         assert.ok(true)

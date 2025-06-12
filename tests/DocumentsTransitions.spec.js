@@ -37,7 +37,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = createTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(createTransition.__wbg_ptr, 0)
@@ -51,17 +51,17 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = createTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         const st = batchTransition.toStateTransition()
 
-        const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
+        const deserializedBatch = wasm.BatchTransitionWASM.fromStateTransition(st)
 
         const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
-        const deserializedPurchaseTransition = deserializedTransitions[0].createTransition
+        const deserializedPurchaseTransition = deserializedTransitions[0].toTransition().createTransition
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(createTransition.__wbg_ptr, 0)
@@ -99,7 +99,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = deleteTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(deleteTransition.__wbg_ptr, 0)
@@ -113,17 +113,17 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = deleteTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         const st = batchTransition.toStateTransition()
 
-        const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
+        const deserializedBatch = wasm.BatchTransitionWASM.fromStateTransition(st)
 
         const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
-        const deserializedPurchaseTransition = deserializedTransitions[0].deleteTransition
+        const deserializedPurchaseTransition = deserializedTransitions[0].toTransition().deleteTransition
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(deleteTransition.__wbg_ptr, 0)
@@ -161,7 +161,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = replaceTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(replaceTransition.__wbg_ptr, 0)
@@ -175,17 +175,17 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = replaceTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         const st = batchTransition.toStateTransition()
 
-        const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
+        const deserializedBatch = wasm.BatchTransitionWASM.fromStateTransition(st)
 
         const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
-        const deserializedPurchaseTransition = deserializedTransitions[0].replaceTransition
+        const deserializedPurchaseTransition = deserializedTransitions[0].toTransition().replaceTransition
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(replaceTransition.__wbg_ptr, 0)
@@ -223,7 +223,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = transferTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(transferTransition.__wbg_ptr, 0)
@@ -237,17 +237,17 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = transferTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         const st = batchTransition.toStateTransition()
 
-        const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
+        const deserializedBatch = wasm.BatchTransitionWASM.fromStateTransition(st)
 
         const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
-        const deserializedPurchaseTransition = deserializedTransitions[0].transferTransition
+        const deserializedPurchaseTransition = deserializedTransitions[0].toTransition().transferTransition
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(transferTransition.__wbg_ptr, 0)
@@ -285,7 +285,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = updatePriceTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(updatePriceTransition.__wbg_ptr, 0)
@@ -299,17 +299,17 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = updatePriceTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         const st = batchTransition.toStateTransition()
 
-        const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
+        const deserializedBatch = wasm.BatchTransitionWASM.fromStateTransition(st)
 
         const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
-        const deserializedPurchaseTransition = deserializedTransitions[0].updatePriceTransition
+        const deserializedPurchaseTransition = deserializedTransitions[0].toTransition().updatePriceTransition
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(updatePriceTransition.__wbg_ptr, 0)
@@ -347,7 +347,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = purchaseTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(purchaseTransition.__wbg_ptr, 0)
@@ -361,17 +361,17 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = purchaseTransition.toDocumentTransition()
 
-        const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
 
         const st = batchTransition.toStateTransition()
 
-        const deserializedBatch = wasm.DocumentsBatchWASM.fromStateTransition(st)
+        const deserializedBatch = wasm.BatchTransitionWASM.fromStateTransition(st)
 
         const deserializedTransitions = deserializedBatch.transitions
 
         assert.equal(deserializedTransitions.length, 2)
 
-        const deserializedPurchaseTransition = deserializedTransitions[0].purchaseTransition
+        const deserializedPurchaseTransition = deserializedTransitions[0].toTransition().purchaseTransition
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(purchaseTransition.__wbg_ptr, 0)
