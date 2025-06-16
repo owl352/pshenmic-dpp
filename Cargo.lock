@@ -1296,6 +1296,7 @@ dependencies = [
  "js-sys",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
+ "pshenmic_dpp_token_configuration",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
  "wasm-bindgen",
@@ -1445,6 +1446,8 @@ name = "pshenmic_dpp_token_configuration"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "js-sys",
+ "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",

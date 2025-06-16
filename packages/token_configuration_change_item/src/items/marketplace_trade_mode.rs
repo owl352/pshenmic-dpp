@@ -1,7 +1,7 @@
 use crate::TokenConfigurationChangeItemWASM;
 use dpp::data_contract::associated_token::token_configuration_item::TokenConfigurationChangeItem;
 use pshenmic_dpp_token_configuration::authorized_action_takers::AuthorizedActionTakersWASM;
-use pshenmic_dpp_token_configuration::token_trade_mode::TokenTradeModeWASM;
+use pshenmic_dpp_token_configuration::trade_mode::TokenTradeModeWASM;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]

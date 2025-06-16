@@ -2,6 +2,7 @@ use dpp::dashcore::secp256k1::hashes::hex::Case::Lower;
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::identity::{KeyID, KeyType};
 use dpp::platform_value::BinaryData;
+use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition;
@@ -13,8 +14,8 @@ use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_utils::WithJsError;
 use sha2::{Digest, Sha256};
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[derive(Clone)]
 #[wasm_bindgen(js_name = "StateTransitionWASM")]
@@ -87,14 +88,43 @@ impl StateTransitionWASM {
         Ok(JsValue::from(bytes.clone()))
     }
 
+    #[wasm_bindgen(js_name = "toHex")]
+    pub fn to_hex(&self) -> Result<JsValue, JsValue> {
+        let bytes = self.0.serialize_to_bytes().with_js_error()?;
+
+        Ok(JsValue::from(encode(bytes.as_slice(), Encoding::Hex)))
+    }
+
+    #[wasm_bindgen(js_name = "toBase64")]
+    pub fn to_base64(&self) -> Result<JsValue, JsValue> {
+        let bytes = self.0.serialize_to_bytes().with_js_error()?;
+
+        Ok(JsValue::from(encode(bytes.as_slice(), Encoding::Base64)))
+    }
+
     #[wasm_bindgen(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<StateTransitionWASM, JsValue> {
-        let st = StateTransition::deserialize_from_bytes(bytes.as_slice());
+        let st = StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
 
-        match st {
-            Err(err) => Err(JsValue::from_str(err.to_string().as_str())),
-            Ok(transition) => Ok(StateTransitionWASM(transition)),
-        }
+        Ok(st.into())
+    }
+
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<StateTransitionWASM, JsValue> {
+        let bytes = decode(&hex, Encoding::Hex).map_err(JsError::from)?;
+
+        let st = StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+
+        Ok(st.into())
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<StateTransitionWASM, JsValue> {
+        let bytes = decode(&base64, Encoding::Base64).map_err(JsError::from)?;
+
+        let st = StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+
+        Ok(st.into())
     }
 
     #[wasm_bindgen(js_name = "hash")]
