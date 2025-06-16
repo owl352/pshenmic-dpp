@@ -41,7 +41,7 @@ impl From<DataContractWASM> for DataContract {
     }
 }
 
-pub fn tokens_configuration_fron_js_value(
+pub fn tokens_configuration_from_js_value(
     js_configuration: &JsValue,
 ) -> Result<BTreeMap<TokenContractPosition, TokenConfiguration>, JsValue> {
     let configuration_object = Object::from(js_configuration.clone());
@@ -88,7 +88,7 @@ impl DataContractWASM {
         let schema: Value = serde_wasm_bindgen::from_value(js_schema)?;
 
         let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> =
-            tokens_configuration_fron_js_value(js_tokens)?;
+            tokens_configuration_from_js_value(js_tokens)?;
 
         let platform_version: PlatformVersion = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default().into(),
@@ -363,7 +363,7 @@ impl DataContractWASM {
     pub fn set_tokens(&mut self, js_tokens: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
-            .set_tokens(tokens_configuration_fron_js_value(js_tokens)?))
+            .set_tokens(tokens_configuration_from_js_value(js_tokens)?))
     }
 
     #[wasm_bindgen(js_name = "toJson")]
