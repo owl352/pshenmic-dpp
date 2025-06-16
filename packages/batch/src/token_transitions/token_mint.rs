@@ -7,6 +7,8 @@ use dpp::state_transition::batch_transition::token_mint_transition::v0::v0_metho
 use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use pshenmic_dpp_token_configuration::TokenConfigurationWASM;
+use pshenmic_dpp_utils::WithJsError;
 
 #[derive(Debug, Clone, PartialEq)]
 #[wasm_bindgen(js_name=TokenMintTransitionWASM)]
@@ -69,11 +71,10 @@ impl TokenMintTransitionWASM {
         self.clone().0.public_note_owned()
     }
 
-    // TODO: Implement token config and enable this method
-    // #[wasm_bindgen(getter = recipitnId)]
-    // pub fn recipient_id(&self) -> Result<IdentifierWASM, JsValue> {
-    //     Ok(self.0.recipient_id().with_js_error()?.into())
-    // }
+    #[wasm_bindgen(js_name = getRecipitnId)]
+    pub fn recipient_id(&self, config: &TokenConfigurationWASM) -> Result<IdentifierWASM, JsValue> {
+        Ok(self.0.recipient_id(&config.clone().into()).with_js_error()?.into())
+    }
 
     #[wasm_bindgen(setter = amount)]
     pub fn set_amount(&mut self, amount: u64) {
