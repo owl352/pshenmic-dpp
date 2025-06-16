@@ -51,17 +51,17 @@ impl PrivateKeyWASM {
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
-    #[wasm_bindgen(js_name = "getWIF")]
+    #[wasm_bindgen(js_name = "WIF")]
     pub fn get_wif(&self) -> String {
         self.0.to_wif()
     }
 
-    #[wasm_bindgen(js_name = "getBytes")]
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn get_bytes(&self) -> Vec<u8> {
         self.0.to_bytes()
     }
 
-    #[wasm_bindgen(js_name = "getHex")]
+    #[wasm_bindgen(js_name = "hex")]
     pub fn get_hex(&self) -> String {
         self.0.to_bytes().to_hex_string(Case::Upper)
     }

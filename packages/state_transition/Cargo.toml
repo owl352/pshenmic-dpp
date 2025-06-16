@@ -15,6 +15,7 @@ pshenmic_dpp_identifier = {path = "../identifier"}
 pshenmic_dpp_mock_bls = {path = "../mock_bls"}
 pshenmic_dpp_enums = {path = "../enums"}
 dpp = { workspace = true, features = [
-    "state-transition-signing"
+    "state-transition-signing",
+    "platform-value"
 ]}
 sha2 = "0.10.8"

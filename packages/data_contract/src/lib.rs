@@ -1,12 +1,13 @@
 use dpp::dashcore::hashes::serde::Serialize;
-use dpp::data_contract::DataContract;
 use dpp::data_contract::accessors::v0::{DataContractV0Getters, DataContractV0Setters};
+use dpp::data_contract::accessors::v1::{DataContractV1Getters, DataContractV1Setters};
 use dpp::data_contract::config::DataContractConfig;
 use dpp::data_contract::conversion::json::DataContractJsonConversionMethodsV0;
 use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethodsV0;
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
+use dpp::data_contract::{DataContract, TokenConfiguration, TokenContractPosition};
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::platform_value::{Value, ValueMap};
 use dpp::prelude::IdentityNonce;
@@ -15,9 +16,11 @@ use dpp::serialization::{
     PlatformSerializableWithPlatformVersion,
 };
 use dpp::version::PlatformVersion;
+use js_sys::{Object, Reflect};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
-use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
+use pshenmic_dpp_token_configuration::TokenConfigurationWASM;
+use pshenmic_dpp_utils::{IntoWasm, ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -38,6 +41,27 @@ impl From<DataContractWASM> for DataContract {
     }
 }
 
+pub fn tokens_configuration_from_js_value(
+    js_configuration: &JsValue,
+) -> Result<BTreeMap<TokenContractPosition, TokenConfiguration>, JsValue> {
+    let configuration_object = Object::from(js_configuration.clone());
+    let configuration_keys = Object::keys(&configuration_object);
+
+    let mut configuration: BTreeMap<TokenContractPosition, TokenConfiguration> = BTreeMap::new();
+
+    for key in configuration_keys.iter() {
+        let key_number = key.as_f64().unwrap_or(0f64) as TokenContractPosition;
+
+        let js_config = Reflect::get(&js_configuration, &key)?
+            .to_wasm::<TokenConfigurationWASM>("TokenConfigurationWASM")?
+            .clone();
+
+        configuration.insert(key_number, js_config.into());
+    }
+
+    Ok(configuration)
+}
+
 #[wasm_bindgen]
 impl DataContractWASM {
     #[wasm_bindgen(getter = __type)]
@@ -51,6 +75,7 @@ impl DataContractWASM {
         identity_nonce: IdentityNonce,
         js_schema: JsValue,
         js_definitions: Option<js_sys::Object>,
+        js_tokens: &JsValue,
         full_validation: bool,
         js_platform_version: JsValue,
     ) -> Result<DataContractWASM, JsValue> {
@@ -61,6 +86,9 @@ impl DataContractWASM {
         let owner_id_value = Value::from(owner_id.get_base58());
 
         let schema: Value = serde_wasm_bindgen::from_value(js_schema)?;
+
+        let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> =
+            tokens_configuration_from_js_value(js_tokens)?;
 
         let platform_version: PlatformVersion = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default().into(),
@@ -124,10 +152,20 @@ impl DataContractWASM {
             .set_value("documentSchemas", schema)
             .map_err(|err| JsValue::from(err.to_string()))?;
 
-        Ok(DataContractWASM(
+        let data_contract =
             DataContract::from_value(contract_value, full_validation, &platform_version)
-                .with_js_error()?,
-        ))
+                .with_js_error()?;
+
+        let data_contract_with_tokens = match data_contract {
+            DataContract::V0(v0) => DataContract::from(v0),
+            DataContract::V1(mut v1) => {
+                v1.set_tokens(tokens);
+
+                DataContract::from(v1)
+            }
+        };
+
+        Ok(DataContractWASM(data_contract_with_tokens))
     }
 
     #[wasm_bindgen(js_name = "fromValue")]
@@ -234,6 +272,21 @@ impl DataContractWASM {
             .map_err(JsValue::from)
     }
 
+    #[wasm_bindgen(js_name = "getTokens")]
+    pub fn get_tokens(&self) -> Result<Object, JsValue> {
+        let tokens_object = Object::new();
+
+        for (key, value) in self.0.tokens().iter() {
+            Reflect::set(
+                &tokens_object,
+                &JsValue::from(key.clone()),
+                &JsValue::from(TokenConfigurationWASM::from(value.clone())),
+            )?;
+        }
+
+        Ok(tokens_object)
+    }
+
     #[wasm_bindgen(js_name = "setId")]
     pub fn set_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
         self.0
@@ -304,6 +357,13 @@ impl DataContractWASM {
             .with_js_error()?;
 
         Ok(())
+    }
+
+    #[wasm_bindgen(js_name = "setTokens")]
+    pub fn set_tokens(&mut self, js_tokens: &JsValue) -> Result<(), JsValue> {
+        Ok(self
+            .0
+            .set_tokens(tokens_configuration_from_js_value(js_tokens)?))
     }
 
     #[wasm_bindgen(js_name = "toJson")]

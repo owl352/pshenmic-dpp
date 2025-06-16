@@ -7,15 +7,16 @@ use dpp::identity::identity_public_key::accessors::v0::{
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, TimestampMillis};
 use dpp::platform_value::BinaryData;
-use dpp::platform_value::string_encoding::Encoding::Hex;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_utils::WithJsError;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[derive(Clone)]
 #[wasm_bindgen(js_name = IdentityPublicKeyWASM)]
@@ -185,11 +186,47 @@ impl IdentityPublicKeyWASM {
         self.0.serialize_to_bytes().with_js_error()
     }
 
+    #[wasm_bindgen(js_name = toHex)]
+    pub fn to_hex(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Hex,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = toBase64)]
+    pub fn to_base64(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Base64,
+        ))
+    }
+
     #[wasm_bindgen(js_name = fromBytes)]
     pub fn from_bytes(bytes: Vec<u8>) -> Result<IdentityPublicKeyWASM, JsValue> {
-        match IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error() {
-            Ok(pk) => Ok(IdentityPublicKeyWASM(pk)),
-            Err(e) => Err(e),
-        }
+        let public_key =
+            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+
+        Ok(IdentityPublicKeyWASM(public_key))
+    }
+
+    #[wasm_bindgen(js_name = fromHex)]
+    pub fn from_hex(hex: String) -> Result<IdentityPublicKeyWASM, JsValue> {
+        let bytes = decode(&hex, Hex).map_err(|err| JsValue::from(JsError::from(err)))?;
+
+        let public_key =
+            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+
+        Ok(IdentityPublicKeyWASM(public_key))
+    }
+
+    #[wasm_bindgen(js_name = fromBase64)]
+    pub fn from_base64(hex: String) -> Result<IdentityPublicKeyWASM, JsValue> {
+        let bytes = decode(&hex, Base64).map_err(|err| JsValue::from(JsError::from(err)))?;
+
+        let public_key =
+            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+
+        Ok(IdentityPublicKeyWASM(public_key))
     }
 }

@@ -33,10 +33,15 @@ fi
 if command -v wasm-opt &> /dev/null; then
   echo "Optimizing wasm using Binaryen"
   wasm-opt \
+    --code-folding \
+    --const-hoisting \
+    --abstract-type-refining \
+    --dce \
+    --strip-producers \
+    -Oz \
     --generate-global-effects \
     --enable-bulk-memory \
     --enable-nontrapping-float-to-int  \
-    -Oz \
     -tnh \
     --flatten \
     --rereloop \
@@ -44,14 +49,22 @@ if command -v wasm-opt &> /dev/null; then
     --converge \
     --vacuum \
     --dce \
+    --gsi \
     --inlining-optimizing \
     --merge-blocks \
     --simplify-locals \
+    --optimize-added-constants \
+    --optimize-casts \
     --optimize-instructions \
+    --optimize-stack-ir \
+    --remove-unused-brs \
+    --remove-unused-module-elements \
+    --remove-unused-names \
+    --remove-unused-types \
+    --post-emscripten \
     -Oz \
-    --gufa \
     -Oz \
-    "$OUTPUT_FILE" \
+    "${OUTPUT_FILE}" \
     -o \
     "${OUTPUT_FILE}"
 else

@@ -10,6 +10,7 @@ crate-type = ["cdylib", "lib"]
 wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_enums = {path = "../enums"}
+pshenmic_dpp_token_configuration = {path = "../token_configuration"}
 pshenmic_dpp_identifier = { path = "../identifier" }
 dpp = { workspace = true, features = [
     "data-contract-json-conversion",

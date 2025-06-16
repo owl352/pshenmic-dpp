@@ -29,19 +29,19 @@ describe('PrivateKey', function () {
 
       const pkeyFromHex = wasm.PrivateKeyWASM.fromHex(bytes, 'Mainnet')
 
-      assert.deepEqual(pkey.getBytes(), pkeyFromHex.getBytes())
+      assert.deepEqual(pkey.bytes(), pkeyFromHex.bytes())
     })
 
     it('should allow to create PrivateKey from wif and read value in wif', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(pkey.getWIF(), wif)
+      assert.equal(pkey.WIF(), wif)
     })
 
     it('should allow to create PrivateKey from wif and write value in bytes', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.deepEqual(pkey.getBytes(), fromHexString(bytes))
+      assert.deepEqual(pkey.bytes(), fromHexString(bytes))
     })
   })
 
@@ -49,19 +49,19 @@ describe('PrivateKey', function () {
     it('should allow to get key wif', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(pkey.getWIF(), wif)
+      assert.equal(pkey.WIF(), wif)
     })
 
     it('should allow to get key bytes', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(toHexString(pkey.getBytes()), bytes)
+      assert.equal(toHexString(pkey.bytes()), bytes)
     })
 
     it('should allow to get key hex', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(pkey.getHex().toLowerCase(), bytes)
+      assert.equal(pkey.hex().toLowerCase(), bytes)
     })
 
     it('should allow to get public key hash', function () {
