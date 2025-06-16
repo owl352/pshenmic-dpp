@@ -73,7 +73,11 @@ impl TokenMintTransitionWASM {
 
     #[wasm_bindgen(js_name = getRecipitnId)]
     pub fn recipient_id(&self, config: &TokenConfigurationWASM) -> Result<IdentifierWASM, JsValue> {
-        Ok(self.0.recipient_id(&config.clone().into()).with_js_error()?.into())
+        Ok(self
+            .0
+            .recipient_id(&config.clone().into())
+            .with_js_error()?
+            .into())
     }
 
     #[wasm_bindgen(setter = amount)]
