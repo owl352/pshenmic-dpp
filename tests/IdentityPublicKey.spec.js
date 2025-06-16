@@ -100,7 +100,7 @@ describe('PublicKey', function () {
 
       const privateKey = wasm.PrivateKeyWASM.fromWIF(wif)
 
-      assert.equal(pubKey.validatePrivateKey(privateKey.getBytes(), wasm.NetworkWASM.Mainnet), false)
+      assert.equal(pubKey.validatePrivateKey(privateKey.bytes(), wasm.NetworkWASM.Mainnet), false)
     })
   })
 
