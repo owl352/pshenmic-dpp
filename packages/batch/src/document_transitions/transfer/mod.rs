@@ -37,13 +37,12 @@ impl DocumentTransferTransitionWASM {
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
-        document_type_name: String,
         js_recipient_owner_id: &JsValue,
     ) -> Result<DocumentTransferTransitionWASM, JsValue> {
         let rs_transfer_transition = generate_transfer_transition(
             document.clone(),
             identity_contract_nonce,
-            document_type_name,
+            document.get_document_type_name().to_string(),
             IdentifierWASM::try_from(js_recipient_owner_id)?.into(),
         );
 

@@ -7,7 +7,7 @@ use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethod
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
-use dpp::data_contract::{DataContract, TokenConfiguration, TokenContractPosition};
+use dpp::data_contract::{DataContract, GroupContractPosition, TokenConfiguration, TokenContractPosition};
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::platform_value::{Value, ValueMap};
 use dpp::prelude::IdentityNonce;
@@ -22,7 +22,7 @@ use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_token_configuration::TokenConfigurationWASM;
 use pshenmic_dpp_utils::{IntoWasm, ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
-use wasm_bindgen::JsValue;
+use wasm_bindgen::{JsError, JsValue};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "DataContractWASM")]
@@ -50,13 +50,16 @@ pub fn tokens_configuration_from_js_value(
     let mut configuration: BTreeMap<TokenContractPosition, TokenConfiguration> = BTreeMap::new();
 
     for key in configuration_keys.iter() {
-        let key_number = key.as_f64().unwrap_or(0f64) as TokenContractPosition;
+        let contract_position = match key.as_string() {
+            None => Err(JsValue::from("Cannot read timestamp in distribution rules")),
+            Some(contract_position) => Ok(contract_position.parse::<GroupContractPosition>().map_err(JsError::from)?),
+        }?;
 
         let js_config = Reflect::get(&js_configuration, &key)?
             .to_wasm::<TokenConfigurationWASM>("TokenConfigurationWASM")?
             .clone();
 
-        configuration.insert(key_number, js_config.into());
+        configuration.insert(contract_position, js_config.into());
     }
 
     Ok(configuration)

@@ -38,12 +38,11 @@ impl DocumentReplaceTransitionWASM {
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
-        document_type_name: String,
     ) -> Result<DocumentReplaceTransitionWASM, JsValue> {
         let rs_update_transition = generate_replace_transition(
             document.clone(),
             identity_contract_nonce,
-            document_type_name.to_string(),
+            document.get_document_type_name().to_string(),
         );
 
         Ok(DocumentReplaceTransitionWASM(rs_update_transition))
