@@ -35,9 +35,11 @@ pub fn js_distributions_to_distributions(
     let mut distributions = BTreeMap::new();
 
     for key in distributions_keys.iter() {
-        let timestamp = match key.as_string() { 
+        let timestamp = match key.as_string() {
             None => Err(JsValue::from("Cannot read timestamp in distribution rules")),
-            Some(timestamp) => Ok(timestamp.parse::<TimestampMillis>().map_err(JsError::from)?),
+            Some(timestamp) => Ok(timestamp
+                .parse::<TimestampMillis>()
+                .map_err(JsError::from)?),
         }?;
 
         let identifiers_object = Object::from(Reflect::get(&distributions_object, &key)?.clone());
@@ -87,7 +89,12 @@ impl TokenPreProgrammedDistributionWASM {
             .map(|(k, v)| {
                 let identifiers: BTreeMap<String, TokenAmount> = v
                     .iter()
-                    .map(|(identifier, v)| (IdentifierWASM::from(identifier.clone()).get_base58(), v.clone()))
+                    .map(|(identifier, v)| {
+                        (
+                            IdentifierWASM::from(identifier.clone()).get_base58(),
+                            v.clone(),
+                        )
+                    })
                     .collect();
 
                 (k.clone().to_string(), identifiers.clone())
