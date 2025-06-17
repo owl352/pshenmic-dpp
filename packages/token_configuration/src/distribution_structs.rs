@@ -1,7 +1,7 @@
 use dpp::balances::credits::TokenAmount;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-#[wasm_bindgen(js_name = "FixedAmountWASM")]
+#[wasm_bindgen(js_name = "DistributionFixedAmountWASM")]
 pub struct DistributionFixedAmountWASM {
     pub amount: TokenAmount,
 }

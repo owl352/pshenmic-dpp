@@ -10,8 +10,8 @@ use pshenmic_dpp_enums::token::action_goal::ActionGoalWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::IntoWasm;
 use std::collections::BTreeMap;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[derive(Clone, Debug, PartialEq)]
 #[wasm_bindgen(js_name = "ChangeControlRulesWASM")]
@@ -169,7 +169,12 @@ impl ChangeControlRulesWASM {
         let mut groups: BTreeMap<GroupContractPosition, Group> = BTreeMap::new();
 
         for key in groups_keys.iter() {
-            let contract_position = key.as_f64().unwrap_or(0f64) as GroupContractPosition;
+            let contract_position = match key.as_string() {
+                None => Err(JsValue::from("Cannot read timestamp in distribution rules")),
+                Some(contract_position) => Ok(contract_position
+                    .parse::<GroupContractPosition>()
+                    .map_err(JsError::from)?),
+            }?;
 
             let group_value = Reflect::get(js_groups, &key)?;
 

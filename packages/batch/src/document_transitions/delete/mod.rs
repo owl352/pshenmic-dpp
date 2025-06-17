@@ -29,12 +29,11 @@ impl DocumentDeleteTransitionWASM {
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
-        document_type_name: String,
     ) -> Result<DocumentDeleteTransitionWASM, JsValue> {
         let rs_delete_transition = generate_delete_transition(
             document.clone(),
             identity_contract_nonce,
-            document_type_name.to_string(),
+            document.get_document_type_name().to_string(),
         );
 
         Ok(DocumentDeleteTransitionWASM(rs_delete_transition))
