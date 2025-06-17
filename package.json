@@ -16,6 +16,10 @@
     "tests": "mocha ./tests/*.spec.js",
     "lint": "cargo fmt"
   },
+  "files": [
+    "dist/wasm",
+    "tests/"
+  ],
   "author": "owl352",
   "license": "ISC",
   "description": "",
