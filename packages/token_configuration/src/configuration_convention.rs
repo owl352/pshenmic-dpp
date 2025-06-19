@@ -1,6 +1,4 @@
 use crate::localization::TokenConfigurationLocalizationWASM;
-use dpp::ProtocolError;
-use dpp::dashcore::hashes::serde::Serialize;
 use dpp::data_contract::associated_token::token_configuration_convention::TokenConfigurationConvention;
 use dpp::data_contract::associated_token::token_configuration_convention::accessors::v0::{
     TokenConfigurationConventionV0Getters, TokenConfigurationConventionV0Setters,
@@ -8,9 +6,8 @@ use dpp::data_contract::associated_token::token_configuration_convention::access
 use dpp::data_contract::associated_token::token_configuration_convention::v0::TokenConfigurationConventionV0;
 use dpp::data_contract::associated_token::token_configuration_localization::TokenConfigurationLocalization;
 use dpp::data_contract::associated_token::token_configuration_localization::v0::TokenConfigurationLocalizationV0;
-use dpp::platform_value::Value;
-use dpp::platform_value::converter::serde_json::BTreeValueJsonConverter;
-use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
+use js_sys::{Object, Reflect};
+use pshenmic_dpp_utils::ToSerdeJSONExt;
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -61,26 +58,17 @@ impl TokenConfigurationConventionWASM {
 
     #[wasm_bindgen(getter = "localizations")]
     pub fn localizations(&self) -> Result<JsValue, JsValue> {
-        let json_value = self
-            .0
-            .localizations()
-            .iter()
-            .map(|(key, value)| {
-                (
-                    key.clone(),
-                    JsValue::from(TokenConfigurationLocalizationWASM::from(value.clone()))
-                        .with_serde_to_platform_value()
-                        .unwrap(),
-                )
-            })
-            .collect::<BTreeMap<String, Value>>()
-            .to_json_value()
-            .map_err(ProtocolError::ValueError)
-            .with_js_error()?;
+        let object = Object::new();
 
-        let js_value = json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?;
-
-        Ok(js_value)
+        for (key, value) in &self.0.localizations().clone() {
+            Reflect::set(
+                &object,
+                &JsValue::from(key.clone()),
+                &TokenConfigurationLocalizationWASM::from(value.clone()).into(),
+            )?;
+        }
+        
+        Ok(object.into())
     }
 
     #[wasm_bindgen(setter = "decimals")]

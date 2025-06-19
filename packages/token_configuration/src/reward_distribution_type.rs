@@ -61,8 +61,8 @@ impl RewardDistributionTypeWASM {
         })
     }
 
-    #[wasm_bindgen(js_name = "getDistributionType")]
-    pub fn get_distribution_type(&self) -> JsValue {
+    #[wasm_bindgen(js_name = "getDistribution")]
+    pub fn get_distribution(&self) -> JsValue {
         match self.0.clone() {
             RewardDistributionType::BlockBasedDistribution { interval, function } => {
                 JsValue::from(BlockBasedDistributionWASM {

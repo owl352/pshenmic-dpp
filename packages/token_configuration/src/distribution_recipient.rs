@@ -45,13 +45,22 @@ impl TokenDistributionRecipientWASM {
         TokenDistributionRecipientWASM(TokenDistributionRecipient::EvonodesByParticipation)
     }
 
-    #[wasm_bindgen(getter = "value")]
-    pub fn get_value(&self) -> JsValue {
+    #[wasm_bindgen(js_name = "getType")]
+    pub fn get_type(&self) -> String {
         match self.0 {
             TokenDistributionRecipient::EvonodesByParticipation => {
-                String::from("EvonodesByParticipation").into()
+                String::from("EvonodesByParticipation")
             }
-            TokenDistributionRecipient::ContractOwner => String::from("ContractOwner").into(),
+            TokenDistributionRecipient::ContractOwner => String::from("ContractOwner"),
+            TokenDistributionRecipient::Identity(identifier) => String::from("Identity"),
+        }
+    }
+
+    #[wasm_bindgen(js_name = "getValue")]
+    pub fn get_value(&self) -> JsValue {
+        match self.0 {
+            TokenDistributionRecipient::EvonodesByParticipation => JsValue::undefined(),
+            TokenDistributionRecipient::ContractOwner => JsValue::undefined(),
             TokenDistributionRecipient::Identity(identifier) => {
                 IdentifierWASM::from(identifier).into()
             }

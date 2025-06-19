@@ -1,10 +1,9 @@
 use dpp::balances::credits::TokenAmount;
-use dpp::dashcore::hashes::serde::Serialize;
 use dpp::data_contract::associated_token::token_pre_programmed_distribution::TokenPreProgrammedDistribution;
 use dpp::data_contract::associated_token::token_pre_programmed_distribution::accessors::v0::TokenPreProgrammedDistributionV0Methods;
 use dpp::data_contract::associated_token::token_pre_programmed_distribution::v0::TokenPreProgrammedDistributionV0;
 use dpp::prelude::{Identifier, TimestampMillis};
-use js_sys::{Object, Reflect};
+use js_sys::{BigInt, Object, Reflect};
 use pshenmic_dpp_identifier::IdentifierWASM;
 use std::collections::BTreeMap;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -50,9 +49,13 @@ pub fn js_distributions_to_distributions(
         for id_key in identifiers_keys.iter() {
             let identifier = Identifier::from(IdentifierWASM::try_from(id_key.clone())?);
 
-            let token_amount = Reflect::get(&identifiers_keys, &id_key.clone())?
-                .as_f64()
-                .unwrap_or(0f64) as TokenAmount;
+            let token_amount = BigInt::new(&Reflect::get(&identifiers_object, &id_key.clone())?)?
+                .to_string(10)
+                .map_err(|err| JsValue::from(format!("bigint to string: {}", err.to_string())))?
+                .as_string()
+                .ok_or_else(|| JsValue::from_str("Failed to convert BigInt to string"))?
+                .parse::<TokenAmount>()
+                .map_err(JsError::from)?;
 
             ids.insert(identifier, token_amount);
         }
@@ -80,28 +83,27 @@ impl TokenPreProgrammedDistributionWASM {
     }
 
     #[wasm_bindgen(getter = "distributions")]
-    pub fn get_distributions(&self) -> Result<JsValue, JsError> {
-        let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+    pub fn get_distributions(&self) -> Result<JsValue, JsValue> {
+        let obj = Object::new();
 
-        self.0
-            .distributions()
-            .iter()
-            .map(|(k, v)| {
-                let identifiers: BTreeMap<String, TokenAmount> = v
-                    .iter()
-                    .map(|(identifier, v)| {
-                        (
-                            IdentifierWASM::from(identifier.clone()).get_base58(),
-                            v.clone(),
-                        )
-                    })
-                    .collect();
+        for (key, value) in self.0.distributions() {
+            let identifiers_obj = Object::new();
+            // &BigInt::from(key.clone()).into()
 
-                (k.clone().to_string(), identifiers.clone())
-            })
-            .collect::<BTreeMap<String, BTreeMap<String, TokenAmount>>>()
-            .serialize(&serializer)
-            .map_err(JsError::from)
+            for (identifiers_key, identifiers_value) in value {
+                Reflect::set(
+                    &identifiers_obj,
+                    &IdentifierWASM::from(identifiers_key.clone())
+                        .get_base58()
+                        .into(),
+                    &BigInt::from(identifiers_value.clone()).into(),
+                )?;
+            }
+
+            Reflect::set(&obj, &key.to_string().into(), &identifiers_obj.into())?;
+        }
+
+        Ok(obj.into())
     }
 
     #[wasm_bindgen(setter = "distributions")]
