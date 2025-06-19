@@ -1,7 +1,7 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {identifier} = require("./mocks/Identity");
+const { identifier } = require('./mocks/Identity')
 
 let wasm
 
@@ -15,14 +15,14 @@ describe('AuthorizedActionTakers', function () {
       const actionTaker = wasm.AuthorizedActionTakersWASM.NoOne()
 
       assert.notEqual(actionTaker.__wbg_ptr, 0)
-      assert.deepEqual(actionTaker.getTakerType(), "NoOne")
+      assert.deepEqual(actionTaker.getTakerType(), 'NoOne')
     })
 
     it('should allows to create AuthorizedActionTakers with ContractOwner', function () {
       const actionTaker = wasm.AuthorizedActionTakersWASM.ContractOwner()
 
       assert.notEqual(actionTaker.__wbg_ptr, 0)
-      assert.deepEqual(actionTaker.getTakerType(), "ContractOwner")
+      assert.deepEqual(actionTaker.getTakerType(), 'ContractOwner')
     })
 
     it('should allows to create AuthorizedActionTakers with Identity', function () {
@@ -36,14 +36,14 @@ describe('AuthorizedActionTakers', function () {
       const actionTaker = wasm.AuthorizedActionTakersWASM.MainGroup()
 
       assert.notEqual(actionTaker.__wbg_ptr, 0)
-      assert.deepEqual(actionTaker.getTakerType(), `MainGroup`)
+      assert.deepEqual(actionTaker.getTakerType(), 'MainGroup')
     })
 
     it('should allows to create AuthorizedActionTakers with Group', function () {
       const actionTaker = wasm.AuthorizedActionTakersWASM.Group(12)
 
       assert.notEqual(actionTaker.__wbg_ptr, 0)
-      assert.deepEqual(actionTaker.getTakerType(), `Group(12)`)
+      assert.deepEqual(actionTaker.getTakerType(), 'Group(12)')
     })
   })
 

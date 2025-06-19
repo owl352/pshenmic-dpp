@@ -12,13 +12,13 @@ describe('TokenConfiguration', function () {
   describe('serialization / deserialization', function () {
     it('Should allow to create from values', function () {
       const convention = new wasm.TokenConfigurationConventionWASM({
-          ru: {
-            shouldCapitalize: true,
-            singularForm: "TOKEN",
-            pluralForm: "TOKENS",
-          }
-        },
-        1
+        ru: {
+          shouldCapitalize: true,
+          singularForm: 'TOKEN',
+          pluralForm: 'TOKENS'
+        }
+      },
+      1
       )
 
       const noOne = wasm.AuthorizedActionTakersWASM.NoOne()
@@ -37,13 +37,13 @@ describe('TokenConfiguration', function () {
         true,
         true,
         true,
-        true,
+        true
       )
 
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10000)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10000)
           }
         }
       )
@@ -85,7 +85,7 @@ describe('TokenConfiguration', function () {
         changeRules,
         undefined,
         noOne,
-        "note"
+        'note'
       )
 
       assert.notEqual(config.__wbg_ptr, 0)

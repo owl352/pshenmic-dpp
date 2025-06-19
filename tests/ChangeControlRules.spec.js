@@ -38,7 +38,7 @@ describe('ChangeControlRules', function () {
         true
       )
 
-      assert.deepEqual(changeRules.authorizedToMakeChange.constructor.name, "AuthorizedActionTakersWASM")
+      assert.deepEqual(changeRules.authorizedToMakeChange.constructor.name, 'AuthorizedActionTakersWASM')
     })
 
     it('should allow to get adminActionTakers', function () {
@@ -52,7 +52,7 @@ describe('ChangeControlRules', function () {
         true
       )
 
-      assert.deepEqual(changeRules.adminActionTakers.constructor.name, "AuthorizedActionTakersWASM")
+      assert.deepEqual(changeRules.adminActionTakers.constructor.name, 'AuthorizedActionTakersWASM')
     })
 
     it('should allow to get changingAuthorizedActionTakersToNoOneAllowed', function () {
@@ -114,8 +114,8 @@ describe('ChangeControlRules', function () {
 
       changeRules.authorizedToMakeChange = newActionTaker
 
-      assert.deepEqual(changeRules.authorizedToMakeChange.constructor.name, "AuthorizedActionTakersWASM")
-      assert.deepEqual(changeRules.authorizedToMakeChange.getTakerType(), "ContractOwner")
+      assert.deepEqual(changeRules.authorizedToMakeChange.constructor.name, 'AuthorizedActionTakersWASM')
+      assert.deepEqual(changeRules.authorizedToMakeChange.getTakerType(), 'ContractOwner')
       assert.notEqual(newActionTaker.__wbg_ptr, 0)
     })
 
@@ -134,8 +134,8 @@ describe('ChangeControlRules', function () {
 
       changeRules.adminActionTakers = newActionTaker
 
-      assert.deepEqual(changeRules.adminActionTakers.constructor.name, "AuthorizedActionTakersWASM")
-      assert.deepEqual(changeRules.adminActionTakers.getTakerType(), "ContractOwner")
+      assert.deepEqual(changeRules.adminActionTakers.constructor.name, 'AuthorizedActionTakersWASM')
+      assert.deepEqual(changeRules.adminActionTakers.getTakerType(), 'ContractOwner')
       assert.notEqual(newActionTaker.__wbg_ptr, 0)
     })
 

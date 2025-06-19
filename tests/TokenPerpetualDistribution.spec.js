@@ -1,7 +1,6 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {identifier} = require("./mocks/Identity");
 
 let wasm
 
@@ -11,11 +10,11 @@ describe('TokenPerpetualDistribution', function () {
   })
 
   describe('serialization / deserialization', function () {
-    it("should allow to create from values", () => {
+    it('should allow to create from values', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -25,7 +24,7 @@ describe('TokenPerpetualDistribution', function () {
 
       const distribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
       assert.notEqual(recipient.__wbg_ptr, 0)
@@ -36,11 +35,11 @@ describe('TokenPerpetualDistribution', function () {
   })
 
   describe('getters', function () {
-    it("should allow to get distributionType", () => {
+    it('should allow to get distributionType', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -50,17 +49,17 @@ describe('TokenPerpetualDistribution', function () {
 
       const distribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
       assert.deepEqual(distribution.distributionType.constructor.name, 'RewardDistributionTypeWASM')
     })
 
-    it("should allow to get distributionRecipient", () => {
+    it('should allow to get distributionRecipient', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -70,7 +69,7 @@ describe('TokenPerpetualDistribution', function () {
 
       const distribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
       assert.deepEqual(distribution.distributionRecipient.constructor.name, 'TokenDistributionRecipientWASM')
@@ -78,13 +77,12 @@ describe('TokenPerpetualDistribution', function () {
     })
   })
 
-
   describe('setters', function () {
-    it("should allow to set distributionType", () => {
+    it('should allow to set distributionType', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -94,10 +92,10 @@ describe('TokenPerpetualDistribution', function () {
 
       const distribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
-      const newDistribution =  wasm.RewardDistributionTypeWASM.TimeBasedDistribution(
+      const newDistribution = wasm.RewardDistributionTypeWASM.TimeBasedDistribution(
         BigInt(111),
         distributionFunction
       )
@@ -109,11 +107,11 @@ describe('TokenPerpetualDistribution', function () {
       assert.deepEqual(distribution.distributionType.getDistribution().constructor.name, 'TimeBasedDistributionWASM')
     })
 
-    it("should allow to set distributionRecipient", () => {
+    it('should allow to set distributionRecipient', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -123,10 +121,10 @@ describe('TokenPerpetualDistribution', function () {
 
       const distribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
-      const newRecipient =  wasm.TokenDistributionRecipientWASM.EvonodesByParticipation()
+      const newRecipient = wasm.TokenDistributionRecipientWASM.EvonodesByParticipation()
 
       distribution.distributionRecipient = newRecipient
 

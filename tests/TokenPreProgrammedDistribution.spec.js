@@ -1,5 +1,5 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 
 let wasm
@@ -10,11 +10,11 @@ describe('TokenPreProgrammedDistribution', function () {
   })
 
   describe('serialization / deserialization', function () {
-    it("should allow to create from values", () => {
+    it('should allow to create from values', () => {
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10000)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10000)
           }
         }
       )
@@ -24,42 +24,42 @@ describe('TokenPreProgrammedDistribution', function () {
   })
 
   describe('getters', function () {
-    it("should allow to get distributions", () => {
+    it('should allow to get distributions', () => {
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10100)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10100)
           }
         }
       )
 
       assert.deepEqual(preProgrammedDistribution.distributions, {
         1750140416485: {
-          "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10100)
+          PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10100)
         }
       })
     })
   })
 
   describe('setters', function () {
-    it("should allow to set distributions", () => {
+    it('should allow to set distributions', () => {
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10100)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10100)
           }
         }
       )
 
       preProgrammedDistribution.distributions = {
         1750140416415: {
-          "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(9999999)
+          PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(9999999)
         }
       }
 
       assert.deepEqual(preProgrammedDistribution.distributions, {
         1750140416415: {
-          "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(9999999)
+          PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(9999999)
         }
       })
     })

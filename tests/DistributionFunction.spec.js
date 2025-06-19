@@ -1,7 +1,6 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {identifier} = require("./mocks/Identity");
 
 let wasm
 
@@ -13,7 +12,7 @@ describe('DistributionFunction', function () {
   describe('serialization / deserialization', function () {
     it('shoulda allow to create FixedAmountDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       assert.notEqual(distributionFunction.__wbg_ptr, 0)
@@ -22,7 +21,7 @@ describe('DistributionFunction', function () {
     it('shoulda allow to create Random', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.Random(
         BigInt(111),
-        BigInt(113),
+        BigInt(113)
       )
 
       assert.notEqual(distributionFunction.__wbg_ptr, 0)
@@ -46,7 +45,7 @@ describe('DistributionFunction', function () {
     it('shoulda allow to create Stepwise', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.Stepwise(
         {
-          "11111111121": BigInt(111),
+          11111111121: BigInt(111)
         }
       )
 
@@ -92,7 +91,7 @@ describe('DistributionFunction', function () {
         undefined,
         BigInt(113),
         undefined,
-        undefined,
+        undefined
       )
 
       assert.notEqual(distributionFunction.__wbg_ptr, 0)
@@ -108,7 +107,7 @@ describe('DistributionFunction', function () {
         undefined,
         BigInt(113),
         undefined,
-        undefined,
+        undefined
       )
 
       assert.notEqual(distributionFunction.__wbg_ptr, 0)
@@ -124,7 +123,7 @@ describe('DistributionFunction', function () {
         undefined,
         BigInt(113),
         undefined,
-        undefined,
+        undefined
       )
 
       assert.notEqual(distributionFunction.__wbg_ptr, 0)
@@ -135,19 +134,19 @@ describe('DistributionFunction', function () {
     describe('function name', function () {
       it('FixedAmountDistribution', () => {
         const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-          BigInt(111),
+          BigInt(111)
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "FixedAmount")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'FixedAmount')
       })
 
       it('Random', () => {
         const distributionFunction = wasm.DistributionFunctionWASM.Random(
           BigInt(111),
-          BigInt(113),
+          BigInt(113)
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "Random")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'Random')
       })
 
       it('StepDecreasingAmount', () => {
@@ -162,17 +161,17 @@ describe('DistributionFunction', function () {
           BigInt(1)
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "StepDecreasingAmount")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'StepDecreasingAmount')
       })
 
       it('Stepwise', () => {
         const distributionFunction = wasm.DistributionFunctionWASM.Stepwise(
           {
-            "11111111121": BigInt(111),
+            11111111121: BigInt(111)
           }
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "Stepwise")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'Stepwise')
       })
 
       it('Linear', () => {
@@ -185,7 +184,7 @@ describe('DistributionFunction', function () {
           undefined
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "Linear")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'Linear')
       })
 
       it('Polynomial', () => {
@@ -201,7 +200,7 @@ describe('DistributionFunction', function () {
           undefined
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "Polynomial")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'Polynomial')
       })
 
       it('Exponential', () => {
@@ -214,10 +213,10 @@ describe('DistributionFunction', function () {
           undefined,
           BigInt(113),
           undefined,
-          undefined,
+          undefined
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "Exponential")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'Exponential')
       })
 
       it('Logarithmic', () => {
@@ -230,10 +229,10 @@ describe('DistributionFunction', function () {
           undefined,
           BigInt(113),
           undefined,
-          undefined,
+          undefined
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "Logarithmic")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'Logarithmic')
       })
 
       it('InvertedLogarithmic', () => {
@@ -246,16 +245,16 @@ describe('DistributionFunction', function () {
           undefined,
           BigInt(113),
           undefined,
-          undefined,
+          undefined
         )
 
-        assert.deepEqual(distributionFunction.getFunctionName(), "InvertedLogarithmic")
+        assert.deepEqual(distributionFunction.getFunctionName(), 'InvertedLogarithmic')
       })
     })
     describe('function value', function () {
       it('FixedAmountDistribution', () => {
         const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-          BigInt(111),
+          BigInt(111)
         )
 
         assert.deepEqual(distributionFunction.getFunctionValue().amount, 111n)
@@ -264,7 +263,7 @@ describe('DistributionFunction', function () {
       it('Random', () => {
         const distributionFunction = wasm.DistributionFunctionWASM.Random(
           BigInt(111),
-          BigInt(113),
+          BigInt(113)
         )
 
         assert.deepEqual(distributionFunction.getFunctionValue().min, 111n)
@@ -296,12 +295,12 @@ describe('DistributionFunction', function () {
       it('Stepwise', () => {
         const distributionFunction = wasm.DistributionFunctionWASM.Stepwise(
           {
-            "11111111121": BigInt(111),
+            11111111121: BigInt(111)
           }
         )
 
         assert.deepEqual(distributionFunction.getFunctionValue(), {
-          "11111111121": BigInt(111),
+          11111111121: BigInt(111)
         })
       })
 
@@ -357,7 +356,7 @@ describe('DistributionFunction', function () {
           undefined,
           BigInt(113),
           undefined,
-          undefined,
+          undefined
         )
 
         assert.deepEqual(distributionFunction.getFunctionValue().a, 111n)
@@ -381,7 +380,7 @@ describe('DistributionFunction', function () {
           undefined,
           BigInt(113),
           undefined,
-          undefined,
+          undefined
         )
 
         assert.deepEqual(distributionFunction.getFunctionValue().a, 111n)
@@ -405,7 +404,7 @@ describe('DistributionFunction', function () {
           undefined,
           BigInt(113),
           undefined,
-          undefined,
+          undefined
         )
 
         assert.deepEqual(distributionFunction.getFunctionValue().a, 111n)

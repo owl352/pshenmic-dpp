@@ -1,5 +1,5 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
 
 let wasm
@@ -17,7 +17,7 @@ describe('TokenKeepsHistoryRules', function () {
         true,
         true,
         true,
-        true,
+        true
       )
 
       assert.notEqual(keepHistory.__wbg_ptr, 0)
@@ -32,7 +32,7 @@ describe('TokenKeepsHistoryRules', function () {
         true,
         true,
         true,
-        true,
+        true
       )
 
       assert.equal(keepHistory.keepsTransferHistory, true)
@@ -52,7 +52,7 @@ describe('TokenKeepsHistoryRules', function () {
         true,
         true,
         true,
-        true,
+        true
       )
 
       keepHistory.keepsTransferHistory = false

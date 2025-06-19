@@ -1,7 +1,6 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {identifier} = require("./mocks/Identity");
 
 let wasm
 
@@ -13,7 +12,7 @@ describe('RewardDistributionType', function () {
   describe('serialization / deserialization', function () {
     it('shoulda allow to create BlockBasedDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -27,7 +26,7 @@ describe('RewardDistributionType', function () {
 
     it('shoulda allow to create TimeBasedDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.TimeBasedDistribution(
@@ -41,7 +40,7 @@ describe('RewardDistributionType', function () {
 
     it('shoulda allow to create EpochBasedDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.EpochBasedDistribution(
@@ -57,7 +56,7 @@ describe('RewardDistributionType', function () {
   describe('getters', function () {
     it('shoulda allow return value BlockBasedDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -65,12 +64,12 @@ describe('RewardDistributionType', function () {
         distributionFunction
       )
 
-      assert.equal(distributionType.getDistribution().constructor.name, "BlockBasedDistributionWASM")
+      assert.equal(distributionType.getDistribution().constructor.name, 'BlockBasedDistributionWASM')
     })
 
     it('shoulda allow return value TimeBasedDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.TimeBasedDistribution(
@@ -78,12 +77,12 @@ describe('RewardDistributionType', function () {
         distributionFunction
       )
 
-      assert.equal(distributionType.getDistribution().constructor.name, "TimeBasedDistributionWASM")
+      assert.equal(distributionType.getDistribution().constructor.name, 'TimeBasedDistributionWASM')
     })
 
     it('shoulda allow return value EpochBasedDistribution', () => {
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.EpochBasedDistribution(
@@ -91,7 +90,7 @@ describe('RewardDistributionType', function () {
         distributionFunction
       )
 
-      assert.equal(distributionType.getDistribution().constructor.name, "EpochBasedDistributionWASM")
+      assert.equal(distributionType.getDistribution().constructor.name, 'EpochBasedDistributionWASM')
     })
   })
 })

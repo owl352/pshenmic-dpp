@@ -1,7 +1,7 @@
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
+const { describe, it, before } = require('mocha')
 const initWasm = require('./utils/wasm')
-const {identifier} = require("./mocks/Identity");
+const { identifier } = require('./mocks/Identity')
 
 let wasm
 
@@ -51,7 +51,7 @@ describe('TokenDistributionRules', function () {
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10000)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10000)
           }
         }
       )
@@ -59,7 +59,7 @@ describe('TokenDistributionRules', function () {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -69,7 +69,7 @@ describe('TokenDistributionRules', function () {
 
       const perpetualDistribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
       const distributionRules = new wasm.TokenDistributionRulesWASM(
@@ -105,7 +105,7 @@ describe('TokenDistributionRules', function () {
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10000)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10000)
           }
         }
       )
@@ -113,7 +113,7 @@ describe('TokenDistributionRules', function () {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
 
       const distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
 
       const distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
@@ -123,7 +123,7 @@ describe('TokenDistributionRules', function () {
 
       const perpetualDistribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
 
       const distributionRules = new wasm.TokenDistributionRulesWASM(
@@ -177,13 +177,13 @@ describe('TokenDistributionRules', function () {
       preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416485: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10000)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10000)
           }
         }
       )
       recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()
       distributionFunction = wasm.DistributionFunctionWASM.FixedAmountDistribution(
-        BigInt(111),
+        BigInt(111)
       )
       distributionType = wasm.RewardDistributionTypeWASM.BlockBasedDistribution(
         BigInt(111),
@@ -191,7 +191,7 @@ describe('TokenDistributionRules', function () {
       )
       perpetualDistribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        recipient,
+        recipient
       )
       distributionRules = new wasm.TokenDistributionRulesWASM(
         perpetualDistribution,
@@ -272,7 +272,7 @@ describe('TokenDistributionRules', function () {
       const newPreProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(
         {
           1750140416411: {
-            "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10011120)
+            PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10011120)
           }
         }
       )
@@ -282,7 +282,7 @@ describe('TokenDistributionRules', function () {
       assert.notEqual(newPreProgrammedDistribution.__wbg_ptr, 0)
       assert.deepEqual(distributionRules.preProgrammedDistribution.distributions, {
         1750140416411: {
-          "PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB": BigInt(10011120)
+          PJUBWbXWmzEYCs99rAAbnCiHRzrnhKLQrXbmSsuPBYB: BigInt(10011120)
         }
       })
     })
@@ -307,7 +307,7 @@ describe('TokenDistributionRules', function () {
 
       const newPerpetualDistribution = new wasm.TokenPerpetualDistributionWASM(
         distributionType,
-        newRecipient,
+        newRecipient
       )
 
       distributionRules.perpetualDistribution = newPerpetualDistribution
@@ -315,9 +315,5 @@ describe('TokenDistributionRules', function () {
       assert.notEqual(newPerpetualDistribution.__wbg_ptr, 0)
       assert.deepEqual(distributionRules.perpetualDistribution.distributionRecipient.getType(), 'EvonodesByParticipation')
     })
-
-
   })
 })
-
-
