@@ -21,7 +21,7 @@ describe('InstantLock', function () {
       const outpoint = new wasm.OutPointWASM('e8b43025641eea4fd21190f01bd870ef90f1a8b199d8fc3376c5b62c0b1a179d', 1)
       const chainlock = wasm.ChainAssetLockProofWASM.fromRawObject({
         coreChainLockedHeight: 11,
-        outPoint: Array.from(outpoint.toBytes())
+        outPoint: Array.from(outpoint.bytes())
       })
 
       assert.notEqual(chainlock.__wbg_ptr, 0)

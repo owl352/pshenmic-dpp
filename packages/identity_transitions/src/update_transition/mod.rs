@@ -1,6 +1,8 @@
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::KeyID;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::{IdentityNonce, Revision, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_update_transition::IdentityUpdateTransition;
@@ -13,8 +15,8 @@ use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "IdentityUpdateTransitionWASM")]
 #[derive(Clone)]
@@ -186,9 +188,39 @@ impl IdentityUpdateTransitionWASM {
         self.0.set_signature_public_key_id(signature_public_key_id)
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<IdentityUpdateTransitionWASM, JsValue> {
+        let bytes = decode(hex.as_str(), Hex).map_err(JsError::from)?;
+
+        IdentityUpdateTransitionWASM::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<IdentityUpdateTransitionWASM, JsValue> {
+        let bytes = decode(base64.as_str(), Base64).map_err(JsError::from)?;
+
+        IdentityUpdateTransitionWASM::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Hex,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Base64,
+        ))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]

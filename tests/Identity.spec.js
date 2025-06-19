@@ -21,9 +21,9 @@ describe('Identity', function () {
     it('should generate identity from identifier and return bytes', async function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      assert.deepEqual(Array.from(identity.toBytes()), identityBytesWithoutKeys)
+      assert.deepEqual(Array.from(identity.bytes()), identityBytesWithoutKeys)
 
-      const newIdentity = wasm.IdentityWASM.fromBytes(identity.toBytes())
+      const newIdentity = wasm.IdentityWASM.fromBytes(identity.bytes())
 
       assert.notEqual(identity.__wbg_ptr, 0)
       assert.notEqual(newIdentity.__wbg_ptr, 0)
@@ -91,7 +91,7 @@ describe('Identity', function () {
 
       assert.notEqual(identity.__wbg_ptr, 0)
 
-      assert.deepEqual(identity.getPublicKeyById(keyId).toBytes(), pubKey.toBytes())
+      assert.deepEqual(identity.getPublicKeyById(keyId).bytes(), pubKey.bytes())
     })
 
     it('should allows to set balance', function () {

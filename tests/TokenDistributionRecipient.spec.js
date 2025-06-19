@@ -41,7 +41,7 @@ describe('TokenDistributionRecipient', function () {
     it('should allow to get values Identity', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.Identity(identifier)
 
-      assert.equal(recipient.getType(), 'Identity')
+      assert.equal(recipient.getType(), `Identity(${identifier})`)
       assert.equal(recipient.getValue().base58(), identifier)
     })
 

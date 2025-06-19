@@ -1,5 +1,7 @@
 use dpp::identifier::Identifier;
 use dpp::identity::state_transition::{AssetLockProved, OptionallyAssetLockProved};
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_topup_transition::IdentityTopUpTransition;
@@ -10,8 +12,8 @@ use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "IdentityTopUpTransitionWASM")]
 #[derive(Clone)]
@@ -114,9 +116,25 @@ impl IdentityTopUpTransitionWASM {
         self.0.set_signature_bytes(signature)
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Hex,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Base64,
+        ))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
@@ -125,6 +143,18 @@ impl IdentityTopUpTransitionWASM {
             IdentityTopUpTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
 
         Ok(IdentityTopUpTransitionWASM(rs_transition))
+    }
+
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<IdentityTopUpTransitionWASM, JsValue> {
+        IdentityTopUpTransitionWASM::from_bytes(decode(hex.as_str(), Hex).map_err(JsError::from)?)
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<IdentityTopUpTransitionWASM, JsValue> {
+        IdentityTopUpTransitionWASM::from_bytes(
+            decode(base64.as_str(), Base64).map_err(JsError::from)?,
+        )
     }
 
     #[wasm_bindgen(js_name = "toStateTransition")]

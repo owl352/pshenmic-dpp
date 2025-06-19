@@ -44,13 +44,13 @@ describe('DataContract', function () {
 
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.toBytes(), fromHexString(dataContractBytes))
+      assert.deepEqual(dataContract.bytes(), fromHexString(dataContractBytes))
 
-      const dataContractFromBytes = wasm.DataContractWASM.fromBytes(dataContract.toBytes(), false, PlatformVersionWASM.PLATFORM_V1)
+      const dataContractFromBytes = wasm.DataContractWASM.fromBytes(dataContract.bytes(), false, PlatformVersionWASM.PLATFORM_V1)
 
       assert.notEqual(dataContract.__wbg_ptr, 0)
 
-      assert.deepEqual(dataContractFromBytes.toBytes(), fromHexString(dataContractBytes))
+      assert.deepEqual(dataContractFromBytes.bytes(), fromHexString(dataContractBytes))
     })
 
     it('should allows to create DataContract from bytes without full validation', function () {

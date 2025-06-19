@@ -37,7 +37,7 @@ describe('Document', function () {
       const dataContract = wasm.DataContractWASM.fromValue(dataContractValue, false)
       const documentInstance = wasm.DocumentWASM.fromBytes(fromHexString(documentBytes), dataContract, 'note')
 
-      const bytes = documentInstance.toBytes(dataContract, 'note')
+      const bytes = documentInstance.bytes(dataContract, wasm.PlatformVersionWASM.PLATFORM_V1)
 
       assert.deepEqual(bytes, fromHexString(documentBytes))
       assert.notEqual(dataContract.__wbg_ptr, 0)

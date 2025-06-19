@@ -181,12 +181,12 @@ impl IdentityPublicKeyWASM {
         Ok(hash)
     }
 
-    #[wasm_bindgen(js_name = toBytes)]
+    #[wasm_bindgen(js_name = bytes)]
     pub fn to_byes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name = toHex)]
+    #[wasm_bindgen(js_name = hex)]
     pub fn to_hex(&self) -> Result<String, JsValue> {
         Ok(encode(
             self.0.serialize_to_bytes().with_js_error()?.as_slice(),
@@ -194,7 +194,7 @@ impl IdentityPublicKeyWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = toBase64)]
+    #[wasm_bindgen(js_name = base64)]
     pub fn to_base64(&self) -> Result<String, JsValue> {
         Ok(encode(
             self.0.serialize_to_bytes().with_js_error()?.as_slice(),

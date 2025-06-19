@@ -19,7 +19,7 @@ describe('IdentityCreateTransition', function () {
     it('should allow to serialize to bytes', function () {
       const transition = wasm.IdentityCreateTransitionWASM.default(0)
 
-      const bytes = transition.toBytes()
+      const bytes = transition.bytes()
 
       assert.equal(bytes.length > 0, true)
     })

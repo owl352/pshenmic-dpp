@@ -1,4 +1,6 @@
 use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::{DataContract, IdentityNonce};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::StateTransition;
@@ -10,8 +12,8 @@ use pshenmic_dpp_data_contract::DataContractWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "DataContractUpdateTransitionWASM")]
 pub struct DataContractUpdateTransitionWASM(DataContractUpdateTransition);
@@ -57,9 +59,39 @@ impl DataContractUpdateTransitionWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<DataContractUpdateTransitionWASM, JsValue> {
+        let bytes = decode(hex.as_str(), Hex).map_err(JsError::from)?;
+
+        DataContractUpdateTransitionWASM::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<DataContractUpdateTransitionWASM, JsValue> {
+        let bytes = decode(base64.as_str(), Base64).map_err(JsError::from)?;
+
+        DataContractUpdateTransitionWASM::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Hex,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Base64,
+        ))
     }
 
     #[wasm_bindgen(js_name = "getFeatureVersion")]
