@@ -67,7 +67,7 @@ impl TokenConfigurationConventionWASM {
                 &TokenConfigurationLocalizationWASM::from(value.clone()).into(),
             )?;
         }
-        
+
         Ok(object.into())
     }
 

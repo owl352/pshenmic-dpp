@@ -74,15 +74,27 @@ impl TokenConfigurationLocalizationWASM {
     pub fn set_singular_form(&mut self, singular_form: String) {
         self.0.set_singular_form(singular_form);
     }
-    
+
     #[wasm_bindgen(js_name = "toJSON")]
     pub fn to_json(&self) -> Result<JsValue, JsValue> {
         let object = Object::new();
 
-        Reflect::set(&object, &JsValue::from("shouldCapitalize"), &JsValue::from(self.0.should_capitalize()))?;
-        Reflect::set(&object, &JsValue::from("pluralForm"), &JsValue::from(self.0.plural_form()))?;
-        Reflect::set(&object, &JsValue::from("singularForm"), &JsValue::from(self.0.singular_form()))?;
-        
+        Reflect::set(
+            &object,
+            &JsValue::from("shouldCapitalize"),
+            &JsValue::from(self.0.should_capitalize()),
+        )?;
+        Reflect::set(
+            &object,
+            &JsValue::from("pluralForm"),
+            &JsValue::from(self.0.plural_form()),
+        )?;
+        Reflect::set(
+            &object,
+            &JsValue::from("singularForm"),
+            &JsValue::from(self.0.singular_form()),
+        )?;
+
         Ok(object.into())
     }
 }

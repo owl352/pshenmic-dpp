@@ -9,8 +9,8 @@ use js_sys::{BigInt, Object, Reflect};
 use pshenmic_dpp_utils::try_to_u64;
 use std::collections::BTreeMap;
 use std::str::FromStr;
-use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Clone, Debug, PartialEq)]
 #[wasm_bindgen(js_name = "DistributionFunctionWASM")]
@@ -254,11 +254,15 @@ impl DistributionFunctionWASM {
             })),
             DistributionFunction::Stepwise(map) => {
                 let object = Object::new();
-                
+
                 for (key, value) in map {
-                    Reflect::set(&object, &key.to_string().into(), &BigInt::from(value).into())?;
+                    Reflect::set(
+                        &object,
+                        &key.to_string().into(),
+                        &BigInt::from(value).into(),
+                    )?;
                 }
-                
+
                 Ok(object.into())
             }
             DistributionFunction::Linear {
