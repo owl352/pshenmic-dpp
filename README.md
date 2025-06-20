@@ -37,10 +37,43 @@ ___
 
 **At this moment available structs:**
 - `Document`
-- `DocumentsBatch`
+- `Batch`
 - `DocumentsBaseTransition`
+- `TokenBaseTransitionWASM`
+- `TokenPricingScheduleWASM`
+- `TokenTransitionWASM`
+- `BatchedTransitionWASM`
+- `TokenConfigurationChangeItemWASM`
+- `TokenConfigurationWASM`
+- `ActionTakerWASM`
+- `AuthorizedActionTakersWASM`
+- `ChangeControlRulesWASM`
+- `TokenConfigurationConventionWASM`
+- `DistributionFunctionWASM`
+- `TokenDistributionRecipientWASM`
+- `TokenDistributionRulesWASM`
+- distribution structs:
+  - `DistributionFixedAmountWASM`
+  - `DistributionRandomWASM`
+  - `DistributionStepDecreasingAmountWASM`
+  - `DistributionLinearWASM`
+  - `DistributionPolynomialWASM`
+  - `DistributionExponentialWASM`
+  - `DistributionLogarithmicWASM`
+  - `DistributionInvertedLogarithmicWASM`
+- `GroupWASM`
+- `TokenKeepsHistoryRulesWASM`
+- `TokenConfigurationLocalizationWASM`
+- `TokenMarketplaceRulesWASM`
+- `TokenPerpetualDistributionWASM`
+- `TokenPreProgrammedDistributionWASM`
+- `RewardDistributionTypeWASM`
+- `TokenTradeModeWASM`
+- `GroupStateTransitionInfoWASM`
 - `DocumentsTransition`
 - `PrefundedVotingBalance`
+- `PrivateEncryptedNoteWASM`
+- `SharedEncryptedNoteWASM`
 - DocumentsTransitions:
   - `DocuemntCreateTransition`
   - `DocuemntDeleteTransition`
@@ -48,6 +81,18 @@ ___
   - `DocuemntReplaceTransition`
   - `DocumentTransferTransition`
   - `DocumentUpdatePriceTransition`
+- Tokens Transitions:
+  - `TokenConfigUpdateTransitionWASM`
+  - `TokenDirectPurchaseTransitionWASM`
+  - `TokenSetPriceForDirectPurchaseTransitionWASM`
+  - `TokenBurnTransitionWASM`
+  - `TokenClaimTransitionWASM`
+  - `TokenDestroyFrozenFundsTransitionWASM`
+  - `TokenEmergencyActionTransitionWASM`
+  - `TokenFreezeTransitionWASM`
+  - `TokenMintTransitionWASM`
+  - `TokenTransferTransitionWASM`
+  - `TokenUnFreezeTransitionWASM`
 - `IdentityPublicKey`
 - IdentityTransitions:
   - `IdentityCreateTransition`
