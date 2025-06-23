@@ -1,15 +1,9 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { identifier } = require('./mocks/Identity')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('TokenDistributionRecipient', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create from values ContractOwner', () => {
       const recipient = wasm.TokenDistributionRecipientWASM.ContractOwner()

@@ -1,14 +1,8 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
-
-let wasm
+const { describe, it } = require('mocha')
+const { default: wasm } = require('..')
 
 describe('CoreScript', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create from bytes', () => {
       const script = wasm.CoreScriptWASM.fromBytes(Buffer.from('76a914c3dbfd40e7f8a4845c2f8e868a167c984049764988ac', 'hex'))

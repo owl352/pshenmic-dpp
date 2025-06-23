@@ -1,16 +1,10 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { wif, bytes, publicKeyHash } = require('./mocks/PrivateKey')
 const { fromHexString, toHexString } = require('./utils/hex')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('PrivateKey', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allows to create PrivateKey from wif', function () {
       const pkey = wasm.PrivateKeyWASM.fromWIF(wif)

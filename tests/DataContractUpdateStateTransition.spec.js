@@ -1,17 +1,11 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { value, dataContractsBytes } = require('./mocks/DataContract')
 const { PlatformVersionWASM } = require('../dist/cjs/wasm/pshenmic_dpp')
 const { fromHexString } = require('./utils/hex')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('DataContract Updatet Transition', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create document_transitions from data contract', () => {
       const dataContract = wasm.DataContractWASM.fromValue(value, false, PlatformVersionWASM.PLATFORM_V1)

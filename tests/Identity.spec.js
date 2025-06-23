@@ -1,16 +1,10 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { identifier, identityBytesWithoutKeys, identifierBytes, balance, revision } = require('./mocks/Identity')
 const { keyId, purpose, securityLevel, keyType, binaryData } = require('./mocks/PublicKey')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('Identity', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should generate identity from identifier', async function () {
       const identity = new wasm.IdentityWASM(identifier)

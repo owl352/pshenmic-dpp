@@ -1,17 +1,14 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
 const { document, documentTypeName, revision, dataContractId, ownerId, id } = require('./mocks/Document')
+const { default: wasm } = require('..')
 
-let wasm
 let documentInstance
 let createTransition
 let replaceTransition
 
 describe('DocumentTransition', function () {
   before(async function () {
-    wasm = initWasm()
-
     documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
     createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), 'note')
     replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1), 'preorder')

@@ -1,14 +1,8 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
-
-let wasm
+const { describe, it } = require('mocha')
+const { default: wasm } = require('..')
 
 describe('TokenKeepsHistoryRules', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create TokenKeepsHistoryRules from values', function () {
       const keepHistory = new wasm.TokenKeepsHistoryRulesWASM(
