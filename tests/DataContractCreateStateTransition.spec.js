@@ -27,11 +27,11 @@ describe('DataContract Create Transition', function () {
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
-      const bytes = dataContractTransition.toBytes()
+      const bytes = dataContractTransition.bytes()
 
       const newDataContractTransition = wasm.DataContractCreateTransitionWASM.fromBytes(bytes)
 
-      assert.deepEqual(newDataContractTransition.toBytes(), bytes)
+      assert.deepEqual(newDataContractTransition.bytes(), bytes)
       assert.notEqual(newDataContractTransition.__wbg_ptr, 0)
       assert.notEqual(dataContractTransition.__wbg_ptr, 0)
       assert.notEqual(dataContract.__wbg_ptr, 0)
@@ -46,7 +46,7 @@ describe('DataContract Create Transition', function () {
 
       const newDataContractTransition = wasm.DataContractCreateTransitionWASM.fromStateTransition(stateTransition)
 
-      assert.deepEqual(dataContractTransition.toBytes(), newDataContractTransition.toBytes())
+      assert.deepEqual(dataContractTransition.bytes(), newDataContractTransition.bytes())
     })
   })
 
@@ -87,7 +87,7 @@ describe('DataContract Create Transition', function () {
 
       const newDataContract = dataContractTransition.getDataContract()
 
-      assert.deepEqual(dataContract.toBytes(), newDataContract.toBytes())
+      assert.deepEqual(dataContract.bytes(), newDataContract.bytes())
     })
   })
 
@@ -103,7 +103,7 @@ describe('DataContract Create Transition', function () {
 
       dataContractTransition.setDataContract(newDataContract)
 
-      assert.deepEqual(fromHexString(dataContractBytes), dataContractTransition.getDataContract().toBytes())
+      assert.deepEqual(fromHexString(dataContractBytes), dataContractTransition.getDataContract().bytes())
     })
   })
 })

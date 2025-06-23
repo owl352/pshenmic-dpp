@@ -77,7 +77,7 @@ impl TokenBaseTransitionWASM {
         self.0.data_contract_id().into()
     }
 
-    #[wasm_bindgen(getter = tokenContractId)]
+    #[wasm_bindgen(getter = tokenId)]
     pub fn get_token_id(&self) -> IdentifierWASM {
         self.0.token_id().into()
     }
@@ -107,7 +107,7 @@ impl TokenBaseTransitionWASM {
         Ok(())
     }
 
-    #[wasm_bindgen(setter = tokenContractId)]
+    #[wasm_bindgen(setter = tokenId)]
     pub fn set_token_id(&mut self, js_identifier: &JsValue) -> Result<(), JsValue> {
         self.0
             .set_token_id(IdentifierWASM::try_from(js_identifier)?.into());

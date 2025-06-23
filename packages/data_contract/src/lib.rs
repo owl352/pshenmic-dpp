@@ -10,7 +10,8 @@ use dpp::data_contract::schema::DataContractSchemaMethodsV0;
 use dpp::data_contract::{
     DataContract, GroupContractPosition, TokenConfiguration, TokenContractPosition,
 };
-use dpp::platform_value::string_encoding::Encoding::Base58;
+use dpp::platform_value::string_encoding::Encoding::{Base58, Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::platform_value::{Value, ValueMap};
 use dpp::prelude::IdentityNonce;
 use dpp::serialization::{
@@ -215,7 +216,33 @@ impl DataContractWASM {
         Ok(DataContractWASM(rs_data_contract))
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(
+        hex: String,
+        full_validation: bool,
+        js_platform_version: JsValue,
+    ) -> Result<DataContractWASM, JsValue> {
+        DataContractWASM::from_bytes(
+            decode(hex.as_str(), Hex).map_err(JsError::from)?,
+            full_validation,
+            js_platform_version,
+        )
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(
+        base64: String,
+        full_validation: bool,
+        js_platform_version: JsValue,
+    ) -> Result<DataContractWASM, JsValue> {
+        DataContractWASM::from_bytes(
+            decode(base64.as_str(), Base64).map_err(JsError::from)?,
+            full_validation,
+            js_platform_version,
+        )
+    }
+
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self, js_platform_version: JsValue) -> Result<Vec<u8>, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default(),
@@ -227,6 +254,19 @@ impl DataContractWASM {
         rs_data_contract
             .serialize_to_bytes_with_platform_version(&platform_version.into())
             .with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self, js_platform_version: JsValue) -> Result<String, JsValue> {
+        Ok(encode(self.to_bytes(js_platform_version)?.as_slice(), Hex))
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self, js_platform_version: JsValue) -> Result<String, JsValue> {
+        Ok(encode(
+            self.to_bytes(js_platform_version)?.as_slice(),
+            Base64,
+        ))
     }
 
     #[wasm_bindgen(js_name = "toValue")]

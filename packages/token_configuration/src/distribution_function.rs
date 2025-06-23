@@ -4,9 +4,11 @@ use crate::distribution_structs::{
     DistributionRandomWASM, DistributionStepDecreasingAmountWASM,
 };
 use dpp::balances::credits::TokenAmount;
-use dpp::dashcore::hashes::serde::Serialize;
 use dpp::data_contract::associated_token::token_perpetual_distribution::distribution_function::DistributionFunction;
-use pshenmic_dpp_utils::ToSerdeJSONExt;
+use js_sys::{BigInt, Object, Reflect};
+use pshenmic_dpp_utils::try_to_u64;
+use std::collections::BTreeMap;
+use std::str::FromStr;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -68,16 +70,18 @@ impl DistributionFunctionWASM {
 
     #[wasm_bindgen(js_name = "Stepwise")]
     pub fn stepwise(js_steps_with_amount: JsValue) -> Result<DistributionFunctionWASM, JsValue> {
-        let steps_with_amount = js_steps_with_amount
-            .with_serde_to_platform_value_map()?
-            .iter()
-            .map(|(key, value)| {
-                (
-                    key.clone().parse::<u64>().unwrap(),
-                    value.clone().as_integer::<u64>().unwrap(),
-                )
-            })
-            .collect();
+        let obj = Object::from(js_steps_with_amount);
+
+        let mut steps_with_amount: BTreeMap<u64, TokenAmount> = BTreeMap::new();
+
+        for key in Object::keys(&obj) {
+            steps_with_amount.insert(
+                try_to_u64(BigInt::from_str(key.as_string().unwrap().as_str())?.into())
+                    .map_err(|err| JsValue::from(err.to_string()))?,
+                try_to_u64(Reflect::get(&obj, &key)?)
+                    .map_err(|err| JsValue::from(err.to_string()))?,
+            );
+        }
 
         Ok(DistributionFunctionWASM(DistributionFunction::Stepwise(
             steps_with_amount,
@@ -204,6 +208,23 @@ impl DistributionFunctionWASM {
     }
 
     #[wasm_bindgen(js_name = "getFunctionName")]
+    pub fn get_function_name(&self) -> String {
+        match self.0 {
+            DistributionFunction::FixedAmount { .. } => String::from("FixedAmount"),
+            DistributionFunction::Random { .. } => String::from("Random"),
+            DistributionFunction::StepDecreasingAmount { .. } => {
+                String::from("StepDecreasingAmount")
+            }
+            DistributionFunction::Stepwise(_) => String::from("Stepwise"),
+            DistributionFunction::Linear { .. } => String::from("Linear"),
+            DistributionFunction::Polynomial { .. } => String::from("Polynomial"),
+            DistributionFunction::Exponential { .. } => String::from("Exponential"),
+            DistributionFunction::Logarithmic { .. } => String::from("Logarithmic"),
+            DistributionFunction::InvertedLogarithmic { .. } => String::from("InvertedLogarithmic"),
+        }
+    }
+
+    #[wasm_bindgen(js_name = "getFunctionValue")]
     pub fn get_function_values(&self) -> Result<JsValue, JsValue> {
         match self.0.clone() {
             DistributionFunction::FixedAmount { amount } => {
@@ -232,9 +253,17 @@ impl DistributionFunctionWASM {
                 min_value,
             })),
             DistributionFunction::Stepwise(map) => {
-                let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+                let object = Object::new();
 
-                map.serialize(&serializer).map_err(JsValue::from)
+                for (key, value) in map {
+                    Reflect::set(
+                        &object,
+                        &key.to_string().into(),
+                        &BigInt::from(value).into(),
+                    )?;
+                }
+
+                Ok(object.into())
             }
             DistributionFunction::Linear {
                 a,

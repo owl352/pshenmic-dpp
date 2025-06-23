@@ -1,6 +1,8 @@
 use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::state_transition::AssetLockProved;
 use dpp::platform_value::BinaryData;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::decode;
 use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
@@ -13,8 +15,8 @@ use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "IdentityCreateTransitionWASM")]
 #[derive(Clone)]
@@ -67,11 +69,25 @@ impl IdentityCreateTransitionWASM {
         let platform_version = PlatformVersionWASM::try_from(js_platform_version)?;
 
         IdentityCreateTransition::default_versioned(&platform_version.into())
-            .map(Into::into)
             .map_err(|err| JsValue::from_str(&*err.to_string()))
+            .map(Into::into)
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<IdentityCreateTransitionWASM, JsValue> {
+        let bytes = decode(hex.as_str(), Hex).map_err(JsError::from)?;
+
+        IdentityCreateTransitionWASM::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<IdentityCreateTransitionWASM, JsValue> {
+        let bytes = decode(base64.as_str(), Base64).map_err(JsError::from)?;
+
+        IdentityCreateTransitionWASM::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.serialize_to_bytes().with_js_error()
     }

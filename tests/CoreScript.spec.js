@@ -31,7 +31,7 @@ describe('CoreScript', function () {
     it('should allow to convert to asm P2PKH', () => {
       const script = wasm.CoreScriptWASM.newP2PKH([195, 219, 253, 64, 231, 248, 164, 132, 92, 47, 142, 134, 138, 22, 124, 152, 64, 73, 118, 73])
 
-      assert.equal(script.toASMString(), 'OP_DUP OP_HASH160 OP_PUSHBYTES_20 c3dbfd40e7f8a4845c2f8e868a167c9840497649 OP_EQUALVERIFY OP_CHECKSIG')
+      assert.equal(script.ASMString(), 'OP_DUP OP_HASH160 OP_PUSHBYTES_20 c3dbfd40e7f8a4845c2f8e868a167c9840497649 OP_EQUALVERIFY OP_CHECKSIG')
     })
   })
 })

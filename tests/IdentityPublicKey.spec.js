@@ -37,7 +37,7 @@ describe('PublicKey', function () {
         false,
         binaryData)
 
-      const bytes = pubKey.toBytes()
+      const bytes = pubKey.bytes()
 
       const newPubKey = wasm.IdentityPublicKeyWASM.fromBytes(Array.from(bytes))
 
@@ -51,7 +51,7 @@ describe('PublicKey', function () {
       assert.equal(pubKey.getReadOnly(), newPubKey.getReadOnly())
       assert.equal(pubKey.getData(), newPubKey.getData())
 
-      assert.deepEqual(pubKey.toBytes(), newPubKey.toBytes())
+      assert.deepEqual(pubKey.bytes(), newPubKey.bytes())
 
       assert.notEqual(pubKey.__wbg_ptr, 0)
       assert.notEqual(newPubKey.__wbg_ptr, 0)

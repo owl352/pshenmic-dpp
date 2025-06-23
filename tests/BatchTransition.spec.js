@@ -28,7 +28,7 @@ describe('BatchTransition', function () {
 
       it('should allow to create from v1 transition', function () {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+        const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
         const documentTransition = createTransition.toDocumentTransition()
 
@@ -67,7 +67,7 @@ describe('BatchTransition', function () {
   describe('getters', function () {
     it('should allow to get transitions', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
       const documentTransition = createTransition.toDocumentTransition()
 
@@ -78,7 +78,7 @@ describe('BatchTransition', function () {
 
     it('should allow to get signature', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
       const documentTransition = createTransition.toDocumentTransition()
 
@@ -89,7 +89,7 @@ describe('BatchTransition', function () {
 
     it('should allow to get signature public key id', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
       const documentTransition = createTransition.toDocumentTransition()
 
@@ -100,8 +100,8 @@ describe('BatchTransition', function () {
 
     it('should allow to get all purchases amount', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
-      const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1) , BigInt(100))
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
+      const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), BigInt(100))
 
       const documentTransition = createTransition.toDocumentTransition()
       const documentTransition2 = purchaseTransition.toDocumentTransition()
@@ -113,7 +113,7 @@ describe('BatchTransition', function () {
 
     it('should allow to get owner id', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
       const documentTransition = createTransition.toDocumentTransition()
 
@@ -124,7 +124,7 @@ describe('BatchTransition', function () {
 
     it('should allow to get modified data ids', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
       const documentTransition = createTransition.toDocumentTransition()
 
@@ -135,7 +135,7 @@ describe('BatchTransition', function () {
 
     it('should allow to get allConflictingIndexCollateralVotingFunds', function () {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), )
+      const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
       const documentTransition = createTransition.toDocumentTransition()
 

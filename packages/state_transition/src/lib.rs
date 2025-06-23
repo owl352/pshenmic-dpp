@@ -81,21 +81,21 @@ impl StateTransitionWASM {
         self.0.serialize_to_bytes().with_js_error()
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
         Ok(JsValue::from(bytes.clone()))
     }
 
-    #[wasm_bindgen(js_name = "toHex")]
+    #[wasm_bindgen(js_name = "hex")]
     pub fn to_hex(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
         Ok(JsValue::from(encode(bytes.as_slice(), Encoding::Hex)))
     }
 
-    #[wasm_bindgen(js_name = "toBase64")]
+    #[wasm_bindgen(js_name = "base64")]
     pub fn to_base64(&self) -> Result<JsValue, JsValue> {
         let bytes = self.0.serialize_to_bytes().with_js_error()?;
 

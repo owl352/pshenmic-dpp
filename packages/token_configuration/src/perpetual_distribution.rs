@@ -1,6 +1,7 @@
 use crate::distribution_recipient::TokenDistributionRecipientWASM;
 use crate::reward_distribution_type::RewardDistributionTypeWASM;
 use dpp::data_contract::associated_token::token_perpetual_distribution::TokenPerpetualDistribution;
+use dpp::data_contract::associated_token::token_perpetual_distribution::methods::v0::TokenPerpetualDistributionV0Accessors;
 use dpp::data_contract::associated_token::token_perpetual_distribution::v0::TokenPerpetualDistributionV0;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -38,5 +39,27 @@ impl TokenPerpetualDistributionWASM {
                 distribution_recipient: recipient.clone().into(),
             },
         ))
+    }
+
+    #[wasm_bindgen(getter = distributionType)]
+    pub fn distribution_type(&self) -> RewardDistributionTypeWASM {
+        self.0.distribution_type().clone().into()
+    }
+
+    #[wasm_bindgen(getter = distributionRecipient)]
+    pub fn recipient(&self) -> TokenDistributionRecipientWASM {
+        self.0.distribution_recipient().clone().into()
+    }
+
+    #[wasm_bindgen(setter = distributionType)]
+    pub fn set_distribution_type(&mut self, distribution_type: &RewardDistributionTypeWASM) {
+        self.0
+            .set_distribution_type(distribution_type.clone().into());
+    }
+
+    #[wasm_bindgen(setter = distributionRecipient)]
+    pub fn set_recipient(&mut self, distribution_recipient: &TokenDistributionRecipientWASM) {
+        self.0
+            .set_distribution_recipient(distribution_recipient.clone().into());
     }
 }

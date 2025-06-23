@@ -3,6 +3,8 @@ use crate::document_transition::DocumentTransitionWASM;
 use dpp::fee::Credits;
 use dpp::identity::KeyID;
 use dpp::platform_value::BinaryData;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::{IdentityNonce, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::batch_transition::accessors::DocumentsBatchTransitionAccessorsV0;
@@ -16,8 +18,8 @@ use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, Stat
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::{IntoWasm, WithJsError};
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 pub mod batched_transition;
 pub mod document_base_transition;
@@ -209,14 +211,27 @@ impl BatchTransitionWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
-    pub fn to_bytes(&self) -> Result<JsValue, JsValue> {
-        let bytes = self.0.serialize_to_bytes().with_js_error();
+    #[wasm_bindgen(js_name = "bytes")]
+    pub fn to_bytes(&self) -> Result<Vec<u8>, JsValue> {
+        let bytes = self.0.serialize_to_bytes().with_js_error()?;
 
-        match bytes {
-            Ok(bytes) => Ok(JsValue::from(bytes.clone())),
-            Err(err) => Err(err),
-        }
+        Ok(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Hex,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self) -> Result<String, JsValue> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Base64,
+        ))
     }
 
     #[wasm_bindgen(js_name = "fromBytes")]
@@ -224,5 +239,15 @@ impl BatchTransitionWASM {
         let rs_batch = BatchTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
 
         Ok(BatchTransitionWASM::from(rs_batch))
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<BatchTransitionWASM, JsValue> {
+        BatchTransitionWASM::from_bytes(decode(base64.as_str(), Base64).map_err(JsError::from)?)
+    }
+
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<BatchTransitionWASM, JsValue> {
+        BatchTransitionWASM::from_bytes(decode(hex.as_str(), Hex).map_err(JsError::from)?)
     }
 }

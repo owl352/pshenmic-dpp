@@ -14,7 +14,8 @@
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
     "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.js",
-    "lint": "cargo fmt"
+    "lint": "cargo fmt",
+    "lint:test": "standard --fix ./tests"
   },
   "files": [
     "dist/wasm",

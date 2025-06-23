@@ -1,6 +1,7 @@
 use dpp::dashcore::opcodes;
 use dpp::identity::core_script::CoreScript;
-use dpp::platform_value::string_encoding::Encoding::Base64;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::encode;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "CoreScriptWASM")]
@@ -62,12 +63,22 @@ impl CoreScriptWASM {
         self.0.to_string(Base64)
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Vec<u8> {
         self.0.to_bytes()
     }
 
-    #[wasm_bindgen(js_name = "toASMString")]
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self) -> String {
+        encode(self.0.to_bytes().as_slice(), Hex)
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self) -> String {
+        encode(self.0.to_bytes().as_slice(), Base64)
+    }
+
+    #[wasm_bindgen(js_name = "ASMString")]
     pub fn to_asm_string(&self) -> String {
         self.0.to_asm_string()
     }

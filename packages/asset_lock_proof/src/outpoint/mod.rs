@@ -1,7 +1,9 @@
 use dpp::dashcore::{OutPoint, Txid};
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use pshenmic_dpp_utils::IntoWasm;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "OutPointWASM")]
 #[derive(Clone)]
@@ -55,20 +57,48 @@ impl OutPointWASM {
         self.0.txid.to_hex()
     }
 
-    #[wasm_bindgen(js_name = "toBytes")]
+    #[wasm_bindgen(js_name = "bytes")]
     pub fn to_bytes(&self) -> Vec<u8> {
         let slice: [u8; 36] = self.0.into();
         slice.to_vec()
     }
 
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_hex(&self) -> String {
+        let slice: [u8; 36] = self.0.into();
+
+        encode(slice.as_slice(), Hex)
+    }
+
+    #[wasm_bindgen(js_name = "base64")]
+    pub fn to_base64(&self) -> String {
+        let slice: [u8; 36] = self.0.into();
+
+        encode(slice.as_slice(), Base64)
+    }
+
     #[wasm_bindgen(js_name = "fromBytes")]
-    pub fn from_buffer(js_buffer: Vec<u8>) -> OutPointWASM {
+    pub fn from_bytes(js_buffer: Vec<u8>) -> OutPointWASM {
         let mut buffer = [0u8; 36];
         let bytes = js_buffer.as_slice();
         let len = bytes.len();
         buffer[..len].copy_from_slice(bytes);
 
         OutPointWASM(OutPoint::from(buffer))
+    }
+
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<OutPointWASM, JsValue> {
+        Ok(OutPointWASM::from_bytes(
+            decode(hex.as_str(), Hex).map_err(JsError::from)?,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<OutPointWASM, JsValue> {
+        Ok(OutPointWASM::from_bytes(
+            decode(base64.as_str(), Base64).map_err(JsError::from)?,
+        ))
     }
 }
 

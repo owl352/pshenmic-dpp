@@ -49,7 +49,7 @@ describe('OutPoint', function () {
       // 32 bytes for txId and 4 bytes for vout
       const bytes = [...txIdBytes.reverse(), ...[0, 0, 0, 1].reverse()]
 
-      assert.deepEqual(outpoint.toBytes(), Uint8Array.from(bytes))
+      assert.deepEqual(outpoint.bytes(), Uint8Array.from(bytes))
     })
   })
 })

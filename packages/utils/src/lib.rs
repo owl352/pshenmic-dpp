@@ -230,9 +230,6 @@ pub fn get_class_type(value: &JsValue) -> Result<String, JsValue> {
     }
 }
 
-#[allow(dead_code)]
-#[deprecated(note = "This function is marked as unused.")]
-#[allow(deprecated)]
 pub fn try_to_u64(value: JsValue) -> Result<u64, anyhow::Error> {
     if value.is_bigint() {
         js_sys::BigInt::new(&value)

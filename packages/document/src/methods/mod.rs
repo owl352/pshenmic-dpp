@@ -7,6 +7,8 @@ use dpp::document::serialization_traits::DocumentPlatformConversionMethodsV0;
 use dpp::identifier::Identifier;
 use dpp::platform_value::Value;
 use dpp::platform_value::converter::serde_json::BTreeValueJsonConverter;
+use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::Revision;
 use dpp::util::entropy_generator;
 use dpp::util::entropy_generator::EntropyGenerator;
@@ -15,8 +17,8 @@ use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::{ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen]
 impl DocumentWASM {
@@ -262,11 +264,10 @@ impl DocumentWASM {
         self.document_type_name = document_type_name.to_string();
     }
 
-    #[wasm_bindgen(js_name=toBytes)]
+    #[wasm_bindgen(js_name=bytes)]
     pub fn to_bytes(
         &self,
         data_contract: &DataContractWASM,
-        type_name: String,
         js_platform_version: JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
@@ -277,7 +278,7 @@ impl DocumentWASM {
         let rs_document: Document = Document::from(self.clone());
 
         let document_type_ref = data_contract
-            .get_document_type_ref_by_name(type_name)
+            .get_document_type_ref_by_name(self.get_document_type_name())
             .map_err(|err| JsValue::from_str(err.to_string().as_str()))?;
 
         DocumentPlatformConversionMethodsV0::serialize(
@@ -287,6 +288,32 @@ impl DocumentWASM {
             &platform_version.into(),
         )
         .with_js_error()
+    }
+
+    #[wasm_bindgen(js_name=hex)]
+    pub fn to_hex(
+        &self,
+        data_contract: &DataContractWASM,
+        js_platform_version: JsValue,
+    ) -> Result<String, JsValue> {
+        Ok(encode(
+            self.to_bytes(data_contract, js_platform_version)?
+                .as_slice(),
+            Hex,
+        ))
+    }
+
+    #[wasm_bindgen(js_name=base64)]
+    pub fn to_base64(
+        &self,
+        data_contract: &DataContractWASM,
+        js_platform_version: JsValue,
+    ) -> Result<String, JsValue> {
+        Ok(encode(
+            self.to_bytes(data_contract, js_platform_version)?
+                .as_slice(),
+            Base64,
+        ))
     }
 
     #[wasm_bindgen(js_name=fromBytes)]
@@ -301,7 +328,8 @@ impl DocumentWASM {
             false => PlatformVersionWASM::try_from(js_platform_version)?,
         };
 
-        let document_type_ref = match data_contract.get_document_type_ref_by_name(type_name) {
+        let document_type_ref = match data_contract.get_document_type_ref_by_name(type_name.clone())
+        {
             Ok(type_ref) => Ok(type_ref),
             Err(err) => Err(JsValue::from_str(err.to_string().as_str())),
         }?;
@@ -311,12 +339,43 @@ impl DocumentWASM {
             document_type_ref,
             &platform_version.into(),
         )
-        .with_js_error();
+        .with_js_error()?;
 
-        match rs_document {
-            Ok(doc) => Ok(DocumentWASM::from(doc)),
-            Err(err) => Err(err),
-        }
+        let mut js_document = DocumentWASM::from(rs_document);
+
+        js_document.set_document_type_name(type_name.clone().as_str());
+
+        Ok(js_document)
+    }
+
+    #[wasm_bindgen(js_name=fromHex)]
+    pub fn from_hex(
+        hex: String,
+        data_contract: &DataContractWASM,
+        type_name: String,
+        js_platform_version: JsValue,
+    ) -> Result<DocumentWASM, JsValue> {
+        DocumentWASM::from_bytes(
+            decode(hex.as_str(), Hex).map_err(JsError::from)?,
+            data_contract,
+            type_name,
+            js_platform_version,
+        )
+    }
+
+    #[wasm_bindgen(js_name=fromBase64)]
+    pub fn from_base64(
+        base64: String,
+        data_contract: &DataContractWASM,
+        type_name: String,
+        js_platform_version: JsValue,
+    ) -> Result<DocumentWASM, JsValue> {
+        DocumentWASM::from_bytes(
+            decode(base64.as_str(), Base64).map_err(JsError::from)?,
+            data_contract,
+            type_name,
+            js_platform_version,
+        )
     }
 
     #[wasm_bindgen(js_name=generateId)]

@@ -3,6 +3,8 @@ use dpp::data_contract::associated_token::token_configuration_localization::acce
     TokenConfigurationLocalizationV0Getters, TokenConfigurationLocalizationV0Setters,
 };
 use dpp::data_contract::associated_token::token_configuration_localization::v0::TokenConfigurationLocalizationV0;
+use js_sys::{Object, Reflect};
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -71,5 +73,28 @@ impl TokenConfigurationLocalizationWASM {
     #[wasm_bindgen(setter = "singularForm")]
     pub fn set_singular_form(&mut self, singular_form: String) {
         self.0.set_singular_form(singular_form);
+    }
+
+    #[wasm_bindgen(js_name = "toJSON")]
+    pub fn to_json(&self) -> Result<JsValue, JsValue> {
+        let object = Object::new();
+
+        Reflect::set(
+            &object,
+            &JsValue::from("shouldCapitalize"),
+            &JsValue::from(self.0.should_capitalize()),
+        )?;
+        Reflect::set(
+            &object,
+            &JsValue::from("pluralForm"),
+            &JsValue::from(self.0.plural_form()),
+        )?;
+        Reflect::set(
+            &object,
+            &JsValue::from("singularForm"),
+            &JsValue::from(self.0.singular_form()),
+        )?;
+
+        Ok(object.into())
     }
 }
