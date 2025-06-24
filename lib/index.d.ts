@@ -96,4 +96,5 @@ export class DashPlatformProtocolWASM {
     // METHODS
     cborToObject: typeof DPP.cborToObject
     objectToCbor: typeof DPP.objectToCbor
+    initSync: typeof DPP.initSync
 }
