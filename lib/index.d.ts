@@ -1,6 +1,10 @@
 import * as DPP from './pshenmic_dpp';
 
-export * from './pshenmic_dpp';
+export * from './pshenmic_dpp'
+
+export default dpp;
+
+declare const dpp: DashPlatformProtocolWASM;
 
 export class DashPlatformProtocolWASM {
     // CLASSES

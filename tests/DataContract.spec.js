@@ -1,7 +1,7 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
 const { value, id, ownerId } = require('./mocks/DataContract')
-const { PlatformVersionWASM } = require('../dist/cjs/wasm/pshenmic_dpp')
+const { PlatformVersionWASM } = require('..')
 const { fromHexString } = require('./utils/hex')
 const { default: wasm } = require('..')
 
