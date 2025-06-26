@@ -39,6 +39,7 @@ describe('Document', function () {
 
       const bytes = documentInstance.bytes(dataContract, wasm.PlatformVersionWASM.PLATFORM_V1)
 
+      assert.equal(documentInstance.getDataContractId().base58(), dataContract.getId().base58())
       assert.deepEqual(bytes, fromHexString(documentBytes))
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
