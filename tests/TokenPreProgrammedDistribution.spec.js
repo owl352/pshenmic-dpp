@@ -1,14 +1,8 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
-
-let wasm
+const { describe, it } = require('mocha')
+const { default: wasm } = require('..')
 
 describe('TokenPreProgrammedDistribution', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create from values', () => {
       const preProgrammedDistribution = new wasm.TokenPreProgrammedDistributionWASM(

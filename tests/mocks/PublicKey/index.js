@@ -1,4 +1,4 @@
-const { Purpose, SecurityLevel, KeyType } = require('../../../dist/cjs/wasm/pshenmic_dpp')
+const { Purpose, SecurityLevel, KeyType } = require('../../..')
 
 module.exports = {
   keyId: 2,

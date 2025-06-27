@@ -1,15 +1,9 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
 const { identifier } = require('./mocks/Identity')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('TokenDistributionRules', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('shoulda allow to create with undefined values', () => {
       const noOne = wasm.AuthorizedActionTakersWASM.NoOne()

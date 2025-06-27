@@ -1,15 +1,9 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { instantLockBytes, transactionBytes } = require('./mocks/Locks')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('InstantLock', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create InstantLock from values', () => {
       const instantLockProof = new wasm.InstantAssetLockProofWASM(instantLockBytes, transactionBytes, 0)

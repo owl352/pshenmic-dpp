@@ -1,14 +1,8 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
-
-let wasm
+const { describe, it } = require('mocha')
+const { default: wasm } = require('..')
 
 describe('IdentityCreditTransferTransition', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('Should create IdentityCreditTransferTransition with empty platform version', async function () {
       const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))

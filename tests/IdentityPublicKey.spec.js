@@ -1,20 +1,14 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const {
   keyId, purpose, securityLevel, keyType, binaryData, securityLevelSet, keyIdSet, purposeSet,
   keyTypeSet, binaryDataSet
 } = require('./mocks/PublicKey')
 const { wif } = require('./mocks/PrivateKey')
 const { toHexString } = require('./utils/hex')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('PublicKey', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should generate public key from values with type ECDSA_SECP256K1', function () {
       const pubKey = new wasm.IdentityPublicKeyWASM(
