@@ -344,6 +344,7 @@ impl DocumentWASM {
         let mut js_document = DocumentWASM::from(rs_document);
 
         js_document.set_document_type_name(type_name.clone().as_str());
+        js_document.set_data_contract_id(&data_contract.get_id());
 
         Ok(js_document)
     }
@@ -434,5 +435,9 @@ impl DocumentWASM {
 
     pub fn rs_get_properties(&self) -> BTreeMap<String, Value> {
         self.clone().properties
+    }
+
+    fn set_data_contract_id(&mut self, data_contract_id: &IdentifierWASM) {
+        self.data_contract_id = data_contract_id.clone();
     }
 }
