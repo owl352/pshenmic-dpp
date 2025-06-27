@@ -1232,7 +1232,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "1.0.7-rc.2"
+version = "1.0.7-rc.4"
 dependencies = [
  "bincode",
  "bincode_derive",
