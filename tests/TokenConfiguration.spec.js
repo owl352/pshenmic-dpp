@@ -1,16 +1,11 @@
-const initWasm = require('./utils/wasm')
 const assert = require('assert')
-const {describe, it, before} = require('mocha')
-
-let wasm
+const { describe, it } = require('mocha')
+const { default: wasm } = require('..')
 
 describe('TokenConfiguration', function () {
-  let config
-
-  before(async function () {
-    wasm = initWasm()
-
-    const convention = new wasm.TokenConfigurationConventionWASM({
+  describe('serialization / deserialization', function () {
+    it('Should allow to create from values', function () {
+      const convention = new wasm.TokenConfigurationConventionWASM({
         ru: {
           shouldCapitalize: true,
           singularForm: 'TOKEN',

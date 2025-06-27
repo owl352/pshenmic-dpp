@@ -1,14 +1,8 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
-
-let wasm
+const { describe, it } = require('mocha')
+const { default: wasm } = require('..')
 
 describe('TxOut', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allow to create from values with pubkey hex', function () {
       const out = new wasm.TxOutWASM(BigInt(100), '76a9141a486a3855e6dc6dd02874424f53a6f2197b3d4588ac')

@@ -1,15 +1,9 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { tokenLocalization } = require('./mocks/TokenConfiguration')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('TokenConfigurationConvention', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('Should allow to create from object', function () {
       const convention = new wasm.TokenConfigurationConventionWASM({

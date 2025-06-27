@@ -1,15 +1,9 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const { document, documentTypeName, revision, dataContractId, ownerId, id } = require('./mocks/Document')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('DocumentsTransitions', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     describe('document Create transition', function () {
       it('should allow to create CreateTransition from document', () => {

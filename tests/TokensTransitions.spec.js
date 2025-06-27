@@ -1,15 +1,12 @@
 const { describe, it, before } = require('mocha')
 const assert = require('assert')
-const initWasm = require('./utils/wasm')
 const { dataContractId, ownerId } = require('./mocks/Document')
+const { default: wasm } = require('..')
 
-let wasm
 let baseTransition
 
 describe('TokenTransitions', function () {
   before(async function () {
-    wasm = initWasm()
-
     baseTransition = new wasm.TokenBaseTransitionWASM(BigInt(1), 1, dataContractId, ownerId)
   })
 

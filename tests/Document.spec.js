@@ -1,18 +1,12 @@
 const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const initWasm = require('./utils/wasm')
+const { describe, it } = require('mocha')
 const {
   document, dataContractId, ownerId, documentTypeName, revision, dataContractValue, id, document2, documentBytes
 } = require('./mocks/Document')
 const { fromHexString } = require('./utils/hex')
-
-let wasm
+const { default: wasm } = require('..')
 
 describe('Document', function () {
-  before(async function () {
-    wasm = initWasm()
-  })
-
   describe('serialization / deserialization', function () {
     it('should allows to create Document from values', function () {
       const dataContractIdentifier = new wasm.IdentifierWASM(dataContractId)
