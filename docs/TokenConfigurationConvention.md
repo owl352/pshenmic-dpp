@@ -1,4 +1,4 @@
-# TokenConfigurationConvention
+# TokenConfigurationConventionWASM
 
 This class allows to create and interact with TokenConfigurationConvention struct
 
