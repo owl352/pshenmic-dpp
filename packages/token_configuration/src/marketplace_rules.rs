@@ -52,4 +52,13 @@ impl TokenMarketplaceRulesWASM {
     pub fn set_trade_mode(&mut self, trade_mode: &TokenTradeModeWASM) {
         self.0.set_trade_mode(trade_mode.clone().into());
     }
+
+    #[wasm_bindgen(setter = "tradeModeChangeRules")]
+    pub fn set_trade_mode_change_rules(
+        &mut self,
+        trade_mode_change_rules: &ChangeControlRulesWASM,
+    ) {
+        self.0
+            .set_trade_mode_change_rules(trade_mode_change_rules.clone().into());
+    }
 }
