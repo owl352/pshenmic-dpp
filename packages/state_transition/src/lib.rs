@@ -146,6 +146,21 @@ impl StateTransitionWASM {
         self.0.name()
     }
 
+    #[wasm_bindgen(js_name = "getActionTypeNumber")]
+    pub fn get_action_type_number(&self) -> u8 {
+        match self.0 {
+            StateTransition::DataContractCreate(_) => 0,
+            StateTransition::Batch(_) => 1,
+            StateTransition::IdentityCreate(_) => 2,
+            StateTransition::IdentityTopUp(_) => 3,
+            StateTransition::DataContractUpdate(_) => 4,
+            StateTransition::IdentityUpdate(_) => 5,
+            StateTransition::IdentityCreditWithdrawal(_) => 6,
+            StateTransition::IdentityCreditTransfer(_) => 7,
+            StateTransition::MasternodeVote(_) => 8,
+        }
+    }
+
     #[wasm_bindgen(js_name = "getOwnerId")]
     pub fn get_owner_id(&self) -> IdentifierWASM {
         self.0.owner_id().into()
