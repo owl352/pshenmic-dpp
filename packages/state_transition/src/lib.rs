@@ -157,7 +157,7 @@ impl StateTransitionWASM {
             StateTransition::IdentityUpdate(_) => 5,
             StateTransition::IdentityCreditWithdrawal(_) => 6,
             StateTransition::IdentityCreditTransfer(_) => 7,
-            StateTransition::MasternodeVote(_) => 8
+            StateTransition::MasternodeVote(_) => 8,
         }
     }
 
