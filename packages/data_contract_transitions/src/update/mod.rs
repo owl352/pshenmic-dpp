@@ -132,6 +132,11 @@ impl DataContractUpdateTransitionWASM {
         Ok(())
     }
 
+    #[wasm_bindgen(js_name = "getIdentityNonce")]
+    pub fn get_identity_nonce(&self) -> IdentityNonce {
+        self.0.identity_contract_nonce()
+    }
+
     #[wasm_bindgen(js_name = "getDataContract")]
     pub fn get_data_contract(
         &self,
