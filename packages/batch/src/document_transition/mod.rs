@@ -8,7 +8,7 @@ use dpp::prelude::{Identifier, IdentityNonce, Revision};
 use dpp::state_transition::batch_transition::batched_transition::document_transition::{
     DocumentTransition, DocumentTransitionV0Methods,
 };
-use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::DocumentTransitionActionTypeGetter;
+use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::{DocumentTransitionActionType, DocumentTransitionActionTypeGetter};
 use pshenmic_dpp_enums::batch::batch_enum::BatchTypeWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
@@ -40,6 +40,19 @@ impl DocumentTransitionWASM {
     #[wasm_bindgen(getter = "actionType")]
     pub fn get_action_type(&self) -> String {
         BatchTypeWASM::from(self.0.action_type()).into()
+    }
+
+    #[wasm_bindgen(getter = "actionTypeNumber")]
+    pub fn get_action_type_number(&self) -> u8 {
+        match self.0.action_type() {
+            DocumentTransitionActionType::Create => 0,
+            DocumentTransitionActionType::Replace => 1,
+            DocumentTransitionActionType::Delete => 3,
+            DocumentTransitionActionType::Transfer => 4,
+            DocumentTransitionActionType::Purchase => 5,
+            DocumentTransitionActionType::UpdatePrice => 6,
+            DocumentTransitionActionType::IgnoreWhileBumpingRevision => 7,
+        }
     }
 
     #[wasm_bindgen(getter = "dataContractId")]
