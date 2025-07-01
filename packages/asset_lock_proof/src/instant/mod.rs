@@ -3,7 +3,7 @@ mod instant_lock;
 use crate::instant::instant_lock::InstantLockWASM;
 use crate::outpoint::OutPointWASM;
 use crate::tx_out::TxOutWASM;
-use dpp::dashcore::consensus::deserialize;
+use dpp::dashcore::consensus::{deserialize, serialize};
 use dpp::dashcore::{InstantLock, Transaction};
 use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
 use pshenmic_dpp_utils::WithJsError;
@@ -116,5 +116,11 @@ impl InstantAssetLockProofWASM {
     #[wasm_bindgen(setter = "instantLock")]
     pub fn set_instant_lock(&mut self, instant_lock: &InstantLockWASM) {
         self.0.instant_lock = instant_lock.clone().into();
+    }
+
+    #[wasm_bindgen(js_name=getTransaction)]
+    pub fn get_transaction(&self) -> Vec<u8> {
+        let transaction = self.0.transaction();
+        serialize(transaction)
     }
 }
