@@ -184,9 +184,9 @@ impl IdentityCreditTransferWASM {
 
     #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
-        st: StateTransitionWASM,
+        st: &StateTransitionWASM,
     ) -> Result<IdentityCreditTransferWASM, JsValue> {
-        let rs_st: StateTransition = st.into();
+        let rs_st: StateTransition = st.clone().into();
 
         match rs_st {
             StateTransition::IdentityCreditTransfer(st) => Ok(IdentityCreditTransferWASM(st)),

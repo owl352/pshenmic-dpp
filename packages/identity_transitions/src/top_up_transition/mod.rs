@@ -164,9 +164,9 @@ impl IdentityTopUpTransitionWASM {
 
     #[wasm_bindgen(js_name = "fromStateTransition")]
     pub fn from_state_transition(
-        st: StateTransitionWASM,
+        st: &StateTransitionWASM,
     ) -> Result<IdentityTopUpTransitionWASM, JsValue> {
-        let rs_st: StateTransition = st.into();
+        let rs_st: StateTransition = st.clone().into();
 
         match rs_st {
             StateTransition::IdentityTopUp(st) => Ok(IdentityTopUpTransitionWASM(st)),
