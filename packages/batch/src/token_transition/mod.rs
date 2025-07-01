@@ -175,4 +175,21 @@ impl TokenTransitionWASM {
             }
         }
     }
+
+    #[wasm_bindgen(js_name = "getTransitionType")]
+    pub fn get_transition_type(&self) -> u8 {
+        match self.clone().0 {
+            TokenTransition::Burn(_) => 0,
+            TokenTransition::Mint(_) => 1,
+            TokenTransition::Transfer(_) => 2,
+            TokenTransition::Freeze(_) => 3,
+            TokenTransition::Unfreeze(_) => 4,
+            TokenTransition::DestroyFrozenFunds(_) => 5,
+            TokenTransition::Claim(_) => 6,
+            TokenTransition::EmergencyAction(_) => 7,
+            TokenTransition::ConfigUpdate(_) => 8,
+            TokenTransition::DirectPurchase(_) => 9,
+            TokenTransition::SetPriceForDirectPurchase(_) => 10,
+        }
+    }
 }
