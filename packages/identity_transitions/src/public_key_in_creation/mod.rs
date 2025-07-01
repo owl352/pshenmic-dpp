@@ -1,3 +1,4 @@
+use crate::contract_bounds::ContractBoundsWASM;
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
 use dpp::platform_value::BinaryData;
@@ -11,7 +12,7 @@ use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
-use pshenmic_dpp_utils::IntoWasm;
+use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -109,6 +110,22 @@ impl IdentityPublicKeyInCreationWASM {
         )
     }
 
+    #[wasm_bindgen(js_name = "getHash")]
+    pub fn get_hash(&self) -> Result<Vec<u8>, JsValue> {
+        match self.0.hash().with_js_error() {
+            Ok(hash) => Ok(hash.to_vec()),
+            Err(err) => Err(err),
+        }
+    }
+
+    #[wasm_bindgen(getter = "contractBounds")]
+    pub fn get_contract_bounds(&self) -> Option<ContractBoundsWASM> {
+        match self.0.contract_bounds() {
+            Some(bounds) => Some(ContractBoundsWASM::from(bounds.clone())),
+            None => None,
+        }
+    }
+
     #[wasm_bindgen(getter = keyId)]
     pub fn get_key_id(&self) -> u32 {
         self.0.id()
@@ -185,6 +202,22 @@ impl IdentityPublicKeyInCreationWASM {
     pub fn set_signature(&mut self, binary_data: Vec<u8>) {
         let signature = BinaryData::from(binary_data);
         self.0.set_signature(signature)
+    }
+
+    #[wasm_bindgen(setter = "contractBounds")]
+    pub fn set_contract_bounds(&mut self, js_bounds: &JsValue) -> Result<(), JsValue> {
+        match js_bounds.is_undefined() {
+            true => self.0.set_contract_bounds(None),
+            false => {
+                let bounds = js_bounds
+                    .to_wasm::<ContractBoundsWASM>("ContractBoundsWASM")?
+                    .clone();
+
+                self.0.set_contract_bounds(Some(bounds.into()))
+            }
+        };
+
+        Ok(())
     }
 }
 

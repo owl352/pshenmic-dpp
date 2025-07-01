@@ -1,3 +1,4 @@
+pub mod contract_bounds;
 pub mod create_transition;
 pub mod credit_withdrawal_transition;
 pub mod identity_credit_transfer_transition;
