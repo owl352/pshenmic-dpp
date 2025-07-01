@@ -60,7 +60,7 @@ impl ContractBoundsWASM {
 
     #[wasm_bindgen(getter = "contractBoundsType")]
     pub fn contract_bounds_type(&self) -> String {
-        self.0.contract_bounds_type_string().clone().into()
+        self.0.contract_bounds_type_string().into()
     }
 
     #[wasm_bindgen(getter = "contractBoundsTypeNumber")]

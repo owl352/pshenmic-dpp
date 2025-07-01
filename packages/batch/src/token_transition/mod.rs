@@ -175,4 +175,40 @@ impl TokenTransitionWASM {
             }
         }
     }
+
+    #[wasm_bindgen(js_name = "getTransitionTypeNumber")]
+    pub fn get_transition_type_number(&self) -> u8 {
+        match self.clone().0 {
+            TokenTransition::Burn(_) => 0,
+            TokenTransition::Mint(_) => 1,
+            TokenTransition::Transfer(_) => 2,
+            TokenTransition::Freeze(_) => 3,
+            TokenTransition::Unfreeze(_) => 4,
+            TokenTransition::DestroyFrozenFunds(_) => 5,
+            TokenTransition::Claim(_) => 6,
+            TokenTransition::EmergencyAction(_) => 7,
+            TokenTransition::ConfigUpdate(_) => 8,
+            TokenTransition::DirectPurchase(_) => 9,
+            TokenTransition::SetPriceForDirectPurchase(_) => 10,
+        }
+    }
+
+    #[wasm_bindgen(js_name = "getTransitionType")]
+    pub fn get_transition_type(&self) -> String {
+        match self.clone().0 {
+            TokenTransition::Burn(_) => "Burn".to_string(),
+            TokenTransition::Mint(_) => "Mint".to_string(),
+            TokenTransition::Transfer(_) => "Transfer".to_string(),
+            TokenTransition::Freeze(_) => "Freeze".to_string(),
+            TokenTransition::Unfreeze(_) => "Unfreeze".to_string(),
+            TokenTransition::DestroyFrozenFunds(_) => "DestroyFrozenFunds".to_string(),
+            TokenTransition::Claim(_) => "Claim".to_string(),
+            TokenTransition::EmergencyAction(_) => "EmergencyAction".to_string(),
+            TokenTransition::ConfigUpdate(_) => "ConfigUpdate".to_string(),
+            TokenTransition::DirectPurchase(_) => "DirectPurchase".to_string(),
+            TokenTransition::SetPriceForDirectPurchase(_) => {
+                "SetPriceForDirectPurchase".to_string()
+            }
+        }
+    }
 }
