@@ -3,7 +3,7 @@ use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-#[wasm_bindgen(js_name = "ContractBoundWASM")]
+#[wasm_bindgen(js_name = "ContractBoundsWASM")]
 #[derive(Clone)]
 pub struct ContractBoundsWASM(ContractBounds);
 
