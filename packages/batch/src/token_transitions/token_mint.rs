@@ -56,6 +56,14 @@ impl TokenMintTransitionWASM {
         )))
     }
 
+    #[wasm_bindgen(getter = issuedToIdentityId)]
+    pub fn issued_to_identity_id(&self) -> Option<IdentifierWASM> {
+        match self.0.issued_to_identity_id() {
+            None => None,
+            Some(id) => Some(id.into()),
+        }
+    }
+
     #[wasm_bindgen(getter = amount)]
     pub fn get_amount(&self) -> u64 {
         self.0.amount()
@@ -78,6 +86,22 @@ impl TokenMintTransitionWASM {
             .recipient_id(&config.clone().into())
             .with_js_error()?
             .into())
+    }
+
+    #[wasm_bindgen(setter = issuedToIdentityId)]
+    pub fn set_issued_to_identity_id(&mut self, js_id: &JsValue) -> Result<(), JsValue> {
+        match js_id.is_undefined() {
+            true => {
+                self.0.set_issued_to_identity_id(None);
+            }
+            false => {
+                let id = IdentifierWASM::try_from(js_id)?;
+
+                self.0.set_issued_to_identity_id(Some(id.into()));
+            }
+        }
+
+        Ok(())
     }
 
     #[wasm_bindgen(setter = amount)]

@@ -111,11 +111,19 @@ impl TokenTransferTransitionWASM {
         }
     }
 
-    // TODO: Implement token config and enable this method
-    // #[wasm_bindgen(getter = recipitnId)]
-    // pub fn recipient_id(&self) -> Result<IdentifierWASM, JsValue> {
-    //     Ok(self.0.recipient_id().with_js_error()?.into())
-    // }
+    #[wasm_bindgen(getter = recipientId)]
+    pub fn recipient_id(&self) -> IdentifierWASM {
+        self.0.recipient_id().into()
+    }
+
+    #[wasm_bindgen(setter = recipientId)]
+    pub fn set_recipient_id(&mut self, js_recipient: &JsValue) -> Result<(), JsValue> {
+        let recipient = IdentifierWASM::try_from(js_recipient)?;
+
+        self.0.set_recipient_id(recipient.into());
+
+        Ok(())
+    }
 
     #[wasm_bindgen(setter = "amount")]
     pub fn set_amount(&mut self, amount: u64) {

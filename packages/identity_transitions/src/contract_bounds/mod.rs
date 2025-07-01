@@ -21,6 +21,11 @@ impl From<ContractBoundsWASM> for ContractBounds {
 
 #[wasm_bindgen]
 impl ContractBoundsWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "ContractBoundsWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "SingleContract")]
     pub fn single_contract(js_contract_id: &JsValue) -> Result<ContractBoundsWASM, JsValue> {
         let contract_id = IdentifierWASM::try_from(js_contract_id)?;

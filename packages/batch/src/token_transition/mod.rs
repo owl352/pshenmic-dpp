@@ -9,13 +9,16 @@ use crate::token_transitions::token_freeze::TokenFreezeTransitionWASM;
 use crate::token_transitions::token_mint::TokenMintTransitionWASM;
 use crate::token_transitions::token_transfer::TokenTransferTransitionWASM;
 use crate::token_transitions::token_unfreeze::TokenUnFreezeTransitionWASM;
-use dpp::state_transition::batch_transition::batched_transition::token_transition::TokenTransition;
+use dpp::state_transition::batch_transition::batched_transition::token_transition::{
+    TokenTransition, TokenTransitionV0Methods,
+};
 use dpp::state_transition::batch_transition::{
     TokenBurnTransition, TokenClaimTransition, TokenConfigUpdateTransition,
     TokenDestroyFrozenFundsTransition, TokenDirectPurchaseTransition,
     TokenEmergencyActionTransition, TokenFreezeTransition, TokenMintTransition,
     TokenSetPriceForDirectPurchaseTransition, TokenTransferTransition, TokenUnfreezeTransition,
 };
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::{IntoWasm, get_class_type};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -210,5 +213,19 @@ impl TokenTransitionWASM {
                 "SetPriceForDirectPurchase".to_string()
             }
         }
+    }
+
+    #[wasm_bindgen(js_name = "getHistoricalDocumentTypeName")]
+    pub fn get_historical_document_type_name(&self) -> String {
+        self.0.historical_document_type_name().to_string()
+    }
+
+    #[wasm_bindgen(js_name = "getHistoricalDocumentId")]
+    pub fn get_historical_document_id(
+        &self,
+        js_owner: &JsValue,
+    ) -> Result<IdentifierWASM, JsValue> {
+        let owner = IdentifierWASM::try_from(js_owner)?;
+        Ok(self.0.historical_document_id(owner.into()).into())
     }
 }
