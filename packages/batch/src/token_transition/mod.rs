@@ -9,6 +9,7 @@ use crate::token_transitions::token_freeze::TokenFreezeTransitionWASM;
 use crate::token_transitions::token_mint::TokenMintTransitionWASM;
 use crate::token_transitions::token_transfer::TokenTransferTransitionWASM;
 use crate::token_transitions::token_unfreeze::TokenUnFreezeTransitionWASM;
+use dpp::prelude::IdentityNonce;
 use dpp::state_transition::batch_transition::batched_transition::token_transition::{
     TokenTransition, TokenTransitionV0Methods,
 };
@@ -227,5 +228,43 @@ impl TokenTransitionWASM {
     ) -> Result<IdentifierWASM, JsValue> {
         let owner = IdentifierWASM::try_from(js_owner)?;
         Ok(self.0.historical_document_id(owner.into()).into())
+    }
+
+    #[wasm_bindgen(getter = "identityContractNonce")]
+    pub fn get_identity_contract_nonce(&self) -> IdentityNonce {
+        self.0.identity_contract_nonce()
+    }
+
+    #[wasm_bindgen(getter = "tokenId")]
+    pub fn get_token_id(&self) -> IdentifierWASM {
+        self.0.token_id().into()
+    }
+
+    #[wasm_bindgen(getter = "contractId")]
+    pub fn get_contract_id(&self) -> IdentifierWASM {
+        self.0.data_contract_id().into()
+    }
+
+    #[wasm_bindgen(setter = "identityContractNonce")]
+    pub fn set_identity_contract_nonce(&mut self, nonce: IdentityNonce) {
+        self.0.set_identity_contract_nonce(nonce)
+    }
+
+    #[wasm_bindgen(setter = "tokenId")]
+    pub fn set_token_id(&mut self, js_id: &JsValue) -> Result<(), JsValue> {
+        let id = IdentifierWASM::try_from(js_id)?;
+
+        self.0.set_token_id(id.into());
+
+        Ok(())
+    }
+
+    #[wasm_bindgen(setter = "contractId")]
+    pub fn set_contract_id(&mut self, js_id: &JsValue) -> Result<(), JsValue> {
+        let id = IdentifierWASM::try_from(js_id)?;
+
+        self.0.set_data_contract_id(id.into());
+
+        Ok(())
     }
 }
