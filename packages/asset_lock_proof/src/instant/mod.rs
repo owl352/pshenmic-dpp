@@ -123,4 +123,10 @@ impl InstantAssetLockProofWASM {
         let transaction = self.0.transaction();
         serialize(transaction)
     }
+
+    #[wasm_bindgen(js_name=getInstantLockBytes)]
+    pub fn get_instant_lock_bytes(&self) -> Vec<u8> {
+        let instant_lock = self.0.instant_lock();
+        serialize(instant_lock)
+    }
 }

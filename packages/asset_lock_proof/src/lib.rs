@@ -129,6 +129,14 @@ impl AssetLockProofWASM {
         self.clone().0.into()
     }
 
+    #[wasm_bindgen(js_name = "getOutPoint")]
+    pub fn get_out_point(&self) -> Option<OutPointWASM> {
+        match self.0.out_point() { 
+            Some(out_point) => Some(OutPointWASM::from(out_point)),
+            None => None,
+        }
+    }
+
     #[wasm_bindgen(js_name = "toObject")]
     pub fn to_object(&self) -> Result<JsValue, JsValue> {
         let json_value = self.0.to_raw_object().with_js_error()?;
