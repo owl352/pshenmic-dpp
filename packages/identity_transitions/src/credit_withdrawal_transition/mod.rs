@@ -159,9 +159,19 @@ impl IdentityCreditWithdrawalTransitionWASM {
         self.0.set_amount(amount)
     }
 
+    #[wasm_bindgen(setter = "coreFeePerByte")]
+    pub fn set_core_fee_per_byte(&mut self, fee_per_byte: u32) {
+        self.0.set_core_fee_per_byte(fee_per_byte)
+    }
+
     #[wasm_bindgen(getter = "signature")]
     pub fn get_signature(&self) -> Vec<u8> {
         self.0.signature().to_vec()
+    }
+
+    #[wasm_bindgen(getter = "coreFeePerByte")]
+    pub fn get_core_fee_per_byte(&self) -> u32 {
+        self.0.core_fee_per_byte()
     }
 
     #[wasm_bindgen(js_name = "getSignableBytes")]

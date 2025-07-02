@@ -1,0 +1,150 @@
+use dpp::dashcore::hashes::serde::Serialize;
+use dpp::voting::vote_polls::VotePoll;
+use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
+use pshenmic_dpp_identifier::IdentifierWASM;
+use pshenmic_dpp_utils::ToSerdeJSONExt;
+use wasm_bindgen::JsValue;
+use wasm_bindgen::prelude::wasm_bindgen;
+
+#[derive(Clone)]
+#[wasm_bindgen(js_name = VotePollWASM)]
+pub struct VotePollWASM(VotePoll);
+
+impl From<VotePoll> for VotePollWASM {
+    fn from(poll: VotePoll) -> Self {
+        VotePollWASM(poll)
+    }
+}
+
+impl From<VotePollWASM> for VotePoll {
+    fn from(poll: VotePollWASM) -> Self {
+        poll.0
+    }
+}
+
+#[wasm_bindgen]
+impl VotePollWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "VotePollWASM".to_string()
+    }
+
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        js_contract_id: &JsValue,
+        document_type_name: String,
+        index_name: String,
+        js_index_values: JsValue,
+    ) -> Result<VotePollWASM, JsValue> {
+        let contract_id = IdentifierWASM::try_from(js_contract_id)?;
+
+        let index_values = js_index_values
+            .with_serde_to_platform_value()?
+            .as_array()
+            .unwrap()
+            .clone();
+
+        Ok(VotePollWASM(VotePoll::ContestedDocumentResourceVotePoll(
+            ContestedDocumentResourceVotePoll {
+                contract_id: contract_id.into(),
+                document_type_name,
+                index_name,
+                index_values,
+            },
+        )))
+    }
+
+    #[wasm_bindgen(js_name = "toString")]
+    pub fn to_string(&self) -> String {
+        self.0.to_string()
+    }
+
+    #[wasm_bindgen(getter = "contractId")]
+    pub fn contract_id(&self) -> IdentifierWASM {
+        match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll.contract_id.into(),
+        }
+    }
+
+    #[wasm_bindgen(getter = "documentTypeName")]
+    pub fn document_type_name(&self) -> String {
+        match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll.document_type_name.into(),
+        }
+    }
+
+    #[wasm_bindgen(getter = "indexName")]
+    pub fn index_name(&self) -> String {
+        match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll.index_name.into(),
+        }
+    }
+
+    #[wasm_bindgen(getter = "indexValues")]
+    pub fn index_values(&self) -> Result<JsValue, JsValue> {
+        let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+
+        match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll
+                .index_values
+                .serialize(&serializer)
+                .map_err(JsValue::from),
+        }
+    }
+
+    #[wasm_bindgen(setter = "contractId")]
+    pub fn set_contract_id(&mut self, js_contract_id: &JsValue) -> Result<(), JsValue> {
+        let contract_id = IdentifierWASM::try_from(js_contract_id)?;
+
+        self.0 = match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {
+                poll.contract_id = contract_id.into();
+
+                VotePoll::ContestedDocumentResourceVotePoll(poll)
+            }
+        };
+
+        Ok(())
+    }
+
+    #[wasm_bindgen(setter = "documentTypeName")]
+    pub fn set_document_type_name(&mut self, document_type_name: String) {
+        self.0 = match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {
+                poll.document_type_name = document_type_name;
+
+                VotePoll::ContestedDocumentResourceVotePoll(poll)
+            }
+        }
+    }
+
+    #[wasm_bindgen(setter = "indexName")]
+    pub fn set_index_name(&mut self, index_name: String) {
+        self.0 = match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {
+                poll.index_name = index_name;
+
+                VotePoll::ContestedDocumentResourceVotePoll(poll)
+            }
+        };
+    }
+
+    #[wasm_bindgen(setter = "indexValues")]
+    pub fn set_index_values(&mut self, js_index_values: JsValue) -> Result<(), JsValue> {
+        let index_values = js_index_values
+            .with_serde_to_platform_value()?
+            .as_array()
+            .unwrap()
+            .clone();
+
+        self.0 = match self.0.clone() {
+            VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {
+                poll.index_values = index_values;
+
+                VotePoll::ContestedDocumentResourceVotePoll(poll)
+            }
+        };
+
+        Ok(())
+    }
+}
