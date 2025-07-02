@@ -26,7 +26,15 @@ members = [
     "packages/state_transition",
     "packages/data_contract",
     "packages/asset_lock_proof",
-    "packages/data_contract_transitions", "packages/core_script", "packages/batch", "packages/group_state_transition_info", "packages/encrypted_note", "packages/token_configuration_change_item", "packages/token_configuration"]
+    "packages/data_contract_transitions",
+    "packages/core_script",
+    "packages/batch",
+    "packages/group_state_transition_info",
+    "packages/encrypted_note",
+    "packages/token_configuration_change_item",
+    "packages/token_configuration",
+    "packages/masternode_vote"
+]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -35,7 +43,6 @@ crate-type = ["cdylib", "lib"]
 wee_alloc = { version = "0.4.5", default-features = false }
 bincode = "=2.0.0-rc.3"
 bincode_derive = "=2.0.0-rc.3"
-#pshenmic_dpp_documents_batch = { path = "packages/documents_batch" }
 pshenmic_dpp_document_search = { path = "packages/cbor_conversation" }
 pshenmic_dpp_batch = { path = "packages/batch" }
 pshenmic_dpp_identity = { path = "packages/identity" }
@@ -45,6 +52,7 @@ pshenmic_dpp_identity_transitions = { path = "packages/identity_transitions" }
 pshenmic_dpp_data_contract = { path = "packages/data_contract" }
 pshenmic_dpp_data_contract_transitions = { path = "packages/data_contract_transitions" }
 pshenmic_dpp_enums = { path = "packages/enums" }
+pshenmic_dpp_masternode_vote = {path = "packages/masternode_vote"}
 
 [profile.release]
 lto = "fat"

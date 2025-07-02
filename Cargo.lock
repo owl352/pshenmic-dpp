@@ -1244,6 +1244,7 @@ dependencies = [
  "pshenmic_dpp_identifier",
  "pshenmic_dpp_identity",
  "pshenmic_dpp_identity_transitions",
+ "pshenmic_dpp_masternode_vote",
  "pshenmic_dpp_state_transition",
  "wee_alloc",
 ]
@@ -1398,6 +1399,19 @@ dependencies = [
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_state_transition",
  "pshenmic_dpp_utils",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_masternode_vote"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_asset_lock_proof",
+ "pshenmic_dpp_identifier",
+ "pshenmic_dpp_state_transition",
+ "pshenmic_dpp_utils",
+ "serde-wasm-bindgen",
  "wasm-bindgen",
 ]
 
