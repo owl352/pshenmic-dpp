@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.0.7-rc.19"
+version = "1.0.7-rc.20"
 edition = "2024"
 rust-version = "1.85"
 
