@@ -78,25 +78,25 @@ describe('DataContract', function () {
     it('should allow to get schemas', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getSchema(), value.documentSchemas)
+      assert.deepEqual(dataContract.getSchemas(), value.documentSchemas)
     })
 
     it('should allow to get version', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getVersion(), value.version)
+      assert.deepEqual(dataContract.version, value.version)
     })
 
     it('should allow to get id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getId().base58(), id)
+      assert.deepEqual(dataContract.id.base58(), id)
     })
 
     it('should allow to get owner id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      assert.deepEqual(dataContract.getOwnerId().base58(), ownerId)
+      assert.deepEqual(dataContract.ownerId.base58(), ownerId)
     })
 
     it('should allow to get config', function () {
@@ -110,29 +110,25 @@ describe('DataContract', function () {
     it('should allow to set id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      const identifier = new wasm.IdentifierWASM('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
+      dataContract.id = new wasm.IdentifierWASM('7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
 
-      dataContract.setId(identifier)
-
-      assert.deepEqual(dataContract.getId().base58(), '7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
+      assert.deepEqual(dataContract.id.base58(), '7ckT6Y19HnjfqoPFmfL995i4z2HwgZ8UttNmP99LtCBH')
     })
 
     it('should allow to set owner id', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      const identifier = new wasm.IdentifierWASM('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
+      dataContract.ownerId = new wasm.IdentifierWASM('3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
 
-      dataContract.setOwnerId(identifier)
-
-      assert.deepEqual(dataContract.getOwnerId().base58(), '3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
+      assert.deepEqual(dataContract.ownerId.base58(), '3bx13Wd5k4LwHAvXJrayc5HdKPyiccKWYECPQGGYfnVL')
     })
 
     it('should allow to set version', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      dataContract.setVersion(20)
+      dataContract.version = 20
 
-      assert.equal(dataContract.getVersion(), 20)
+      assert.equal(dataContract.version, 20)
     })
 
     it('should allow to set config', function () {
@@ -150,15 +146,15 @@ describe('DataContract', function () {
     it('should allow to set schema', function () {
       const dataContract = wasm.DataContractWASM.fromValue(value, true)
 
-      const oldSchema = dataContract.getSchema()
+      const oldSchema = dataContract.getSchemas()
 
       const newSchema = {
         pupup: oldSchema.withdrawal
       }
 
-      dataContract.setSchema(newSchema)
+      dataContract.setSchemas(newSchema)
 
-      assert.deepEqual(dataContract.getSchema(), newSchema)
+      assert.deepEqual(dataContract.getSchemas(), newSchema)
     })
   })
 

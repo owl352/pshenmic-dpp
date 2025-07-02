@@ -38,12 +38,12 @@ describe('PublicKey', function () {
       assert.notEqual(pubKey.__wbg_ptr, 0)
       assert.notEqual(newPubKey.__wbg_ptr, 0)
 
-      assert.equal(pubKey.getKeyId(), newPubKey.getKeyId())
-      assert.equal(pubKey.getPurpose(), newPubKey.getPurpose())
-      assert.equal(pubKey.getSecurityLevel(), newPubKey.getSecurityLevel())
-      assert.equal(pubKey.getKeyType(), newPubKey.getKeyType())
-      assert.equal(pubKey.getReadOnly(), newPubKey.getReadOnly())
-      assert.equal(pubKey.getData(), newPubKey.getData())
+      assert.equal(pubKey.keyId, newPubKey.keyId)
+      assert.equal(pubKey.purpose, newPubKey.purpose)
+      assert.equal(pubKey.securityLevel, newPubKey.securityLevel)
+      assert.equal(pubKey.keyType, newPubKey.keyType)
+      assert.equal(pubKey.readOnly, newPubKey.readOnly)
+      assert.equal(pubKey.data, newPubKey.data)
 
       assert.deepEqual(pubKey.bytes(), newPubKey.bytes())
 
@@ -75,12 +75,12 @@ describe('PublicKey', function () {
         false,
         binaryData)
 
-      assert.equal(pubKey.getKeyId(), keyId)
-      assert.equal(pubKey.getPurpose(), 'AUTHENTICATION')
-      assert.equal(pubKey.getSecurityLevel(), 'CRITICAL')
-      assert.equal(pubKey.getKeyType(), 'ECDSA_SECP256K1')
-      assert.equal(pubKey.getReadOnly(), false)
-      assert.equal(pubKey.getData(), binaryData)
+      assert.equal(pubKey.keyId, keyId)
+      assert.equal(pubKey.purpose, 'AUTHENTICATION')
+      assert.equal(pubKey.securityLevel, 'CRITICAL')
+      assert.equal(pubKey.keyType, 'ECDSA_SECP256K1')
+      assert.equal(pubKey.readOnly, false)
+      assert.equal(pubKey.data, binaryData)
     })
 
     it('should allow to validate private key', function () {
@@ -108,19 +108,19 @@ describe('PublicKey', function () {
         false,
         binaryData)
 
-      pubKey.setKeyId(keyIdSet)
-      pubKey.setPurpose(purposeSet)
-      pubKey.setSecurityLevel(securityLevelSet)
-      pubKey.setKeyType(keyTypeSet)
-      pubKey.setReadOnly(true)
-      pubKey.setData(binaryDataSet)
+      pubKey.keyId = keyIdSet
+      pubKey.purpose = purposeSet
+      pubKey.securityLevel = securityLevelSet
+      pubKey.keyType = keyTypeSet
+      pubKey.readOnly = true
+      pubKey.data = binaryDataSet
 
-      assert.equal(pubKey.getKeyId(), keyIdSet)
-      assert.equal(pubKey.getPurpose(), 'ENCRYPTION')
-      assert.equal(pubKey.getSecurityLevel(), 'HIGH')
-      assert.equal(pubKey.getKeyType(), 'ECDSA_HASH160')
-      assert.equal(pubKey.getReadOnly(), true)
-      assert.equal(pubKey.getData(), binaryDataSet)
+      assert.equal(pubKey.keyId, keyIdSet)
+      assert.equal(pubKey.purpose, 'ENCRYPTION')
+      assert.equal(pubKey.securityLevel, 'HIGH')
+      assert.equal(pubKey.keyType, 'ECDSA_HASH160')
+      assert.equal(pubKey.readOnly, true)
+      assert.equal(pubKey.data, binaryDataSet)
     })
   })
 })

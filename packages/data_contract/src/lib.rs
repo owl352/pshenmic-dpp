@@ -286,7 +286,7 @@ impl DataContractWASM {
             .map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(getter = "schema")]
+    #[wasm_bindgen(js_name = "getSchemas")]
     pub fn get_schemas(&self) -> Result<JsValue, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
@@ -311,7 +311,7 @@ impl DataContractWASM {
         self.0.owner_id().into()
     }
 
-    #[wasm_bindgen(getter = "config")]
+    #[wasm_bindgen(js_name = "getConfig")]
     pub fn get_config(&self) -> Result<JsValue, JsValue> {
         self.0
             .config()
@@ -353,7 +353,7 @@ impl DataContractWASM {
         self.0.set_version(version)
     }
 
-    #[wasm_bindgen(setter = "config")]
+    #[wasm_bindgen(js_name = "setConfig")]
     pub fn set_config(
         &mut self,
         js_config: JsValue,
@@ -374,7 +374,7 @@ impl DataContractWASM {
         Ok(())
     }
 
-    #[wasm_bindgen(setter = "schema")]
+    #[wasm_bindgen(js_name = "setSchemas")]
     pub fn set_schemas(
         &mut self,
         js_schema: JsValue,

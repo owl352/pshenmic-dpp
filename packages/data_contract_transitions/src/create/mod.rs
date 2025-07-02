@@ -126,7 +126,7 @@ impl DataContractCreateTransitionWASM {
             .with_js_error()
     }
 
-    #[wasm_bindgen(setter = "dataContract")]
+    #[wasm_bindgen(js_name = "setDataContract")]
     pub fn set_data_contract(
         &mut self,
         data_contract: &DataContractWASM,
@@ -154,7 +154,7 @@ impl DataContractCreateTransitionWASM {
         self.0.identity_nonce()
     }
 
-    #[wasm_bindgen(getter = "dataContract")]
+    #[wasm_bindgen(js_name = "getDataContract")]
     pub fn get_data_contract(
         &self,
         js_platform_version: JsValue,
