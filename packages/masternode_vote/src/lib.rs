@@ -11,8 +11,9 @@ use dpp::platform_value::string_encoding::decode;
 use dpp::prelude::IdentityNonce;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
+use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
 use dpp::state_transition::masternode_vote_transition::v0::MasternodeVoteTransitionV0;
-use dpp::state_transition::{StateTransition, StateTransitionLike};
+use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
@@ -67,6 +68,80 @@ impl MasternodeVoteTransitionWASM {
         )))
     }
 
+    #[wasm_bindgen(getter = proTxHash)]
+    pub fn pro_tx_hash(&self) -> IdentifierWASM {
+        self.0.pro_tx_hash().into()
+    }
+
+    #[wasm_bindgen(getter = voterIdentityId)]
+    pub fn voter_identity_id(&self) -> IdentifierWASM {
+        self.0.voter_identity_id().into()
+    }
+
+    #[wasm_bindgen(getter = vote)]
+    pub fn vote(&self) -> VoteWASM {
+        self.0.vote().clone().into()
+    }
+
+    #[wasm_bindgen(getter = nonce)]
+    pub fn nonce(&self) -> IdentityNonce {
+        self.0.nonce()
+    }
+
+    #[wasm_bindgen(getter=signaturePublicKeyId)]
+    pub fn signature_public_key_id(&self) -> KeyID {
+        self.0.signature_public_key_id()
+    }
+
+    #[wasm_bindgen(getter=signature)]
+    pub fn signature(&self) -> Vec<u8> {
+        self.0.signature().clone().to_vec()
+    }
+
+    #[wasm_bindgen(setter = proTxHash)]
+    pub fn set_pro_tx_hash(&mut self, js_pro_tx_hash: &JsValue) -> Result<(), JsValue> {
+        let pro_tx_hash = IdentifierWASM::try_from(js_pro_tx_hash)?;
+
+        self.0.set_pro_tx_hash(pro_tx_hash.into());
+
+        Ok(())
+    }
+
+    #[wasm_bindgen(setter = voterIdentityId)]
+    pub fn set_voter_identity_id(&mut self, js_voter_identity_id: &JsValue) -> Result<(), JsValue> {
+        let voter_identity_id = IdentifierWASM::try_from(js_voter_identity_id)?;
+
+        self.0.set_voter_identity_id(voter_identity_id.into());
+
+        Ok(())
+    }
+
+    #[wasm_bindgen(setter = vote)]
+    pub fn set_vote(&mut self, vote: &VoteWASM) {
+        self.0.set_vote(vote.clone().into())
+    }
+
+    #[wasm_bindgen(setter = nonce)]
+    pub fn set_nonce(&mut self, nonce: IdentityNonce) {
+        self.0 = match self.0.clone() {
+            MasternodeVoteTransition::V0(mut vote) => {
+                vote.nonce = nonce;
+
+                MasternodeVoteTransition::V0(vote)
+            }
+        }
+    }
+
+    #[wasm_bindgen(setter=signaturePublicKeyId)]
+    pub fn set_signature_public_key_id(&mut self, signature_public_key_id: KeyID) {
+        self.0.set_signature_public_key_id(signature_public_key_id)
+    }
+
+    #[wasm_bindgen(setter=signature)]
+    pub fn set_signature(&mut self, signature: Vec<u8>) {
+        self.0.set_signature_bytes(signature);
+    }
+
     #[wasm_bindgen(js_name = "fromHex")]
     pub fn from_hex(hex: String) -> Result<MasternodeVoteTransitionWASM, JsValue> {
         let bytes = decode(hex.as_str(), Hex).map_err(JsError::from)?;
@@ -99,11 +174,6 @@ impl MasternodeVoteTransitionWASM {
         self.0.user_fee_increase()
     }
 
-    #[wasm_bindgen(js_name = "getSignature")]
-    pub fn get_signature(&self) -> Vec<u8> {
-        self.0.signature().to_vec()
-    }
-
     #[wasm_bindgen(js_name = "getSignableBytes")]
     pub fn get_signable_bytes(&self) -> Result<Vec<u8>, JsValue> {
         self.0.signable_bytes().with_js_error()
@@ -129,11 +199,6 @@ impl MasternodeVoteTransitionWASM {
             .iter()
             .map(|id| id.clone().into())
             .collect()
-    }
-
-    #[wasm_bindgen(js_name = "setSignature")]
-    pub fn set_signature(&mut self, signature: Vec<u8>) {
-        self.0.set_signature_bytes(signature)
     }
 
     #[wasm_bindgen(js_name = "toStateTransition")]
