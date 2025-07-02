@@ -54,20 +54,6 @@ impl BatchedTransitionWASM {
         }
     }
 
-    // #[wasm_bindgen(js_name = "fromTokenTransition")]
-    // pub fn from_token_transition(transition: &TokenTransitionWASM) -> BatchedTransitionWASM {
-    //     BatchedTransitionWASM(BatchedTransition::from(TokenTransition::from(
-    //         transition.clone(),
-    //     )))
-    // }
-    //
-    // #[wasm_bindgen(js_name = "fromDocumentTransition")]
-    // pub fn from_document_transition(transition: &JsValue) -> BatchedTransitionWASM {
-    //     BatchedTransitionWASM(BatchedTransition::from(DocumentTransition::from(
-    //         transition.clone(),
-    //     )))
-    // }
-
     #[wasm_bindgen(js_name = "toTransition")]
     pub fn to_transition(&self) -> JsValue {
         match &self.0 {

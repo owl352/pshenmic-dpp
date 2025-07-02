@@ -82,12 +82,12 @@ impl DocumentWASM {
         })
     }
 
-    #[wasm_bindgen(js_name=getId)]
+    #[wasm_bindgen(getter=id)]
     pub fn get_id(&self) -> IdentifierWASM {
         self.id
     }
 
-    #[wasm_bindgen(js_name=getEntropy)]
+    #[wasm_bindgen(getter=entropy)]
     pub fn get_entropy(&self) -> Option<Vec<u8>> {
         match self.entropy {
             Some(entropy) => Some(entropy.to_vec()),
@@ -95,17 +95,17 @@ impl DocumentWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=getDataContractId)]
+    #[wasm_bindgen(getter=dataContractId)]
     pub fn get_data_contract_id(&self) -> IdentifierWASM {
         self.data_contract_id
     }
 
-    #[wasm_bindgen(js_name=getOwnerId)]
+    #[wasm_bindgen(getter=ownerId)]
     pub fn get_owner_id(&self) -> IdentifierWASM {
         self.owner_id
     }
 
-    #[wasm_bindgen(js_name=getProperties)]
+    #[wasm_bindgen(getter=properties)]
     pub fn get_properties(&self) -> Result<JsValue, JsValue> {
         let json_value: JsonValue = self
             .properties
@@ -118,68 +118,68 @@ impl DocumentWASM {
         Ok(js_value)
     }
 
-    #[wasm_bindgen(js_name=getRevision)]
+    #[wasm_bindgen(getter=revision)]
     pub fn get_revision(&self) -> Option<u64> {
         self.revision
     }
 
-    #[wasm_bindgen(js_name=getCreatedAt)]
+    #[wasm_bindgen(getter=createdAt)]
     pub fn get_created_at(&self) -> Option<u64> {
         self.created_at
     }
 
-    #[wasm_bindgen(js_name=getUpdatedAt)]
+    #[wasm_bindgen(getter=updatedAt)]
     pub fn get_updated_at(&self) -> Option<u64> {
         self.updated_at
     }
 
-    #[wasm_bindgen(js_name=getTransferredAt)]
+    #[wasm_bindgen(getter=transferredAt)]
     pub fn get_transferred_at(&self) -> Option<u64> {
         self.transferred_at
     }
 
-    #[wasm_bindgen(js_name=getCreatedAtBlockHeight)]
+    #[wasm_bindgen(getter=createdAtBlockHeight)]
     pub fn get_created_at_block_height(&self) -> Option<u64> {
         self.created_at_block_height
     }
 
-    #[wasm_bindgen(js_name=getUpdatedAtBlockHeight)]
+    #[wasm_bindgen(getter=updatedAtBlockHeight)]
     pub fn get_updated_at_block_height(&self) -> Option<u64> {
         self.updated_at_block_height
     }
 
-    #[wasm_bindgen(js_name=getTransferredAtBlockHeight)]
+    #[wasm_bindgen(getter=transferredAtBlockHeight)]
     pub fn get_transferred_at_block_height(&self) -> Option<u64> {
         self.transferred_at_block_height
     }
 
-    #[wasm_bindgen(js_name=getCreatedAtCoreBlockHeight)]
+    #[wasm_bindgen(getter=createdAtCoreBlockHeight)]
     pub fn get_created_at_core_block_height(&self) -> Option<u32> {
         self.created_at_core_block_height
     }
 
-    #[wasm_bindgen(js_name=getUpdatedAtCoreBlockHeight)]
+    #[wasm_bindgen(getter=updatedAtCoreBlockHeight)]
     pub fn get_updated_at_core_block_height(&self) -> Option<u32> {
         self.updated_at_core_block_height
     }
 
-    #[wasm_bindgen(js_name=getTransferredAtCoreBlockHeight)]
+    #[wasm_bindgen(getter=transferredAtCoreBlockHeight)]
     pub fn get_transferred_at_core_block_height(&self) -> Option<u32> {
         self.transferred_at_core_block_height
     }
 
-    #[wasm_bindgen(js_name=getDocumentTypeName)]
+    #[wasm_bindgen(getter=documentTypeName)]
     pub fn get_document_type_name(&self) -> String {
         self.document_type_name.clone()
     }
 
-    #[wasm_bindgen(js_name=setId)]
+    #[wasm_bindgen(setter=id)]
     pub fn set_id(&mut self, id: &JsValue) -> Result<(), JsValue> {
         self.id = IdentifierWASM::try_from(id)?.clone();
         Ok(())
     }
 
-    #[wasm_bindgen(js_name=setEntropy)]
+    #[wasm_bindgen(setter=entropy)]
     pub fn set_entropy(&mut self, entropy: JsValue) {
         match entropy.is_undefined() {
             false => {
@@ -195,63 +195,63 @@ impl DocumentWASM {
         }
     }
 
-    #[wasm_bindgen(js_name=setOwnerId)]
+    #[wasm_bindgen(setter=ownerId)]
     pub fn set_owner_id(&mut self, id: &JsValue) -> Result<(), JsValue> {
         self.owner_id = IdentifierWASM::try_from(id)?.clone();
         Ok(())
     }
 
-    #[wasm_bindgen(js_name=setProperties)]
+    #[wasm_bindgen(setter=properties)]
     pub fn set_properties(&mut self, properties: JsValue) {
         self.properties = properties.with_serde_to_platform_value_map().unwrap()
     }
 
-    #[wasm_bindgen(js_name=setRevision)]
+    #[wasm_bindgen(setter=revision)]
     pub fn set_revision(&mut self, revision: Option<u64>) {
         self.revision = revision
     }
 
-    #[wasm_bindgen(js_name=setCreatedAt)]
+    #[wasm_bindgen(setter=createdAt)]
     pub fn set_created_at(&mut self, created_at: Option<u64>) {
         self.created_at = created_at
     }
 
-    #[wasm_bindgen(js_name=setUpdatedAt)]
+    #[wasm_bindgen(setter=updatedAt)]
     pub fn set_get_updated_at(&mut self, updated_at: Option<u64>) {
         self.updated_at = updated_at
     }
 
-    #[wasm_bindgen(js_name=setTransferredAt)]
+    #[wasm_bindgen(setter=transferredAt)]
     pub fn set_transferred_at(&mut self, transferred_at: Option<u64>) {
         self.transferred_at = transferred_at
     }
 
-    #[wasm_bindgen(js_name=setCreatedAtBlockHeight)]
+    #[wasm_bindgen(setter=createdAtBlockHeight)]
     pub fn set_created_at_block_height(&mut self, created_at_block_height: Option<u64>) {
         self.created_at_block_height = created_at_block_height
     }
 
-    #[wasm_bindgen(js_name=setUpdatedAtBlockHeight)]
+    #[wasm_bindgen(setter=updatedAtBlockHeight)]
     pub fn set_updated_at_block_height(&mut self, updated_at_block_height: Option<u64>) {
         self.updated_at_block_height = updated_at_block_height
     }
 
-    #[wasm_bindgen(js_name=setTransferredAtBlockHeight)]
+    #[wasm_bindgen(setter=transferredAtBlockHeight)]
     pub fn set_transferred_at_block_height(&mut self, transferred_at_block_height: Option<u64>) {
         self.transferred_at_block_height = transferred_at_block_height
     }
 
-    #[wasm_bindgen(js_name=setCreatedAtCoreBlockHeight)]
+    #[wasm_bindgen(setter=createdAtCoreBlockHeight)]
     pub fn set_created_at_core_block_height(&mut self, created_at_core_block_height: Option<u32>) {
         self.created_at_core_block_height = created_at_core_block_height
     }
 
-    #[wasm_bindgen(js_name=setUpdatedAtCoreBlockHeight)]
+    #[wasm_bindgen(setter=updatedAtCoreBlockHeight)]
     pub fn set_updated_at_core_block_height(&mut self, updated_at_core_block_height: Option<u32>) {
         self.updated_at_core_block_height = updated_at_core_block_height
     }
 
-    #[wasm_bindgen(js_name=setTransferredAtCoreBlockHeight)]
+    #[wasm_bindgen(setter=transferredAtCoreBlockHeight)]
     pub fn set_transferred_at_core_block_height(
         &mut self,
         transferred_at_core_block_height: Option<u32>,
@@ -259,7 +259,7 @@ impl DocumentWASM {
         self.transferred_at_core_block_height = transferred_at_core_block_height
     }
 
-    #[wasm_bindgen(js_name=setDocumentTypeName)]
+    #[wasm_bindgen(setter=documentTypeName)]
     pub fn set_document_type_name(&mut self, document_type_name: &str) {
         self.document_type_name = document_type_name.to_string();
     }

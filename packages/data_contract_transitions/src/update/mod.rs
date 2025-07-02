@@ -94,7 +94,7 @@ impl DataContractUpdateTransitionWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "getFeatureVersion")]
+    #[wasm_bindgen(getter = "featureVersion")]
     pub fn get_feature_version(&self) -> FeatureVersion {
         self.0.feature_version()
     }
@@ -109,7 +109,7 @@ impl DataContractUpdateTransitionWASM {
             .with_js_error()
     }
 
-    #[wasm_bindgen(js_name = "setDataContract")]
+    #[wasm_bindgen(setter = "dataContract")]
     pub fn set_data_contract(
         &mut self,
         data_contract: &DataContractWASM,
@@ -132,12 +132,12 @@ impl DataContractUpdateTransitionWASM {
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = "getIdentityContractNonce")]
+    #[wasm_bindgen(getter = "identityContractNonce")]
     pub fn get_identity_nonce(&self) -> IdentityNonce {
         self.0.identity_contract_nonce()
     }
 
-    #[wasm_bindgen(js_name = "getDataContract")]
+    #[wasm_bindgen(getter = "dataContract")]
     pub fn get_data_contract(
         &self,
         full_validation: Option<bool>,

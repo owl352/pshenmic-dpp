@@ -286,7 +286,7 @@ impl DataContractWASM {
             .map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(js_name = "getSchema")]
+    #[wasm_bindgen(getter = "schema")]
     pub fn get_schemas(&self) -> Result<JsValue, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
@@ -296,22 +296,22 @@ impl DataContractWASM {
             .map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(js_name = "getVersion")]
+    #[wasm_bindgen(getter = "version")]
     pub fn get_version(&self) -> u32 {
         self.0.version()
     }
 
-    #[wasm_bindgen(js_name = "getId")]
+    #[wasm_bindgen(getter = "id")]
     pub fn get_id(&self) -> IdentifierWASM {
         self.0.id().into()
     }
 
-    #[wasm_bindgen(js_name = "getOwnerId")]
+    #[wasm_bindgen(getter = "ownerId")]
     pub fn get_owner_id(&self) -> IdentifierWASM {
         self.0.owner_id().into()
     }
 
-    #[wasm_bindgen(js_name = "getConfig")]
+    #[wasm_bindgen(getter = "config")]
     pub fn get_config(&self) -> Result<JsValue, JsValue> {
         self.0
             .config()
@@ -319,7 +319,7 @@ impl DataContractWASM {
             .map_err(JsValue::from)
     }
 
-    #[wasm_bindgen(js_name = "getTokens")]
+    #[wasm_bindgen(getter = "tokens")]
     pub fn get_tokens(&self) -> Result<Object, JsValue> {
         let tokens_object = Object::new();
 
@@ -334,26 +334,26 @@ impl DataContractWASM {
         Ok(tokens_object)
     }
 
-    #[wasm_bindgen(js_name = "setId")]
+    #[wasm_bindgen(setter = "id")]
     pub fn set_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
         self.0
             .set_id(IdentifierWASM::try_from(js_data_contract_id)?.into());
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = "setOwnerId")]
+    #[wasm_bindgen(setter = "ownerId")]
     pub fn set_owner_id(&mut self, js_owner_id: &JsValue) -> Result<(), JsValue> {
         self.0
             .set_owner_id(IdentifierWASM::try_from(js_owner_id)?.into());
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = "setVersion")]
+    #[wasm_bindgen(setter = "version")]
     pub fn set_version(&mut self, version: u32) {
         self.0.set_version(version)
     }
 
-    #[wasm_bindgen(js_name = "setConfig")]
+    #[wasm_bindgen(setter = "config")]
     pub fn set_config(
         &mut self,
         js_config: JsValue,
@@ -374,7 +374,7 @@ impl DataContractWASM {
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = "setSchema")]
+    #[wasm_bindgen(setter = "schema")]
     pub fn set_schemas(
         &mut self,
         js_schema: JsValue,
@@ -406,7 +406,7 @@ impl DataContractWASM {
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = "setTokens")]
+    #[wasm_bindgen(setter = "tokens")]
     pub fn set_tokens(&mut self, js_tokens: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0

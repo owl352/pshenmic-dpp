@@ -119,7 +119,7 @@ impl IdentityCreateTransitionWASM {
         self.0.user_fee_increase()
     }
 
-    #[wasm_bindgen(js_name = "getSignature")]
+    #[wasm_bindgen(getter = "signature")]
     pub fn get_signature(&self) -> Vec<u8> {
         self.0.signature().to_vec()
     }
@@ -154,7 +154,7 @@ impl IdentityCreateTransitionWASM {
         self.0.set_user_fee_increase(amount)
     }
 
-    #[wasm_bindgen(js_name = "setSignature")]
+    #[wasm_bindgen(setter = "signature")]
     pub fn set_signature(&mut self, signature: Vec<u8>) {
         self.0.set_signature_bytes(signature)
     }

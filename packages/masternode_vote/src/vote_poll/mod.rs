@@ -1,6 +1,7 @@
-use dpp::dashcore::hashes::serde::Serialize;
+use dpp::bincode;
 use dpp::voting::vote_polls::VotePoll;
 use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
+use js_sys::Array;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::ToSerdeJSONExt;
 use wasm_bindgen::JsValue;
@@ -81,14 +82,30 @@ impl VotePollWASM {
     }
 
     #[wasm_bindgen(getter = "indexValues")]
-    pub fn index_values(&self) -> Result<JsValue, JsValue> {
-        let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+    pub fn index_values(&self) -> Result<Array, JsValue> {
+        let config = bincode::config::standard()
+            .with_big_endian()
+            .with_no_limit();
 
         match self.0.clone() {
-            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll
-                .index_values
-                .serialize(&serializer)
-                .map_err(JsValue::from),
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => {
+                let encoded: Result<Vec<Vec<u8>>, JsValue> = poll
+                    .index_values
+                    .iter()
+                    .map(|value| {
+                        bincode::encode_to_vec(value, config)
+                            .map_err(|err| JsValue::from(err.to_string()))
+                    })
+                    .collect();
+
+                let js_array = Array::new();
+
+                for bytes in encoded? {
+                    js_array.push(&JsValue::from(bytes));
+                }
+
+                Ok(js_array)
+            }
         }
     }
 

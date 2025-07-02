@@ -5,7 +5,7 @@ edition = "2024"
 rust-version = "1.85"
 
 [workspace.dependencies]
-dpp = { git = "https://github.com/dashpay/platform", tag = "v2.0.0-rc.14", default-features = false }
+dpp = { git = "https://github.com/dashpay/platform", tag = "v2.0.0", default-features = false }
 
 [workspace.package]
 version = "1.0.5"
