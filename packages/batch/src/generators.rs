@@ -61,7 +61,7 @@ pub fn generate_replace_transition(
             document_type_name,
             data_contract_id: document.rs_get_data_contract_id(),
         }),
-        revision: document.get_revision().unwrap(),
+        revision: document.get_revision().unwrap() + 1,
         data: document.rs_get_properties(),
     })
 }
@@ -80,7 +80,7 @@ pub fn generate_transfer_transition(
             document_type_name,
             data_contract_id: document.rs_get_data_contract_id(),
         }),
-        revision: document.get_revision().unwrap(),
+        revision: document.get_revision().unwrap() + 1,
         recipient_owner_id,
     })
 }
@@ -99,7 +99,7 @@ pub fn generate_update_price_transition(
             document_type_name,
             data_contract_id: document.rs_get_data_contract_id(),
         }),
-        revision: document.get_revision().unwrap(),
+        revision: document.get_revision().unwrap() + 1,
         price,
     })
 }
@@ -118,7 +118,7 @@ pub fn generate_purchase_transition(
             document_type_name,
             data_contract_id: document.rs_get_data_contract_id(),
         }),
-        revision: document.get_revision().unwrap(),
+        revision: document.get_revision().unwrap() + 1,
         price: price,
     })
 }

@@ -111,7 +111,7 @@ impl DataContractCreateTransitionWASM {
         ))
     }
 
-    #[wasm_bindgen(js_name = "getFeatureVersion")]
+    #[wasm_bindgen(getter = "featureVersion")]
     pub fn get_feature_version(&self) -> FeatureVersion {
         self.0.feature_version()
     }
@@ -149,7 +149,7 @@ impl DataContractCreateTransitionWASM {
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = "getIdentityNonce")]
+    #[wasm_bindgen(getter = "identityNonce")]
     pub fn get_identity_nonce(&self) -> IdentityNonce {
         self.0.identity_nonce()
     }

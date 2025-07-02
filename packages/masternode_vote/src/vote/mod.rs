@@ -37,21 +37,21 @@ impl VoteWASM {
         })))
     }
 
-    #[wasm_bindgen(getter = vote_poll)]
+    #[wasm_bindgen(getter = votePoll)]
     pub fn vote_poll(&self) -> VotePollWASM {
         match self.0.clone() {
             Vote::ResourceVote(vote) => vote.vote_poll().clone().into(),
         }
     }
 
-    #[wasm_bindgen(getter = resource_vote_choice)]
+    #[wasm_bindgen(getter = resourceVoteChoice)]
     pub fn resource_vote_choice(&self) -> ResourceVoteChoiceWASM {
         match self.0.clone() {
             Vote::ResourceVote(vote) => vote.resource_vote_choice().clone().into(),
         }
     }
 
-    #[wasm_bindgen(setter = vote_poll)]
+    #[wasm_bindgen(setter = votePoll)]
     pub fn set_vote_poll(&mut self, vote_poll: &VotePollWASM) {
         self.0 = match self.0.clone() {
             Vote::ResourceVote(vote) => Vote::ResourceVote(ResourceVote::V0(ResourceVoteV0 {
@@ -61,7 +61,7 @@ impl VoteWASM {
         }
     }
 
-    #[wasm_bindgen(setter = resource_vote_choice)]
+    #[wasm_bindgen(setter = resourceVoteChoice)]
     pub fn set_resource_vote_choice(&mut self, resource_vote_choice: &ResourceVoteChoiceWASM) {
         self.0 = match self.0.clone() {
             Vote::ResourceVote(vote) => Vote::ResourceVote(ResourceVote::V0(ResourceVoteV0 {

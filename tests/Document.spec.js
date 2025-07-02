@@ -33,7 +33,7 @@ describe('Document', function () {
 
       const bytes = documentInstance.bytes(dataContract, wasm.PlatformVersionWASM.PLATFORM_V1)
 
-      assert.equal(documentInstance.getDataContractId().base58(), dataContract.getId().base58())
+      assert.equal(documentInstance.dataContractId.base58(), dataContract.id.base58())
       assert.deepEqual(bytes, fromHexString(documentBytes))
       assert.notEqual(dataContract.__wbg_ptr, 0)
     })
@@ -43,37 +43,31 @@ describe('Document', function () {
     it('should return document id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(documentInstance.getId().base58(), id)
+      assert.deepEqual(documentInstance.id.base58(), id)
     })
 
     it('should return owner id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(documentInstance.getOwnerId().base58(), ownerId)
+      assert.deepEqual(documentInstance.ownerId.base58(), ownerId)
     })
 
     it('should return data contract id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(documentInstance.getDataContractId().base58(), dataContractId)
+      assert.deepEqual(documentInstance.dataContractId.base58(), dataContractId)
     })
 
     it('should return properties', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(documentInstance.getProperties(), document)
+      assert.deepEqual(documentInstance.properties, document)
     })
 
     it('should return revision', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      assert.deepEqual(documentInstance.getRevision(), revision)
-    })
-
-    it('should return revision', () => {
-      const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-
-      assert.deepEqual(documentInstance.getRevision(), revision)
+      assert.deepEqual(documentInstance.revision, revision)
     })
   })
 
@@ -81,35 +75,35 @@ describe('Document', function () {
     it('should allow to set document id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      documentInstance.setId(ownerId)
+      documentInstance.id = ownerId
 
-      assert.deepEqual(documentInstance.getId().base58(), ownerId)
+      assert.deepEqual(documentInstance.id.base58(), ownerId)
     })
 
     it('should allow to set document owner id', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      documentInstance.setOwnerId(id)
+      documentInstance.ownerId = id
 
-      assert.deepEqual(documentInstance.getOwnerId().base58(), id)
+      assert.deepEqual(documentInstance.ownerId.base58(), id)
     })
 
     it('should allow to set entropy', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      const newEntropy = new Array(documentInstance.getEntropy().length).fill(0)
+      const newEntropy = new Array(documentInstance.entropy.length).fill(0)
 
-      documentInstance.setEntropy(newEntropy)
+      documentInstance.entropy = newEntropy
 
-      assert.deepEqual(Array.from(documentInstance.getEntropy()), newEntropy)
+      assert.deepEqual(Array.from(documentInstance.entropy), newEntropy)
     })
 
     it('should allow to set properties', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
-      documentInstance.setProperties(document2)
+      documentInstance.properties = document2
 
-      assert.deepEqual(documentInstance.getProperties(), document2)
+      assert.deepEqual(documentInstance.properties, document2)
     })
 
     it('should allow to set revision', () => {
@@ -117,9 +111,9 @@ describe('Document', function () {
 
       const newRevision = BigInt(1000)
 
-      documentInstance.setRevision(newRevision)
+      documentInstance.revision = newRevision
 
-      assert.deepEqual(documentInstance.getRevision(), newRevision)
+      assert.deepEqual(documentInstance.revision, newRevision)
     })
 
     it('should allow to set created at', () => {
@@ -127,9 +121,9 @@ describe('Document', function () {
 
       const createdAt = BigInt(new Date(1123).getTime())
 
-      documentInstance.setCreatedAt(createdAt)
+      documentInstance.createdAt = createdAt
 
-      assert.deepEqual(documentInstance.getCreatedAt(), createdAt)
+      assert.deepEqual(documentInstance.createdAt, createdAt)
     })
 
     it('should allow to set updated at', () => {
@@ -137,9 +131,9 @@ describe('Document', function () {
 
       const updatedAt = BigInt(new Date(1123).getTime())
 
-      documentInstance.setUpdatedAt(updatedAt)
+      documentInstance.updatedAt = updatedAt
 
-      assert.deepEqual(documentInstance.getUpdatedAt(), updatedAt)
+      assert.deepEqual(documentInstance.updatedAt, updatedAt)
     })
 
     it('should allow to set transferred at', () => {
@@ -147,9 +141,9 @@ describe('Document', function () {
 
       const transferredAt = BigInt(new Date(11231).getTime())
 
-      documentInstance.setTransferredAt(transferredAt)
+      documentInstance.transferredAt = transferredAt
 
-      assert.deepEqual(documentInstance.getTransferredAt(), transferredAt)
+      assert.deepEqual(documentInstance.transferredAt, transferredAt)
     })
 
     it('should allow to set create at Block Height', () => {
@@ -157,9 +151,9 @@ describe('Document', function () {
 
       const createdAtHeight = BigInt(9172)
 
-      documentInstance.setCreatedAtBlockHeight(createdAtHeight)
+      documentInstance.createdAtBlockHeight = createdAtHeight
 
-      assert.deepEqual(documentInstance.getCreatedAtBlockHeight(), createdAtHeight)
+      assert.deepEqual(documentInstance.createdAtBlockHeight, createdAtHeight)
     })
 
     it('should allow to set updated at Block Height', () => {
@@ -167,9 +161,9 @@ describe('Document', function () {
 
       const updatedAtHeight = BigInt(9172)
 
-      documentInstance.setUpdatedAtBlockHeight(updatedAtHeight)
+      documentInstance.updatedAtBlockHeight = updatedAtHeight
 
-      assert.deepEqual(documentInstance.getUpdatedAtBlockHeight(), updatedAtHeight)
+      assert.deepEqual(documentInstance.updatedAtBlockHeight, updatedAtHeight)
     })
 
     it('should allow to set transferred at Block Height', () => {
@@ -177,9 +171,9 @@ describe('Document', function () {
 
       const transferredAtHeight = BigInt(9172)
 
-      documentInstance.setTransferredAtBlockHeight(transferredAtHeight)
+      documentInstance.transferredAtBlockHeight = transferredAtHeight
 
-      assert.deepEqual(documentInstance.getTransferredAtBlockHeight(), transferredAtHeight)
+      assert.deepEqual(documentInstance.transferredAtBlockHeight, transferredAtHeight)
     })
 
     it('should allow to set create at core Block Height', () => {
@@ -187,9 +181,9 @@ describe('Document', function () {
 
       const createdAtHeight = 91721
 
-      documentInstance.setCreatedAtCoreBlockHeight(createdAtHeight)
+      documentInstance.createdAtCoreBlockHeight = createdAtHeight
 
-      assert.deepEqual(documentInstance.getCreatedAtCoreBlockHeight(), createdAtHeight)
+      assert.deepEqual(documentInstance.createdAtCoreBlockHeight, createdAtHeight)
     })
 
     it('should allow to set updated at Block Height', () => {
@@ -197,9 +191,9 @@ describe('Document', function () {
 
       const updatedAtHeight = 91722
 
-      documentInstance.setUpdatedAtCoreBlockHeight(updatedAtHeight)
+      documentInstance.updatedAtCoreBlockHeight = updatedAtHeight
 
-      assert.deepEqual(documentInstance.getUpdatedAtCoreBlockHeight(), updatedAtHeight)
+      assert.deepEqual(documentInstance.updatedAtCoreBlockHeight, updatedAtHeight)
     })
 
     it('should allow to set transferred at Block Height', () => {
@@ -207,9 +201,9 @@ describe('Document', function () {
 
       const transferredAtHeight = 91723
 
-      documentInstance.setTransferredAtCoreBlockHeight(transferredAtHeight)
+      documentInstance.transferredAtCoreBlockHeight = transferredAtHeight
 
-      assert.deepEqual(documentInstance.getTransferredAtCoreBlockHeight(), transferredAtHeight)
+      assert.deepEqual(documentInstance.transferredAtCoreBlockHeight, transferredAtHeight)
     })
 
     it('should allow to set document type name', () => {
@@ -217,9 +211,9 @@ describe('Document', function () {
 
       const newDocumentTypeName = 'bbbb'
 
-      documentInstance.setDocumentTypeName(newDocumentTypeName)
+      documentInstance.documentTypeName = newDocumentTypeName
 
-      assert.deepEqual(documentInstance.getDocumentTypeName(), newDocumentTypeName)
+      assert.deepEqual(documentInstance.documentTypeName, newDocumentTypeName)
     })
   })
 

@@ -50,7 +50,7 @@ describe('DataContract Create Transition', function () {
 
       const dataContractTransition = new wasm.DataContractCreateTransitionWASM(dataContract, BigInt(1))
 
-      assert.equal(dataContractTransition.getFeatureVersion(), 0)
+      assert.equal(dataContractTransition.featureVersion, 0)
     })
 
     it('should allow to verify protocol version', () => {

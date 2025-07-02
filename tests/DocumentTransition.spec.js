@@ -32,13 +32,13 @@ describe('DocumentTransition', function () {
     it('should allow to get dataContractId', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
-      assert.deepEqual(documentTransition.dataContractId.base58(), documentInstance.getDataContractId().base58())
+      assert.deepEqual(documentTransition.dataContractId.base58(), documentInstance.dataContractId.base58())
     })
 
     it('should allow to get id', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
-      assert.deepEqual(documentTransition.id.base58(), documentInstance.getId().base58())
+      assert.deepEqual(documentTransition.id.base58(), documentInstance.id.base58())
     })
 
     it('should allow to get documentTypeName', function () {
@@ -62,7 +62,7 @@ describe('DocumentTransition', function () {
     it('should allow to get entropy', function () {
       const documentTransition = createTransition.toDocumentTransition()
 
-      assert.deepEqual(documentTransition.entropy, documentInstance.getEntropy())
+      assert.deepEqual(documentTransition.entropy, documentInstance.entropy)
     })
   })
 

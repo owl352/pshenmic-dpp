@@ -31,7 +31,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = createTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(createTransition.__wbg_ptr, 0)
@@ -45,7 +45,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = createTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         const st = batchTransition.toStateTransition()
 
@@ -93,7 +93,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = deleteTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(deleteTransition.__wbg_ptr, 0)
@@ -107,7 +107,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = deleteTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         const st = batchTransition.toStateTransition()
 
@@ -155,7 +155,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = replaceTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(replaceTransition.__wbg_ptr, 0)
@@ -169,7 +169,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = replaceTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         const st = batchTransition.toStateTransition()
 
@@ -194,7 +194,7 @@ describe('DocumentsTransitions', function () {
     describe('document Transfer transition', function () {
       it('should allow to create ReplaceTransition from document', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(transferTransition.__wbg_ptr, 0)
@@ -202,7 +202,7 @@ describe('DocumentsTransitions', function () {
 
       it('should allow to create Document Transition from Replace transition', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         const documentTransition = transferTransition.toDocumentTransition()
 
@@ -213,11 +213,11 @@ describe('DocumentsTransitions', function () {
 
       it('should allow to create Document Batch Transition from Document Transitions', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         const documentTransition = transferTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(transferTransition.__wbg_ptr, 0)
@@ -227,11 +227,11 @@ describe('DocumentsTransitions', function () {
 
       it('should allow to create state document_transitions from document and convert state transition to document batch', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         const documentTransition = transferTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         const st = batchTransition.toStateTransition()
 
@@ -279,7 +279,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = updatePriceTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(updatePriceTransition.__wbg_ptr, 0)
@@ -293,7 +293,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = updatePriceTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         const st = batchTransition.toStateTransition()
 
@@ -341,7 +341,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = purchaseTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(purchaseTransition.__wbg_ptr, 0)
@@ -355,7 +355,7 @@ describe('DocumentsTransitions', function () {
 
         const documentTransition = purchaseTransition.toDocumentTransition()
 
-        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+        const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
         const st = batchTransition.toStateTransition()
 
@@ -397,7 +397,7 @@ describe('DocumentsTransitions', function () {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
-        assert.deepEqual(createTransition.entropy, documentInstance.getEntropy())
+        assert.deepEqual(createTransition.entropy, documentInstance.entropy)
       })
 
       it('get prefunded voting balance', () => {
@@ -436,23 +436,23 @@ describe('DocumentsTransitions', function () {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
         const replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1))
 
-        assert.equal(replaceTransition.revision, BigInt(1))
+        assert.equal(replaceTransition.revision, BigInt(2))
       })
     })
 
     describe('document Transfer transition', function () {
       it('get base', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         assert.equal(transferTransition.base.constructor.name, 'DocumentBaseTransitionWASM')
       })
 
       it('get recipient', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
-        assert.deepEqual(transferTransition.recipientId.base58(), documentInstance.getOwnerId().base58())
+        assert.deepEqual(transferTransition.recipientId.base58(), documentInstance.ownerId.base58())
       })
     })
 
@@ -507,7 +507,7 @@ describe('DocumentsTransitions', function () {
         const createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
 
         const newBase = new wasm.DocumentBaseTransitionWASM(
-          documentInstance.getId(),
+          documentInstance.id,
           BigInt(12350),
           'bbbbb',
           dataContractId
@@ -549,7 +549,7 @@ describe('DocumentsTransitions', function () {
         const deleteTransition = new wasm.DocumentDeleteTransitionWASM(documentInstance, BigInt(1))
 
         const newBase = new wasm.DocumentBaseTransitionWASM(
-          documentInstance.getId(),
+          documentInstance.id,
           BigInt(12350),
           'bbbbb',
           dataContractId
@@ -579,7 +579,7 @@ describe('DocumentsTransitions', function () {
         const replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1))
 
         const newBase = new wasm.DocumentBaseTransitionWASM(
-          documentInstance.getId(),
+          documentInstance.id,
           BigInt(12350),
           'bbbbb',
           dataContractId
@@ -604,10 +604,10 @@ describe('DocumentsTransitions', function () {
     describe('document Transfer transition', function () {
       it('set base', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         const newBase = new wasm.DocumentBaseTransitionWASM(
-          documentInstance.getId(),
+          documentInstance.id,
           BigInt(12350),
           'bbbbb',
           dataContractId
@@ -621,7 +621,7 @@ describe('DocumentsTransitions', function () {
 
       it('set recipient', () => {
         const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.getOwnerId())
+        const transferTransition = new wasm.DocumentTransferTransitionWASM(documentInstance, BigInt(1), documentInstance.ownerId)
 
         const newRecipient = new Uint8Array(32)
 
@@ -637,7 +637,7 @@ describe('DocumentsTransitions', function () {
         const updatePriceTransition = new wasm.DocumentUpdatePriceTransitionWASM(documentInstance, BigInt(1), BigInt(100))
 
         const newBase = new wasm.DocumentBaseTransitionWASM(
-          documentInstance.getId(),
+          documentInstance.id,
           BigInt(12350),
           'bbbbb',
           dataContractId
@@ -665,7 +665,7 @@ describe('DocumentsTransitions', function () {
         const purchaseTransition = new wasm.DocumentPurchaseTransitionWASM(documentInstance, BigInt(1), BigInt(100))
 
         const newBase = new wasm.DocumentBaseTransitionWASM(
-          documentInstance.getId(),
+          documentInstance.id,
           BigInt(12350),
           'bbbbb',
           dataContractId

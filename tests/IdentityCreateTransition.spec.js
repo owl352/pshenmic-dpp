@@ -55,7 +55,7 @@ describe('IdentityCreateTransition', function () {
     it('should allow to get signature', function () {
       const transition = wasm.IdentityCreateTransitionWASM.default(0)
 
-      assert.deepEqual(transition.getSignature(), Uint8Array.from([]))
+      assert.deepEqual(transition.signature, Uint8Array.from([]))
     })
 
     it('should allow to get signable bytes', function () {

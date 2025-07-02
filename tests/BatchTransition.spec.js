@@ -12,7 +12,7 @@ describe('BatchTransition', function () {
 
         const documentTransition = createTransition.toDocumentTransition()
 
-        const batch = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1)
+        const batch = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(createTransition.__wbg_ptr, 0)
@@ -28,7 +28,7 @@ describe('BatchTransition', function () {
 
         const batchedTransition = new wasm.BatchedTransitionWASM(documentTransition)
 
-        const batch = wasm.BatchTransitionWASM.fromV1BatchedTransitions([batchedTransition, batchedTransition], documentInstance.getOwnerId(), 1)
+        const batch = wasm.BatchTransitionWASM.fromV1BatchedTransitions([batchedTransition, batchedTransition], documentInstance.ownerId, 1)
 
         assert.notEqual(documentInstance.__wbg_ptr, 0)
         assert.notEqual(createTransition.__wbg_ptr, 0)
@@ -65,7 +65,7 @@ describe('BatchTransition', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
       assert.equal(batchTransition.transitions.length, 2)
     })
@@ -76,7 +76,7 @@ describe('BatchTransition', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
       assert.deepEqual(batchTransition.signature, new Uint8Array(0))
     })
@@ -87,7 +87,7 @@ describe('BatchTransition', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
       assert.equal(batchTransition.signaturePublicKeyId, 1)
     })
@@ -100,7 +100,7 @@ describe('BatchTransition', function () {
       const documentTransition = createTransition.toDocumentTransition()
       const documentTransition2 = purchaseTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition2], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition2], documentInstance.ownerId, 1, 1)
 
       assert.deepEqual(batchTransition.allPurchasesAmount, BigInt(100))
     })
@@ -111,9 +111,9 @@ describe('BatchTransition', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
-      assert.deepEqual(batchTransition.ownerId.base58(), documentInstance.getOwnerId().base58())
+      assert.deepEqual(batchTransition.ownerId.base58(), documentInstance.ownerId.base58())
     })
 
     it('should allow to get modified data ids', function () {
@@ -122,7 +122,7 @@ describe('BatchTransition', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
       assert.deepEqual(batchTransition.modifiedDataIds.map(id => id.base58()), [documentTransition.id.base58(), documentTransition.id.base58()])
     })
@@ -133,7 +133,7 @@ describe('BatchTransition', function () {
 
       const documentTransition = createTransition.toDocumentTransition()
 
-      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.getOwnerId(), 1, 1)
+      const batchTransition = wasm.BatchTransitionWASM.fromV0Transitions([documentTransition, documentTransition], documentInstance.ownerId, 1, 1)
 
       assert.deepEqual(batchTransition.allConflictingIndexCollateralVotingFunds, undefined)
     })
