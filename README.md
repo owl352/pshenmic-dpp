@@ -36,9 +36,9 @@ ___
 ## Current features
 
 **At this moment available structs:**
-- `Document`
-- `Batch`
-- `DocumentsBaseTransition`
+- `DocumentWASM`
+- `BatchWASM`
+- `DocumentsBaseTransitionWASM`
 - `TokenBaseTransitionWASM`
 - `TokenPricingScheduleWASM`
 - `TokenTransitionWASM`
@@ -70,17 +70,17 @@ ___
 - `RewardDistributionTypeWASM`
 - `TokenTradeModeWASM`
 - `GroupStateTransitionInfoWASM`
-- `DocumentsTransition`
-- `PrefundedVotingBalance`
+- `DocumentsTransitionWASM`
+- `PrefundedVotingBalanceWASM`
 - `PrivateEncryptedNoteWASM`
 - `SharedEncryptedNoteWASM`
 - DocumentsTransitions:
-  - `DocuemntCreateTransition`
-  - `DocuemntDeleteTransition`
-  - `DocuemntPurchaseTransition`
-  - `DocuemntReplaceTransition`
-  - `DocumentTransferTransition`
-  - `DocumentUpdatePriceTransition`
+  - `DocuemntCreateTransitionWASM`
+  - `DocuemntDeleteTransitionWASM`
+  - `DocuemntPurchaseTransitionWASM`
+  - `DocuemntReplaceTransitionWASM`
+  - `DocumentTransferTransitionWASM`
+  - `DocumentUpdatePriceTransitionWASM`
 - Tokens Transitions:
   - `TokenConfigUpdateTransitionWASM`
   - `TokenDirectPurchaseTransitionWASM`
@@ -93,22 +93,27 @@ ___
   - `TokenMintTransitionWASM`
   - `TokenTransferTransitionWASM`
   - `TokenUnFreezeTransitionWASM`
-- `IdentityPublicKey`
+- `IdentityPublicKeyWASM`
 - IdentityTransitions:
-  - `IdentityCreateTransition`
-  - `IdentityCreditWithdrawalTransition`
-  - `IdentityCreditTransferTransition`
-  - `IdentityTopUpTransition`
-  - `IdentityUpdateTransition`
+  - `IdentityCreateTransitionWASM`
+  - `IdentityCreditWithdrawalTransitionWASM`
+  - `IdentityCreditTransferTransitionWASM`
+  - `IdentityTopUpTransitionWASM`
+  - `IdentityUpdateTransitionWASM`
 - `IdentityPublicKeyInCreationWASM`
-- `AssetLockProof`
-- `OutPoint`
-- `TxOut`
-- `CoreScript`
-- `PrivateKey`
-- `Identity`
-- `StateTransition`
-- `DataContract`
+- `AssetLockProofWASM`
+- `OutPointWASM`
+- `TxOutWASM`
+- `CoreScriptWASM`
+- `PrivateKeyWASM`
+- `IdentityWASM`
+- `StateTransitionWASM`
+- `DataContractWASM`
+- `ContractBoundsWASM`
+- `MasternodeVoteTransitionWASM`
+- `VotePollWASM`
+- `VoteWASM`
+- `ResourceVoteChoiceWASM`
 - `Enums`
 
 **At this moment available static methods**

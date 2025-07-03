@@ -1233,7 +1233,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "1.0.7-rc.20"
+version = "1.0.7"
 dependencies = [
  "bincode",
  "bincode_derive",
@@ -1280,6 +1280,15 @@ dependencies = [
  "pshenmic_dpp_token_configuration_change_item",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_contract_bounds"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_identifier",
  "wasm-bindgen",
 ]
 
@@ -1394,6 +1403,7 @@ dependencies = [
  "dpp",
  "js-sys",
  "pshenmic_dpp_asset_lock_proof",
+ "pshenmic_dpp_contract_bounds",
  "pshenmic_dpp_core_script",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
@@ -1438,6 +1448,7 @@ name = "pshenmic_dpp_public_key"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "pshenmic_dpp_contract_bounds",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
  "wasm-bindgen",

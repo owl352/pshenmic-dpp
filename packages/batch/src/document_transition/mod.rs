@@ -47,11 +47,11 @@ impl DocumentTransitionWASM {
         match self.0.action_type() {
             DocumentTransitionActionType::Create => 0,
             DocumentTransitionActionType::Replace => 1,
-            DocumentTransitionActionType::Delete => 3,
-            DocumentTransitionActionType::Transfer => 4,
-            DocumentTransitionActionType::Purchase => 5,
-            DocumentTransitionActionType::UpdatePrice => 6,
-            DocumentTransitionActionType::IgnoreWhileBumpingRevision => 7,
+            DocumentTransitionActionType::Delete => 2,
+            DocumentTransitionActionType::Transfer => 3,
+            DocumentTransitionActionType::Purchase => 4,
+            DocumentTransitionActionType::UpdatePrice => 5,
+            DocumentTransitionActionType::IgnoreWhileBumpingRevision => 6,
         }
     }
 

@@ -12,4 +12,5 @@ dpp = { workspace = true, features = [
     "identity-value-conversion",
 ]}
 pshenmic_dpp_enums = {path = "../enums"}
+pshenmic_dpp_contract_bounds = {path = "../contract_bounds"}
 pshenmic_dpp_utils = {path = "../utils"}

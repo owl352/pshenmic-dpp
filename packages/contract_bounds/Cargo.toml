@@ -1,0 +1,14 @@
+[package]
+name = "pshenmic_dpp_contract_bounds"
+edition = "2024"
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+dpp = { workspace = true, features = [
+    "state-transition-signing"
+]}
+pshenmic_dpp_identifier = {path = "../identifier" }
