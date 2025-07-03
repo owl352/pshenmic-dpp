@@ -1,4 +1,3 @@
-use crate::contract_bounds::ContractBoundsWASM;
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
 use dpp::platform_value::BinaryData;
@@ -8,6 +7,7 @@ use dpp::state_transition::public_key_in_creation::accessors::{
     IdentityPublicKeyInCreationV0Getters, IdentityPublicKeyInCreationV0Setters,
 };
 use dpp::state_transition::public_key_in_creation::v0::IdentityPublicKeyInCreationV0;
+use pshenmic_dpp_contract_bounds::ContractBoundsWASM;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;

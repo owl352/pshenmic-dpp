@@ -80,3 +80,15 @@ impl From<KeyType> for KeyTypeWASM {
         }
     }
 }
+
+impl From<KeyTypeWASM> for u8 {
+    fn from(key_type: KeyTypeWASM) -> Self {
+        match key_type {
+            KeyTypeWASM::ECDSA_SECP256K1 => 0,
+            KeyTypeWASM::BLS12_381 => 1,
+            KeyTypeWASM::ECDSA_HASH160 => 2,
+            KeyTypeWASM::BIP13_SCRIPT_HASH => 3,
+            KeyTypeWASM::EDDSA_25519_HASH160 => 4,
+        }
+    }
+}

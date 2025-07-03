@@ -10,6 +10,7 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use pshenmic_dpp_contract_bounds::ContractBoundsWASM;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
@@ -89,6 +90,14 @@ impl IdentityPublicKeyWASM {
             .with_js_error()
     }
 
+    #[wasm_bindgen(js_name = "getContractBounds")]
+    pub fn contract_bounds(&self) -> JsValue {
+        match self.0.contract_bounds() {
+            None => JsValue::undefined(),
+            Some(bounds) => JsValue::from(ContractBoundsWASM::from(bounds.clone())),
+        }
+    }
+
     #[wasm_bindgen(getter = keyId)]
     pub fn get_key_id(&self) -> u32 {
         self.0.id()
@@ -99,14 +108,29 @@ impl IdentityPublicKeyWASM {
         PurposeWASM::from(self.0.purpose()).into()
     }
 
+    #[wasm_bindgen(getter = purposeNumber)]
+    pub fn get_purpose_number(&self) -> PurposeWASM {
+        PurposeWASM::from(self.0.purpose())
+    }
+
     #[wasm_bindgen(getter = securityLevel)]
     pub fn get_security_level(&self) -> String {
         SecurityLevelWASM::from(self.0.security_level()).into()
     }
 
+    #[wasm_bindgen(getter = securityLevelNumber)]
+    pub fn get_security_level_number(&self) -> SecurityLevelWASM {
+        SecurityLevelWASM::from(self.0.security_level())
+    }
+
     #[wasm_bindgen(getter = keyType)]
     pub fn get_key_type(&self) -> String {
         KeyTypeWASM::from(self.0.key_type()).into()
+    }
+
+    #[wasm_bindgen(getter = keyTypeNumber)]
+    pub fn get_key_type_number(&self) -> KeyTypeWASM {
+        KeyTypeWASM::from(self.0.key_type())
     }
 
     #[wasm_bindgen(getter = readOnly)]
@@ -136,6 +160,11 @@ impl IdentityPublicKeyWASM {
             .set_purpose(Purpose::from(PurposeWASM::try_from(purpose)?)))
     }
 
+    #[wasm_bindgen(setter = purposeNumber)]
+    pub fn set_purpose_number(&mut self, purpose: JsValue) -> Result<(), JsValue> {
+        self.set_purpose(purpose)
+    }
+
     #[wasm_bindgen(setter = securityLevel)]
     pub fn set_security_level(&mut self, security_level: JsValue) -> Result<(), JsValue> {
         Ok(self
@@ -145,11 +174,21 @@ impl IdentityPublicKeyWASM {
             )?)))
     }
 
+    #[wasm_bindgen(setter = securityLevelNumber)]
+    pub fn set_security_level_number(&mut self, security_level: JsValue) -> Result<(), JsValue> {
+        self.set_security_level(security_level)
+    }
+
     #[wasm_bindgen(setter = keyType)]
     pub fn set_key_type(&mut self, key_type: JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
             .set_key_type(KeyType::from(KeyTypeWASM::try_from(key_type)?)))
+    }
+
+    #[wasm_bindgen(setter = keyTypeNumber)]
+    pub fn set_key_type_number(&mut self, key_type: JsValue) -> Result<(), JsValue> {
+        self.set_key_type(key_type)
     }
 
     #[wasm_bindgen(setter = readOnly)]
@@ -179,6 +218,11 @@ impl IdentityPublicKeyWASM {
             .to_hex_string(Case::Lower);
 
         Ok(hash)
+    }
+
+    #[wasm_bindgen(js_name = "isMaster")]
+    pub fn is_master(&self) -> bool {
+        self.0.is_master()
     }
 
     #[wasm_bindgen(js_name = bytes)]
