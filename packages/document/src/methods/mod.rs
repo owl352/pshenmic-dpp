@@ -34,7 +34,7 @@ impl DocumentWASM {
         js_revision: u64,
         js_data_contract_id: &JsValue,
         js_owner_id: &JsValue,
-        js_document_id: JsValue,
+        js_document_id: &JsValue,
     ) -> Result<DocumentWASM, JsValue> {
         let data_contract_id = IdentifierWASM::try_from(js_data_contract_id)?;
         let owner_id = IdentifierWASM::try_from(js_owner_id)?;

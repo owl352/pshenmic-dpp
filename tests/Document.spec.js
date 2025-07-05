@@ -179,6 +179,23 @@ describe('Document', function () {
     it('should allow to set create at core Block Height', () => {
       const documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
 
+      ///
+      ///
+      ///
+      const st
+
+      const batch = BatchTransitionWASM.fromST(st)
+
+      const [transition] = batch.transitions
+
+      const documentTransition = transition.toTransition()
+
+      const dataContractId = documentTransition.createTransition.base.dataContractId
+      const dataContractId = documentTransition.getCreateTransition().getBase().getDataContractId()
+      ///
+      ///
+      ///
+
       const createdAtHeight = 91721
 
       documentInstance.createdAtCoreBlockHeight = createdAtHeight
