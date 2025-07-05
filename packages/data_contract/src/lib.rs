@@ -96,7 +96,10 @@ impl DataContractWASM {
         let schema: Value = serde_wasm_bindgen::from_value(js_schema)?;
 
         let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> =
-            tokens_configuration_from_js_value(js_tokens)?;
+            match js_tokens.is_undefined() {
+                true => BTreeMap::new(),
+                false => tokens_configuration_from_js_value(js_tokens)?,
+            };
 
         let platform_version: PlatformVersion = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default().into(),
