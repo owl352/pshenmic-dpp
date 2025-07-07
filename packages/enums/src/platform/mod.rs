@@ -7,6 +7,7 @@ use dpp::version::v5::PLATFORM_V5;
 use dpp::version::v6::PLATFORM_V6;
 use dpp::version::v7::PLATFORM_V7;
 use dpp::version::v8::PLATFORM_V8;
+use dpp::version::v9::PLATFORM_V9;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -23,6 +24,7 @@ pub enum PlatformVersionWASM {
     PLATFORM_V6 = 5,
     PLATFORM_V7 = 6,
     PLATFORM_V8 = 7,
+    PLATFORM_V9 = 8,
 }
 
 impl TryFrom<JsValue> for PlatformVersionWASM {
@@ -40,6 +42,7 @@ impl TryFrom<JsValue> for PlatformVersionWASM {
                     "platform_v6" => Ok(PlatformVersionWASM::PLATFORM_V6),
                     "platform_v7" => Ok(PlatformVersionWASM::PLATFORM_V7),
                     "platform_v8" => Ok(PlatformVersionWASM::PLATFORM_V8),
+                    "platform_v9" => Ok(PlatformVersionWASM::PLATFORM_V9),
                     _ => Err(JsValue::from(format!(
                         "unknown platform version value: {}",
                         enum_val
@@ -57,6 +60,7 @@ impl TryFrom<JsValue> for PlatformVersionWASM {
                     5 => Ok(PlatformVersionWASM::PLATFORM_V6),
                     6 => Ok(PlatformVersionWASM::PLATFORM_V7),
                     7 => Ok(PlatformVersionWASM::PLATFORM_V8),
+                    8 => Ok(PlatformVersionWASM::PLATFORM_V9),
                     _ => Err(JsValue::from(format!(
                         "unknown platform version value: {}",
                         enum_val
@@ -78,6 +82,7 @@ impl From<PlatformVersionWASM> for String {
             PlatformVersionWASM::PLATFORM_V6 => String::from("PLATFORM_V6"),
             PlatformVersionWASM::PLATFORM_V7 => String::from("PLATFORM_V7"),
             PlatformVersionWASM::PLATFORM_V8 => String::from("PLATFORM_V8"),
+            PlatformVersionWASM::PLATFORM_V9 => String::from("PLATFORM_V9"),
         }
     }
 }
@@ -93,6 +98,7 @@ impl From<PlatformVersionWASM> for PlatformVersion {
             PlatformVersionWASM::PLATFORM_V6 => PLATFORM_V6,
             PlatformVersionWASM::PLATFORM_V7 => PLATFORM_V7,
             PlatformVersionWASM::PLATFORM_V8 => PLATFORM_V8,
+            PlatformVersionWASM::PLATFORM_V9 => PLATFORM_V9,
         }
     }
 }
