@@ -38,7 +38,7 @@ jobs:
 
       - name: Build JS DOC
         run: |
-          yarn doc
+          yarn docs
 
       - name: Run tests
         run: |

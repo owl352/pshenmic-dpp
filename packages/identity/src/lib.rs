@@ -32,19 +32,19 @@ impl IdentityWASM {
         Ok(IdentityWASM(identity))
     }
 
-    #[wasm_bindgen(js_name = "setId")]
+    #[wasm_bindgen(setter = "id")]
     pub fn set_id(&mut self, js_identifier: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
             .set_id(IdentifierWASM::try_from(js_identifier)?.into()))
     }
 
-    #[wasm_bindgen(js_name = "setBalance")]
+    #[wasm_bindgen(setter = "balance")]
     pub fn set_balance(&mut self, balance: u64) {
         self.0.set_balance(balance);
     }
 
-    #[wasm_bindgen(js_name = "setRevision")]
+    #[wasm_bindgen(setter = "revision")]
     pub fn set_revision(&mut self, revision: u64) {
         self.0.set_revision(revision);
     }
@@ -56,17 +56,17 @@ impl IdentityWASM {
 
     // GETTERS
 
-    #[wasm_bindgen(js_name = "getId")]
+    #[wasm_bindgen(getter = "id")]
     pub fn get_id(&self) -> IdentifierWASM {
         self.0.id().into()
     }
 
-    #[wasm_bindgen(js_name = "getBalance")]
+    #[wasm_bindgen(getter = "balance")]
     pub fn get_balance(&self) -> u64 {
         self.0.balance()
     }
 
-    #[wasm_bindgen(js_name = "getRevision")]
+    #[wasm_bindgen(getter = "revision")]
     pub fn get_revision(&self) -> u64 {
         self.0.revision()
     }

@@ -28,19 +28,19 @@ describe('Identity', function () {
     it('should get id buffer', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      assert.deepEqual(identity.getId().bytes(), Uint8Array.from(identifierBytes))
+      assert.deepEqual(identity.id.bytes(), Uint8Array.from(identifierBytes))
     })
 
     it('should get balance', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      assert.deepEqual(identity.getBalance(), BigInt(0))
+      assert.deepEqual(identity.balance, BigInt(0))
     })
 
     it('should get revision', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      assert.deepEqual(identity.getRevision(), BigInt(0))
+      assert.deepEqual(identity.revision, BigInt(0))
     })
 
     it('should get public keys', function () {
@@ -91,17 +91,17 @@ describe('Identity', function () {
     it('should allows to set balance', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      identity.setBalance(balance)
+      identity.balance = balance
 
-      assert.equal(identity.getBalance(), balance)
+      assert.equal(identity.balance, balance)
     })
 
     it('should allows to set revision', function () {
       const identity = new wasm.IdentityWASM(identifier)
 
-      identity.setRevision(revision)
+      identity.revision = revision
 
-      assert.equal(identity.getRevision(), revision)
+      assert.equal(identity.revision, revision)
     })
   })
 })

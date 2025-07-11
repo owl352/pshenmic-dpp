@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "dist/wasm/index.js",
   "types": "dist/wasm/index.d.ts",
   "repository": {
@@ -12,7 +12,7 @@
     "build:js": "./scripts/build-js.sh",
     "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
-    "doc": "ts-node ./generate-docs.ts && typedoc",
+    "docs": "ts-node ./generate-docs.ts && typedoc",
     "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.js",
     "lint": "cargo fmt",
