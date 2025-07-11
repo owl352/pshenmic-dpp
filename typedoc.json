@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["dist/wasm/index.d.ts"],
+  "out": "auto-docs",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "tsconfig": "tsconfig.json",
+  "exclude": ["./lib/*", "./generate-docs.ts", "./tests/*"]
+}

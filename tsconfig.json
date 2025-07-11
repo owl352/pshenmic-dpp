@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./dist/wasm",
     "noImplicitAny": true,
     "module": "commonjs",
     "target": "es2015",
@@ -14,5 +14,9 @@
       "dom"
     ]
   },
-  "include": ["lib/**/*.ts"],
+  "include": ["dist/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
 }
