@@ -10,11 +10,10 @@ const dtsFiles = project.addSourceFilesAtPaths("dist/**/*.d.ts");
 const jsFiles = project.addSourceFilesAtPaths("dist/**/*.js");
 
 function getJsDocTextFromSignature(node: any) {
-    // Параметры
     const params = node.getParameters().map((param: any) => {
         const paramName = param.getName();
         const paramType = param.getType().getText(undefined, TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
-        return ` * @param {${paramType}} ${paramName}`;
+        return `@param {${paramType}} ${paramName}`;
     });
 
     const returnType = node.getReturnType().getText(undefined, TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
