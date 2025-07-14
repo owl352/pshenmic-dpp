@@ -177,9 +177,7 @@ pub fn generic_of_js_val<T: RefFromWasmAbi<Abi = u32>>(
         .into());
     }
 
-    let ctor_name = js_sys::Object::get_prototype_of(js_value)
-        .constructor()
-        .name();
+    let ctor_name = get_class_type(js_value)?;
 
     if ctor_name == class_name {
         let ptr = js_sys::Reflect::get(js_value, &JsValue::from_str("__wbg_ptr"))?;
