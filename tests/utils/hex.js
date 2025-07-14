@@ -1,15 +1,14 @@
-module.exports = {
-  toHexString: (byteArray) => {
-    return Array.prototype.map.call(byteArray, function (byte) {
-      return ('0' + (byte & 0xFF).toString(16)).slice(-2)
-    }).join('')
-  },
-  fromHexString: (str) => {
-    const bytes = []
-    for (let i = 0; i < str.length; i += 2) {
-      bytes.push(parseInt(str.slice(i, i + 2), 16))
-    }
+export const toHexString = (byteArray) => {
+  return Array.prototype.map.call(byteArray, function (byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2)
+  }).join('')
+}
 
-    return Uint8Array.from(bytes)
+export const fromHexString = (str) => {
+  const bytes = []
+  for (let i = 0; i < str.length; i += 2) {
+    bytes.push(parseInt(str.slice(i, i + 2), 16))
   }
+
+  return Uint8Array.from(bytes)
 }
