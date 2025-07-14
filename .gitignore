@@ -2,6 +2,7 @@
 .pnp.*
 /.yarn
 /.idea
+/auto-docs
 /wasm
 /dist/cjs
 package-lock.json
