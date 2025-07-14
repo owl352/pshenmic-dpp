@@ -1,7 +1,5 @@
-module.exports = {
-  tokenLocalization: {
-    shouldCapitalize: true,
-    singularForm: 'TOKEN',
-    pluralForm: 'TOKENS'
-  }
+export const tokenLocalization = {
+  shouldCapitalize: true,
+  singularForm: 'TOKEN',
+  pluralForm: 'TOKENS'
 }
