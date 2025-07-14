@@ -1,6 +1,6 @@
 const { describe, it, before } = require('mocha')
 const assert = require('assert')
-const { dataContractId, ownerId } = require('./mocks/Document')
+const { dataContractId, ownerId } = require('./mocks/Document/index.js')
 const { default: wasm } = require('..')
 
 let baseTransition
