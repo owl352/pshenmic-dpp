@@ -2,7 +2,7 @@ const assert = require('assert')
 const { describe, it } = require('mocha')
 const {
   document, dataContractId, ownerId, documentTypeName, revision, dataContractValue, id, document2, documentBytes
-} = require('./mocks/Document/index.js')
+} = require('./mocks/Document')
 const { fromHexString } = require('./utils/hex')
 const { default: wasm } = require('..')
 
