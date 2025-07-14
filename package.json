@@ -13,7 +13,7 @@
     "build:js": "./scripts/build-js.sh",
     "build:full": "./scripts/build.sh && ./scripts/build-js.sh",
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
-    "docs": "ts-node ./generate-docs.ts && typedoc",
+    "docs": "node --loader ts-node/esm ./generate-docs.ts && typedoc",
     "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.cjs",
     "lint": "cargo fmt",
