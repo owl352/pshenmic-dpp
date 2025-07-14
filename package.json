@@ -1,9 +1,8 @@
 {
   "name": "pshenmic-dpp",
-  "version": "1.0.13-rc.1",
+  "version": "1.0.12",
   "main": "dist/wasm/index.js",
   "types": "dist/wasm/index.d.ts",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/owl352/pshenmic-dpp"
@@ -15,7 +14,7 @@
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
     "docs": "ts-node ./generate-docs.ts && typedoc",
     "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
-    "tests": "mocha ./tests/*.spec.cjs",
+    "tests": "mocha ./tests/*.spec.js",
     "lint": "cargo fmt",
     "lint:test": "standard --fix ./tests"
   },

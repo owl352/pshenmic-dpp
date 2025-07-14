@@ -1,6 +1,6 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
-const { document, documentTypeName, revision, dataContractId, ownerId, id } = require('./mocks/Document/index.js')
+const { document, documentTypeName, revision, dataContractId, ownerId, id } = require('./mocks/Document')
 const { default: wasm } = require('..')
 
 let documentInstance
