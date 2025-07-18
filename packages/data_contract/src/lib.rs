@@ -6,6 +6,7 @@ use dpp::data_contract::conversion::json::DataContractJsonConversionMethodsV0;
 use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethodsV0;
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
+use dpp::data_contract::group::Group;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
 use dpp::data_contract::{
     DataContract, GroupContractPosition, TokenConfiguration, TokenContractPosition,
@@ -23,6 +24,7 @@ use js_sys::{Object, Reflect};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_token_configuration::TokenConfigurationWASM;
+use pshenmic_dpp_token_configuration::group::GroupWASM;
 use pshenmic_dpp_utils::{IntoWasm, ToSerdeJSONExt, WithJsError};
 use std::collections::BTreeMap;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -337,6 +339,21 @@ impl DataContractWASM {
         Ok(tokens_object)
     }
 
+    #[wasm_bindgen(getter = "groups")]
+    pub fn get_groups(&self) -> Result<JsValue, JsValue> {
+        let groups_object = Object::new();
+
+        for (key, value) in self.0.groups().iter() {
+            Reflect::set(
+                &groups_object,
+                &JsValue::from(key.clone()),
+                &JsValue::from(GroupWASM::from(value.clone())),
+            )?;
+        }
+
+        Ok(groups_object.into())
+    }
+
     #[wasm_bindgen(setter = "id")]
     pub fn set_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
         self.0
@@ -414,6 +431,34 @@ impl DataContractWASM {
         Ok(self
             .0
             .set_tokens(tokens_configuration_from_js_value(js_tokens)?))
+    }
+
+    #[wasm_bindgen(setter = "groups")]
+    pub fn set_groups(&mut self, js_groups: &JsValue) -> Result<(), JsValue> {
+        let groups_object = Object::from(js_groups.clone());
+
+        let mut groups: BTreeMap<GroupContractPosition, Group> = BTreeMap::new();
+
+        for js_position in Object::keys(&groups_object) {
+            if js_position.as_f64().unwrap() > u16::MAX as f64 {
+                return Err(JsValue::from_str(&format!(
+                    "Position value '{:?}' exceeds the maximum limit for u16.",
+                    js_position.as_string()
+                )));
+            }
+
+            let position = js_position.as_f64().unwrap() as u16;
+
+            let js_group = Reflect::get(&groups_object, &js_position)?;
+
+            let group = js_group.to_wasm::<GroupWASM>("GroupWASM")?.clone();
+
+            groups.insert(position, group.into());
+        }
+
+        self.0.set_groups(groups);
+
+        Ok(())
     }
 
     #[wasm_bindgen(js_name = "toJson")]
