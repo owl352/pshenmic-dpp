@@ -1,7 +1,7 @@
-use dpp::dashcore::hashes::serde::Serialize;
 use dpp::data_contract::group::accessors::v0::{GroupV0Getters, GroupV0Setters};
 use dpp::data_contract::group::v0::GroupV0;
 use dpp::data_contract::group::{Group, GroupMemberPower, GroupRequiredPower};
+use dpp::platform_value::string_encoding::Encoding;
 use dpp::prelude::Identifier;
 use js_sys::Object;
 use js_sys::Reflect;
@@ -75,12 +75,19 @@ impl GroupWASM {
 
     #[wasm_bindgen(getter = "members")]
     pub fn get_members(&self) -> Result<JsValue, JsValue> {
-        let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+        let members = self.0.members();
 
-        self.0
-            .members()
-            .serialize(&serializer)
-            .map_err(JsValue::from)
+        let js_members = Object::new();
+
+        for (k, v) in members {
+            Reflect::set(
+                &js_members,
+                &JsValue::from(k.to_string(Encoding::Base58)),
+                &JsValue::from(v.clone()),
+            )?;
+        }
+
+        Ok(js_members.into())
     }
 
     #[wasm_bindgen(getter = "requiredPower")]
