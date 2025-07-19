@@ -109,6 +109,11 @@ pub struct EpochBasedDistributionWASM {
 
 #[wasm_bindgen]
 impl BlockBasedDistributionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "BlockBasedDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "function")]
     pub fn get_function(&self) -> DistributionFunctionWASM {
         self.function.clone()
@@ -122,6 +127,11 @@ impl BlockBasedDistributionWASM {
 
 #[wasm_bindgen]
 impl TimeBasedDistributionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TimeBasedDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "function")]
     pub fn get_function(&self) -> DistributionFunctionWASM {
         self.function.clone()
@@ -135,6 +145,11 @@ impl TimeBasedDistributionWASM {
 
 #[wasm_bindgen]
 impl EpochBasedDistributionWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "EpochBasedDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "function")]
     pub fn get_function(&self) -> DistributionFunctionWASM {
         self.function.clone()

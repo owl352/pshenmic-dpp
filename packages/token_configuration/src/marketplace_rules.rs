@@ -25,6 +25,11 @@ impl From<TokenMarketplaceRulesWASM> for TokenMarketplaceRules {
 
 #[wasm_bindgen]
 impl TokenMarketplaceRulesWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenMarketplaceRulesWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         trade_mode: &TokenTradeModeWASM,
