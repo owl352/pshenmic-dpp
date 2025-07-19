@@ -32,6 +32,11 @@ impl From<TokenDistributionRules> for TokenDistributionRulesWASM {
 
 #[wasm_bindgen]
 impl TokenDistributionRulesWASM {
+    #[wasm_bindgen(getter = __type)]
+    pub fn type_name(&self) -> String {
+        "TokenDistributionRulesWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_perpetual_distribution: &JsValue,
