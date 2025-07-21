@@ -16,6 +16,11 @@ impl PrivateKeyWASM {
         "PrivateKeyWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "PrivateKeyWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "fromWIF")]
     pub fn from_wif(wif: &str) -> Result<Self, JsValue> {
         let pk = PrivateKey::from_wif(wif).map_err(|err| JsValue::from_str(&*err.to_string()));

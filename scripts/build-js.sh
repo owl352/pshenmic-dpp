@@ -20,6 +20,9 @@ WASM_TS_BG_CODE_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm.d.ts"
 WASM_TS_CODE_PATH="$WASM_DIR/pshenmic_dpp.d.ts"
 WASM_TS_INDEX_CODE_PATH="$PWD/lib/."
 
+## String with patch for type checker
+TYPE_CHECKER_PATCH='s#if (!(instance instanceof klass)) {#if (!(instance?.__type === klass.__struct)) {#g'
+
 # Create directory in dist to save transpiled wasm code and TS lib
 mkdir -p $DIST_WASM_DIR
 
@@ -51,14 +54,17 @@ cp -a $WASM_TS_INDEX_CODE_PATH $DIST_WASM_DIR
 cp $WASM_TS_BG_CODE_PATH $DIST_WASM_TS_BG
 cp $WASM_TS_CODE_PATH $DIST_WASM_TS
 
+
 echo "Patching assert to custom type checker"
 if [[ "$(uname)" == "Darwin" ]]; then
   echo "SYSTEM: Darwin"
-  sed -i '' 's#if (!(instance instanceof klass)) {#if (!(instance?.__type === klass.name)) {#g' $DIST_WASM_JS
+  sed -i '' "$TYPE_CHECKER_PATCH" $DIST_WASM_JS
 else
   echo "SYSTEM: GNU"
-  sed -i 's#if (!(instance instanceof klass)) {#if (!(instance?.__type === klass.name)) {#g' $DIST_WASM_JS
+  sed -i "$TYPE_CHECKER_PATCH" $DIST_WASM_JS
 fi
+
+
 
 echo "Cleaning wasm build"
 rm -rf $WASM_DIR

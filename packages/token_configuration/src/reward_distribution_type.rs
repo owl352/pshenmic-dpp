@@ -28,6 +28,11 @@ impl RewardDistributionTypeWASM {
         "RewardDistributionTypeWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "RewardDistributionTypeWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "BlockBasedDistribution")]
     pub fn block_based_distribution(
         interval: BlockHeightInterval,
@@ -114,6 +119,11 @@ impl BlockBasedDistributionWASM {
         "BlockBasedDistributionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "BlockBasedDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "function")]
     pub fn get_function(&self) -> DistributionFunctionWASM {
         self.function.clone()
@@ -132,6 +142,11 @@ impl TimeBasedDistributionWASM {
         "TimeBasedDistributionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TimeBasedDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "function")]
     pub fn get_function(&self) -> DistributionFunctionWASM {
         self.function.clone()
@@ -147,6 +162,11 @@ impl TimeBasedDistributionWASM {
 impl EpochBasedDistributionWASM {
     #[wasm_bindgen(getter = __type)]
     pub fn type_name(&self) -> String {
+        "EpochBasedDistributionWASM".to_string()
+    }
+
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
         "EpochBasedDistributionWASM".to_string()
     }
 

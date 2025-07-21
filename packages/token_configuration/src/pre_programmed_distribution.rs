@@ -73,6 +73,11 @@ impl TokenPreProgrammedDistributionWASM {
         "TokenPreProgrammedDistributionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenPreProgrammedDistributionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(js_distributions: &JsValue) -> Result<TokenPreProgrammedDistributionWASM, JsValue> {
         let distributions = js_distributions_to_distributions(js_distributions)?;

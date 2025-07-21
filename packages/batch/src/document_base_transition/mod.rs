@@ -29,6 +29,11 @@ impl DocumentBaseTransitionWASM {
         "DocumentBaseTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DocumentBaseTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_document_id: &JsValue,

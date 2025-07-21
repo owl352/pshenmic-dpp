@@ -26,6 +26,11 @@ impl GroupStateTransitionInfoWASM {
         "GroupStateTransitionInfoWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "GroupStateTransitionInfoWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         group_contract_position: u16,

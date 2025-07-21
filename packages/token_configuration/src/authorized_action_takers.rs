@@ -28,6 +28,11 @@ impl AuthorizedActionTakersWASM {
         "AuthorizedActionTakersWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "AuthorizedActionTakersWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "NoOne")]
     pub fn no_one() -> Self {
         AuthorizedActionTakersWASM(AuthorizedActionTakers::NoOne)

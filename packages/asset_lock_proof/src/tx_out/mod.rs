@@ -26,6 +26,11 @@ impl TxOutWASM {
         "TxOutWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TxOutWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(value: u64, script_pubkey: JsValue) -> Result<TxOutWASM, JsValue> {
         let tx_out: Result<TxOut, JsValue> = match script_pubkey.is_array() {

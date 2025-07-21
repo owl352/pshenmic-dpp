@@ -30,6 +30,11 @@ impl TokenPricingScheduleWASM {
         "TokenPricingScheduleWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenPricingScheduleWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "SinglePrice")]
     pub fn single_price(credits: Credits) -> Self {
         Self(TokenPricingSchedule::SinglePrice(credits))

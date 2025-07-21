@@ -34,6 +34,11 @@ impl DocumentReplaceTransitionWASM {
         "DocumentReplaceTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DocumentReplaceTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,

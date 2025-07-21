@@ -25,6 +25,11 @@ impl SharedEncryptedNoteWASM {
         "SharedEncryptedNoteWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "SharedEncryptedNoteWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         sender_key_index: SenderKeyIndex,

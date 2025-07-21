@@ -24,6 +24,11 @@ impl TokenTradeModeWASM {
         "TokenTradeModeWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenTradeModeWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "NotTradeable")]
     pub fn not_tradeable() -> TokenTradeModeWASM {
         TokenTradeModeWASM(TokenTradeMode::NotTradeable)

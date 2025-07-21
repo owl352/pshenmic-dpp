@@ -42,6 +42,11 @@ impl IdentityPublicKeyWASM {
         "IdentityPublicKeyWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "IdentityPublicKeyWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         id: u32,

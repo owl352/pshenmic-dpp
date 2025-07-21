@@ -37,6 +37,11 @@ impl DocumentTransitionWASM {
         "DocumentTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DocumentTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(getter = "actionType")]
     pub fn get_action_type(&self) -> String {
         BatchTypeWASM::from(self.0.action_type()).into()

@@ -32,6 +32,11 @@ impl TokenConfigurationChangeItemWASM {
         "TokenConfigurationChangeItemWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenConfigurationChangeItemWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "getItemName")]
     pub fn get_item_name(&self) -> String {
         match self.0.clone() {

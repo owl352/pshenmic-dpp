@@ -30,6 +30,11 @@ impl BatchedTransitionWASM {
         "BatchedTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "BatchedTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(js_transition: &JsValue) -> Result<BatchedTransitionWASM, JsValue> {
         match js_transition.is_undefined() && js_transition.is_object() {

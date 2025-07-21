@@ -37,6 +37,11 @@ impl OutPointWASM {
         "OutPointWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "OutPointWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(txid_hex: String, vout: u32) -> Result<OutPointWASM, JsValue> {
         let out_point = Txid::from_hex(&txid_hex).map_err(|err| JsValue::from(err.to_string()))?;

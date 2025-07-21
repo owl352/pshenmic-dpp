@@ -28,6 +28,11 @@ impl TokenKeepsHistoryRulesWASM {
         "TokenKeepsHistoryRulesWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenKeepsHistoryRulesWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         keeps_transfer_history: bool,

@@ -26,6 +26,11 @@ impl ResourceVoteChoiceWASM {
         "ResourceVoteChoiceWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "ResourceVoteChoiceWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "TowardsIdentity")]
     pub fn towards_identity(js_id: &JsValue) -> Result<Self, JsValue> {
         let id = IdentifierWASM::try_from(js_id)?;
