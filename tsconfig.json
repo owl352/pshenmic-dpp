@@ -2,11 +2,11 @@
   "compilerOptions": {
     "outDir": "./dist/wasm",
     "noImplicitAny": true,
-    "module": "ES6",
-    "target": "es2015",
-    "rootDir": "./lib",
+    "module": "NodeNext",
+    "target": "ESNext",
+    "rootDir": "./",
     "allowJs": false,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "declaration": true,
     "lib": [
