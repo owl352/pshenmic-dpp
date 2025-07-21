@@ -36,6 +36,11 @@ impl TokenSetPriceForDirectPurchaseTransitionWASM {
         "TokenSetPriceForDirectPurchaseTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenSetPriceForDirectPurchaseTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         base: &TokenBaseTransitionWASM,

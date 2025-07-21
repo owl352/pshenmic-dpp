@@ -30,6 +30,11 @@ impl TokenMarketplaceRulesWASM {
         "TokenMarketplaceRulesWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenMarketplaceRulesWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         trade_mode: &TokenTradeModeWASM,

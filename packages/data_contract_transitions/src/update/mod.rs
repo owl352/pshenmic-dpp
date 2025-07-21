@@ -25,6 +25,11 @@ impl DataContractUpdateTransitionWASM {
         "DataContractUpdateTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DataContractUpdateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         data_contract: &DataContractWASM,

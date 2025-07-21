@@ -25,6 +25,11 @@ impl DocumentDeleteTransitionWASM {
         "DocumentDeleteTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DocumentDeleteTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         document: &DocumentWASM,

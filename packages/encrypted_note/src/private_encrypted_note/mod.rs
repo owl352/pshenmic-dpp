@@ -25,6 +25,11 @@ impl PrivateEncryptedNoteWASM {
         "PrivateEncryptedNoteWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "PrivateEncryptedNoteWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         root_encryption_key_index: RootEncryptionKeyIndex,

@@ -30,6 +30,11 @@ impl VotePollWASM {
         "VotePollWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "VotePollWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_contract_id: &JsValue,

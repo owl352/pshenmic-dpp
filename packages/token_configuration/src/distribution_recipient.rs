@@ -26,6 +26,11 @@ impl TokenDistributionRecipientWASM {
         "TokenDistributionRecipientWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenDistributionRecipientWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "ContractOwner")]
     pub fn contract_owner() -> TokenDistributionRecipientWASM {
         TokenDistributionRecipientWASM(TokenDistributionRecipient::ContractOwner)

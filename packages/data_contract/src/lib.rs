@@ -79,6 +79,11 @@ impl DataContractWASM {
         "DataContractWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DataContractWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn from_js_values(
         js_owner_id: &JsValue,

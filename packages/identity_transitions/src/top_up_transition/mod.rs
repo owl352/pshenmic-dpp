@@ -26,6 +26,11 @@ impl IdentityTopUpTransitionWASM {
         "IdentityTopUpTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "IdentityTopUpTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         asset_lock_proof: &AssetLockProofWASM,

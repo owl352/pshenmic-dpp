@@ -46,6 +46,12 @@ impl TokenTransitionWASM {
     pub fn type_name(&self) -> String {
         "TokenTransitionWASM".to_string()
     }
+
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenTransitionWASM".to_string()
+    }
+    
     #[wasm_bindgen(constructor)]
     pub fn new(js_transition: &JsValue) -> Result<TokenTransitionWASM, JsValue> {
         let transition = match js_transition.is_object() {

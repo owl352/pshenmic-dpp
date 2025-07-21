@@ -60,6 +60,11 @@ impl GroupWASM {
         "GroupWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "GroupWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_members: &JsValue,

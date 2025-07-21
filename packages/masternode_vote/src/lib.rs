@@ -44,6 +44,11 @@ impl MasternodeVoteTransitionWASM {
         "MasternodeVoteTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "MasternodeVoteTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_pro_tx_hash: &JsValue,

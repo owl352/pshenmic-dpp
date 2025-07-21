@@ -35,6 +35,11 @@ impl DistributionFunctionWASM {
         "DistributionFunctionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "DistributionFunctionWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "FixedAmountDistribution")]
     pub fn fixed_amount_distribution(amount: TokenAmount) -> DistributionFunctionWASM {
         DistributionFunctionWASM(DistributionFunction::FixedAmount { amount })

@@ -41,6 +41,11 @@ impl InstantAssetLockProofWASM {
         "InstantAssetLockProofWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "InstantAssetLockProofWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         instant_lock: Vec<u8>,

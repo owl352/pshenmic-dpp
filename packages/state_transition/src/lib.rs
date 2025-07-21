@@ -40,6 +40,11 @@ impl StateTransitionWASM {
         "StateTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "StateTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,

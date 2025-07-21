@@ -29,6 +29,11 @@ impl ActionTakerWASM {
         "ActionTakerWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "ActionTakerWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(value: &JsValue) -> Result<ActionTakerWASM, JsValue> {
         let identifier = IdentifierWASM::try_from(value);

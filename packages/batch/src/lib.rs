@@ -69,6 +69,11 @@ impl BatchTransitionWASM {
         "BatchTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "BatchTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "fromV1BatchedTransitions")]
     pub fn from_v1_batched_transitions(
         js_batched_transitions: &js_sys::Array,

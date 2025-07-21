@@ -32,6 +32,11 @@ impl TokenBaseTransitionWASM {
         "TokenBaseTransitionWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenBaseTransitionWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         identity_contract_nonce: IdentityNonce,

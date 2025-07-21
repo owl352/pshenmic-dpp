@@ -37,6 +37,11 @@ impl TokenDistributionRulesWASM {
         "TokenDistributionRulesWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "TokenDistributionRulesWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         js_perpetual_distribution: &JsValue,

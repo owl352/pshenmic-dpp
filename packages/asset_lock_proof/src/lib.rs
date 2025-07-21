@@ -68,6 +68,11 @@ impl AssetLockProofWASM {
         "AssetLockProofWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "AssetLockProofWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(js_asset_lock_proof_type: JsValue) -> Result<AssetLockProofWASM, JsValue> {
         let asset_lock_proof_type = AssetLockProofTypeWASM::try_from(js_asset_lock_proof_type)?;

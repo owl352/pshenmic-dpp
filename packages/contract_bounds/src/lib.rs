@@ -26,6 +26,11 @@ impl ContractBoundsWASM {
         "ContractBoundsWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "ContractBoundsWASM".to_string()
+    }
+
     #[wasm_bindgen(js_name = "SingleContract")]
     pub fn single_contract(js_contract_id: &JsValue) -> Result<ContractBoundsWASM, JsValue> {
         let contract_id = IdentifierWASM::try_from(js_contract_id)?;

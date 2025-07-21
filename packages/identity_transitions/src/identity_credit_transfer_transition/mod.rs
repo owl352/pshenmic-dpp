@@ -24,6 +24,11 @@ impl IdentityCreditTransferWASM {
         "IdentityCreditTransferWASM".to_string()
     }
 
+    #[wasm_bindgen(getter = __struct)]
+    pub fn struct_name() -> String {
+        "IdentityCreditTransferWASM".to_string()
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         amount: u64,
