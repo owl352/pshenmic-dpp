@@ -35,7 +35,7 @@ impl TokenFreezeTransitionWASM {
     pub fn struct_name() -> String {
         "TokenFreezeTransitionWASM".to_string()
     }
-    
+
     #[wasm_bindgen(constructor)]
     pub fn new(
         base: &TokenBaseTransitionWASM,
