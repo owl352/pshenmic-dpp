@@ -19,6 +19,12 @@ impl From<Identifier> for IdentifierWASM {
     }
 }
 
+impl From<[u8; 32]> for IdentifierWASM {
+    fn from(identifier: [u8;32]) -> Self {
+        IdentifierWASM(Identifier::new(identifier))
+    }
+}
+
 impl From<&IdentifierWASM> for Identifier {
     fn from(identifier: &IdentifierWASM) -> Self {
         identifier.clone().into()
@@ -121,5 +127,11 @@ impl IdentifierWASM {
             Identifier::from_vec(bytes).map_err(|err| JsValue::from(err.to_string()))?;
 
         Ok(IdentifierWASM(identifier))
+    }
+}
+
+impl IdentifierWASM {
+    pub fn to_slice(&self) -> [u8; 32] {
+        self.0.as_bytes().clone()
     }
 }
