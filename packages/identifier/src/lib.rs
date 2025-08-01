@@ -20,7 +20,7 @@ impl From<Identifier> for IdentifierWASM {
 }
 
 impl From<[u8; 32]> for IdentifierWASM {
-    fn from(identifier: [u8;32]) -> Self {
+    fn from(identifier: [u8; 32]) -> Self {
         IdentifierWASM(Identifier::new(identifier))
     }
 }

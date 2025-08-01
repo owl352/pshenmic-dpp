@@ -11,9 +11,9 @@ use dpp::data_contract::associated_token::token_configuration::accessors::v0::{
 use dpp::data_contract::associated_token::token_configuration::v0::TokenConfigurationV0;
 use dpp::data_contract::{GroupContractPosition, TokenConfiguration, TokenContractPosition};
 use dpp::tokens::calculate_token_id;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
-use pshenmic_dpp_identifier::IdentifierWASM;
 
 pub mod action_taker;
 pub mod authorized_action_takers;
@@ -316,11 +316,17 @@ impl TokenConfigurationWASM {
     pub fn set_description(&mut self, description: Option<String>) {
         self.0.set_description(description)
     }
-    
+
     #[wasm_bindgen(js_name = "calculateTokenId")]
-    pub fn calculate_token_id(js_contract_id: &JsValue, token_pos: TokenContractPosition) -> Result<IdentifierWASM, JsValue> {
+    pub fn calculate_token_id(
+        js_contract_id: &JsValue,
+        token_pos: TokenContractPosition,
+    ) -> Result<IdentifierWASM, JsValue> {
         let contract_id = IdentifierWASM::try_from(js_contract_id)?;
-        
-        Ok(IdentifierWASM::from(calculate_token_id(&contract_id.to_slice(), token_pos)))
+
+        Ok(IdentifierWASM::from(calculate_token_id(
+            &contract_id.to_slice(),
+            token_pos,
+        )))
     }
 }
