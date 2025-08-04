@@ -1,9 +1,9 @@
 use dpp::balances::credits::TokenAmount;
 use dpp::fee::Credits;
 use dpp::tokens::token_pricing_schedule::TokenPricingSchedule;
+use js_sys::{Object, Reflect};
 use pshenmic_dpp_utils::ToSerdeJSONExt;
 use std::collections::BTreeMap;
-use js_sys::{Object, Reflect};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -67,11 +67,15 @@ impl TokenPricingScheduleWASM {
             }
             TokenPricingSchedule::SetPrices(prices) => {
                 let price_object = Object::new();
-                
+
                 for (key, value) in prices.iter() {
-                    Reflect::set(&price_object, &JsValue::from(key.to_string()), &value.clone().into())?;
+                    Reflect::set(
+                        &price_object,
+                        &JsValue::from(key.to_string()),
+                        &value.clone().into(),
+                    )?;
                 }
-                
+
                 Ok(price_object.into())
             }
         }
