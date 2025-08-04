@@ -1,5 +1,4 @@
 use dpp::balances::credits::TokenAmount;
-use dpp::dashcore::hashes::serde::Serialize;
 use dpp::fee::Credits;
 use dpp::tokens::token_pricing_schedule::TokenPricingSchedule;
 use pshenmic_dpp_utils::ToSerdeJSONExt;
