@@ -1,7 +1,7 @@
 use dpp::balances::credits::TokenAmount;
-use dpp::dashcore::hashes::serde::Serialize;
 use dpp::fee::Credits;
 use dpp::tokens::token_pricing_schedule::TokenPricingSchedule;
+use js_sys::{Object, Reflect};
 use pshenmic_dpp_utils::ToSerdeJSONExt;
 use std::collections::BTreeMap;
 use wasm_bindgen::JsValue;
@@ -66,9 +66,17 @@ impl TokenPricingScheduleWASM {
                 Ok(JsValue::bigint_from_str(&credits.to_string()))
             }
             TokenPricingSchedule::SetPrices(prices) => {
-                let serializer = serde_wasm_bindgen::Serializer::json_compatible();
+                let price_object = Object::new();
 
-                prices.serialize(&serializer).map_err(JsValue::from)
+                for (key, value) in prices.iter() {
+                    Reflect::set(
+                        &price_object,
+                        &JsValue::from(key.to_string()),
+                        &value.clone().into(),
+                    )?;
+                }
+
+                Ok(price_object.into())
             }
         }
     }
