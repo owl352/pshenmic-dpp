@@ -1,5 +1,5 @@
 [package]
-name = "pshenmic_dpp_identity"
+name = "pshenmic_dpp_public_key"
 version.workspace = true
 edition = "2024"
 
@@ -9,8 +9,6 @@ crate-type = ["cdylib", "lib"]
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 dpp = { workspace = true, features = [
-    "identity-serialization"
+    "identity-value-conversion",
 ]}
-pshenmic_dpp_identity_public_key = { path = "../identity_public_key" }
-pshenmic_dpp_identifier = { path = "../identifier" }
-pshenmic_dpp_utils = { path = "../utils" }
+pshenmic_dpp_enums = {path = "../enums"}

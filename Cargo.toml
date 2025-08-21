@@ -34,7 +34,7 @@ members = [
     "packages/token_configuration_change_item",
     "packages/token_configuration",
     "packages/masternode_vote"
-, "packages/contract_bounds"]
+, "packages/contract_bounds", "packages/public_key"]
 
 [lib]
 crate-type = ["cdylib", "lib"]

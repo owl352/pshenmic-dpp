@@ -6,7 +6,7 @@ use dpp::prelude::IdentityPublicKey;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::version::PlatformVersion;
 use pshenmic_dpp_identifier::IdentifierWASM;
-use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_identity_public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_utils::WithJsError;
 use std::collections::BTreeMap;
 use wasm_bindgen::prelude::wasm_bindgen;
