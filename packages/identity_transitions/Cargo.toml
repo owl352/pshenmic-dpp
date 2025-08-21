@@ -15,7 +15,7 @@ js-sys = "0.3.53"
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_contract_bounds = {path = "../contract_bounds"}
 pshenmic_dpp_core_script = {path = "../core_script"}
-pshenmic_dpp_public_key = {path = "../identity_public_key" }
+pshenmic_dpp_identity_public_key = {path = "../identity_public_key" }
 pshenmic_dpp_identifier = {path = "../identifier" }
 pshenmic_dpp_state_transition = {path = "../state_transition"}
 pshenmic_dpp_enums = {path = "../enums"}
