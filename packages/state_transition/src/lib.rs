@@ -1,6 +1,6 @@
 use dpp::dashcore::secp256k1::hashes::hex::Case::Lower;
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
-use dpp::identity::{KeyID, KeyType, Purpose};
+use dpp::identity::{KeyID, KeyType};
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::prelude::UserFeeIncrease;
@@ -314,7 +314,10 @@ impl StateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "getKeyLevelRequirement")]
-    pub fn get_key_level_requirement(&self, js_purpose: &JsValue) -> Result<Option<Vec<String>>, JsValue> {
+    pub fn get_key_level_requirement(
+        &self,
+        js_purpose: &JsValue,
+    ) -> Result<Option<Vec<String>>, JsValue> {
         let purpose = PurposeWASM::try_from(js_purpose.clone())?;
 
         let requirements = self.0.security_level_requirement(purpose.into());
