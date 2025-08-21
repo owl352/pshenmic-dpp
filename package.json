@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "main": "dist/wasm/index.js",
   "types": "dist/wasm/index.d.ts",
   "repository": {
