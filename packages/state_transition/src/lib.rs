@@ -1,6 +1,6 @@
 use dpp::dashcore::secp256k1::hashes::hex::Case::Lower;
 use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
-use dpp::identity::{KeyID, KeyType};
+use dpp::identity::{KeyID, KeyType, Purpose};
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::prelude::UserFeeIncrease;
@@ -10,6 +10,7 @@ use dpp::state_transition::{
 };
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
+use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
@@ -52,9 +53,49 @@ impl StateTransitionWASM {
         &mut self,
         private_key: &PrivateKeyWASM,
         public_key: &IdentityPublicKeyWASM,
+    ) -> Result<Vec<u8>, JsValue> {
+        self.0
+            .sign(
+                &public_key.clone().into(),
+                private_key.get_bytes().as_slice(),
+                &MockBLS {},
+            )
+            .with_js_error()?;
+
+        self.0.set_signature(self.0.signature().clone());
+        self.0
+            .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
+
+        self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "signByPrivateKey")]
+    pub fn sign_by_private_key(
+        &mut self,
+        private_key: &PrivateKeyWASM,
+        js_key_type: JsValue,
+    ) -> Result<Vec<u8>, JsValue> {
+        let key_type = KeyTypeWASM::try_from(js_key_type)?;
+
+        let _sig = self
+            .0
+            .sign_by_private_key(
+                &private_key.get_bytes().as_slice(),
+                KeyType::from(key_type),
+                &MockBLS {},
+            )
+            .with_js_error();
+
+        self.0.serialize_to_bytes().with_js_error()
+    }
+
+    #[wasm_bindgen(js_name = "verifyPublicKey")]
+    pub fn verify_public_key(
+        &self,
+        public_key: &IdentityPublicKeyWASM,
         js_allow_signing_with_any_security_level: Option<bool>,
         js_allow_signing_with_any_purpose: Option<bool>,
-    ) -> Result<Vec<u8>, JsValue> {
+    ) -> Result<(), JsValue> {
         let allow_signing_with_any_security_level =
             js_allow_signing_with_any_security_level.unwrap_or(false);
         let allow_signing_with_any_purpose = js_allow_signing_with_any_purpose.unwrap_or(false);
@@ -154,39 +195,7 @@ impl StateTransitionWASM {
             _ => {}
         }
 
-        self.0
-            .sign(
-                &public_key.clone().into(),
-                private_key.get_bytes().as_slice(),
-                &MockBLS {},
-            )
-            .with_js_error()?;
-
-        self.0.set_signature(self.0.signature().clone());
-        self.0
-            .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
-
-        self.0.serialize_to_bytes().with_js_error()
-    }
-
-    #[wasm_bindgen(js_name = "signByPrivateKey")]
-    pub fn sign_by_private_key(
-        &mut self,
-        private_key: &PrivateKeyWASM,
-        js_key_type: JsValue,
-    ) -> Result<Vec<u8>, JsValue> {
-        let key_type = KeyTypeWASM::try_from(js_key_type)?;
-
-        let _sig = self
-            .0
-            .sign_by_private_key(
-                &private_key.get_bytes().as_slice(),
-                KeyType::from(key_type),
-                &MockBLS {},
-            )
-            .with_js_error();
-
-        self.0.serialize_to_bytes().with_js_error()
+        Ok(())
     }
 
     #[wasm_bindgen(js_name = "bytes")]
@@ -301,6 +310,23 @@ impl StateTransitionWASM {
                     .map(String::from)
                     .collect(),
             ),
+        }
+    }
+
+    #[wasm_bindgen(js_name = "getKeyLevelRequirement")]
+    pub fn get_key_level_requirement(&self, js_purpose: &JsValue) -> Result<Option<Vec<String>>, JsValue> {
+        let purpose = PurposeWASM::try_from(js_purpose.clone())?;
+
+        let requirements = self.0.security_level_requirement(purpose.into());
+
+        match requirements {
+            None => Ok(None),
+            Some(req) => Ok(Some(
+                req.iter()
+                    .map(|security_level| SecurityLevelWASM::from(security_level.clone()))
+                    .map(String::from)
+                    .collect(),
+            )),
         }
     }
 
