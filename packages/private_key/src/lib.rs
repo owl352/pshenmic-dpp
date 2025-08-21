@@ -3,6 +3,7 @@ use dpp::dashcore::hashes::hex::FromHex;
 use dpp::dashcore::key::Secp256k1;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use pshenmic_dpp_enums::network::NetworkWASM;
+use pshenmic_dpp_public_key::PublicKeyWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -51,6 +52,15 @@ impl PrivateKeyWASM {
             .map_err(|err| JsValue::from_str(&*err.to_string()))?;
 
         Ok(PrivateKeyWASM(pk))
+    }
+
+    #[wasm_bindgen(js_name = "getPublicKey")]
+    pub fn get_public_key(&self) -> PublicKeyWASM {
+        let secp = Secp256k1::new();
+
+        let public_key = self.0.public_key(&secp);
+
+        public_key.into()
     }
 }
 

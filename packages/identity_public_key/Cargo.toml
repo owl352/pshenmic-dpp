@@ -1,5 +1,5 @@
 [package]
-name = "pshenmic_dpp_public_key"
+name = "pshenmic_dpp_identity_public_key"
 version.workspace = true
 edition = "2024"
 

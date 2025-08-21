@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.0.19"
+version = "1.0.20"
 edition = "2024"
 rust-version = "1.85"
 
@@ -34,7 +34,7 @@ members = [
     "packages/token_configuration_change_item",
     "packages/token_configuration",
     "packages/masternode_vote"
-, "packages/contract_bounds"]
+, "packages/contract_bounds", "packages/public_key"]
 
 [lib]
 crate-type = ["cdylib", "lib"]

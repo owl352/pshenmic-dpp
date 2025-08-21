@@ -1233,7 +1233,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "1.0.19"
+version = "1.0.20"
 dependencies = [
  "bincode",
  "bincode_derive",
@@ -1392,7 +1392,18 @@ version = "1.0.5"
 dependencies = [
  "dpp",
  "pshenmic_dpp_identifier",
- "pshenmic_dpp_public_key",
+ "pshenmic_dpp_identity_public_key",
+ "pshenmic_dpp_utils",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_identity_public_key"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_contract_bounds",
+ "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
@@ -1408,7 +1419,7 @@ dependencies = [
  "pshenmic_dpp_core_script",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
- "pshenmic_dpp_public_key",
+ "pshenmic_dpp_identity_public_key",
  "pshenmic_dpp_state_transition",
  "pshenmic_dpp_utils",
  "wasm-bindgen",
@@ -1441,6 +1452,7 @@ version = "1.0.5"
 dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
+ "pshenmic_dpp_public_key",
  "wasm-bindgen",
 ]
 
@@ -1449,9 +1461,7 @@ name = "pshenmic_dpp_public_key"
 version = "1.0.5"
 dependencies = [
  "dpp",
- "pshenmic_dpp_contract_bounds",
  "pshenmic_dpp_enums",
- "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
 
@@ -1462,9 +1472,9 @@ dependencies = [
  "dpp",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
+ "pshenmic_dpp_identity_public_key",
  "pshenmic_dpp_mock_bls",
  "pshenmic_dpp_private_key",
- "pshenmic_dpp_public_key",
  "pshenmic_dpp_utils",
  "sha2",
  "wasm-bindgen",

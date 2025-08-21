@@ -11,7 +11,7 @@ use pshenmic_dpp_contract_bounds::ContractBoundsWASM;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
-use pshenmic_dpp_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_identity_public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -82,7 +82,7 @@ impl IdentityPublicKeyInCreationWASM {
         js_key_type: JsValue,
         read_only: bool,
         binary_data: Vec<u8>,
-        signature: Vec<u8>,
+        signature: Option<Vec<u8>>,
     ) -> Result<IdentityPublicKeyInCreationWASM, JsValue> {
         let purpose = PurposeWASM::try_from(js_purpose)?;
         let security_level = SecurityLevelWASM::try_from(js_security_level)?;
@@ -97,7 +97,7 @@ impl IdentityPublicKeyInCreationWASM {
                 contract_bounds: None,
                 read_only,
                 data: BinaryData::from(binary_data),
-                signature: BinaryData::from(signature),
+                signature: BinaryData::from(signature.unwrap_or(Vec::new())),
             }),
         ))
     }
