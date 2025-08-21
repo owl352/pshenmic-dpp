@@ -1257,6 +1257,7 @@ dependencies = [
  "dpp",
  "js-sys",
  "pshenmic_dpp_enums",
+ "pshenmic_dpp_identifier",
  "pshenmic_dpp_utils",
  "serde",
  "serde-wasm-bindgen",

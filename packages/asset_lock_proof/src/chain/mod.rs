@@ -1,5 +1,6 @@
 use crate::outpoint::OutPointWASM;
 use dpp::identity::state_transition::asset_lock_proof::chain::ChainAssetLockProof;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use serde::Deserialize;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};
@@ -12,6 +13,7 @@ struct ChainAssetLockProofParams {
 }
 
 #[wasm_bindgen(js_name = "ChainAssetLockProofWASM")]
+#[derive(Clone)]
 pub struct ChainAssetLockProofWASM(ChainAssetLockProof);
 
 impl From<ChainAssetLockProofWASM> for ChainAssetLockProof {
@@ -85,5 +87,12 @@ impl ChainAssetLockProofWASM {
     #[wasm_bindgen(getter = "outPoint")]
     pub fn get_out_point(self) -> OutPointWASM {
         self.0.out_point.into()
+    }
+
+    #[wasm_bindgen(js_name = "createIdentifier")]
+    pub fn create_identifier(&self) -> IdentifierWASM {
+        let identifier = self.0.create_identifier();
+
+        identifier.into()
     }
 }

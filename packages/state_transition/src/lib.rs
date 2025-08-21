@@ -5,7 +5,9 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::prelude::UserFeeIncrease;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
-use dpp::state_transition::StateTransition;
+use dpp::state_transition::{
+    StateTransition, StateTransitionIdentitySigned, StateTransitionSigningOptions,
+};
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
@@ -50,7 +52,108 @@ impl StateTransitionWASM {
         &mut self,
         private_key: &PrivateKeyWASM,
         public_key: &IdentityPublicKeyWASM,
+        js_allow_signing_with_any_security_level: Option<bool>,
+        js_allow_signing_with_any_purpose: Option<bool>,
     ) -> Result<Vec<u8>, JsValue> {
+        let allow_signing_with_any_security_level =
+            js_allow_signing_with_any_security_level.unwrap_or(false);
+        let allow_signing_with_any_purpose = js_allow_signing_with_any_purpose.unwrap_or(false);
+
+        match &self.0 {
+            StateTransition::DataContractCreate(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            StateTransition::DataContractUpdate(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            StateTransition::Batch(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            StateTransition::IdentityCreditWithdrawal(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            StateTransition::IdentityUpdate(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            StateTransition::IdentityCreditTransfer(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            StateTransition::MasternodeVote(st) => {
+                st.verify_public_key_level_and_purpose(
+                    &public_key.clone().into(),
+                    StateTransitionSigningOptions {
+                        allow_signing_with_any_security_level,
+                        allow_signing_with_any_purpose,
+                    },
+                )
+                .with_js_error()?;
+
+                st.verify_public_key_is_enabled(&public_key.clone().into())
+                    .with_js_error()?;
+            }
+            _ => {}
+        }
+
         self.0
             .sign(
                 &public_key.clone().into(),

@@ -35,7 +35,7 @@ impl IdentityTopUpTransitionWASM {
     pub fn new(
         asset_lock_proof: &AssetLockProofWASM,
         js_identity_id: JsValue,
-        user_fee_increase: UserFeeIncrease,
+        user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityTopUpTransitionWASM, JsValue> {
         let identity_id: Identifier = IdentifierWASM::try_from(js_identity_id)?.into();
 
@@ -43,7 +43,7 @@ impl IdentityTopUpTransitionWASM {
             IdentityTopUpTransitionV0 {
                 asset_lock_proof: asset_lock_proof.clone().into(),
                 identity_id,
-                user_fee_increase,
+                user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature: Default::default(),
             },
         )))

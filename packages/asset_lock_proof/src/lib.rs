@@ -5,12 +5,12 @@ mod tx_out;
 
 use crate::chain::ChainAssetLockProofWASM;
 use crate::instant::InstantAssetLockProofWASM;
-use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
 
 use crate::outpoint::OutPointWASM;
 use dpp::prelude::AssetLockProof;
 use pshenmic_dpp_enums::lock_types::AssetLockProofTypeWASM;
-use pshenmic_dpp_utils::WithJsError;
+use pshenmic_dpp_identifier::IdentifierWASM;
+use pshenmic_dpp_utils::{IntoWasm, WithJsError, get_class_type};
 use serde::Serialize;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -74,14 +74,23 @@ impl AssetLockProofWASM {
     }
 
     #[wasm_bindgen(constructor)]
-    pub fn new(js_asset_lock_proof_type: JsValue) -> Result<AssetLockProofWASM, JsValue> {
-        let asset_lock_proof_type = AssetLockProofTypeWASM::try_from(js_asset_lock_proof_type)?;
+    pub fn new(js_asset_lock_proof: &JsValue) -> Result<AssetLockProofWASM, JsValue> {
+        match get_class_type(js_asset_lock_proof)?.as_str() {
+            "ChainAssetLockProofWASM" => {
+                let chain_lock = js_asset_lock_proof
+                    .to_wasm::<ChainAssetLockProofWASM>("ChainAssetLockProofWASM")?
+                    .clone();
 
-        match asset_lock_proof_type {
-            AssetLockProofTypeWASM::Chain => Err(JsValue::from_str(&"ChainLock unavailable")),
-            AssetLockProofTypeWASM::Instant => {
-                Ok(InstantAssetLockProofWASM::from(InstantAssetLockProof::default()).into())
+                Ok(AssetLockProofWASM::from(chain_lock))
             }
+            "InstantAssetLockProofWASM" => {
+                let instant_lock = js_asset_lock_proof
+                    .to_wasm::<InstantAssetLockProofWASM>("InstantAssetLockProofWASM")?
+                    .clone();
+
+                Ok(AssetLockProofWASM::from(instant_lock))
+            }
+            &_ => Err(JsValue::from("Invalid asset lock proof type.")),
         }
     }
 
@@ -101,20 +110,6 @@ impl AssetLockProofWASM {
     ) -> Result<AssetLockProofWASM, JsValue> {
         Ok(ChainAssetLockProofWASM::new(core_chain_locked_height, out_point)?.into())
     }
-
-    // #[wasm_bindgen(js_name = "fromRawObject")]
-    // pub fn from_raw_object(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
-    //     let lock_type = get_type_from_raw_asset_lock_proof(&raw_asset_lock_proof)?;
-    //
-    //     match lock_type {
-    //         AssetLockProofTypeWASM::Instant => {
-    //             Ok(InstantAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
-    //         }
-    //         AssetLockProofTypeWASM::Chain => {
-    //             Ok(ChainAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
-    //         }
-    //     }
-    // }
 
     #[wasm_bindgen(js_name = "getLockType")]
     pub fn get_lock_type(&self) -> String {
@@ -140,6 +135,13 @@ impl AssetLockProofWASM {
             Some(out_point) => Some(OutPointWASM::from(out_point)),
             None => None,
         }
+    }
+
+    #[wasm_bindgen(js_name = "createIdentifier")]
+    pub fn create_identifier(&self) -> Result<IdentifierWASM, JsValue> {
+        let identifier = self.0.create_identifier().with_js_error()?;
+
+        Ok(identifier.into())
     }
 
     #[wasm_bindgen(js_name = "toObject")]

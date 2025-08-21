@@ -39,9 +39,9 @@ impl IdentityUpdateTransitionWASM {
         js_identity_id: &JsValue,
         revision: Revision,
         nonce: IdentityNonce,
-        user_fee_increase: Option<UserFeeIncrease>,
         js_add_public_keys: &js_sys::Array,
         disable_public_keys: Vec<KeyID>,
+        user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityUpdateTransitionWASM, JsValue> {
         let identity_id = IdentifierWASM::try_from(js_identity_id)?;
 
