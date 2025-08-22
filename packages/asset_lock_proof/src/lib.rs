@@ -134,4 +134,26 @@ impl AssetLockProofWASM {
 
         Ok(json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?)
     }
+
+    #[wasm_bindgen(js_name = "hex")]
+    pub fn to_string(&self) -> Result<String, JsValue> {
+        Ok(hex::encode(
+            serde_json::to_string(&self.0).map_err(|err| JsValue::from(err.to_string()))?,
+        ))
+    }
+
+    #[wasm_bindgen(js_name = "fromHex")]
+    pub fn from_hex(asset_lock_proof: String) -> Result<AssetLockProofWASM, JsValue> {
+        let asset_lock_proof_bytes = hex::decode(&asset_lock_proof)
+            .map_err(|e| JsValue::from_str(&format!("Invalid asset lock proof hex: {}", e)))?;
+
+        let json_str = String::from_utf8(asset_lock_proof_bytes)
+            .map_err(|e| JsValue::from_str(&format!("Invalid UTF-8 in asset lock proof: {}", e)))?;
+
+        let asset_lock_proof = serde_json::from_str(&json_str).map_err(|e| {
+            JsValue::from_str(&format!("Failed to parse asset lock proof JSON: {}", e))
+        })?;
+
+        Ok(AssetLockProofWASM(asset_lock_proof))
+    }
 }
