@@ -6,9 +6,17 @@ const { default: wasm } = require('..')
 describe('AssetLockProof', function () {
   describe('serialization / deserialization', function () {
     it('should allow to get instant lock proof via constructor', () => {
-      const instantLockProof = new wasm.AssetLockProofWASM('instant')
+      const outpoint = new wasm.OutPointWASM('e8b43025641eea4fd21190f01bd870ef90f1a8b199d8fc3376c5b62c0b1a179d', 1)
+      const chainlock = new wasm.ChainAssetLockProofWASM(11, outpoint)
+      const instantLockProof = new wasm.InstantAssetLockProofWASM(instantLockBytes, transactionBytes, 0)
 
-      assert.equal(instantLockProof.constructor.name, 'AssetLockProofWASM')
+      const instantAssetLock = new wasm.AssetLockProofWASM(instantLockProof)
+      const chainAssetLock = new wasm.AssetLockProofWASM(chainlock)
+
+      assert.equal(instantAssetLock.constructor.name, 'AssetLockProofWASM')
+      assert.notEqual(instantAssetLock.__wbg_ptr, 0)
+      assert.equal(chainAssetLock.constructor.name, 'AssetLockProofWASM')
+      assert.notEqual(chainAssetLock.__wbg_ptr, 0)
     })
 
     it('shouldn\'t allow to get chain lock proof via constructor', () => {
@@ -51,32 +59,35 @@ describe('AssetLockProof', function () {
   describe('getters', function () {
     it('should allow to get lock type', () => {
       const outpoint = new wasm.OutPointWASM('e8b43025641eea4fd21190f01bd870ef90f1a8b199d8fc3376c5b62c0b1a179d', 1)
+      const instantLockProof = new wasm.InstantAssetLockProofWASM(instantLockBytes, transactionBytes, 0)
 
+      const instantAssetLockProof = new wasm.AssetLockProofWASM(instantLockProof)
       const chainLockProof = wasm.AssetLockProofWASM.createChainAssetLockProof(1, outpoint)
 
-      const instantLockProof = new wasm.AssetLockProofWASM('instant')
-
+      assert.equal(instantAssetLockProof.getLockType(), 'Instant')
       assert.equal(chainLockProof.getLockType(), 'Chain')
-      assert.equal(instantLockProof.getLockType(), 'Instant')
     })
 
     it('should allow to get lock instances', () => {
       const outpoint = new wasm.OutPointWASM('e8b43025641eea4fd21190f01bd870ef90f1a8b199d8fc3376c5b62c0b1a179d', 1)
+      const instantLockProof = new wasm.InstantAssetLockProofWASM(instantLockBytes, transactionBytes, 0)
 
       const chainLockProof = wasm.AssetLockProofWASM.createChainAssetLockProof(1, outpoint)
+      const instantAssetLockProof = new wasm.AssetLockProofWASM(instantLockProof)
 
-      const instantLockProof = new wasm.AssetLockProofWASM('instant')
 
       assert.equal(chainLockProof.getChainLockProof().constructor.name, 'ChainAssetLockProofWASM')
-      assert.equal(instantLockProof.getInstantLockProof().constructor.name, 'InstantAssetLockProofWASM')
+      assert.equal(instantAssetLockProof.getInstantLockProof().constructor.name, 'InstantAssetLockProofWASM')
     })
 
     it('should allow to return object of lock', () => {
-      const instantLockProof = new wasm.AssetLockProofWASM('instant')
+      const instantLockProof = new wasm.InstantAssetLockProofWASM(instantLockBytes, transactionBytes, 0)
+
+      const instantAssetLockProof = new wasm.AssetLockProofWASM(instantLockProof)
 
       const expected = {
-        instantLock: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        transaction: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 0, 255, 255, 255, 255, 1, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0],
+        instantLock: instantLockBytes,
+        transaction: transactionBytes,
         outputIndex: 0
       }
 

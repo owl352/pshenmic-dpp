@@ -1,12 +1,12 @@
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
-use dpp::prelude::Identifier;
+use dpp::prelude::{Identifier, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
+use dpp::state_transition::identity_credit_transfer_transition::v0::IdentityCreditTransferTransitionV0;
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
-use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
@@ -35,32 +35,23 @@ impl IdentityCreditTransferWASM {
         js_sender: &JsValue,
         js_recipient: &JsValue,
         nonce: u64,
-        js_platform_version_wasm: &JsValue,
+        user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityCreditTransferWASM, JsValue> {
-        let platform_version_wasm = match js_platform_version_wasm.is_undefined() {
-            true => PlatformVersionWASM::PLATFORM_V1,
-            false => PlatformVersionWASM::try_from(js_platform_version_wasm.clone())?,
-        };
-
-        let rs_transfer_transition_creation =
-            IdentityCreditTransferTransition::default_versioned(&platform_version_wasm.into())
-                .with_js_error();
-
-        let mut rs_transition = match rs_transfer_transition_creation {
-            Ok(rs_transition) => rs_transition,
-            Err(err) => wasm_bindgen::throw_val(err),
-        };
-
         let sender: Identifier = IdentifierWASM::try_from(js_sender)?.into();
 
         let recipient: Identifier = IdentifierWASM::try_from(js_recipient)?.into();
 
-        rs_transition.set_recipient_id(recipient);
-        rs_transition.set_identity_id(sender);
-        rs_transition.set_amount(amount);
-        rs_transition.set_nonce(nonce);
-
-        Ok(IdentityCreditTransferWASM(rs_transition))
+        Ok(IdentityCreditTransferWASM(
+            IdentityCreditTransferTransition::V0(IdentityCreditTransferTransitionV0 {
+                identity_id: sender,
+                recipient_id: recipient,
+                amount,
+                nonce,
+                user_fee_increase: user_fee_increase.unwrap_or(0),
+                signature_public_key_id: 0,
+                signature: Default::default(),
+            }),
+        ))
     }
 
     #[wasm_bindgen(js_name = "bytes")]

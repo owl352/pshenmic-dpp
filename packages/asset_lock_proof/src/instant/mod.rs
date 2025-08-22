@@ -6,6 +6,7 @@ use crate::tx_out::TxOutWASM;
 use dpp::dashcore::consensus::{deserialize, serialize};
 use dpp::dashcore::{InstantLock, Transaction};
 use dpp::identity::state_transition::asset_lock_proof::InstantAssetLockProof;
+use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_utils::WithJsError;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
@@ -19,6 +20,7 @@ struct InstantAssetLockProofRAW {
     output_index: u32,
 }
 
+#[derive(Clone)]
 #[wasm_bindgen(js_name = "InstantAssetLockProofWASM")]
 pub struct InstantAssetLockProofWASM(InstantAssetLockProof);
 
@@ -133,5 +135,12 @@ impl InstantAssetLockProofWASM {
     pub fn get_instant_lock_bytes(&self) -> Vec<u8> {
         let instant_lock = self.0.instant_lock();
         serialize(instant_lock)
+    }
+
+    #[wasm_bindgen(js_name = "createIdentityId")]
+    pub fn create_identifier(&self) -> Result<IdentifierWASM, JsValue> {
+        let identifier = self.0.create_identifier().with_js_error()?;
+
+        Ok(identifier.into())
     }
 }

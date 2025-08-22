@@ -12,6 +12,7 @@ dpp = { workspace = true, features = [
     "state-transition-signing"
 ]}
 pshenmic_dpp_utils = {path = "../utils"}
+pshenmic_dpp_identifier = {path = "../identifier"}
 pshenmic_dpp_enums = {path = "../enums"}
 js-sys = "0.3.53"
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }

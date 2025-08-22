@@ -50,21 +50,19 @@ impl IdentityCreateTransitionWASM {
     pub fn new(
         js_public_keys: &js_sys::Array,
         asset_lock: &AssetLockProofWASM,
-        user_fee_increase: UserFeeIncrease,
         signature: Option<Vec<u8>>,
-        js_identity_id: &JsValue,
+        user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityCreateTransitionWASM, JsValue> {
         let public_keys: Vec<IdentityPublicKeyInCreationWASM> =
             IdentityPublicKeyInCreationWASM::vec_from_js_value(js_public_keys)?;
-        let identity_id = IdentifierWASM::try_from(js_identity_id)?;
 
         Ok(IdentityCreateTransitionWASM(IdentityCreateTransition::V0(
             IdentityCreateTransitionV0 {
                 public_keys: public_keys.iter().map(|key| key.clone().into()).collect(),
                 asset_lock_proof: asset_lock.clone().into(),
-                user_fee_increase,
+                user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature: BinaryData::from(signature.unwrap_or(vec![])),
-                identity_id: identity_id.into(),
+                identity_id: asset_lock.create_identifier()?.into(),
             },
         )))
     }
