@@ -102,20 +102,6 @@ impl AssetLockProofWASM {
         Ok(ChainAssetLockProofWASM::new(core_chain_locked_height, out_point)?.into())
     }
 
-    // #[wasm_bindgen(js_name = "fromRawObject")]
-    // pub fn from_raw_object(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
-    //     let lock_type = get_type_from_raw_asset_lock_proof(&raw_asset_lock_proof)?;
-    //
-    //     match lock_type {
-    //         AssetLockProofTypeWASM::Instant => {
-    //             Ok(InstantAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
-    //         }
-    //         AssetLockProofTypeWASM::Chain => {
-    //             Ok(ChainAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
-    //         }
-    //     }
-    // }
-
     #[wasm_bindgen(js_name = "getLockType")]
     pub fn get_lock_type(&self) -> String {
         match self.0 {

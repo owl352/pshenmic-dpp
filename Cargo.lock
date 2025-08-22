@@ -527,8 +527,8 @@ dependencies = [
 
 [[package]]
 name = "dpp"
-version = "2.0.0"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.0#bcbbad13029ee952c41fb185612e61fde2561f14"
+version = "2.0.1"
+source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1130,8 +1130,8 @@ dependencies = [
 
 [[package]]
 name = "platform-serialization"
-version = "2.0.0"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.0#bcbbad13029ee952c41fb185612e61fde2561f14"
+version = "2.0.1"
+source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
 dependencies = [
  "bincode",
  "platform-version",
@@ -1139,8 +1139,8 @@ dependencies = [
 
 [[package]]
 name = "platform-serialization-derive"
-version = "2.0.0"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.0#bcbbad13029ee952c41fb185612e61fde2561f14"
+version = "2.0.1"
+source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1150,8 +1150,8 @@ dependencies = [
 
 [[package]]
 name = "platform-value"
-version = "2.0.0"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.0#bcbbad13029ee952c41fb185612e61fde2561f14"
+version = "2.0.1"
+source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
 dependencies = [
  "base64",
  "bincode",
@@ -1169,8 +1169,8 @@ dependencies = [
 
 [[package]]
 name = "platform-version"
-version = "2.0.0"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.0#bcbbad13029ee952c41fb185612e61fde2561f14"
+version = "2.0.1"
+source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
 dependencies = [
  "bincode",
  "grovedb-version",
@@ -1181,8 +1181,8 @@ dependencies = [
 
 [[package]]
 name = "platform-versioning"
-version = "2.0.0"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.0#bcbbad13029ee952c41fb185612e61fde2561f14"
+version = "2.0.1"
+source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1255,13 +1255,14 @@ name = "pshenmic_dpp_asset_lock_proof"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "hex",
  "js-sys",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_utils",
  "serde",
  "serde-wasm-bindgen",
+ "serde_json",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]
@@ -1512,7 +1513,6 @@ dependencies = [
  "dpp",
  "js-sys",
  "serde",
- "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",
 ]
@@ -2045,16 +2045,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "web-sys"
-version = "0.3.77"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33b6dd2ef9186f1f2072e409e99cd22a975331a6b3591b12c764e0e55c60d5d2"
-dependencies = [
- "js-sys",
- "wasm-bindgen",
 ]
 
 [[package]]
