@@ -15,6 +15,7 @@ pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_identifier = {path = "../identifier"}
 pshenmic_dpp_enums = {path = "../enums"}
 js-sys = "0.3.53"
-web-sys = {version = "0.3.77", features = ["console"]}
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
 serde = { version = "1.0.197", features = ["derive"] }
+hex = "0.4.3"
+serde_json = { version = "1.0", features = ["preserve_order"] }

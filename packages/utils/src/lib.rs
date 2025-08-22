@@ -85,15 +85,6 @@ pub fn to_vec_of_platform_values(
         .collect()
 }
 
-pub fn into_vec_of<T>(iter: &[JsValue]) -> Vec<T>
-where
-    T: for<'de> serde::de::Deserialize<'de>,
-{
-    iter.iter()
-        .map(|v| serde_wasm_bindgen::from_value(v.clone()).expect("data malformed"))
-        .collect()
-}
-
 pub fn with_serde_to_json_value(data: JsValue) -> Result<JsonValue, JsValue> {
     let data = stringify(&data)?;
     let value: JsonValue = serde_json::from_str(&data)
