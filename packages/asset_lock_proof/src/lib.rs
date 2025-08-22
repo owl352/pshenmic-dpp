@@ -102,6 +102,20 @@ impl AssetLockProofWASM {
         Ok(ChainAssetLockProofWASM::new(core_chain_locked_height, out_point)?.into())
     }
 
+    // #[wasm_bindgen(js_name = "fromRawObject")]
+    // pub fn from_raw_object(raw_asset_lock_proof: JsValue) -> Result<AssetLockProofWASM, JsValue> {
+    //     let lock_type = get_type_from_raw_asset_lock_proof(&raw_asset_lock_proof)?;
+    //
+    //     match lock_type {
+    //         AssetLockProofTypeWASM::Instant => {
+    //             Ok(InstantAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
+    //         }
+    //         AssetLockProofTypeWASM::Chain => {
+    //             Ok(ChainAssetLockProofWASM::from_raw_value(raw_asset_lock_proof)?.into())
+    //         }
+    //     }
+    // }
+
     #[wasm_bindgen(js_name = "getLockType")]
     pub fn get_lock_type(&self) -> String {
         match self.0 {
@@ -133,27 +147,5 @@ impl AssetLockProofWASM {
         let json_value = self.0.to_raw_object().with_js_error()?;
 
         Ok(json_value.serialize(&serde_wasm_bindgen::Serializer::json_compatible())?)
-    }
-
-    #[wasm_bindgen(js_name = "hex")]
-    pub fn to_string(&self) -> Result<String, JsValue> {
-        Ok(hex::encode(
-            serde_json::to_string(&self.0).map_err(|err| JsValue::from(err.to_string()))?,
-        ))
-    }
-
-    #[wasm_bindgen(js_name = "fromHex")]
-    pub fn from_hex(asset_lock_proof: String) -> Result<AssetLockProofWASM, JsValue> {
-        let asset_lock_proof_bytes = hex::decode(&asset_lock_proof)
-            .map_err(|e| JsValue::from_str(&format!("Invalid asset lock proof hex: {}", e)))?;
-
-        let json_str = String::from_utf8(asset_lock_proof_bytes)
-            .map_err(|e| JsValue::from_str(&format!("Invalid UTF-8 in asset lock proof: {}", e)))?;
-
-        let asset_lock_proof = serde_json::from_str(&json_str).map_err(|e| {
-            JsValue::from_str(&format!("Failed to parse asset lock proof JSON: {}", e))
-        })?;
-
-        Ok(AssetLockProofWASM(asset_lock_proof))
     }
 }

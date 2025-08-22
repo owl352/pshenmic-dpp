@@ -35,17 +35,6 @@ describe('AssetLockProof', function () {
 
       assert.equal(chainLockProof.constructor.name, 'AssetLockProofWASM')
     })
-
-    it('should allow to serialize and deserialize asset lock in hex', () => {
-      const instantLockProof = wasm.AssetLockProofWASM.createInstantAssetLockProof(instantLockBytes, transactionBytes, 0)
-
-      const newInstantLockProof = wasm.AssetLockProofWASM.fromHex(instantLockProof.hex())
-
-      assert.equal(instantLockProof.constructor.name, 'AssetLockProofWASM')
-      assert.equal(newInstantLockProof.constructor.name, 'AssetLockProofWASM')
-
-      assert.deepEqual(newInstantLockProof.toObject(), instantLockProof.toObject())
-    })
   })
 
   describe('getters', function () {
