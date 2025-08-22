@@ -137,7 +137,7 @@ impl AssetLockProofWASM {
         }
     }
 
-    #[wasm_bindgen(js_name = "createIdentifier")]
+    #[wasm_bindgen(js_name = "createIdentityId")]
     pub fn create_identifier(&self) -> Result<IdentifierWASM, JsValue> {
         let identifier = self.0.create_identifier().with_js_error()?;
 

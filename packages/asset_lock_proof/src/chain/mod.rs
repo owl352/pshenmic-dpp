@@ -89,7 +89,7 @@ impl ChainAssetLockProofWASM {
         self.0.out_point.into()
     }
 
-    #[wasm_bindgen(js_name = "createIdentifier")]
+    #[wasm_bindgen(js_name = "createIdentityId")]
     pub fn create_identifier(&self) -> IdentifierWASM {
         let identifier = self.0.create_identifier();
 
