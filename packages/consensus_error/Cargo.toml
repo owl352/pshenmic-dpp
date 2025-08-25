@@ -1,0 +1,14 @@
+[package]
+name = "pshenmic_dpp_consensus_error"
+version.workspace = true
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+dpp = { workspace = true, features = [
+    "platform-value",
+]}
+pshenmic_dpp_utils = {path = "../utils"}
