@@ -76,9 +76,9 @@ impl StateTransitionWASM {
         key_id: KeyID,
         js_key_type: JsValue,
     ) -> Result<Vec<u8>, JsValue> {
-        let key_type =match js_key_type.is_undefined() { 
+        let key_type = match js_key_type.is_undefined() {
             true => KeyTypeWASM::ECDSA_SECP256K1,
-            false => KeyTypeWASM::try_from(js_key_type)?
+            false => KeyTypeWASM::try_from(js_key_type)?,
         };
 
         let _sig = self
@@ -89,7 +89,7 @@ impl StateTransitionWASM {
                 &MockBLS {},
             )
             .with_js_error();
-        
+
         self.0.set_signature_public_key_id(key_id);
 
         self.0.serialize_to_bytes().with_js_error()
