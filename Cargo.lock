@@ -1233,11 +1233,12 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "1.0.21-rc.1"
+version = "1.0.21-rc.2"
 dependencies = [
  "bincode",
  "bincode_derive",
  "pshenmic_dpp_batch",
+ "pshenmic_dpp_consensus_error",
  "pshenmic_dpp_data_contract",
  "pshenmic_dpp_data_contract_transitions",
  "pshenmic_dpp_document_search",
@@ -1282,6 +1283,15 @@ dependencies = [
  "pshenmic_dpp_token_configuration_change_item",
  "pshenmic_dpp_utils",
  "serde-wasm-bindgen",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "pshenmic_dpp_consensus_error"
+version = "1.0.5"
+dependencies = [
+ "dpp",
+ "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
 
