@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.0.21-rc.1"
+version = "1.0.21-rc.2"
 edition = "2024"
 rust-version = "1.85"
 
@@ -33,8 +33,11 @@ members = [
     "packages/encrypted_note",
     "packages/token_configuration_change_item",
     "packages/token_configuration",
-    "packages/masternode_vote"
-, "packages/contract_bounds", "packages/public_key"]
+    "packages/masternode_vote",
+    "packages/contract_bounds",
+    "packages/public_key",
+    "packages/consensus_error"
+]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -43,6 +46,7 @@ crate-type = ["cdylib", "lib"]
 wee_alloc = { version = "0.4.5", default-features = false }
 bincode = "=2.0.0-rc.3"
 bincode_derive = "=2.0.0-rc.3"
+pshenmic_dpp_consensus_error = { path = "packages/consensus_error" }
 pshenmic_dpp_document_search = { path = "packages/cbor_conversation" }
 pshenmic_dpp_batch = { path = "packages/batch" }
 pshenmic_dpp_identity = { path = "packages/identity" }
