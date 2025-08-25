@@ -25,8 +25,11 @@ if [[ "${OSTYPE}" == "darwin"* ]]; then
   AR=${AR_PATH} CC=${CLANG_PATH} ${BUILD_COMMAND}
   AR=${AR_PATH} CC=${CLANG_PATH} ${BINDGEN_COMMAND}
 else
+  echo "Build"
   ${BUILD_COMMAND}
+  echo "Strip"
   ${STRIP_COMMAND}
+  echo "Bindgen"
   ${BINDGEN_COMMAND}
 fi
 
