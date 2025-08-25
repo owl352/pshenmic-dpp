@@ -9,7 +9,7 @@ PROFILE=release
 
 OUTPUT_FILE="${PWD}/wasm/pshenmic_dpp_bg.wasm"
 
-RUSTFLAGS="-C link-arg=--initial-memory=1179648 -C link-arg=--max-memory=5767168 -C target-feature=+crt-static -C embed-bitcode=no -C metadata=reduced -C link-dead-code=no -C panic=abort"
+RUSTFLAGS="-C link-arg=--initial-memory=1190400 -C link-arg=--max-memory=5767168 -C target-feature=+crt-static -C embed-bitcode=no -C metadata=reduced -C link-dead-code=no -C panic=abort"
 
 BUILD_COMMAND="cargo build --config net.git-fetch-with-cli=true --target=${TARGET} ${PROFILE_ARG}"
 STRIP_COMMAND="wasm-snip ${PWD}/target/${TARGET}/${PROFILE}/pshenmic_dpp.wasm -o ${PWD}/target/${TARGET}/${PROFILE}/pshenmic_dpp.wasm --snip-rust-fmt-code --snip-rust-panicking-code"
@@ -22,7 +22,8 @@ fi
 if [[ "${OSTYPE}" == "darwin"* ]]; then
   AR_PATH=$(command -v llvm-ar)
   CLANG_PATH=$(command -v clang)
-  AR=${AR_PATH} CC=${CLANG_PATH} ${BUILD_COMMAND}
+  AR=${AR_PATH} CC=${CLANG_PATH} RUSTFLAGS=${RUSTFLAGS} ${BUILD_COMMAND}
+  AR=${AR_PATH} CC=${CLANG_PATH} ${STRIP_COMMAND}
   AR=${AR_PATH} CC=${CLANG_PATH} ${BINDGEN_COMMAND}
 else
   echo "Build"
