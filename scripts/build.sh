@@ -20,18 +20,11 @@ if ! [[ -d ${OUTPUT_DIR} ]]; then
 fi
 
 if [[ "${OSTYPE}" == "darwin"* ]]; then
-#  AR_PATH=$(command -v llvm-ar)
-#  CLANG_PATH=$(command -v clang)
-#  AR=${AR_PATH} CC=${CLANG_PATH} ${BUILD_COMMAND}
-#  AR=${AR_PATH} CC=${CLANG_PATH} ${STRIP_COMMAND}
-#  AR=${AR_PATH} CC=${CLANG_PATH} ${BINDGEN_COMMAND}
-
-  echo "Build"
-  ${BUILD_COMMAND}
-  echo "Strip"
-  ${STRIP_COMMAND}
-  echo "Bindgen"
-  ${BINDGEN_COMMAND}
+  AR_PATH=$(command -v llvm-ar)
+  CLANG_PATH=$(command -v clang)
+  AR=${AR_PATH} CC=${CLANG_PATH} ${BUILD_COMMAND}
+  AR=${AR_PATH} CC=${CLANG_PATH} ${STRIP_COMMAND}
+  AR=${AR_PATH} CC=${CLANG_PATH} ${BINDGEN_COMMAND}
 else
   echo "Build"
   ${BUILD_COMMAND}
@@ -41,43 +34,43 @@ else
   ${BINDGEN_COMMAND}
 fi
 
-#if command -v wasm-opt &> /dev/null; then
-#  echo "Optimizing wasm using Binaryen"
-#  wasm-opt \
-#    --code-folding \
-#    --const-hoisting \
-#    --abstract-type-refining \
-#    --dce \
-#    --strip-producers \
-#    -Oz \
-#    --generate-global-effects \
-#    --enable-bulk-memory \
-#    --enable-nontrapping-float-to-int  \
-#    -tnh \
-#    --flatten \
-#    --rereloop \
-#    -Oz \
-#    --converge \
-#    --vacuum \
-#    --dce \
-#    --gsi \
-#    --inlining-optimizing \
-#    --merge-blocks \
-#    --simplify-locals \
-#    --optimize-added-constants \
-#    --optimize-casts \
-#    --optimize-instructions \
-#    --optimize-stack-ir \
-#    --remove-unused-brs \
-#    --remove-unused-module-elements \
-#    --remove-unused-names \
-#    --remove-unused-types \
-#    --post-emscripten \
-#    -Oz \
-#    -Oz \
-#    "${OUTPUT_FILE}" \
-#    -o \
-#    "${OUTPUT_FILE}"
-#else
-#  echo "wasm-opt command not found. Skipping wasm optimization."
-#fi
+if command -v wasm-opt &> /dev/null; then
+  echo "Optimizing wasm using Binaryen"
+  wasm-opt \
+    --code-folding \
+    --const-hoisting \
+    --abstract-type-refining \
+    --dce \
+    --strip-producers \
+    -Oz \
+    --generate-global-effects \
+    --enable-bulk-memory \
+    --enable-nontrapping-float-to-int  \
+    -tnh \
+    --flatten \
+    --rereloop \
+    -Oz \
+    --converge \
+    --vacuum \
+    --dce \
+    --gsi \
+    --inlining-optimizing \
+    --merge-blocks \
+    --simplify-locals \
+    --optimize-added-constants \
+    --optimize-casts \
+    --optimize-instructions \
+    --optimize-stack-ir \
+    --remove-unused-brs \
+    --remove-unused-module-elements \
+    --remove-unused-names \
+    --remove-unused-types \
+    --post-emscripten \
+    -Oz \
+    -Oz \
+    "${OUTPUT_FILE}" \
+    -o \
+    "${OUTPUT_FILE}"
+else
+  echo "wasm-opt command not found. Skipping wasm optimization."
+fi
