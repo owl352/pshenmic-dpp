@@ -54,7 +54,7 @@ impl DocumentWASM {
 
         let entropy = entropy_generator::DefaultEntropyGenerator
             .generate()
-            .unwrap();
+            .map_err(|err| JsValue::from(err.to_string()))?;
 
         let document_id: IdentifierWASM = match js_document_id.is_undefined() {
             true => pshenmic_dpp_utils::generate_document_id_v0(
