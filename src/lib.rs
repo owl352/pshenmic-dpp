@@ -1,11 +1,22 @@
 #![no_std]
 #![no_main]
 
-extern crate wee_alloc;
+// extern crate wee_alloc;
 
 // allows to save 7 kb
+// #[global_allocator]
+// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 #[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+static ALLOCATOR: talc::Talck<talc::locking::AssumeUnlockable, talc::ClaimOnOom> = unsafe {
+    use core::{mem::MaybeUninit, ptr::addr_of_mut};
+
+    const MEMORY_SIZE: usize = 72 * 1024 * 1024;
+    static mut MEMORY: [MaybeUninit<u8>; MEMORY_SIZE] = [MaybeUninit::uninit(); MEMORY_SIZE];
+    let span = talc::Span::from_array(addr_of_mut!(MEMORY));
+    let oom_handler = { talc::ClaimOnOom::new(span) };
+    talc::Talc::new(oom_handler).lock()
+};
 
 pub use pshenmic_dpp_batch;
 pub use pshenmic_dpp_consensus_error;
