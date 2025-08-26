@@ -1,12 +1,6 @@
 #![no_std]
 #![no_main]
 
-// extern crate wee_alloc;
-
-// allows to save 7 kb
-// #[global_allocator]
-// static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[global_allocator]
 static ALLOCATOR: talc::Talck<talc::locking::AssumeUnlockable, talc::ClaimOnOom> = unsafe {
     use core::{mem::MaybeUninit, ptr::addr_of_mut};
