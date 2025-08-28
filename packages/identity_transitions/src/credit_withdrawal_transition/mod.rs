@@ -1,4 +1,5 @@
 use dpp::identity::KeyID;
+use dpp::identity::core_script::CoreScript;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::Identifier;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
@@ -7,7 +8,7 @@ use dpp::prelude::{IdentityNonce, UserFeeIncrease};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::identity_credit_withdrawal_transition::IdentityCreditWithdrawalTransition;
 use dpp::state_transition::identity_credit_withdrawal_transition::accessors::IdentityCreditWithdrawalTransitionAccessorsV0;
-use dpp::state_transition::identity_credit_withdrawal_transition::v0::IdentityCreditWithdrawalTransitionV0;
+use dpp::state_transition::identity_credit_withdrawal_transition::v1::IdentityCreditWithdrawalTransitionV1;
 use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_core_script::CoreScriptWASM;
@@ -40,20 +41,30 @@ impl IdentityCreditWithdrawalTransitionWASM {
         amount: u64,
         core_fee_per_byte: u32,
         js_pooling: JsValue,
-        output_script: &CoreScriptWASM,
+        js_output_script: &JsValue,
         nonce: Option<IdentityNonce>,
         user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityCreditWithdrawalTransitionWASM, JsValue> {
         let pooling = PoolingWASM::try_from(js_pooling)?;
         let identity_id: Identifier = IdentifierWASM::try_from(js_identity_id)?.into();
 
+        let output_script: Option<CoreScript> = match js_output_script.is_undefined() {
+            true => None,
+            false => Some(
+                js_output_script
+                    .to_wasm::<CoreScriptWASM>("CoreScriptWASM")?
+                    .clone()
+                    .into(),
+            ),
+        };
+
         Ok(IdentityCreditWithdrawalTransitionWASM(
-            IdentityCreditWithdrawalTransition::V0(IdentityCreditWithdrawalTransitionV0 {
-                identity_id,
+            IdentityCreditWithdrawalTransition::V1(IdentityCreditWithdrawalTransitionV1 {
                 amount,
+                identity_id,
+                output_script,
                 core_fee_per_byte,
                 pooling: pooling.into(),
-                output_script: output_script.clone().into(),
                 nonce: nonce.unwrap_or(0),
                 user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: 0,
