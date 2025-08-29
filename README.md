@@ -1,5 +1,4 @@
 # PSHENMIC-DPP
-### **AT THIS MOMENT MODULE UNDER DEVELOPMENT**
 
 ## General
 Pshenmic-dpp is package with rust bindings for JS 
