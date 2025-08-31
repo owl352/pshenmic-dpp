@@ -16,7 +16,6 @@ use dpp::state_transition::batch_transition::{
     DocumentCreateTransition, DocumentDeleteTransition, DocumentReplaceTransition,
 };
 use pshenmic_dpp_document::DocumentWASM;
-use wasm_bindgen::JsValue;
 
 pub fn generate_create_transition(
     document: DocumentWASM,
