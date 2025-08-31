@@ -8,7 +8,7 @@ use dpp::state_transition::batch_transition::document_base_transition::document_
 use dpp::state_transition::batch_transition::document_create_transition::v0::v0_methods::DocumentCreateTransitionV0Methods;
 use dpp::state_transition::batch_transition::DocumentCreateTransition;
 use pshenmic_dpp_document::DocumentWASM;
-use pshenmic_dpp_utils::ToSerdeJSONExt;
+use pshenmic_dpp_utils::{IntoWasm, ToSerdeJSONExt};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use crate::prefunded_voting_balance::PrefundedVotingBalanceWASM;
@@ -45,11 +45,18 @@ impl DocumentCreateTransitionWASM {
     pub fn new(
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
+        js_prefunded_voting_balance: &JsValue
     ) -> Result<DocumentCreateTransitionWASM, JsValue> {
+        let prefunded_voting_balance = match js_prefunded_voting_balance.is_undefined() | js_prefunded_voting_balance.is_null() { 
+            true => None,
+            false => Some(js_prefunded_voting_balance.to_wasm::<PrefundedVotingBalanceWASM>("PrefundedVotingBalanceWASM")?.clone())
+        };
+        
         let rs_create_transition = generate_create_transition(
             document.clone(),
             identity_contract_nonce,
             document.get_document_type_name().to_string(),
+            prefunded_voting_balance
         );
 
         Ok(DocumentCreateTransitionWASM(rs_create_transition))
