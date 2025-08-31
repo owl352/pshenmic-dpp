@@ -1,8 +1,12 @@
+use crate::token_payment_info::TokenPaymentInfoWASM;
 use dpp::prelude::IdentityNonce;
 use dpp::state_transition::batch_transition::document_base_transition::DocumentBaseTransition;
-use dpp::state_transition::batch_transition::document_base_transition::v0::DocumentBaseTransitionV0;
 use dpp::state_transition::batch_transition::document_base_transition::v0::v0_methods::DocumentBaseTransitionV0Methods;
+use dpp::state_transition::batch_transition::document_base_transition::v1::DocumentBaseTransitionV1;
+use dpp::state_transition::batch_transition::document_base_transition::v1::v1_methods::DocumentBaseTransitionV1Methods;
+use dpp::tokens::token_payment_info::TokenPaymentInfo;
 use pshenmic_dpp_identifier::IdentifierWASM;
+use pshenmic_dpp_utils::IntoWasm;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -40,16 +44,29 @@ impl DocumentBaseTransitionWASM {
         identity_contract_nonce: IdentityNonce,
         document_type_name: String,
         js_data_contract_id: &JsValue,
+        js_token_payment_info: &JsValue,
     ) -> Result<DocumentBaseTransitionWASM, JsValue> {
-        let rs_base_v0 = DocumentBaseTransitionV0 {
+        let token_payment_info: Option<TokenPaymentInfo> =
+            match js_token_payment_info.is_null() | js_token_payment_info.is_undefined() {
+                true => None,
+                false => Some(
+                    js_token_payment_info
+                        .to_wasm::<TokenPaymentInfoWASM>("TokenPaymentInfoWASM")?
+                        .clone()
+                        .into(),
+                ),
+            };
+
+        let rs_base_v1 = DocumentBaseTransitionV1 {
             id: IdentifierWASM::try_from(js_document_id)?.into(),
             identity_contract_nonce,
             document_type_name,
             data_contract_id: IdentifierWASM::try_from(js_data_contract_id)?.into(),
+            token_payment_info,
         };
 
         Ok(DocumentBaseTransitionWASM(DocumentBaseTransition::from(
-            rs_base_v0,
+            rs_base_v1,
         )))
     }
 
@@ -73,6 +90,14 @@ impl DocumentBaseTransitionWASM {
         self.0.document_type_name().to_string()
     }
 
+    #[wasm_bindgen(getter = "tokenPaymentInfo")]
+    pub fn get_token_payment_info(&self) -> Option<TokenPaymentInfoWASM> {
+        match self.0.token_payment_info() {
+            None => None,
+            Some(info) => Some(info.into()),
+        }
+    }
+
     #[wasm_bindgen(setter = "id")]
     pub fn set_id(&mut self, js_id: &JsValue) -> Result<(), JsValue> {
         self.0.set_id(IdentifierWASM::try_from(js_id)?.into());
@@ -94,5 +119,11 @@ impl DocumentBaseTransitionWASM {
     #[wasm_bindgen(setter = "documentTypeName")]
     pub fn set_document_type_name(&mut self, document_type_name: String) {
         self.0.set_document_type_name(document_type_name)
+    }
+
+    #[wasm_bindgen(setter = "tokenPaymentInfo")]
+    pub fn set_token_payment_info(&mut self, token_payment_info: &TokenPaymentInfoWASM) {
+        self.0
+            .set_token_payment_info(token_payment_info.clone().into())
     }
 }
