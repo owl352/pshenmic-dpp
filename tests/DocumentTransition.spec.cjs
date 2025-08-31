@@ -10,8 +10,8 @@ let replaceTransition
 describe('DocumentTransition', function () {
   before(async function () {
     documentInstance = new wasm.DocumentWASM(document, documentTypeName, revision, dataContractId, ownerId, id)
-    createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1), 'note')
-    replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1), 'preorder')
+    createTransition = new wasm.DocumentCreateTransitionWASM(documentInstance, BigInt(1))
+    replaceTransition = new wasm.DocumentReplaceTransitionWASM(documentInstance, BigInt(1))
   })
 
   describe('serialization / deserialization', function () {
