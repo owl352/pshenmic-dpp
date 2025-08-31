@@ -97,4 +97,6 @@ export class DashPlatformProtocolWASM {
     cborToObject: typeof DPP.cborToObject
     objectToCbor: typeof DPP.objectToCbor
     initSync: typeof DPP.initSync
+    verifyDocumentsProof: typeof DPP.verifyDocumentsProof
+    verifySignatureDigest: typeof DPP.verifySignatureDigest
 }
