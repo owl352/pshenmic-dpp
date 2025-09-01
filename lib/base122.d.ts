@@ -1,0 +1,1 @@
+export function decodeBase122 (base122: Uint8Array | string): Uint8Array;

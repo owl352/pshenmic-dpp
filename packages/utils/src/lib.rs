@@ -1,5 +1,3 @@
-mod buffer;
-
 use anyhow::{Context, anyhow, bail};
 use dpp::ProtocolError;
 use dpp::identifier::Identifier;
@@ -7,7 +5,6 @@ use dpp::platform_value::Value;
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::util::hash::hash_double_to_vec;
 use js_sys::{Function, Uint8Array};
-use serde::de::DeserializeOwned;
 use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
 use std::convert::TryInto;
@@ -20,9 +17,6 @@ pub trait ToSerdeJSONExt {
     /// Converts the `JsValue` into `platform::Value`. It's an expensive conversion,
     /// as `JsValue` must be stringified first
     fn with_serde_to_platform_value_map(&self) -> Result<BTreeMap<String, Value>, JsValue>;
-    fn with_serde_into<D: DeserializeOwned>(&self) -> Result<D, JsValue>
-    where
-        D: for<'de> serde::de::Deserialize<'de> + 'static;
 }
 
 impl ToSerdeJSONExt for JsValue {
@@ -45,15 +39,6 @@ impl ToSerdeJSONExt for JsValue {
             .into_btree_string_map()
             .map_err(ProtocolError::ValueError)
             .with_js_error()
-    }
-
-    /// converts the `JsValue` into any type that is supported by serde. It's an expensive conversion
-    /// as the `jsValue` must be stringified first
-    fn with_serde_into<D>(&self) -> Result<D, JsValue>
-    where
-        D: for<'de> serde::de::Deserialize<'de> + 'static,
-    {
-        with_serde_into(self)
     }
 }
 
@@ -95,17 +80,6 @@ pub fn with_serde_to_json_value(data: JsValue) -> Result<JsonValue, JsValue> {
 
 pub fn with_serde_to_platform_value(data: &JsValue) -> Result<Value, JsValue> {
     Ok(with_serde_to_json_value(data.clone())?.into())
-}
-
-pub fn with_serde_into<D>(data: &JsValue) -> Result<D, JsValue>
-where
-    D: for<'de> serde::de::Deserialize<'de> + 'static,
-{
-    let data = stringify(data)?;
-    let value: D = serde_json::from_str(&data)
-        .with_context(|| format!("cant convert {:#?} to serde json value", data))
-        .map_err(|e| format!("{:#}", e))?;
-    Ok(value)
 }
 
 pub fn stringify(data: &JsValue) -> Result<String, JsValue> {
@@ -187,29 +161,6 @@ pub fn generic_of_js_val<T: RefFromWasmAbi<Abi = u32>>(
     }
 }
 
-pub const SKIP_VALIDATION_PROPERTY_NAME: &str = "skipValidation";
-
-pub fn get_bool_from_options(
-    options: JsValue,
-    property: &str,
-    default: bool,
-) -> Result<bool, JsValue> {
-    if options.is_object() {
-        let val2 = options.with_serde_to_json_value()?;
-        let kek = val2
-            .as_object()
-            .ok_or_else(|| JsError::new("Can't parse options"))?;
-        let kek2 = kek
-            .get(property)
-            .ok_or_else(|| JsError::new(&format!("Can't get property {} of options", property)))?;
-        Ok(kek2
-            .as_bool()
-            .ok_or_else(|| JsError::new(&format!("Option {} is not a boolean", property)))?)
-    } else {
-        Ok(default)
-    }
-}
-
 pub fn get_class_type(value: &JsValue) -> Result<String, JsValue> {
     let class_type = js_sys::Reflect::get(&value, &JsValue::from_str("__type"));
 
@@ -269,37 +220,6 @@ pub fn generate_document_id_v0(
     Identifier::from_bytes(&hash_double_to_vec(&buf)).map_err(|e| JsValue::from(e.to_string()))
 }
 
-#[wasm_bindgen(raw_module = "../identifier_utils/Identifier.js")]
-extern "C" {
-    #[derive(Debug, Clone)]
-    #[wasm_bindgen(js_name = default)]
-    pub type IdentifierWrapper; // Rename to IdentifierJS?
-
-    #[wasm_bindgen(constructor, js_class=default)]
-    pub fn new(buffer: JsValue) -> IdentifierWrapper;
-
-    #[wasm_bindgen(method, js_name=toBuffer)]
-    pub fn to_buffer(this: &IdentifierWrapper) -> Vec<u8>;
-}
-
-impl From<Identifier> for IdentifierWrapper {
-    fn from(s: Identifier) -> Self {
-        IdentifierWrapper::new(buffer::Buffer::from_bytes(s.as_slice()).into())
-    }
-}
-
-impl From<IdentifierWrapper> for Identifier {
-    fn from(s: IdentifierWrapper) -> Self {
-        Identifier::from_bytes(&s.to_buffer()).unwrap()
-    }
-}
-
-impl From<&IdentifierWrapper> for Identifier {
-    fn from(s: &IdentifierWrapper) -> Self {
-        Identifier::from_bytes(&s.to_buffer()).unwrap()
-    }
-}
-
 // Try to extract Identifier from **stringified** identifier_utils.
 // The `js_value` can be a stringified instance of: `Identifier`, `Buffer` or `Array`
 pub fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier, JsValue> {
@@ -325,14 +245,4 @@ pub fn identifier_from_js_value(js_value: &JsValue) -> Result<Identifier, JsValu
             false => Err(JsValue::from_str("Invalid ID. Expected array or string")),
         },
     }
-}
-
-pub fn value_to_u8(v: serde_json::Value) -> Result<u8, JsValue> {
-    let number = v
-        .as_u64()
-        .ok_or_else(|| format!("failed converting {} into u64", v))?;
-    if number > u8::MAX as u64 {
-        JsValue::from_str("the integer in the array isn't a byte");
-    }
-    Ok(number as u8)
 }

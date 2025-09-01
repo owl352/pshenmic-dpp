@@ -2,6 +2,8 @@ import * as DPP from './pshenmic_dpp';
 
 export * from './pshenmic_dpp'
 
+export * from './base122'
+
 export default dpp;
 
 declare const dpp: DashPlatformProtocolWASM;

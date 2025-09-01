@@ -20,13 +20,13 @@ ___
 
 **NOTE. If you want to use ES6 module without CJS, you need to run `yarn babel`**
 
-### Build with binary instead base64
+### Build with binary instead base122
 `yarn build:raw`
-Now you can import `.js` with base64 buffer for WebAssembly module, or binary which smaller
+Now you can import `.js` with base122 buffer for WebAssembly module, or binary which smaller
 ___
 ## Why you need to use `pshenmic-dpp` instead `wasm-dpp`
 
-- `pshenmic-dpp` weighs much less, currently taking up only 2.8 mb in base64 format
+- `pshenmic-dpp` weighs much less, currently taking up only 3.6 mb in base122 format
 - You can build only necessary modules by removing imports from `lib.rs` before building
 - More accurately replicates `rs-dpp`
 - Some sugar, like enums, which you can pass in string with any case or just use numbers
@@ -130,16 +130,7 @@ yarn tests
 ## Example
 
 ```js
-import * as wasm from '../wasm/pshenmic_dpp';
-import wasmBytes from "../wasm/pshenmic_dpp_bg"
-
-let binaryString = atob(wasmBytes);
-let bytes = new Uint8Array(binaryString.length);
-for (let i = 0; i < binaryString.length; i++) {
-  bytes[i] = binaryString.charCodeAt(i);
-}
-
-wasm.initSync({module: bytes.buffer})
+import wasm from pshenmic_dpp';
 
 const document = new wasm.DocumentWASM(
     {
