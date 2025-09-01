@@ -1,3 +1,4 @@
+use crate::prefunded_voting_balance::PrefundedVotingBalanceWASM;
 use dpp::fee::Credits;
 use dpp::prelude::{Identifier, IdentityNonce};
 use dpp::state_transition::batch_transition::batched_transition::document_purchase_transition::DocumentPurchaseTransitionV0;
@@ -20,6 +21,7 @@ pub fn generate_create_transition(
     document: DocumentWASM,
     identity_contract_nonce: IdentityNonce,
     document_type_name: String,
+    prefunded_voting_balance: Option<PrefundedVotingBalanceWASM>,
 ) -> DocumentCreateTransition {
     DocumentCreateTransition::V0(DocumentCreateTransitionV0 {
         base: DocumentBaseTransition::V0(DocumentBaseTransitionV0 {
@@ -30,7 +32,7 @@ pub fn generate_create_transition(
         }),
         entropy: document.rs_get_entropy().unwrap(),
         data: document.rs_get_properties(),
-        prefunded_voting_balance: None,
+        prefunded_voting_balance: prefunded_voting_balance.map(|pb| pb.into()),
     })
 }
 
