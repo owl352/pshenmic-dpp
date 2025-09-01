@@ -64,12 +64,13 @@ pub fn verify_document_proof(
         false => parse_query_internal_clause(js_where_clauses)?,
     };
 
-    let start_at_bytes = match js_start_at.is_undefined() |js_start_at.is_null() {
+    let start_at_bytes = match js_start_at.is_undefined() | js_start_at.is_null() {
         true => None,
         false => Some(IdentifierWASM::try_from(js_start_at.clone())?.to_slice()),
     };
 
-    let platform_version = match js_platform_version.is_undefined() | js_platform_version.is_null() {
+    let platform_version = match js_platform_version.is_undefined() | js_platform_version.is_null()
+    {
         true => PlatformVersionWASM::default(),
         false => PlatformVersionWASM::try_from(js_platform_version)?,
     };
@@ -95,7 +96,7 @@ pub fn verify_document_proof(
     let (root_hash, documents) = query
         .verify_proof(&proof.to_vec(), &platform_version.into())
         .map_err(|e| JsValue::from(e.to_string()))?;
-    
+
     let wasm_documents = documents
         .iter()
         .map(|doc| DocumentWASM::from(doc.clone()))
