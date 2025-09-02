@@ -8,7 +8,7 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
-drive = { git = "https://github.com/dashpay/platform", tag = "v2.0.1", default-features = false, features = ["verify"] }
+drive = { workspace = true, features = ["verify"] }
 dpp = { workspace = true, features = [
     "bls-signatures",
     "platform-value"
