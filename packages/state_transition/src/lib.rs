@@ -93,7 +93,7 @@ impl StateTransitionWASM {
     pub fn sign_by_private_key(
         &mut self,
         private_key: &PrivateKeyWASM,
-        key_id: KeyID,
+        key_id: Option<KeyID>,
         js_key_type: JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let key_type = match js_key_type.is_undefined() {
@@ -110,7 +110,9 @@ impl StateTransitionWASM {
             )
             .with_js_error();
 
-        self.0.set_signature_public_key_id(key_id);
+        if key_id.is_some() {
+            self.0.set_signature_public_key_id(key_id.unwrap());
+        }
 
         self.0.serialize_to_bytes().with_js_error()
     }

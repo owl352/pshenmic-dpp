@@ -12,6 +12,7 @@ use pshenmic_dpp_utils::{IntoWasm, ToSerdeJSONExt};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use crate::prefunded_voting_balance::PrefundedVotingBalanceWASM;
+use crate::token_payment_info::TokenPaymentInfoWASM;
 
 #[wasm_bindgen(js_name = "DocumentCreateTransitionWASM")]
 #[derive(Clone)]
@@ -46,6 +47,7 @@ impl DocumentCreateTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         js_prefunded_voting_balance: &JsValue,
+        js_token_payment_info: &JsValue,
     ) -> Result<DocumentCreateTransitionWASM, JsValue> {
         let prefunded_voting_balance = match js_prefunded_voting_balance.is_undefined()
             | js_prefunded_voting_balance.is_null()
@@ -58,11 +60,22 @@ impl DocumentCreateTransitionWASM {
             ),
         };
 
+        let token_payment_info =
+            match js_token_payment_info.is_null() | js_token_payment_info.is_undefined() {
+                true => None,
+                false => Some(
+                    js_token_payment_info
+                        .to_wasm::<TokenPaymentInfoWASM>("TokenPaymentInfoWASM")?
+                        .clone(),
+                ),
+            };
+
         let rs_create_transition = generate_create_transition(
             document.clone(),
             identity_contract_nonce,
             document.get_document_type_name().to_string(),
             prefunded_voting_balance,
+            token_payment_info,
         );
 
         Ok(DocumentCreateTransitionWASM(rs_create_transition))
