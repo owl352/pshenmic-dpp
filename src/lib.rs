@@ -16,7 +16,7 @@ pub use pshenmic_dpp_batch;
 pub use pshenmic_dpp_consensus_error;
 pub use pshenmic_dpp_data_contract;
 pub use pshenmic_dpp_data_contract_transitions;
-pub use pshenmic_dpp_document_search;
+// pub use pshenmic_dpp_cbor;
 pub use pshenmic_dpp_enums;
 pub use pshenmic_dpp_identifier;
 pub use pshenmic_dpp_identity;

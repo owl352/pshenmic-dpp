@@ -50,7 +50,7 @@ bincode = "=2.0.0-rc.3"
 bincode_derive = "=2.0.0-rc.3"
 pshenmic_dpp_verify = {path = "packages/verify"}
 pshenmic_dpp_consensus_error = { path = "packages/consensus_error" }
-pshenmic_dpp_document_search = { path = "packages/cbor_conversation" }
+pshenmic_dpp_cbor = { path = "packages/cbor_conversation" }
 pshenmic_dpp_batch = { path = "packages/batch" }
 pshenmic_dpp_identity = { path = "packages/identity" }
 pshenmic_dpp_identifier = { path = "packages/identifier" }

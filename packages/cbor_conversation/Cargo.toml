@@ -1,5 +1,5 @@
 [package]
-name = "pshenmic_dpp_document_search"
+name = "pshenmic_dpp_cbor"
 version.workspace = true
 edition = "2024"
 
