@@ -1,2 +1,2 @@
-mod verify_token_balances_for_identities;
-mod verify_tokens_balances_for_identity;
+pub mod verify_token_balances_for_identities;
+pub mod verify_tokens_balances_for_identity;

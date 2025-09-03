@@ -1,6 +1,5 @@
 use dpp::balances::credits::TokenAmount;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
-use dpp::identifier::Identifier;
 use drive::verify::RootHash;
 use js_sys::{Array, Object, Reflect, Uint8Array};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
