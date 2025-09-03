@@ -7,9 +7,11 @@ use dpp::state_transition::batch_transition::document_base_transition::document_
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_document::DocumentWASM;
+use pshenmic_dpp_utils::IntoWasm;
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_purchase_transition;
+use crate::token_payment_info::TokenPaymentInfoWASM;
 
 #[wasm_bindgen(js_name = "DocumentPurchaseTransitionWASM")]
 pub struct DocumentPurchaseTransitionWASM(DocumentPurchaseTransition);
@@ -43,12 +45,24 @@ impl DocumentPurchaseTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         amount: Credits,
+        js_token_payment_info: &JsValue,
     ) -> Result<DocumentPurchaseTransitionWASM, JsValue> {
+        let token_payment_info =
+            match js_token_payment_info.is_null() | js_token_payment_info.is_undefined() {
+                true => None,
+                false => Some(
+                    js_token_payment_info
+                        .to_wasm::<TokenPaymentInfoWASM>("TokenPaymentInfoWASM")?
+                        .clone(),
+                ),
+            };
+
         let rs_purchase_transition = generate_purchase_transition(
             document.clone(),
             identity_contract_nonce,
             document.get_document_type_name().to_string(),
             amount,
+            token_payment_info,
         );
 
         Ok(DocumentPurchaseTransitionWASM(rs_purchase_transition))

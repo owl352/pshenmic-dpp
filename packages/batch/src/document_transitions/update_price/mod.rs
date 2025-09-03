@@ -7,9 +7,11 @@ use dpp::state_transition::batch_transition::document_base_transition::document_
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 use pshenmic_dpp_document::DocumentWASM;
+use pshenmic_dpp_utils::IntoWasm;
 use crate::document_base_transition::DocumentBaseTransitionWASM;
 use crate::document_transition::DocumentTransitionWASM;
 use crate::generators::generate_update_price_transition;
+use crate::token_payment_info::TokenPaymentInfoWASM;
 
 #[wasm_bindgen(js_name = "DocumentUpdatePriceTransitionWASM")]
 pub struct DocumentUpdatePriceTransitionWASM(DocumentUpdatePriceTransition);
@@ -37,12 +39,24 @@ impl DocumentUpdatePriceTransitionWASM {
         document: &DocumentWASM,
         identity_contract_nonce: IdentityNonce,
         price: Credits,
+        js_token_payment_info: &JsValue,
     ) -> Result<DocumentUpdatePriceTransitionWASM, JsValue> {
+        let token_payment_info =
+            match js_token_payment_info.is_null() | js_token_payment_info.is_undefined() {
+                true => None,
+                false => Some(
+                    js_token_payment_info
+                        .to_wasm::<TokenPaymentInfoWASM>("TokenPaymentInfoWASM")?
+                        .clone(),
+                ),
+            };
+
         let rs_document_update_price_transition = generate_update_price_transition(
             document.clone(),
             identity_contract_nonce,
             document.get_document_type_name().to_string(),
             price,
+            token_payment_info,
         );
 
         Ok(DocumentUpdatePriceTransitionWASM(
