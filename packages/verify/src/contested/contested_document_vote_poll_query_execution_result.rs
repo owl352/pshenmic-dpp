@@ -59,31 +59,19 @@ impl ContestedDocumentVotePollQueryExecutionResultWASM {
 
                 match winner_info.0 {
                     ContestedDocumentVotePollWinnerInfo::NoWinner => {
-                        Reflect::set(
-                            &winner,
-                            &JsValue::from_str("type"),
-                            &JsValue::from_str("NoWinner"),
-                        )
-                        .map_err(|_| JsValue::from_str("Failed to set winner type"))?;
+                        Reflect::set(&winner, &"type".into(), &"NoWinner".into())
+                            .map_err(|_| JsValue::from_str("Failed to set winner type"))?;
                     }
                     ContestedDocumentVotePollWinnerInfo::Locked => {
-                        Reflect::set(
-                            &winner,
-                            &JsValue::from_str("type"),
-                            &JsValue::from_str("Locked"),
-                        )
-                        .map_err(|_| JsValue::from_str("Failed to set winner type"))?;
+                        Reflect::set(&winner, &"type".into(), &"Locked".into())
+                            .map_err(|_| JsValue::from_str("Failed to set winner type"))?;
                     }
                     ContestedDocumentVotePollWinnerInfo::WonByIdentity(winner_id) => {
-                        Reflect::set(
-                            &winner,
-                            &JsValue::from_str("type"),
-                            &JsValue::from_str("WonByIdentity"),
-                        )
-                        .map_err(|_| JsValue::from_str("Failed to set winner type"))?;
+                        Reflect::set(&winner, &"type".into(), &"WonByIdentity".into())
+                            .map_err(|_| JsValue::from_str("Failed to set winner type"))?;
 
                         let id_array = Uint8Array::from(winner_id.as_slice());
-                        Reflect::set(&winner, &JsValue::from_str("identityId"), &id_array)
+                        Reflect::set(&winner, &"identityId".into(), &id_array)
                             .map_err(|_| JsValue::from_str("Failed to set winner identity"))?;
                     }
                 }
@@ -91,36 +79,32 @@ impl ContestedDocumentVotePollQueryExecutionResultWASM {
                 let block_info = winner_info.1.clone();
 
                 let block_info_obj = Object::new();
+                Reflect::set(&block_info_obj, &"height".into(), &block_info.height.into())
+                    .map_err(|_| JsValue::from_str("Failed to set block height"))?;
                 Reflect::set(
                     &block_info_obj,
-                    &JsValue::from_str("height"),
-                    &JsValue::from_f64(block_info.height as f64),
-                )
-                .map_err(|_| JsValue::from_str("Failed to set block height"))?;
-                Reflect::set(
-                    &block_info_obj,
-                    &JsValue::from_str("coreHeight"),
-                    &JsValue::from(block_info.core_height),
+                    &"coreHeight".into(),
+                    &block_info.core_height.into(),
                 )
                 .map_err(|_| JsValue::from_str("Failed to set core height"))?;
                 Reflect::set(
                     &block_info_obj,
-                    &JsValue::from_str("timeMs"),
-                    &JsValue::from_f64(block_info.time_ms as f64),
+                    &"timeMs".into(),
+                    &block_info.time_ms.into(),
                 )
                 .map_err(|_| JsValue::from_str("Failed to set time ms"))?;
 
                 Reflect::set(
                     &block_info_obj,
-                    &JsValue::from_str("epoch"),
-                    &JsValue::from(block_info.epoch.index),
+                    &"epoch".into(),
+                    &block_info.epoch.index.into(),
                 )
                 .map_err(|_| JsValue::from_str("Failed to set epoch"))?;
 
-                Reflect::set(&winner, &JsValue::from_str("blockInfo"), &block_info_obj)
+                Reflect::set(&winner, &"blockInfo".into(), &block_info_obj)
                     .map_err(|_| JsValue::from_str("Failed to set block info"))?;
 
-                Ok(JsValue::from(winner))
+                Ok(winner.into())
             }
         }
     }
