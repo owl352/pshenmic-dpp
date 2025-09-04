@@ -70,7 +70,8 @@ impl CoreScriptWASM {
     pub fn to_address(&self, js_network: &JsValue) -> Result<String, JsValue> {
         let network = NetworkWASM::try_from(js_network.clone())?;
 
-        let payload = Payload::from_script(self.0.as_script()).map_err(|e| JsValue::from(e.to_string()))?;
+        let payload =
+            Payload::from_script(self.0.as_script()).map_err(|e| JsValue::from(e.to_string()))?;
 
         let address = Address::new(network.into(), payload);
 
