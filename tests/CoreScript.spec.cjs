@@ -27,5 +27,11 @@ describe('CoreScript', function () {
 
       assert.equal(script.ASMString(), 'OP_DUP OP_HASH160 OP_PUSHBYTES_20 c3dbfd40e7f8a4845c2f8e868a167c9840497649 OP_EQUALVERIFY OP_CHECKSIG')
     })
+
+    it('should allow to convert to adddress', () => {
+      const script = wasm.CoreScriptWASM.fromBytes(Buffer.from('76a9142de40f87177f6e167fb9fcda9a3b3c64fc42468f88ac', 'hex'))
+
+      assert.equal(script.toAddress(wasm.NetworkWASM.Testnet), 'yQW6TmUFef5CDyhEYwjoN8aUTMmKLYYNDm')
+    })
   })
 })
