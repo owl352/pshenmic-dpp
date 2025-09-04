@@ -1,7 +1,10 @@
-use dpp::dashcore::opcodes;
+use dpp::dashcore::address::Payload;
+use dpp::dashcore::{Address, opcodes};
 use dpp::identity::core_script::CoreScript;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::encode;
+use pshenmic_dpp_enums::network::NetworkWASM;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen(js_name = "CoreScriptWASM")]
@@ -61,6 +64,18 @@ impl CoreScriptWASM {
         bytes.extend_from_slice(&script_hash);
         bytes.push(opcodes::all::OP_EQUAL.to_u8());
         Self::from_bytes(bytes)
+    }
+
+    #[wasm_bindgen(js_name = "toAddress")]
+    pub fn to_address(&self, js_network: &JsValue) -> Result<String, JsValue> {
+        let network = NetworkWASM::try_from(js_network.clone())?;
+
+        let payload =
+            Payload::from_script(self.0.as_script()).map_err(|e| JsValue::from(e.to_string()))?;
+
+        let address = Address::new(network.into(), payload);
+
+        Ok(address.to_string())
     }
 
     #[wasm_bindgen(js_name = "toString")]
