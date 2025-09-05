@@ -18,5 +18,6 @@ indexmap = { version = "2.0.2" }
 pshenmic_dpp_data_contract = { path = "../data_contract" }
 pshenmic_dpp_document = { path = "../document" }
 pshenmic_dpp_identifier = { path = "../identifier" }
+pshenmic_dpp_identity = { path = "../identity" }
 pshenmic_dpp_enums = { path = "../enums" }
 pshenmic_dpp_utils = { path = "../utils" }

@@ -12,8 +12,15 @@ use std::collections::BTreeMap;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};
 
+#[derive(Clone)]
 #[wasm_bindgen(js_name = "IdentityWASM")]
 pub struct IdentityWASM(Identity);
+
+impl From<Identity> for IdentityWASM {
+    fn from(identity: Identity) -> Self {
+        Self(identity)
+    }
+}
 
 #[wasm_bindgen]
 impl IdentityWASM {

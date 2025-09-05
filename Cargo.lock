@@ -2390,6 +2390,7 @@ dependencies = [
  "pshenmic_dpp_document",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
+ "pshenmic_dpp_identity",
  "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
