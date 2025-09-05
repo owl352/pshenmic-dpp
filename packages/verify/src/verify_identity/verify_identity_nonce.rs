@@ -39,7 +39,7 @@ impl VerifiedIdentityNonceWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyIdentityContractNonce")]
+#[wasm_bindgen(js_name = "verifyIdentityNonce")]
 pub fn verify_identity_nonce(
     proof: &Uint8Array,
     js_identity_id: &JsValue,
