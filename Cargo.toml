@@ -16,7 +16,6 @@ resolver = "2"
 members = [
     "packages/document",
     "packages/batch",
-    "packages/cbor_conversation",
     "packages/enums",
     "packages/mock_bls",
     "packages/private_key",
@@ -38,8 +37,9 @@ members = [
     "packages/contract_bounds",
     "packages/public_key",
     "packages/consensus_error",
-    "packages/verify"
-, "packages/partial_identity"]
+    "packages/verify",
+    "packages/partial_identity"
+]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -50,9 +50,9 @@ bincode = "=2.0.0-rc.3"
 bincode_derive = "=2.0.0-rc.3"
 pshenmic_dpp_verify = {path = "packages/verify"}
 pshenmic_dpp_consensus_error = { path = "packages/consensus_error" }
-pshenmic_dpp_cbor = { path = "packages/cbor_conversation" }
 pshenmic_dpp_batch = { path = "packages/batch" }
 pshenmic_dpp_identity = { path = "packages/identity" }
+pshenmic_dpp_partial_identity = { path = "packages/partial_identity" }
 pshenmic_dpp_identifier = { path = "packages/identifier" }
 pshenmic_dpp_state_transition = { path = "packages/state_transition" }
 pshenmic_dpp_identity_transitions = { path = "packages/identity_transitions" }
