@@ -17,7 +17,7 @@
     "tests": "mocha ./tests/*.spec.cjs",
     "lint": "cargo fmt",
     "lint:test": "standard --fix ./tests",
-    "convert:ascii85": "node ./utils/convertBinary.mjs"
+    "convert:base122": "node ./utils/convertBinary.mjs"
   },
   "files": [
     "dist/wasm",
