@@ -1,12 +1,12 @@
 use dpp::dashcore::Network;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
+use dpp::identity::contract_bounds::ContractBounds;
 use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::identity::identity_public_key::accessors::v0::{
     IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
 };
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel, TimestampMillis};
-use dpp::identity::contract_bounds::ContractBounds;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
@@ -57,16 +57,22 @@ impl IdentityPublicKeyWASM {
         read_only: bool,
         binary_data: &str,
         disabled_at: Option<TimestampMillis>,
-        js_contract_bounds: &JsValue
+        js_contract_bounds: &JsValue,
     ) -> Result<Self, JsValue> {
         let purpose = PurposeWASM::try_from(js_purpose)?;
         let security_level = SecurityLevelWASM::try_from(js_security_level)?;
         let key_type = KeyTypeWASM::try_from(js_key_type)?;
-        let contract_bounds: Option<ContractBounds> = match js_contract_bounds.is_undefined() | js_contract_bounds.is_null() { 
-            true => None,
-            false => Some(js_contract_bounds.to_wasm::<ContractBoundsWASM>("ContractBoundsWASM")?.clone().into())
-        };
-        
+        let contract_bounds: Option<ContractBounds> =
+            match js_contract_bounds.is_undefined() | js_contract_bounds.is_null() {
+                true => None,
+                false => Some(
+                    js_contract_bounds
+                        .to_wasm::<ContractBoundsWASM>("ContractBoundsWASM")?
+                        .clone()
+                        .into(),
+                ),
+            };
+
         Ok(IdentityPublicKeyWASM(IdentityPublicKey::from(
             IdentityPublicKeyV0 {
                 id,

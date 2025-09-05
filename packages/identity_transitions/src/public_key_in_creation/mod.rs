@@ -112,7 +112,7 @@ impl IdentityPublicKeyInCreationWASM {
             self.0.read_only(),
             self.0.data().to_string(Hex).as_str(),
             None,
-            &JsValue::from(self.get_contract_bounds().clone())
+            &JsValue::from(self.get_contract_bounds().clone()),
         )
     }
 
