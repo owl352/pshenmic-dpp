@@ -10,6 +10,7 @@ DIST_WASM_JS_INDEX="$DIST_WASM_DIR/index.js"
 DIST_WASM_TS_BG="$DIST_WASM_DIR/pshenmic_dpp_bg.wasm.d.ts"
 DIST_WASM_TS="$DIST_WASM_DIR/pshenmic_dpp.d.ts"
 DIST_WASM_TS_INDEX="$DIST_WASM_DIR/index.d.ts"
+DIST_BASE122="$DIST_WASM_DIR/base122.js"
 
 
 ## Paths to wasm files produced by wasm-bindgen
@@ -19,6 +20,7 @@ WASM_BINARY_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm"
 WASM_TS_BG_CODE_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm.d.ts"
 WASM_TS_CODE_PATH="$WASM_DIR/pshenmic_dpp.d.ts"
 WASM_TS_INDEX_CODE_PATH="$PWD/lib/."
+MODULE_BASE122="$PWD/utils/base122.mjs"
 
 ## String with patch for type checker
 TYPE_CHECKER_PATCH='s#if (!(instance instanceof klass)) {#if (!(instance?.__type === klass.__struct)) {#g'
@@ -41,9 +43,9 @@ rm -rf $DIST_WASM_TS
 if [[ "${RAW}" == "true" ]]; then
   cp $WASM_BINARY_PATH $DIST_WASM_BINARY_RAW
 else
-  echo "Converting wasm binary into base64 module"
-  WASM_BUILD_BASE_64=$(base64 -i "$WASM_BINARY_PATH")
-  echo 'export default "'${WASM_BUILD_BASE_64}'"' > "$DIST_WASM_BINARY_BASE_64"
+  echo "Converting wasm binary into base122 module"
+  npm run convert:base122 --silent "$WASM_BINARY_PATH" > "$DIST_WASM_BINARY_BASE_64"
+  cp $MODULE_BASE122 $DIST_BASE122
 fi
 
 echo "Copying ES module to dist"

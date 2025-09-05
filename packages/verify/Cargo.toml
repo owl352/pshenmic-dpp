@@ -1,0 +1,24 @@
+[package]
+name = "pshenmic_dpp_verify"
+version.workspace = true
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+drive = { workspace = true, features = ["verify"] }
+dpp = { workspace = true, features = [
+    "bls-signatures",
+    "platform-value"
+]}
+js-sys = { version = "0.3.53" }
+indexmap = { version = "2.0.2" }
+pshenmic_dpp_data_contract = { path = "../data_contract" }
+pshenmic_dpp_document = { path = "../document" }
+pshenmic_dpp_identifier = { path = "../identifier" }
+pshenmic_dpp_identity = { path = "../identity" }
+pshenmic_dpp_partial_identity = { path = "../partial_identity" }
+pshenmic_dpp_enums = { path = "../enums" }
+pshenmic_dpp_utils = { path = "../utils" }

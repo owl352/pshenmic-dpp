@@ -200,6 +200,13 @@ impl DocumentWASM {
         }
     }
 
+    #[wasm_bindgen(setter=dataContractId)]
+    pub fn set_js_data_contract_id(&mut self, js_contract_id: &JsValue) -> Result<(), JsValue> {
+        self.data_contract_id = IdentifierWASM::try_from(js_contract_id.clone())?;
+
+        Ok(())
+    }
+
     #[wasm_bindgen(setter=ownerId)]
     pub fn set_owner_id(&mut self, id: &JsValue) -> Result<(), JsValue> {
         self.owner_id = IdentifierWASM::try_from(id)?.clone();

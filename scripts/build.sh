@@ -66,11 +66,14 @@ if command -v wasm-opt &> /dev/null; then
     --remove-unused-names \
     --remove-unused-types \
     --post-emscripten \
+    --gufa \
+    --once-reduction \
     -Oz \
     -Oz \
     "${OUTPUT_FILE}" \
     -o \
     "${OUTPUT_FILE}"
+
 else
   echo "wasm-opt command not found. Skipping wasm optimization."
 fi

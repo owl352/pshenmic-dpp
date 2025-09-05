@@ -75,7 +75,6 @@ describe('AssetLockProof', function () {
       const chainLockProof = wasm.AssetLockProofWASM.createChainAssetLockProof(1, outpoint)
       const instantAssetLockProof = new wasm.AssetLockProofWASM(instantLockProof)
 
-
       assert.equal(chainLockProof.getChainLockProof().constructor.name, 'ChainAssetLockProofWASM')
       assert.equal(instantAssetLockProof.getInstantLockProof().constructor.name, 'InstantAssetLockProofWASM')
     })

@@ -1,11 +1,12 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.0.23-rc.7"
+version = "1.0.23-rc.8"
 edition = "2024"
 rust-version = "1.85"
 
 [workspace.dependencies]
 dpp = { git = "https://github.com/dashpay/platform", tag = "v2.0.1", default-features = false }
+drive = { git = "https://github.com/dashpay/platform", tag = "v2.0.1", default-features = false }
 
 [workspace.package]
 version = "1.0.5"
@@ -15,7 +16,6 @@ resolver = "2"
 members = [
     "packages/document",
     "packages/batch",
-    "packages/cbor_conversation",
     "packages/enums",
     "packages/mock_bls",
     "packages/private_key",
@@ -36,7 +36,9 @@ members = [
     "packages/masternode_vote",
     "packages/contract_bounds",
     "packages/public_key",
-    "packages/consensus_error"
+    "packages/consensus_error",
+    "packages/verify",
+    "packages/partial_identity"
 ]
 
 [lib]
@@ -46,10 +48,11 @@ crate-type = ["cdylib", "lib"]
 talc = { version = "=4.4.2", default-features = false, features = ["lock_api"] }
 bincode = "=2.0.0-rc.3"
 bincode_derive = "=2.0.0-rc.3"
+pshenmic_dpp_verify = {path = "packages/verify"}
 pshenmic_dpp_consensus_error = { path = "packages/consensus_error" }
-pshenmic_dpp_document_search = { path = "packages/cbor_conversation" }
 pshenmic_dpp_batch = { path = "packages/batch" }
 pshenmic_dpp_identity = { path = "packages/identity" }
+pshenmic_dpp_partial_identity = { path = "packages/partial_identity" }
 pshenmic_dpp_identifier = { path = "packages/identifier" }
 pshenmic_dpp_state_transition = { path = "packages/state_transition" }
 pshenmic_dpp_identity_transitions = { path = "packages/identity_transitions" }
