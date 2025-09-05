@@ -1,5 +1,6 @@
 use dpp::dashcore::Network;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
+use dpp::identity::contract_bounds::ContractBounds;
 use dpp::identity::hash::IdentityPublicKeyHashMethodsV0;
 use dpp::identity::identity_public_key::accessors::v0::{
     IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0,
@@ -15,7 +16,7 @@ use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_enums::network::NetworkWASM;
-use pshenmic_dpp_utils::WithJsError;
+use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::{JsError, JsValue};
 
@@ -56,17 +57,28 @@ impl IdentityPublicKeyWASM {
         read_only: bool,
         binary_data: &str,
         disabled_at: Option<TimestampMillis>,
+        js_contract_bounds: &JsValue,
     ) -> Result<Self, JsValue> {
         let purpose = PurposeWASM::try_from(js_purpose)?;
         let security_level = SecurityLevelWASM::try_from(js_security_level)?;
         let key_type = KeyTypeWASM::try_from(js_key_type)?;
+        let contract_bounds: Option<ContractBounds> =
+            match js_contract_bounds.is_undefined() | js_contract_bounds.is_null() {
+                true => None,
+                false => Some(
+                    js_contract_bounds
+                        .to_wasm::<ContractBoundsWASM>("ContractBoundsWASM")?
+                        .clone()
+                        .into(),
+                ),
+            };
 
         Ok(IdentityPublicKeyWASM(IdentityPublicKey::from(
             IdentityPublicKeyV0 {
                 id,
                 purpose: Purpose::from(purpose),
                 security_level: SecurityLevel::from(security_level),
-                contract_bounds: None,
+                contract_bounds,
                 key_type: KeyType::from(key_type),
                 read_only,
                 data: BinaryData::from_string(binary_data, Hex).unwrap(),
