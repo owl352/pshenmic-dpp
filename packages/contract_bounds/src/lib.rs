@@ -31,6 +31,24 @@ impl ContractBoundsWASM {
         "ContractBoundsWASM".to_string()
     }
 
+    #[wasm_bindgen(constructor)]
+    pub fn new(
+        js_contract_id: &JsValue,
+        document_type_name: Option<String>,
+    ) -> Result<ContractBoundsWASM, JsValue> {
+        let contract_id = IdentifierWASM::try_from(js_contract_id)?;
+
+        Ok(ContractBoundsWASM(match document_type_name {
+            Some(document_type_name) => ContractBounds::SingleContractDocumentType {
+                id: contract_id.into(),
+                document_type_name,
+            },
+            None => ContractBounds::SingleContract {
+                id: contract_id.into(),
+            },
+        }))
+    }
+
     #[wasm_bindgen(js_name = "SingleContract")]
     pub fn single_contract(js_contract_id: &JsValue) -> Result<ContractBoundsWASM, JsValue> {
         let contract_id = IdentifierWASM::try_from(js_contract_id)?;

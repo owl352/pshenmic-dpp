@@ -75,6 +75,7 @@ export class DashPlatformProtocolWASM {
     IdentityCreditWithdrawalTransitionWASM: typeof DPP.IdentityCreditWithdrawalTransitionWASM
     IdentityPublicKeyInCreationWASM: typeof DPP.IdentityPublicKeyInCreationWASM
     IdentityPublicKeyWASM: typeof DPP.IdentityPublicKeyWASM
+    ContractBoundsWASM: typeof DPP.ContractBoundsWASM
     IdentityTopUpTransitionWASM: typeof DPP.IdentityTopUpTransitionWASM
     IdentityUpdateTransitionWASM: typeof DPP.IdentityUpdateTransitionWASM
     IdentityWASM: typeof DPP.IdentityWASM
