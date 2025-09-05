@@ -1,3 +1,4 @@
+use dpp::identity::contract_bounds::ContractBounds;
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
 use dpp::platform_value::BinaryData;
@@ -83,10 +84,21 @@ impl IdentityPublicKeyInCreationWASM {
         read_only: bool,
         binary_data: Vec<u8>,
         signature: Option<Vec<u8>>,
+        js_contract_bounds: &JsValue,
     ) -> Result<IdentityPublicKeyInCreationWASM, JsValue> {
         let purpose = PurposeWASM::try_from(js_purpose)?;
         let security_level = SecurityLevelWASM::try_from(js_security_level)?;
         let key_type = KeyTypeWASM::try_from(js_key_type)?;
+        let contract_bounds: Option<ContractBounds> =
+            match js_contract_bounds.is_undefined() | js_contract_bounds.is_null() {
+                true => None,
+                false => Some(
+                    js_contract_bounds
+                        .to_wasm::<ContractBoundsWASM>("ContractBoundsWASM")?
+                        .clone()
+                        .into(),
+                ),
+            };
 
         Ok(IdentityPublicKeyInCreationWASM(
             IdentityPublicKeyInCreation::V0(IdentityPublicKeyInCreationV0 {
@@ -94,7 +106,7 @@ impl IdentityPublicKeyInCreationWASM {
                 key_type: KeyType::from(key_type),
                 purpose: Purpose::from(purpose),
                 security_level: SecurityLevel::from(security_level),
-                contract_bounds: None,
+                contract_bounds,
                 read_only,
                 data: BinaryData::from(binary_data),
                 signature: BinaryData::from(signature.unwrap_or(Vec::new())),
