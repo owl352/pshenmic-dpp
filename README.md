@@ -26,7 +26,7 @@ Now you can import `.js` with base122 buffer for WebAssembly module, or binary w
 ___
 ## Why you need to use `pshenmic-dpp` instead `wasm-dpp`
 
-- `pshenmic-dpp` weighs much less, currently taking up only 3.6 mb in base122 format
+- `pshenmic-dpp` weighs much less, currently taking up only 3.9 mb in base122 format
 - You can build only necessary modules by removing imports from `lib.rs` before building
 - More accurately replicates `rs-dpp`
 - Some sugar, like enums, which you can pass in string with any case or just use numbers
