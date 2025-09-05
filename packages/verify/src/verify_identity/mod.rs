@@ -1,1 +1,1 @@
-mod verify_identity_balance;
+pub mod verify_identity_balance;
