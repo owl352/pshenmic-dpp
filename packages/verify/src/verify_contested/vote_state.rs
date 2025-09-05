@@ -1,4 +1,4 @@
-use crate::contested::contested_document_vote_poll_query_execution_result::ContestedDocumentVotePollQueryExecutionResultWASM;
+use crate::verify_contested::contested_document_vote_poll_query_execution_result::ContestedDocumentVotePollQueryExecutionResultWASM;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::data_contract::DataContract;
 use dpp::platform_value::Value;

@@ -3,5 +3,5 @@ pub mod verify_identity_balance;
 pub mod verify_identity_by_identifier;
 pub mod verify_identity_by_unique_public_key_hash;
 pub mod verify_identity_contract_nonce;
-mod verify_identity_keys_by_identifier;
+pub mod verify_identity_keys_by_identifier;
 pub mod verify_identity_nonce;

@@ -1,4 +1,4 @@
-use crate::contested::contender_with_serialized_document::ContenderWithSerializedDocumentWASM;
+use crate::verify_contested::contender_with_serialized_document::ContenderWithSerializedDocumentWASM;
 use dpp::voting::vote_info_storage::contested_document_vote_poll_winner_info::ContestedDocumentVotePollWinnerInfo;
 use drive::query::vote_poll_vote_state_query::ContestedDocumentVotePollDriveQueryExecutionResult;
 use js_sys::{Object, Reflect, Uint8Array};
