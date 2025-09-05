@@ -96,9 +96,22 @@ export class DashPlatformProtocolWASM {
     SecurityLevel: typeof DPP.SecurityLevel
     ActionGoalWASM: typeof DPP.ActionGoalWASM
     // METHODS
-    cborToObject: typeof DPP.cborToObject
-    objectToCbor: typeof DPP.objectToCbor
     initSync: typeof DPP.initSync
+    verifyVotePollVoteStateProof: typeof DPP.verifyVotePollVoteStateProof
+    verifyContract: typeof DPP.verifyContract
     verifyDocumentsProof: typeof DPP.verifyDocumentsProof
+    verifyIdentifierByNonUniquePublicKeyHash: typeof DPP.verifyIdentifierByNonUniquePublicKeyHash
+    verifyIdentityBalance: typeof DPP.verifyIdentityBalance
+    verifyIdentityByIdentifier: typeof DPP.verifyIdentityByIdentifier
+    verifyIdentityByUniqueKeyHash: typeof DPP.verifyIdentityByUniqueKeyHash
+    verifyIdentityContractNonce: typeof DPP.verifyIdentityContractNonce
+    verifyIdentityKeysByIdentifier: typeof DPP.verifyIdentityKeysByIdentifier
+    verifyIdentityNonce: typeof DPP.verifyIdentityNonce
     verifySignatureDigest: typeof DPP.verifySignatureDigest
+    verifyEpochsInfo: typeof DPP.verifyEpochsInfo
+    verifyTotalCredits: typeof DPP.verifyTotalCredits
+    verifyTokenBalancesForIdentities: typeof DPP.verifyTokenBalancesForIdentities
+    verifyTokenContractInfo: typeof DPP.verifyTokenContractInfo
+    verifyTokenTotalSupply: typeof DPP.verifyTokenTotalSupply
+    verifyTokensBalancesForIdentity: typeof DPP.verifyTokensBalancesForIdentity
 }
