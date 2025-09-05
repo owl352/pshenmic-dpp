@@ -49,6 +49,30 @@ impl ContractBoundsWASM {
         }))
     }
 
+    #[wasm_bindgen(js_name = "SingleContract")]
+    pub fn single_contract(js_contract_id: &JsValue) -> Result<ContractBoundsWASM, JsValue> {
+        let contract_id = IdentifierWASM::try_from(js_contract_id)?;
+
+        Ok(ContractBoundsWASM(ContractBounds::SingleContract {
+            id: contract_id.into(),
+        }))
+    }
+
+    #[wasm_bindgen(js_name = "SingleContractDocumentType")]
+    pub fn single_contract_document_type_name(
+        js_contract_id: &JsValue,
+        document_type_name: String,
+    ) -> Result<ContractBoundsWASM, JsValue> {
+        let contract_id = IdentifierWASM::try_from(js_contract_id)?;
+
+        Ok(ContractBoundsWASM(
+            ContractBounds::SingleContractDocumentType {
+                id: contract_id.into(),
+                document_type_name,
+            },
+        ))
+    }
+
     #[wasm_bindgen(getter = "identifier")]
     pub fn id(&self) -> IdentifierWASM {
         self.0.identifier().clone().into()
