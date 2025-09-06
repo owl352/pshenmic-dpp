@@ -499,7 +499,7 @@ dependencies = [
 [[package]]
 name = "dashpay-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -510,7 +510,7 @@ dependencies = [
 [[package]]
 name = "data-contracts"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "dashpay-contract",
  "dpns-contract",
@@ -582,7 +582,7 @@ dependencies = [
 [[package]]
 name = "dpns-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -593,7 +593,7 @@ dependencies = [
 [[package]]
 name = "dpp"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -634,7 +634,7 @@ dependencies = [
 [[package]]
 name = "drive"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "bincode",
  "byteorder",
@@ -774,7 +774,7 @@ checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 [[package]]
 name = "feature-flags-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -1537,7 +1537,7 @@ dependencies = [
 [[package]]
 name = "keyword-search-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -1588,7 +1588,7 @@ checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 [[package]]
 name = "masternode-reward-shares-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -1917,7 +1917,7 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 [[package]]
 name = "platform-serialization"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "bincode",
  "platform-version",
@@ -1926,7 +1926,7 @@ dependencies = [
 [[package]]
 name = "platform-serialization-derive"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1937,7 +1937,7 @@ dependencies = [
 [[package]]
 name = "platform-value"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "base64",
  "bincode",
@@ -1956,7 +1956,7 @@ dependencies = [
 [[package]]
 name = "platform-version"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "bincode",
  "grovedb-version",
@@ -1968,7 +1968,7 @@ dependencies = [
 [[package]]
 name = "platform-versioning"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3008,7 +3008,7 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 [[package]]
 name = "token-history-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -3284,7 +3284,7 @@ dependencies = [
 [[package]]
 name = "wallet-utils-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -3578,7 +3578,7 @@ checksum = "052283831dbae3d879dc7f51f3d92703a316ca49f91540417d38591826127814"
 [[package]]
 name = "withdrawals-contract"
 version = "2.0.1"
-source = "git+https://github.com/dashpay/platform?tag=v2.0.1#5f93c70720a1ea09f91c9142668e17f314986f03"
+source = "git+https://github.com/owl352/platform?branch=v2.0.1#f6d7390361861f5a62b7cb413310b5ec42c26387"
 dependencies = [
  "num_enum 0.5.11",
  "platform-value",
