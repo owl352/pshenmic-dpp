@@ -86,6 +86,7 @@ export class DashPlatformProtocolWASM {
     PrivateKeyWASM: typeof DPP.PrivateKeyWASM
     StateTransitionWASM: typeof DPP.StateTransitionWASM
     TxOutWASM: typeof DPP.TxOutWASM
+    MasternodeVoteTransitionWASM: typeof DPP.MasternodeVoteTransitionWASM
     // ENUMS
     AssetLockProofTypeWASM: typeof DPP.AssetLockProofTypeWASM
     BatchType: typeof DPP.BatchType
@@ -99,20 +100,20 @@ export class DashPlatformProtocolWASM {
     // METHODS
     initSync: typeof DPP.initSync
     verifyVotePollVoteStateProof: typeof DPP.verifyVotePollVoteStateProof
-    verifyContract: typeof DPP.verifyContract
+    verifyContract: typeof DPP.verifyContractProof
     verifyDocumentsProof: typeof DPP.verifyDocumentsProof
-    verifyIdentifierByNonUniquePublicKeyHash: typeof DPP.verifyIdentifierByNonUniquePublicKeyHash
-    verifyIdentityBalance: typeof DPP.verifyIdentityBalance
-    verifyIdentityByIdentifier: typeof DPP.verifyIdentityByIdentifier
-    verifyIdentityByUniqueKeyHash: typeof DPP.verifyIdentityByUniqueKeyHash
-    verifyIdentityContractNonce: typeof DPP.verifyIdentityContractNonce
-    verifyIdentityKeysByIdentifier: typeof DPP.verifyIdentityKeysByIdentifier
-    verifyIdentityNonce: typeof DPP.verifyIdentityNonce
+    verifyIdentifierByNonUniquePublicKeyHash: typeof DPP.verifyIdentifierByNonUniquePublicKeyHashProof
+    verifyIdentityBalance: typeof DPP.verifyIdentityBalanceProof
+    verifyIdentityByIdentifier: typeof DPP.verifyIdentityByIdentifierProof
+    verifyIdentityByUniqueKeyHash: typeof DPP.verifyIdentityByUniqueKeyHashProof
+    verifyIdentityContractNonce: typeof DPP.verifyIdentityContractNonceProof
+    verifyIdentityKeysByIdentifier: typeof DPP.verifyIdentityKeysByIdentifierProof
+    verifyIdentityNonce: typeof DPP.verifyIdentityNonceProof
     verifySignatureDigest: typeof DPP.verifySignatureDigest
-    verifyEpochsInfo: typeof DPP.verifyEpochsInfo
-    verifyTotalCredits: typeof DPP.verifyTotalCredits
-    verifyTokenBalancesForIdentities: typeof DPP.verifyTokenBalancesForIdentities
-    verifyTokenContractInfo: typeof DPP.verifyTokenContractInfo
-    verifyTokenTotalSupply: typeof DPP.verifyTokenTotalSupply
-    verifyTokensBalancesForIdentity: typeof DPP.verifyTokensBalancesForIdentity
+    verifyEpochsInfo: typeof DPP.verifyEpochsInfoProof
+    verifyTotalCredits: typeof DPP.verifyTotalCreditsProof
+    verifyTokenBalancesForIdentities: typeof DPP.verifyTokenBalancesForIdentitiesProof
+    verifyTokenContractInfo: typeof DPP.verifyTokenContractInfoProof
+    verifyTokenTotalSupply: typeof DPP.verifyTokenTotalSupplyProof
+    verifyTokensBalancesForIdentity: typeof DPP.verifyTokensBalancesForIdentityProof
 }
