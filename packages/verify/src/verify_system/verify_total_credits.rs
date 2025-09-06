@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::fee::Credits;
 use dpp::prelude::CoreBlockHeight;
 use drive::drive::Drive;
@@ -27,10 +26,8 @@ impl VerifiedTotalCreditsWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "totalCredits")]
@@ -39,7 +36,7 @@ impl VerifiedTotalCreditsWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyTotalCredits")]
+#[wasm_bindgen(js_name = "verifyTotalCreditsProof")]
 pub fn verify_total_credits(
     proof: &Uint8Array,
     core_subsidy_halving_interval: u32,

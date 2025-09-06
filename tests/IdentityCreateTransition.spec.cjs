@@ -5,13 +5,13 @@ const { default: wasm } = require('..')
 describe('IdentityCreateTransition', function () {
   describe('serialization / deserialization', function () {
     it('should allow to create transition', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.notEqual(transition.__wbg_ptr, 0)
     })
 
     it('should allow to serialize to bytes', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       const bytes = transition.bytes()
 
@@ -29,37 +29,37 @@ describe('IdentityCreateTransition', function () {
 
   describe('getters', function () {
     it('should allow to get userFeeIncrease', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.equal(transition.userFeeIncrease, 0)
     })
 
     it('should allow to get AssetLock', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.notEqual(transition.assetLock.__wbg_ptr, 0)
     })
 
     it('should allow to get Identifier', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.equal(transition.getIdentifier().base58(), '11111111111111111111111111111111')
     })
 
     it('should allow to get PublicKeys', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.equal(transition.publicKeys.length, 0)
     })
 
     it('should allow to get signature', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.deepEqual(transition.signature, Uint8Array.from([]))
     })
 
     it('should allow to get signable bytes', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       assert.equal(transition.getSignableBytes().length, 229)
     })
@@ -67,7 +67,7 @@ describe('IdentityCreateTransition', function () {
 
   describe('setters', function () {
     it('should allow to set the userFeeIncrease', function () {
-      const transition = wasm.IdentityCreateTransitionWASM.default(0)
+      const transition = wasm.IdentityCreateTransitionWASM.default(1)
 
       transition.userFeeIncrease = 100
 

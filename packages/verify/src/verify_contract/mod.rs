@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::drive::Drive;
 use drive::verify::RootHash;
 use js_sys::Uint8Array;
@@ -27,10 +26,8 @@ impl VerifiedContractWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "dataContract")]
@@ -39,7 +36,7 @@ impl VerifiedContractWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyContract")]
+#[wasm_bindgen(js_name = "verifyContractProof")]
 pub fn verify_contract(
     proof: &Uint8Array,
     contract_known_keeps_history: Option<bool>,

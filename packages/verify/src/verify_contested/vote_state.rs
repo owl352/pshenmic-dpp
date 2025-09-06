@@ -1,5 +1,4 @@
 use crate::verify_contested::contested_document_vote_poll_query_execution_result::ContestedDocumentVotePollQueryExecutionResultWASM;
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::data_contract::DataContract;
 use dpp::platform_value::Value;
 use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
@@ -34,10 +33,8 @@ impl VerifiedVoteStateWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "result")]

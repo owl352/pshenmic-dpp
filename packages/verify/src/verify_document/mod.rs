@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::query::WhereOperator::{
     Between, BetweenExcludeBounds, BetweenExcludeLeft, BetweenExcludeRight, Equal, GreaterThan,
     GreaterThanOrEquals, In, LessThan, LessThanOrEquals, StartsWith,
@@ -34,10 +33,8 @@ impl VerifiedDocumentsWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "documents")]
@@ -99,8 +96,14 @@ pub fn verify_document_proof(
 
     let wasm_documents = documents
         .iter()
-        .map(|doc| DocumentWASM::from(doc.clone()))
-        .collect();
+        .map(|doc| {
+            let mut doc_wasm = DocumentWASM::from(doc.clone());
+
+            doc_wasm.set_js_data_contract_id(&contract.get_id().clone().into())?;
+
+            Ok::<DocumentWASM, JsValue>(doc_wasm)
+        })
+        .collect::<Result<Vec<DocumentWASM>, JsValue>>()?;
 
     Ok(VerifiedDocumentsWASM {
         root_hash,

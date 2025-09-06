@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::drive::Drive;
 use drive::verify::RootHash;
 use js_sys::Uint8Array;
@@ -26,10 +25,8 @@ impl VerifiedIdentifierByNonUniquePublicKeyHashWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "identifier")]
@@ -38,7 +35,7 @@ impl VerifiedIdentifierByNonUniquePublicKeyHashWASM {
     }
 }
 
-#[wasm_bindgen(js_name = verifyIdentifierByNonUniquePublicKeyHash)]
+#[wasm_bindgen(js_name = "verifyIdentifierByNonUniquePublicKeyHashProof")]
 pub fn verify_identifier_by_non_unique_public_key_hash(
     proof: &Uint8Array,
     is_proof_subset: bool,

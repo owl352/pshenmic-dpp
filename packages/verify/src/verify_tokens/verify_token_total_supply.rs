@@ -1,6 +1,5 @@
 use dpp::balances::credits::SignedTokenAmount;
 use dpp::balances::total_single_token_balance::TotalSingleTokenBalance;
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::drive::Drive;
 use drive::verify::RootHash;
 use js_sys::Uint8Array;
@@ -61,10 +60,8 @@ impl VerifiedTokenTotalSupplyWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "totalBalance")]
@@ -73,7 +70,7 @@ impl VerifiedTokenTotalSupplyWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyTokenTotalSupply")]
+#[wasm_bindgen(js_name = "verifyTokenTotalSupplyProof")]
 pub fn verify_token_total_supply(
     proof: &Uint8Array,
     js_token_id: &JsValue,

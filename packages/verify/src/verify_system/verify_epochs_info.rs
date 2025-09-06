@@ -1,7 +1,6 @@
 use dpp::block::epoch::EpochIndex;
 use dpp::block::extended_epoch_info::ExtendedEpochInfo;
 use dpp::block::extended_epoch_info::v0::ExtendedEpochInfoV0Getters;
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::drive::Drive;
 use drive::verify::RootHash;
 use js_sys::Uint8Array;
@@ -81,10 +80,8 @@ impl VerifiedEpochsInfoWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "epochsInfo")]
@@ -93,7 +90,7 @@ impl VerifiedEpochsInfoWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyEpochsInfo")]
+#[wasm_bindgen(js_name = "verifyEpochsInfoProof")]
 pub fn verify_epochs_info(
     proof: &Uint8Array,
     current_epoch: u16,
