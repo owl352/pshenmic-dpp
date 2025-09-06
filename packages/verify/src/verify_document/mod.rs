@@ -98,9 +98,9 @@ pub fn verify_document_proof(
         .iter()
         .map(|doc| {
             let mut doc_wasm = DocumentWASM::from(doc.clone());
-            
+
             doc_wasm.set_js_data_contract_id(&contract.get_id().clone().into())?;
-            
+
             Ok::<DocumentWASM, JsValue>(doc_wasm)
         })
         .collect::<Result<Vec<DocumentWASM>, JsValue>>()?;
