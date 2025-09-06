@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::prelude::IdentityNonce;
 use drive::drive::Drive;
 use drive::verify::RootHash;
@@ -27,10 +26,8 @@ impl VerifiedIdentityNonceWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "nonce")]
@@ -39,7 +36,7 @@ impl VerifiedIdentityNonceWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyIdentityNonce")]
+#[wasm_bindgen(js_name = "verifyIdentityNonceProof")]
 pub fn verify_identity_nonce(
     proof: &Uint8Array,
     js_identity_id: &JsValue,

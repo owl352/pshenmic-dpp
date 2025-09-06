@@ -16,15 +16,15 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[allow(non_camel_case_types)]
 pub enum PlatformVersionWASM {
     #[default]
-    PLATFORM_V1 = 0,
-    PLATFORM_V2 = 1,
-    PLATFORM_V3 = 2,
-    PLATFORM_V4 = 3,
-    PLATFORM_V5 = 4,
-    PLATFORM_V6 = 5,
-    PLATFORM_V7 = 6,
-    PLATFORM_V8 = 7,
-    PLATFORM_V9 = 8,
+    PLATFORM_V1 = 1,
+    PLATFORM_V2 = 2,
+    PLATFORM_V3 = 3,
+    PLATFORM_V4 = 4,
+    PLATFORM_V5 = 5,
+    PLATFORM_V6 = 6,
+    PLATFORM_V7 = 7,
+    PLATFORM_V8 = 8,
+    PLATFORM_V9 = 9,
 }
 
 impl TryFrom<JsValue> for PlatformVersionWASM {
@@ -52,15 +52,15 @@ impl TryFrom<JsValue> for PlatformVersionWASM {
             false => match value.as_f64() {
                 None => Err(JsValue::from("cannot read value from enum")),
                 Some(enum_val) => match enum_val as u8 {
-                    0 => Ok(PlatformVersionWASM::PLATFORM_V1),
-                    1 => Ok(PlatformVersionWASM::PLATFORM_V2),
-                    2 => Ok(PlatformVersionWASM::PLATFORM_V3),
-                    3 => Ok(PlatformVersionWASM::PLATFORM_V4),
-                    4 => Ok(PlatformVersionWASM::PLATFORM_V5),
-                    5 => Ok(PlatformVersionWASM::PLATFORM_V6),
-                    6 => Ok(PlatformVersionWASM::PLATFORM_V7),
-                    7 => Ok(PlatformVersionWASM::PLATFORM_V8),
-                    8 => Ok(PlatformVersionWASM::PLATFORM_V9),
+                    1 => Ok(PlatformVersionWASM::PLATFORM_V1),
+                    2 => Ok(PlatformVersionWASM::PLATFORM_V2),
+                    3 => Ok(PlatformVersionWASM::PLATFORM_V3),
+                    4 => Ok(PlatformVersionWASM::PLATFORM_V4),
+                    5 => Ok(PlatformVersionWASM::PLATFORM_V5),
+                    6 => Ok(PlatformVersionWASM::PLATFORM_V6),
+                    7 => Ok(PlatformVersionWASM::PLATFORM_V7),
+                    8 => Ok(PlatformVersionWASM::PLATFORM_V8),
+                    9 => Ok(PlatformVersionWASM::PLATFORM_V9),
                     _ => Err(JsValue::from(format!(
                         "unknown platform version value: {}",
                         enum_val

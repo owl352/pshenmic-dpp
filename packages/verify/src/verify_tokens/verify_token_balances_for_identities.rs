@@ -1,5 +1,4 @@
 use dpp::balances::credits::TokenAmount;
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::verify::RootHash;
 use js_sys::{Array, Object, Reflect, Uint8Array};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
@@ -26,10 +25,8 @@ impl VerifiedTokenBalancesForIdentitiesWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "balances")]
@@ -38,7 +35,7 @@ impl VerifiedTokenBalancesForIdentitiesWASM {
     }
 }
 
-#[wasm_bindgen(js_name = "verifyTokenBalancesForIdentities")]
+#[wasm_bindgen(js_name = "verifyTokenBalancesForIdentitiesProof")]
 pub fn verify_token_balances_for_identities(
     proof: &Uint8Array,
     js_token_id: &JsValue,

@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use drive::drive::Drive;
 use drive::drive::identity::key::fetch::{IdentityKeysRequest, KeyRequestType};
 use drive::verify::RootHash;
@@ -9,7 +8,7 @@ use pshenmic_dpp_partial_identity::PartialIdentityWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-#[wasm_bindgen(js_name = "verifiedIdentityKeysByIdentifierWASM")]
+#[wasm_bindgen(js_name = "VerifiedIdentityKeysByIdentifierWASM")]
 pub struct VerifiedIdentityKeysByIdentifierWASM {
     root_hash: RootHash,
     identity: Option<PartialIdentityWASM>,
@@ -28,10 +27,8 @@ impl VerifiedIdentityKeysByIdentifierWASM {
     }
 
     #[wasm_bindgen(getter = "rootHash")]
-    pub fn root_hash(&self) -> String {
-        let bytes: [u8; 32] = self.root_hash;
-
-        bytes.to_hex_string(Case::Lower)
+    pub fn root_hash(&self) -> Uint8Array {
+        Uint8Array::from(self.root_hash.as_slice())
     }
 
     #[wasm_bindgen(getter = "identity")]
@@ -39,7 +36,7 @@ impl VerifiedIdentityKeysByIdentifierWASM {
         self.identity.clone()
     }
 }
-#[wasm_bindgen(js_name = "verifyIdentityKeysByIdentifier")]
+#[wasm_bindgen(js_name = "verifyIdentityKeysByIdentifierProof")]
 pub fn verify_identity_keys_by_identifier(
     proof: &Uint8Array,
     js_identity_id: &JsValue,
