@@ -1,6 +1,7 @@
 const assert = require('assert')
 const { describe, it } = require('mocha')
 const { default: wasm } = require('..')
+const {fromHexString} = require("./utils/hex");
 
 describe('IdentityCreateTransition', function () {
   describe('serialization / deserialization', function () {
