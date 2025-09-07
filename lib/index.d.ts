@@ -87,6 +87,9 @@ export class DashPlatformProtocolWASM {
     StateTransitionWASM: typeof DPP.StateTransitionWASM
     TxOutWASM: typeof DPP.TxOutWASM
     MasternodeVoteTransitionWASM: typeof DPP.MasternodeVoteTransitionWASM
+    VoteWASM: typeof DPP.VoteWASM
+    VotePollWASM: typeof DPP.VotePollWASM
+    ResourceVoteChoiceWASM: typeof DPP.ResourceVoteChoiceWASM
     // ENUMS
     AssetLockProofTypeWASM: typeof DPP.AssetLockProofTypeWASM
     BatchType: typeof DPP.BatchType

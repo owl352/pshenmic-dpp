@@ -31,6 +31,21 @@ impl From<&IdentifierWASM> for Identifier {
     }
 }
 
+impl TryFrom<&[u8]> for IdentifierWASM {
+    type Error = JsValue;
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        if value.len() != 32 {
+            return Err(JsValue::from("Identifier must be 32 bytes length"));
+        }
+
+        let norm_slice: [u8; 32] = value
+            .try_into()
+            .map_err(|_| JsValue::from("Cannot parse identifier"))?;
+
+        Ok(IdentifierWASM(Identifier::new(norm_slice)))
+    }
+}
+
 impl TryFrom<JsValue> for IdentifierWASM {
     type Error = JsValue;
     fn try_from(value: JsValue) -> Result<Self, Self::Error> {

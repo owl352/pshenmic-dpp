@@ -58,7 +58,17 @@ impl MasternodeVoteTransitionWASM {
         signature_public_key: Option<KeyID>,
         signature: Option<Vec<u8>>,
     ) -> Result<MasternodeVoteTransitionWASM, JsValue> {
-        let pro_tx_hash = IdentifierWASM::try_from(js_pro_tx_hash)?;
+        let pro_tx_hash = match js_pro_tx_hash.is_string() {
+            false => IdentifierWASM::try_from(js_pro_tx_hash)?,
+            true => match js_pro_tx_hash.as_string().unwrap().len() > 44 {
+                true => IdentifierWASM::try_from(
+                    decode(js_pro_tx_hash.as_string().unwrap().as_str(), Hex)
+                        .map_err(|err| JsValue::from(err.to_string()))?
+                        .as_slice(),
+                )?,
+                false => IdentifierWASM::try_from(js_pro_tx_hash)?,
+            },
+        };
         let voter_identity_id = IdentifierWASM::try_from(js_voter_identity_id)?;
 
         Ok(MasternodeVoteTransitionWASM(MasternodeVoteTransition::V0(
