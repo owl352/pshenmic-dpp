@@ -1,4 +1,5 @@
 use dpp::platform_value::string_encoding::Encoding::{Base58, Base64, Hex};
+use dpp::platform_value::string_encoding::decode;
 use dpp::prelude::Identifier;
 use pshenmic_dpp_utils::{IntoWasm, get_class_type, identifier_from_js_value};
 use wasm_bindgen::prelude::*;
@@ -63,7 +64,21 @@ impl TryFrom<JsValue> for IdentifierWASM {
                 },
                 Err(_) => Ok(identifier_from_js_value(&value)?.into()),
             },
-            false => Ok(identifier_from_js_value(&value)?.into()),
+            false => match value.is_string() {
+                false => Ok(identifier_from_js_value(&value)?.into()),
+                true => {
+                    let id_str = value.as_string().unwrap();
+                    match id_str.len() == 64 {
+                        true => {
+                            let bytes = decode(value.as_string().unwrap().as_str(), Hex)
+                                .map_err(|err| JsValue::from(err.to_string()))?;
+
+                            Ok(IdentifierWASM::try_from(bytes.as_slice())?)
+                        }
+                        false => Ok(identifier_from_js_value(&value)?.into()),
+                    }
+                }
+            },
         }
     }
 }
