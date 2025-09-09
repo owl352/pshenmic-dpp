@@ -86,6 +86,9 @@ export class DashPlatformProtocolWASM {
     PrivateKeyWASM: typeof DPP.PrivateKeyWASM
     StateTransitionWASM: typeof DPP.StateTransitionWASM
     TxOutWASM: typeof DPP.TxOutWASM
+    TxInWASM: typeof DPP.TxInWASM
+    WitnessWASM: typeof DPP.WitnessWASM
+    TransactionWASM: typeof DPP.TransactionWASM
     MasternodeVoteTransitionWASM: typeof DPP.MasternodeVoteTransitionWASM
     VoteWASM: typeof DPP.VoteWASM
     VotePollWASM: typeof DPP.VotePollWASM
