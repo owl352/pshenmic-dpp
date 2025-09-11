@@ -5,7 +5,7 @@
 static ALLOCATOR: talc::Talck<talc::locking::AssumeUnlockable, talc::ClaimOnOom> = unsafe {
     use core::{mem::MaybeUninit, ptr::addr_of_mut};
 
-    const MEMORY_SIZE: usize = 128 * 1024 * 1024;
+    const MEMORY_SIZE: usize = 96 * 1024 * 1024;
     static mut MEMORY: [MaybeUninit<u8>; MEMORY_SIZE] = [MaybeUninit::uninit(); MEMORY_SIZE];
     let span = talc::Span::from_array(addr_of_mut!(MEMORY));
     let oom_handler = { talc::ClaimOnOom::new(span) };
