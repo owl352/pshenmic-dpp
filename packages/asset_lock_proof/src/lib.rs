@@ -1,7 +1,10 @@
 pub mod chain;
 pub mod instant;
 pub mod outpoint;
+pub mod transaction;
+pub mod tx_in;
 mod tx_out;
+pub mod witness;
 
 use crate::chain::ChainAssetLockProofWASM;
 use crate::instant::InstantAssetLockProofWASM;
