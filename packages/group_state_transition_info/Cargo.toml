@@ -4,6 +4,6 @@ edition = "2024"
 version.workspace = true
 
 [dependencies]
+wasm-bindgen = { workspace = true, features = ["serde-serialize"] }
 dpp = { workspace = true, features = ["document-json-conversion"] }
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
 pshenmic_dpp_identifier = {path = "../identifier"}

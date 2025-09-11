@@ -8,4 +8,4 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 dpp = { workspace = true, features = ["document-json-conversion"] }
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true, features = ["serde-serialize"] }
