@@ -2327,7 +2327,6 @@ dependencies = [
 name = "pshenmic_dpp_utils"
 version = "1.0.5"
 dependencies = [
- "anyhow",
  "dpp",
  "js-sys",
  "serde_json",
