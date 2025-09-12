@@ -8,6 +8,8 @@ rust-version = "1.85"
 dpp = { git = "https://github.com/owl352/platform", branch = "v2.0.1", default-features = false }
 drive = { git = "https://github.com/owl352/platform", branch = "v2.0.1", default-features = false }
 wasm-bindgen = { version = "=0.2.101", default-features = false, features = ["std"]}
+js-sys = { version = "0.3.78" }
+serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
 
 [workspace.package]
 version = "1.0.5"

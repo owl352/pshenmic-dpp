@@ -8,10 +8,10 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
 anyhow = { version = "1.0.75" }
 dpp = { workspace = true, features = [
     "platform-value",
     "document-json-conversion"
 ] }
-js-sys = "0.3.53"
 serde_json = { version = "1.0", features = ["preserve_order"] }

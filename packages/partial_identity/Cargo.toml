@@ -13,5 +13,5 @@ dpp = { workspace = true, features = [
 ]}
 pshenmic_dpp_identity_public_key = { path = "../identity_public_key" }
 pshenmic_dpp_identifier = { path = "../identifier" }
+js-sys = { workspace = true }
 pshenmic_dpp_utils = { path = "../utils" }
-js-sys = "0.3.77"

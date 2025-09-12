@@ -18,5 +18,5 @@ pshenmic_dpp_enums = { path = "../enums" }
 pshenmic_dpp_identifier = { path = "../identifier" }
 pshenmic_dpp_utils = { path = "../utils" }
 pshenmic_dpp_state_transition = { path = "../state_transition" }
-serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
-js-sys = "0.3.53"
+serde-wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }

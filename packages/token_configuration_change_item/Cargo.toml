@@ -9,4 +9,4 @@ wasm-bindgen = { workspace = true }
 pshenmic_dpp_token_configuration = {path = "../token_configuration"}
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_identifier = {path = "../identifier"}
-serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+serde-wasm-bindgen = { workspace = true }

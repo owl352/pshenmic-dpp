@@ -15,4 +15,4 @@ pshenmic_dpp_data_contract = {path = "../data_contract"}
 dpp = { workspace = true, features = [
     "document-value-conversion"
 ]}
-serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+serde-wasm-bindgen = { workspace = true }

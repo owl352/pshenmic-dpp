@@ -15,5 +15,5 @@ pshenmic_dpp_identifier = { path = "../identifier" }
 dpp = { workspace = true, features = [
     "data-contract-json-conversion",
 ]}
-js-sys = "0.3.53"
-serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+js-sys = { workspace = true }
+serde-wasm-bindgen = { workspace = true }

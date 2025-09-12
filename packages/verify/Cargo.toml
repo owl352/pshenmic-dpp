@@ -13,7 +13,7 @@ dpp = { workspace = true, features = [
     "bls-signatures",
     "platform-value"
 ]}
-js-sys = { version = "0.3.53" }
+js-sys = { workspace = true }
 indexmap = { version = "2.0.2" }
 pshenmic_dpp_data_contract = { path = "../data_contract" }
 pshenmic_dpp_document = { path = "../document" }
