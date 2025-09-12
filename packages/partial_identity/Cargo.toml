@@ -7,11 +7,11 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = [
     "identity-serialization"
 ]}
 pshenmic_dpp_identity_public_key = { path = "../identity_public_key" }
 pshenmic_dpp_identifier = { path = "../identifier" }
+js-sys = { workspace = true }
 pshenmic_dpp_utils = { path = "../utils" }
-js-sys = "0.3.77"

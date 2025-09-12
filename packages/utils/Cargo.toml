@@ -7,11 +7,10 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
-anyhow = { version = "1.0.75" }
+wasm-bindgen = { workspace = true }
+js-sys = { workspace = true }
 dpp = { workspace = true, features = [
     "platform-value",
     "document-json-conversion"
 ] }
-js-sys = "0.3.53"
 serde_json = { version = "1.0", features = ["preserve_order"] }

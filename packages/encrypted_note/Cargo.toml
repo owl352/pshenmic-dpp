@@ -7,5 +7,5 @@ version.workspace = true
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = ["document-json-conversion"] }
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }

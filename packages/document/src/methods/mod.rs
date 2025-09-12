@@ -411,7 +411,7 @@ impl DocumentWASM {
             }
             None => entropy_generator::DefaultEntropyGenerator
                 .generate()
-                .with_js_error()?,
+                .map_err(|err| JsValue::from(err.to_string()))?,
         };
 
         let identifier = pshenmic_dpp_utils::generate_document_id_v0(

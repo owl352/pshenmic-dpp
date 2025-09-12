@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = []}
 pshenmic_dpp_utils = { path = "../utils" }

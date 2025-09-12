@@ -7,12 +7,12 @@ version.workspace = true
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = [
     "state-transition-signing"
 ]}
-js-sys = "0.3.53"
-serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
+js-sys = { workspace = true }
+serde-wasm-bindgen = { workspace = true }
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_identifier = {path = "../identifier" }
 pshenmic_dpp_state_transition = {path = "../state_transition"}

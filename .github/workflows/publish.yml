@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Rust dependencies for WASM
         run: |
-          cargo install wasm-bindgen-cli@0.2.100 wasm-opt wasm-snip
+          cargo install wasm-bindgen-cli@0.2.101 wasm-opt wasm-snip
 
       - name: Install dependencies
         run: |

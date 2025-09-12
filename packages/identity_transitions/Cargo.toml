@@ -7,11 +7,11 @@ version.workspace = true
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-wasm-bindgen = { version = "=0.2.100", default-features = false, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = [
     "state-transition-signing"
 ]}
-js-sys = "0.3.53"
+js-sys = { workspace = true }
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_contract_bounds = {path = "../contract_bounds"}
 pshenmic_dpp_core_script = {path = "../core_script"}

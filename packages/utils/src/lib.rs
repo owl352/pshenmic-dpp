@@ -1,4 +1,3 @@
-use anyhow::{Context, anyhow, bail};
 use dpp::ProtocolError;
 use dpp::identifier::Identifier;
 use dpp::platform_value::Value;
@@ -42,39 +41,9 @@ impl ToSerdeJSONExt for JsValue {
     }
 }
 
-pub fn to_vec_js<T>(iter: impl IntoIterator<Item = T>) -> Vec<JsValue>
-where
-    T: Into<JsValue>,
-{
-    iter.into_iter().map(|v| v.into()).collect()
-}
-
-#[allow(dead_code)]
-#[deprecated(note = "This function is marked as unused.")]
-#[allow(deprecated)]
-pub fn to_vec_of_serde_values(
-    values: impl IntoIterator<Item = impl AsRef<JsValue>>,
-) -> Result<Vec<JsonValue>, JsValue> {
-    values
-        .into_iter()
-        .map(|v| v.as_ref().with_serde_to_json_value())
-        .collect()
-}
-
-pub fn to_vec_of_platform_values(
-    values: impl IntoIterator<Item = impl AsRef<JsValue>>,
-) -> Result<Vec<Value>, JsValue> {
-    values
-        .into_iter()
-        .map(|v| v.as_ref().with_serde_to_platform_value())
-        .collect()
-}
-
 pub fn with_serde_to_json_value(data: JsValue) -> Result<JsonValue, JsValue> {
     let data = stringify(&data)?;
-    let value: JsonValue = serde_json::from_str(&data)
-        .with_context(|| format!("cant convert {data:#?} to serde json value"))
-        .map_err(|e| format!("{e:#}"))?;
+    let value: JsonValue = serde_json::from_str(&data).map_err(|e| format!("{e:#}"))?;
     Ok(value)
 }
 
@@ -99,11 +68,11 @@ pub trait WithJsError<T> {
     fn with_js_error(self) -> Result<T, JsValue>;
 }
 
-impl<T> WithJsError<T> for Result<T, anyhow::Error> {
+impl<T> WithJsError<T> for Result<T, JsValue> {
     fn with_js_error(self) -> Result<T, JsValue> {
         match self {
             Ok(ok) => Ok(ok),
-            Err(error) => Err(format!("{error:#}").into()),
+            Err(error) => Err(error),
         }
     }
 }
@@ -170,38 +139,45 @@ pub fn get_class_type(value: &JsValue) -> Result<String, JsValue> {
     }
 }
 
-pub fn try_to_u64(value: JsValue) -> Result<u64, anyhow::Error> {
+pub fn try_to_u64(value: JsValue) -> Result<u64, JsValue> {
     if value.is_bigint() {
-        js_sys::BigInt::new(&value)
-            .map_err(|e| anyhow!("unable to create bigInt: {}", e.to_string()))?
+        js_sys::BigInt::new(&value)?
             .try_into()
-            .map_err(|e| anyhow!("conversion of BigInt to u64 failed: {:#}", e))
+            .map_err(|e| JsValue::from(format!("conversion of BigInt to u64 failed: {:#}", e)))
     } else if value.as_f64().is_some() {
         let number = js_sys::Number::from(value);
         convert_number_to_u64(number)
     } else {
-        bail!("supported types are Number or BigInt")
+        Err(JsValue::from("supported types are Number or BigInt"))
     }
 }
 
-pub fn convert_number_to_u64(js_number: js_sys::Number) -> Result<u64, anyhow::Error> {
+pub fn convert_number_to_u64(js_number: js_sys::Number) -> Result<u64, JsValue> {
     if let Some(float_number) = js_number.as_f64() {
         if float_number.is_nan() || float_number.is_infinite() {
-            bail!("received an invalid timestamp: the number is either NaN or Inf")
+            Err(JsValue::from(
+                "received an invalid timestamp: the number is either NaN or Inf",
+            ))?
         }
         if float_number < 0. {
-            bail!("received an invalid timestamp: the number is negative");
+            Err(JsValue::from(
+                "received an invalid timestamp: the number is negative",
+            ))?
         }
         if float_number.fract() != 0. {
-            bail!("received an invalid timestamp: the number is fractional")
+            Err(JsValue::from(
+                "received an invalid timestamp: the number is fractional",
+            ))?
         }
         if float_number > u64::MAX as f64 {
-            bail!("received an invalid timestamp: the number is > u64::max")
+            Err(JsValue::from(
+                "received an invalid timestamp: the number is > u64::max",
+            ))?
         }
 
         return Ok(float_number as u64);
     }
-    bail!("the value is not a number")
+    Err(JsValue::from("the value is not a number"))
 }
 
 pub fn generate_document_id_v0(

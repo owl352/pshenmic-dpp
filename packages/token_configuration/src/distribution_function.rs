@@ -81,10 +81,8 @@ impl DistributionFunctionWASM {
 
         for key in Object::keys(&obj) {
             steps_with_amount.insert(
-                try_to_u64(BigInt::from_str(key.as_string().unwrap().as_str())?.into())
-                    .map_err(|err| JsValue::from(err.to_string()))?,
-                try_to_u64(Reflect::get(&obj, &key)?)
-                    .map_err(|err| JsValue::from(err.to_string()))?,
+                try_to_u64(BigInt::from_str(key.as_string().unwrap().as_str())?.into())?,
+                try_to_u64(Reflect::get(&obj, &key)?)?,
             );
         }
 
