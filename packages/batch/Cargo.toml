@@ -7,8 +7,8 @@ version.workspace = true
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = ["document-json-conversion"] }
-wasm-bindgen = { workspace = true, features = ["serde-serialize"] }
 pshenmic_dpp_document = { path = "../document" }
 pshenmic_dpp_encrypted_note = { path = "../encrypted_note" }
 pshenmic_dpp_group_state_transition_info = { path = "../group_state_transition_info" }

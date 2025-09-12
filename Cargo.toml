@@ -7,7 +7,7 @@ rust-version = "1.85"
 [workspace.dependencies]
 dpp = { git = "https://github.com/owl352/platform", branch = "v2.0.1", default-features = false }
 drive = { git = "https://github.com/owl352/platform", branch = "v2.0.1", default-features = false }
-wasm-bindgen = { version = "=0.2.101", default-features = false}
+wasm-bindgen = { version = "=0.2.101", default-features = false, features = ["std"]}
 
 [workspace.package]
 version = "1.0.5"

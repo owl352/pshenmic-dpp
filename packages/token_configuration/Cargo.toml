@@ -4,7 +4,7 @@ edition = "2024"
 version.workspace = true
 
 [dependencies]
-wasm-bindgen = { workspace = true, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = ["state-transition-serde-conversion"] }
 pshenmic_dpp_identifier = { path = "../identifier" }
 pshenmic_dpp_utils = { path = "../utils" }

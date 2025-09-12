@@ -5,7 +5,7 @@ version.workspace = true
 
 [dependencies]
 dpp = { workspace = true, features = ["state-transition-serde-conversion"] }
-wasm-bindgen = { workspace = true, features = ["serde-serialize"] }
+wasm-bindgen = { workspace = true }
 pshenmic_dpp_token_configuration = {path = "../token_configuration"}
 pshenmic_dpp_utils = {path = "../utils"}
 pshenmic_dpp_identifier = {path = "../identifier"}
