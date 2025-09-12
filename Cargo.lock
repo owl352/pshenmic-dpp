@@ -3324,6 +3324,7 @@ dependencies = [
  "cfg-if",
  "once_cell",
  "rustversion",
+ "serde_json",
  "wasm-bindgen-macro",
  "wasm-bindgen-shared",
 ]
