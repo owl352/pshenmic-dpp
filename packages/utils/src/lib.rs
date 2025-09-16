@@ -3,7 +3,7 @@ use dpp::identifier::Identifier;
 use dpp::platform_value::Value;
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::util::hash::hash_double_to_vec;
-use js_sys::{Function, Uint8Array};
+use js_sys::{Array, Object, Reflect, Uint8Array};
 use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
 use std::convert::TryInto;
@@ -51,14 +51,48 @@ pub fn with_serde_to_platform_value(data: &JsValue) -> Result<Value, JsValue> {
     Ok(with_serde_to_json_value(data.clone())?.into())
 }
 
-pub fn stringify(data: &JsValue) -> Result<String, JsValue> {
-    let replacer_func = Function::new_with_args(
-        "key, value",
-        "return (value != undefined && value.type=='Buffer')  ? value.data : value ",
-    );
+pub fn transform_value(data: &JsValue) -> Result<JsValue, JsValue> {
+    if data.is_object() {
+        if Array::is_array(&data) {
+            let arr = Array::from(&data);
+            let transformed_arr = Array::new();
 
-    let data_string: String =
-        js_sys::JSON::stringify_with_replacer(data, &JsValue::from(replacer_func))?.into();
+            for el in arr.iter() {
+                let transformed_el = transform_value(&el)?;
+                transformed_arr.push(&transformed_el);
+            }
+
+            return Ok(transformed_arr.into());
+        }
+
+        if data.is_instance_of::<Uint8Array>() {
+            return Ok(Array::from(data).into());
+        }
+
+        let object = Object::from(data.clone());
+
+        let transformed_obj = Object::new();
+        let keys = Reflect::own_keys(&object)?;
+        let keys2 = Reflect::get_prototype_of(&object)?;
+
+        web_sys::console::log_1(&keys.clone().into());
+        web_sys::console::log_1(&Object::values(&keys).clone().into());
+
+        for key in keys.iter() {
+            let value = Reflect::get(&object, &key)?;
+            let transformed_value = transform_value(&value)?;
+
+            Reflect::set(&transformed_obj, &key, &transformed_value)?;
+        }
+
+        return Ok(transformed_obj.into());
+    }
+
+    Ok(data.clone())
+}
+
+pub fn stringify(data: &JsValue) -> Result<String, JsValue> {
+    let data_string: String = js_sys::JSON::stringify(&transform_value(data)?)?.into();
 
     Ok(data_string)
 }

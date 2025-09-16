@@ -46,9 +46,7 @@ impl DocumentWASM {
 
         let revision = Revision::from(js_revision);
 
-        let document = js_raw_document
-            .with_serde_to_platform_value_map()
-            .expect("cannot convert document to platform value map");
+        let document = js_raw_document.with_serde_to_platform_value_map()?;
 
         let revision = Revision::from(revision);
 

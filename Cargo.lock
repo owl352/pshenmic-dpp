@@ -2329,8 +2329,10 @@ version = "1.0.5"
 dependencies = [
  "dpp",
  "js-sys",
+ "serde-wasm-bindgen",
  "serde_json",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
