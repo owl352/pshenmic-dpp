@@ -42,10 +42,8 @@ impl ActionTakerWASM {
             let set_of_identifiers: Vec<Identifier> = Array::from(value)
                 .to_vec()
                 .iter()
-                .map(|js_value: &JsValue| {
-                    Identifier::from(IdentifierWASM::try_from(js_value).expect("err"))
-                })
-                .collect();
+                .map(|js_value: &JsValue| Ok(Identifier::from(IdentifierWASM::try_from(js_value)?)))
+                .collect::<Result<Vec<Identifier>, JsValue>>()?;
 
             Ok(ActionTakerWASM(ActionTaker::SpecifiedIdentities(
                 BTreeSet::from_iter(set_of_identifiers),

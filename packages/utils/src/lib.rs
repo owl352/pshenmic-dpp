@@ -3,12 +3,17 @@ use dpp::identifier::Identifier;
 use dpp::platform_value::Value;
 use dpp::platform_value::string_encoding::Encoding::Base58;
 use dpp::util::hash::hash_double_to_vec;
-use js_sys::{Function, Uint8Array};
+use js_sys::Uint8Array;
 use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
 use std::convert::TryInto;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::{convert::RefFromWasmAbi, prelude::*};
+
+#[wasm_bindgen(module = "/stringify.js")]
+extern "C" {
+    fn stringify(data: JsValue) -> String;
+}
 
 pub trait ToSerdeJSONExt {
     fn with_serde_to_json_value(&self) -> Result<JsonValue, JsValue>;
@@ -42,25 +47,14 @@ impl ToSerdeJSONExt for JsValue {
 }
 
 pub fn with_serde_to_json_value(data: JsValue) -> Result<JsonValue, JsValue> {
-    let data = stringify(&data)?;
+    let data = stringify(data);
+
     let value: JsonValue = serde_json::from_str(&data).map_err(|e| format!("{e:#}"))?;
     Ok(value)
 }
 
 pub fn with_serde_to_platform_value(data: &JsValue) -> Result<Value, JsValue> {
     Ok(with_serde_to_json_value(data.clone())?.into())
-}
-
-pub fn stringify(data: &JsValue) -> Result<String, JsValue> {
-    let replacer_func = Function::new_with_args(
-        "key, value",
-        "return (value != undefined && value.type=='Buffer')  ? value.data : value ",
-    );
-
-    let data_string: String =
-        js_sys::JSON::stringify_with_replacer(data, &JsValue::from(replacer_func))?.into();
-
-    Ok(data_string)
 }
 
 pub trait WithJsError<T> {

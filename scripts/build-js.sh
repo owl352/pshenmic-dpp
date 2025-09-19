@@ -7,6 +7,7 @@ DIST_WASM_BINARY_BASE_64="$DIST_WASM_DIR/pshenmic_dpp_bg.js"
 DIST_WASM_BINARY_RAW="$DIST_WASM_DIR/pshenmic_dpp_bg.wasm"
 DIST_WASM_JS="$DIST_WASM_DIR/pshenmic_dpp.js"
 DIST_WASM_JS_INDEX="$DIST_WASM_DIR/index.js"
+DIST_WASM_JS_SNIPPETS="$DIST_WASM_DIR/snippets"
 DIST_WASM_TS_BG="$DIST_WASM_DIR/pshenmic_dpp_bg.wasm.d.ts"
 DIST_WASM_TS="$DIST_WASM_DIR/pshenmic_dpp.d.ts"
 DIST_WASM_TS_INDEX="$DIST_WASM_DIR/index.d.ts"
@@ -16,6 +17,7 @@ DIST_BASE122="$DIST_WASM_DIR/base122.js"
 ## Paths to wasm files produced by wasm-bindgen
 WASM_DIR="$PWD/wasm"
 WASM_JS_CODE_PATH="$WASM_DIR/pshenmic_dpp.js"
+WASM_JS_SNIPPETS="$WASM_DIR/snippets"
 WASM_BINARY_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm"
 WASM_TS_BG_CODE_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm.d.ts"
 WASM_TS_CODE_PATH="$WASM_DIR/pshenmic_dpp.d.ts"
@@ -30,6 +32,7 @@ mkdir -p $DIST_WASM_DIR
 
 
 rm -rf $DIST_WASM_BINARY_BASE_64
+rm -rf $DIST_WASM_JS_SNIPPETS
 rm -rf $DIST_WASM_BINARY_RAW
 rm -rf $DIST_WASM_JS_INDEX
 rm -rf $DIST_WASM_JS
@@ -50,6 +53,8 @@ fi
 
 echo "Copying ES module to dist"
 cp $WASM_JS_CODE_PATH $DIST_WASM_JS
+cp -R $WASM_JS_SNIPPETS $DIST_WASM_JS_SNIPPETS
+
 
 echo "Copying lib to dist"
 cp -a $WASM_TS_INDEX_CODE_PATH $DIST_WASM_DIR
