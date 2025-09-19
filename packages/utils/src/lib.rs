@@ -49,8 +49,6 @@ impl ToSerdeJSONExt for JsValue {
 pub fn with_serde_to_json_value(data: JsValue) -> Result<JsonValue, JsValue> {
     let data = stringify(data);
 
-    web_sys::console::log_1(&data.clone().into());
-
     let value: JsonValue = serde_json::from_str(&data).map_err(|e| format!("{e:#}"))?;
     Ok(value)
 }
