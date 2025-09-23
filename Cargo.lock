@@ -2341,6 +2341,7 @@ dependencies = [
  "drive",
  "indexmap",
  "js-sys",
+ "pshenmic_dpp_batch",
  "pshenmic_dpp_data_contract",
  "pshenmic_dpp_document",
  "pshenmic_dpp_enums",

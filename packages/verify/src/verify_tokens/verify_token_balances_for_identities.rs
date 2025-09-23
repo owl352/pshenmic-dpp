@@ -1,3 +1,4 @@
+use crate::utils::js_identities_to_rs_vec_of_slices;
 use dpp::balances::credits::TokenAmount;
 use drive::verify::RootHash;
 use js_sys::{Array, Object, Reflect, Uint8Array};
@@ -46,20 +47,7 @@ pub fn verify_token_balances_for_identities(
     let token_id = IdentifierWASM::try_from(js_token_id)?;
     let platform_version = PlatformVersionWASM::try_from(js_platform_version.clone())?;
 
-    let identities = match js_identities.is_array() {
-        false => Err(JsValue::from("identities should be array")),
-        true => {
-            let js_ids_array = Array::from(js_identities);
-
-            let mut ids_array: Vec<[u8; 32]> = Vec::new();
-
-            for js_id in js_ids_array.iter() {
-                ids_array.push(IdentifierWASM::try_from(js_id)?.to_slice())
-            }
-
-            Ok(ids_array)
-        }
-    }?;
+    let identities: Vec<[u8; 32]> = js_identities_to_rs_vec_of_slices(js_identities)?;
 
     let (root_hash, balances_vec): (RootHash, Vec<([u8; 32], Option<TokenAmount>)>) =
         drive::drive::Drive::verify_token_balances_for_identity_ids(
