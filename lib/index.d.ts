@@ -122,4 +122,5 @@ export class DashPlatformProtocolWASM {
     verifyTokenContractInfo: Function
     verifyTokenTotalSupply: Function
     verifyTokensBalancesForIdentity: Function
+    verifyTokenDirectPurchasePrices: Function
 }

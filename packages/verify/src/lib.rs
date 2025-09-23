@@ -1,3 +1,4 @@
+pub mod utils;
 pub mod verify_contested;
 pub mod verify_contract;
 pub mod verify_document;
