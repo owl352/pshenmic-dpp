@@ -1,34 +1,37 @@
-import fs from 'fs'
-import { encode } from './base122.mjs'
+import fs from 'fs';
+import {encode} from './base122.mjs';
 import zlib from "zlib";
 
-process.argv.forEach(function (val, index) {
-  if (val.includes('.wasm')) {
-    const binaryData = fs.readFileSync(val)
+const inputFile = process.argv[2];
+const outputFile = process.argv[3];
 
-    const bufferData = Buffer.from(binaryData)
+if (!inputFile || !outputFile) {
+  console.error("Usage: node <script.js> <input_file> <output_file>");
+  process.exit(1);
+}
 
-    const compressedChunks = [];
+const binaryData = fs.readFileSync(inputFile);
+const bufferData = Buffer.from(binaryData);
+const compressedChunks = [];
 
-    const gzip = zlib.createGzip({
-      level: 9,
-      memLevel: 9
-    })
+const gzip = zlib.createGzip({
+  level: zlib.constants.Z_BEST_COMPRESSION,
+  memLevel: zlib.constants.Z_MAX_MEMLEVEL,
+});
 
-    gzip.on('data', data => {
-      compressedChunks.push(...data)
-    })
+gzip.on('data', data => {
+  compressedChunks.push(...data);
+});
 
-    gzip.on('end', () => {
-      const encodedData = Buffer.from(encode(compressedChunks)).toString('utf-8')
+gzip.on('end', () => {
+  const encodedData = Buffer.from(encode(compressedChunks)).toString('utf-8');
+  const outputContent = `export default "${encodedData}"`;
 
-      console.log(`export default "${encodedData}"`)
+  fs.writeFileSync(outputFile, outputContent);
 
-      process.exit(0)
-    })
+  console.log(`Successfully converted ${inputFile} to ${outputFile}`);
+  process.exit(0);
+});
 
-    gzip.write(bufferData)
-
-    gzip.end()
-  }
-})
+gzip.write(bufferData);
+gzip.end();

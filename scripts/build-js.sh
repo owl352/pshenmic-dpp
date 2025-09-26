@@ -47,7 +47,8 @@ if [[ "${RAW}" == "true" ]]; then
   cp $WASM_BINARY_PATH $DIST_WASM_BINARY_RAW
 else
   echo "Converting wasm binary into base122 module"
-  npm run convert:base122 --silent "$WASM_BINARY_PATH" > "$DIST_WASM_BINARY_BASE_64"
+  npm run convert:base122 --silent "$WASM_BINARY_PATH" "$DIST_WASM_BINARY_BASE_64"
+  npm run convert:base122 --silent "$WASM_JS_CODE_PATH" "$WASM_JS_CODE_PATH"
   cp $MODULE_BASE122 $DIST_BASE122
 fi
 
