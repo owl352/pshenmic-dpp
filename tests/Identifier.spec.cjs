@@ -1,14 +1,11 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
-const { default: initWASM } = require('..')
+const { default: wasm } = require('..')
 
 let identifierBytes
-let wasm
 
 describe('Identifier', function () {
   before(async function () {
-    wasm = await initWASM()
-
     identifierBytes = Uint8Array.from([9, 40, 40, 237, 192, 129, 211, 186, 26, 84, 240, 67, 37, 155, 148, 19, 104, 242, 199, 24, 136, 27, 6, 169, 211, 71, 136, 59, 33, 191, 227, 19])
   })
 
