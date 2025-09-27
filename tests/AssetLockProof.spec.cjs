@@ -1,7 +1,7 @@
 const assert = require('assert')
 const { describe, it } = require('mocha')
 const { instantLockBytes, transactionBytes } = require('./mocks/Locks')
-const { default: wasm } = require('..')
+const { default: wasm } = require('pshenmic-dpp')
 
 describe('AssetLockProof', function () {
   describe('serialization / deserialization', function () {

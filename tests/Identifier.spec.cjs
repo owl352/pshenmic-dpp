@@ -1,6 +1,6 @@
 const assert = require('assert')
 const { describe, it, before } = require('mocha')
-const { default: wasm } = require('..')
+const { default: wasm } = require('pshenmic-dpp')
 
 let identifierBytes
 

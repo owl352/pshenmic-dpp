@@ -18,6 +18,7 @@ DIST_BASE122="$DIST_WASM_DIR/base122.js"
 ## Paths to wasm files produced by wasm-bindgen
 WASM_DIR="$PWD/wasm"
 WASM_JS_CODE_PATH="$WASM_DIR/pshenmic_dpp.js"
+WASM_JS_CODE_BUNDLE_PATH="$WASM_DIR/pshenmic_dpp_bundle.js"
 WASM_JS_CODE_ZIPPED_PATH="$WASM_DIR/pshenmic_dpp_bundle_zip.js"
 WASM_JS_SNIPPETS="$WASM_DIR/snippets"
 WASM_BINARY_PATH="$WASM_DIR/pshenmic_dpp_bg.wasm"
@@ -46,14 +47,10 @@ rm -rf $DIST_WASM_TS
 
 ## Converting wasm into base64 and saving it to dist folder
 
-if [[ "${RAW}" == "true" ]]; then
-  cp $WASM_BINARY_PATH $DIST_WASM_BINARY_RAW
-else
-  echo "Converting wasm binary into base122 module"
-  npm run convert:base122 --silent "$WASM_BINARY_PATH" "$DIST_WASM_BINARY_BASE_64"
-  npm run convert:base122 --silent "$WASM_JS_CODE_PATH" "$WASM_JS_CODE_ZIPPED_PATH"
-  cp $MODULE_BASE122 $DIST_BASE122
-fi
+echo "Converting wasm binary into base122 module"
+npm run convert:base122 --silent "$WASM_BINARY_PATH" "$DIST_WASM_BINARY_BASE_64"
+npm run convert:base122 --silent "$WASM_JS_CODE_BUNDLE_PATH" "$WASM_JS_CODE_ZIPPED_PATH"
+cp $MODULE_BASE122 $DIST_BASE122
 
 echo "Copying ES module to dist"
 cp $WASM_JS_CODE_PATH $DIST_WASM_JS

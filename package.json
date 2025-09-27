@@ -25,6 +25,10 @@
     "dist/wasm",
     "tests/"
   ],
+  "exports": {
+    ".": "./dist/wasm/index.js",
+    "./initAsync": "./dist/wasm/initAsync.js"
+  },
   "author": "owl352",
   "license": "ISC",
   "description": "",
