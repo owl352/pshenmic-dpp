@@ -1,8 +1,8 @@
-import * as DPP from './pshenmic_dpp';
+import * as DPP from './pshenmic_dpp.js';
 
-export * from './pshenmic_dpp'
+export * from './pshenmic_dpp.js'
 
-export * from './base122'
+export * from './base122.js'
 
 export default dpp;
 

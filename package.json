@@ -14,7 +14,7 @@
     "build:full": "./scripts/build.sh && npm run bundle && ./scripts/build-js.sh",
     "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
     "bundle": "rollup -c",
-    "docs": "ts-node utils/generate-docs.ts && typedoc",
+    "docs": "tsx utils/generate-docs.ts && typedoc",
     "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.cjs",
     "lint": "cargo fmt",
@@ -38,7 +38,7 @@
     "rollup": "^4.52.2",
     "standard": "^17.1.2",
     "ts-morph": "^26.0.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3"
   },
