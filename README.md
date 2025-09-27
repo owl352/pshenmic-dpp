@@ -18,18 +18,23 @@ ___
 ### Build JS
 `yarn build:full`
 
-**NOTE. If you want to use ES6 module without CJS, you need to run `yarn babel`**
-
 ### Build with binary instead base122
 `yarn build:raw`
 Now you can import `.js` with base122 buffer for WebAssembly module, or binary which smaller
 ___
 ## Why you need to use `pshenmic-dpp` instead `wasm-dpp`
 
-- `pshenmic-dpp` weighs much less, currently taking up only 3.9 mb in base122 format
+- `pshenmic-dpp` weighs much less, currently taking up only 1.4mb(\*) or 2.2mb(\*) in base122 format with GZIP
 - You can build only necessary modules by removing imports from `lib.rs` before building
 - More accurately replicates `rs-dpp`
 - Some sugar, like enums, which you can pass in string with any case or just use numbers
+
+**(\*)** \- This module contains 2 builds for wasm js layer:
+- JS without bundling or GZIP (2.2mb)
+- Bundled JS with GZIP (1.4mb)
+
+These variations can be imported depending on requirements.
+In both cases, the binary wasm data will be compressed using gzip.
 ___
 
 ## Current features
@@ -129,8 +134,9 @@ yarn tests
 
 ## Example
 
+This example show how to synchronously import module with size 2.2mb  
 ```js
-import wasm from pshenmic_dpp';
+import wasm from 'pshenmic_dpp';
 
 const document = new wasm.DocumentWASM(
     {
@@ -168,4 +174,20 @@ st.sign(privKey, pubKey)
 
 console.log(st.toBytes())
 console.log(st.hash(false))
+```
+
+This example show how to asynchronously import module with size 1.4mb
+```js
+const {default: initWASM} = require('pshenmic-dpp/initAsync')
+
+async function main() {
+  let wasm = await initWASM()
+
+  const dataContractIdentifier = new wasm.IdentifierWASM('6QMfQTdKpC3Y9uWBcTwXeY3KdzRLDqASUsDnQ4MEc9XC')
+  const ownerIdentifier = new wasm.IdentifierWASM('B7kcE1juMBWEWkuYRJhVdAE2e6RaevrGxRsa1DrLCpQH')
+
+  const documentInstance = new wasm.DocumentWASM(document, 'documentTypeName', BigInt(1), dataContractIdentifier, ownerIdentifier)
+}
+
+main().catch(console.error)
 ```

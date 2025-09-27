@@ -1,14 +1,37 @@
-import fs from 'fs'
-import { encode } from './base122.mjs'
+import fs from 'fs';
+import {encode} from './base122.mjs';
+import zlib from "zlib";
 
-process.argv.forEach(function (val, index) {
-  if (val.includes('.wasm')) {
-    const binaryData = fs.readFileSync(val)
+const inputFile = process.argv[2];
+const outputFile = process.argv[3];
 
-    const encodedData = Buffer.from(encode(binaryData)).toString('utf-8')
+if (!inputFile || !outputFile) {
+  console.error("Usage: node <script.js> <input_file> <output_file>");
+  process.exit(1);
+}
 
-    console.log(`export default "${encodedData}"`)
+const binaryData = fs.readFileSync(inputFile);
+const bufferData = Buffer.from(binaryData);
+const compressedChunks = [];
 
-    process.exit(0)
-  }
-})
+const gzip = zlib.createGzip({
+  level: zlib.constants.Z_BEST_COMPRESSION,
+  memLevel: zlib.constants.Z_MAX_MEMLEVEL,
+});
+
+gzip.on('data', data => {
+  compressedChunks.push(...data);
+});
+
+gzip.on('end', () => {
+  const encodedData = Buffer.from(encode(compressedChunks)).toString('utf-8');
+  const outputContent = `export default "${encodedData}"`;
+
+  fs.writeFileSync(outputFile, outputContent);
+
+  console.log(`Successfully converted ${inputFile} to ${outputFile}`);
+  process.exit(0);
+});
+
+gzip.write(bufferData);
+gzip.end();

@@ -1,5 +1,4 @@
-import {Project, SyntaxKind, JSDocTagInfo, TypeFormatFlags} from "ts-morph";
-import * as path from "path";
+import {Project, TypeFormatFlags} from "ts-morph";
 
 const project = new Project({
     tsConfigFilePath: "tsconfig.json",
