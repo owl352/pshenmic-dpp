@@ -98,30 +98,39 @@ fn js_value_to_localizations(
         .with_serde_to_platform_value_map()?
         .iter()
         .map(|(key, value)| {
-            (
+            let json_should_capitalize = value
+                .get_value("shouldCapitalize")
+                .map_err(|e| JsValue::from(e.to_string()))?;
+            let json_singular_form = value
+                .get_value("singularForm")
+                .map_err(|e| JsValue::from(e.to_string()))?;
+            let json_plural_form = value
+                .get_value("pluralForm")
+                .map_err(|e| JsValue::from(e.to_string()))?;
+
+            let should_capitalize = match json_should_capitalize.as_bool() {
+                None => Err(JsValue::from("shouldCapitalize must be a boolean")),
+                Some(should_capitalize) => Ok(should_capitalize),
+            }?;
+            let singular_form = match json_singular_form.as_str() {
+                None => Err(JsValue::from("singularForm must be a string")),
+                Some(singular_form) => Ok(singular_form.to_string()),
+            }?;
+            let plural_form = match json_plural_form.as_str() {
+                None => Err(JsValue::from("pluralForm must be a string")),
+                Some(plural_form) => Ok(plural_form.to_string()),
+            }?;
+
+            Ok((
                 key.clone(),
                 TokenConfigurationLocalization::V0(TokenConfigurationLocalizationV0 {
-                    should_capitalize: value
-                        .get_value("shouldCapitalize")
-                        .unwrap()
-                        .as_bool()
-                        .unwrap(),
-                    singular_form: value
-                        .get_value("singularForm")
-                        .unwrap()
-                        .as_str()
-                        .unwrap()
-                        .to_string(),
-                    plural_form: value
-                        .get_value("pluralForm")
-                        .unwrap()
-                        .as_str()
-                        .unwrap()
-                        .to_string(),
+                    should_capitalize,
+                    singular_form,
+                    plural_form,
                 }),
-            )
+            ))
         })
-        .collect();
+        .collect::<Result<BTreeMap<String, TokenConfigurationLocalization>, JsValue>>()?;
 
     Ok(localizations)
 }

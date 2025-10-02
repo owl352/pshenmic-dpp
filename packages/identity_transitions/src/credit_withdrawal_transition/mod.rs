@@ -37,7 +37,7 @@ impl IdentityCreditWithdrawalTransitionWASM {
 
     #[wasm_bindgen(constructor)]
     pub fn new(
-        js_identity_id: JsValue,
+        js_identity_id: &JsValue,
         amount: u64,
         core_fee_per_byte: u32,
         js_pooling: JsValue,
@@ -154,7 +154,7 @@ impl IdentityCreditWithdrawalTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "identityId")]
-    pub fn set_identity_id(&mut self, js_identity_id: JsValue) -> Result<(), JsValue> {
+    pub fn set_identity_id(&mut self, js_identity_id: &JsValue) -> Result<(), JsValue> {
         let identity_id = IdentifierWASM::try_from(js_identity_id)?;
 
         Ok(self.0.set_identity_id(identity_id.into()))

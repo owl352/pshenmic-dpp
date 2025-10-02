@@ -44,11 +44,10 @@ impl VotePollWASM {
     ) -> Result<VotePollWASM, JsValue> {
         let contract_id = IdentifierWASM::try_from(js_contract_id)?;
 
-        let index_values = js_index_values
-            .with_serde_to_platform_value()?
-            .as_array()
-            .unwrap()
-            .clone();
+        let index_values = match js_index_values.with_serde_to_platform_value()?.as_array() {
+            None => Err(JsValue::from("index values must be array")),
+            Some(array) => Ok(array.clone()),
+        }?;
 
         Ok(VotePollWASM(VotePoll::ContestedDocumentResourceVotePoll(
             ContestedDocumentResourceVotePoll {
@@ -153,11 +152,10 @@ impl VotePollWASM {
 
     #[wasm_bindgen(setter = "indexValues")]
     pub fn set_index_values(&mut self, js_index_values: JsValue) -> Result<(), JsValue> {
-        let index_values = js_index_values
-            .with_serde_to_platform_value()?
-            .as_array()
-            .unwrap()
-            .clone();
+        let index_values = match js_index_values.with_serde_to_platform_value()?.as_array() {
+            None => Err(JsValue::from("index values must be array")),
+            Some(array) => Ok(array.clone()),
+        }?;
 
         self.0 = match self.0.clone() {
             VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {

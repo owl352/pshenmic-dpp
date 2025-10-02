@@ -183,24 +183,29 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(setter=entropy)]
-    pub fn set_entropy(&mut self, entropy: JsValue) {
+    pub fn set_entropy(&mut self, entropy: JsValue) -> Result<(), JsValue> {
         match entropy.is_undefined() {
             false => {
-                let value = entropy.with_serde_to_platform_value().unwrap();
+                let value = entropy.with_serde_to_platform_value()?;
 
                 let mut entropy = [0u8; 32];
-                let bytes = value.as_bytes().unwrap();
+                let bytes = match value.as_bytes() {
+                    Some(bytes) => Ok(bytes),
+                    None => Err(JsValue::from("cannot get bytes from entropy")),
+                }?;
                 let len = bytes.len().min(32);
                 entropy[..len].copy_from_slice(&bytes[..len]);
                 self.entropy = Some(entropy);
             }
             true => self.entropy = None,
-        }
+        };
+
+        Ok(())
     }
 
     #[wasm_bindgen(setter=dataContractId)]
     pub fn set_js_data_contract_id(&mut self, js_contract_id: &JsValue) -> Result<(), JsValue> {
-        self.data_contract_id = IdentifierWASM::try_from(js_contract_id.clone())?;
+        self.data_contract_id = IdentifierWASM::try_from(js_contract_id)?;
 
         Ok(())
     }
@@ -212,8 +217,10 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(setter=properties)]
-    pub fn set_properties(&mut self, properties: JsValue) {
-        self.properties = properties.with_serde_to_platform_value_map().unwrap()
+    pub fn set_properties(&mut self, properties: JsValue) -> Result<(), JsValue> {
+        self.properties = properties.with_serde_to_platform_value_map()?;
+
+        Ok(())
     }
 
     #[wasm_bindgen(setter=revision)]

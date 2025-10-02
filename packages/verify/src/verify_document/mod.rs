@@ -63,7 +63,7 @@ pub fn verify_document_proof(
 
     let start_at_bytes = match js_start_at.is_undefined() | js_start_at.is_null() {
         true => None,
-        false => Some(IdentifierWASM::try_from(js_start_at.clone())?.to_slice()),
+        false => Some(IdentifierWASM::try_from(js_start_at)?.to_slice()),
     };
 
     let platform_version = match js_platform_version.is_undefined() | js_platform_version.is_null()
@@ -124,8 +124,8 @@ fn parse_query_internal_clause(where_clauses: &JsValue) -> Result<InternalClause
 
         let field = match js_field.as_string() {
             None => Err(JsValue::from(&format!(
-                "field is not a string {}",
-                where_clauses.as_string().unwrap()
+                "field is not a string {:?}",
+                where_clauses
             ))),
             Some(field) => Ok(field),
         }?;

@@ -45,7 +45,7 @@ pub fn verify_contract(
     js_contract_id: &JsValue,
     js_platform_version: &JsValue,
 ) -> Result<VerifiedContractWASM, JsValue> {
-    let contract_id = IdentifierWASM::try_from(js_contract_id.clone())?;
+    let contract_id = IdentifierWASM::try_from(js_contract_id)?;
     let platform_version = PlatformVersionWASM::try_from(js_platform_version.clone())?;
 
     let (root_hash, contract_option) = Drive::verify_contract(
