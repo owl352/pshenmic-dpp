@@ -227,6 +227,11 @@ impl IdentityPublicKeyWASM {
         self.0.set_disabled_at(disabled_at)
     }
 
+    #[wasm_bindgen(js_name = removeDisabledAt)]
+    pub fn remove_disabled_at(&mut self) {
+        self.0.remove_disabled_at()
+    }
+
     #[wasm_bindgen(js_name = "getPublicKeyHash")]
     pub fn public_key_hash(&self) -> Result<String, JsValue> {
         let hash = self
