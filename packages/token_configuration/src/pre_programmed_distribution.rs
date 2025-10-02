@@ -47,9 +47,9 @@ pub fn js_distributions_to_distributions(
         let mut ids = BTreeMap::new();
 
         for id_key in identifiers_keys.iter() {
-            let identifier = Identifier::from(IdentifierWASM::try_from(id_key.clone())?);
+            let identifier = Identifier::from(IdentifierWASM::try_from(&id_key)?);
 
-            let token_amount = BigInt::new(&Reflect::get(&identifiers_object, &id_key.clone())?)?
+            let token_amount = BigInt::new(&Reflect::get(&identifiers_object, &id_key)?)?
                 .to_string(10)
                 .map_err(|err| JsValue::from(format!("bigint to string: {}", err.to_string())))?
                 .as_string()

@@ -415,7 +415,7 @@ impl StateTransitionWASM {
 
     #[wasm_bindgen(js_name = "setOwnerId")]
     pub fn set_owner_id(&mut self, js_owner_id: &JsValue) -> Result<(), JsValue> {
-        let owner_id = IdentifierWASM::try_from(js_owner_id.clone())?;
+        let owner_id = IdentifierWASM::try_from(js_owner_id)?;
 
         match self.0.clone() {
             DataContractCreate(mut contract_create) => {

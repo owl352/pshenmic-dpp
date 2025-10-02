@@ -96,7 +96,7 @@ impl DataContractWASM {
     ) -> Result<DataContractWASM, JsValue> {
         let serializer = serde_wasm_bindgen::Serializer::json_compatible();
 
-        let owner_id: IdentifierWASM = js_owner_id.clone().try_into()?;
+        let owner_id = IdentifierWASM::try_from(js_owner_id)?;
 
         let owner_id_value = Value::from(owner_id.get_base58());
 

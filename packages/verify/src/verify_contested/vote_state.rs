@@ -106,7 +106,7 @@ pub fn verify_vote_state_proof(
                     .unwrap_or(false);
 
             Some((
-                IdentifierWASM::try_from(start_identifier)?.to_slice(),
+                IdentifierWASM::try_from(&start_identifier)?.to_slice(),
                 start_identifier_included,
             ))
         }

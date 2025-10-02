@@ -47,9 +47,9 @@ impl TryFrom<&[u8]> for IdentifierWASM {
     }
 }
 
-impl TryFrom<JsValue> for IdentifierWASM {
+impl TryFrom<&JsValue> for IdentifierWASM {
     type Error = JsValue;
-    fn try_from(value: JsValue) -> Result<Self, Self::Error> {
+    fn try_from(value: &JsValue) -> Result<Self, Self::Error> {
         match value.is_object() {
             true => match get_class_type(&value) {
                 Ok(class_type) => match class_type.as_str() {
@@ -83,13 +83,6 @@ impl TryFrom<JsValue> for IdentifierWASM {
                 }
             },
         }
-    }
-}
-
-impl TryFrom<&JsValue> for IdentifierWASM {
-    type Error = JsValue;
-    fn try_from(value: &JsValue) -> Result<Self, Self::Error> {
-        IdentifierWASM::try_from(value.clone())
     }
 }
 

@@ -51,7 +51,7 @@ impl TokenPaymentInfoWASM {
             | js_payment_token_contract_id.is_undefined()
         {
             true => None,
-            false => Some(IdentifierWASM::try_from(js_payment_token_contract_id.clone())?.into()),
+            false => Some(IdentifierWASM::try_from(js_payment_token_contract_id)?.into()),
         };
 
         let gas_fees_paid_by =
@@ -108,7 +108,7 @@ impl TokenPaymentInfoWASM {
             | js_payment_token_contract_id.is_undefined()
         {
             true => None,
-            false => Some(IdentifierWASM::try_from(js_payment_token_contract_id.clone())?.into()),
+            false => Some(IdentifierWASM::try_from(js_payment_token_contract_id)?.into()),
         };
 
         self.0

@@ -39,7 +39,7 @@ pub fn js_members_to_map(
             .as_string()
             .ok_or_else(|| JsValue::from_str("cannot convert key to string"))?;
 
-        let id_wasm = IdentifierWASM::try_from(key.clone())
+        let id_wasm = IdentifierWASM::try_from(&key)
             .map_err(|_| JsValue::from_str(&format!("Invalid identifier: {}", key_str)))?;
 
         let val = Reflect::get(js_members, &key)
@@ -120,7 +120,7 @@ impl GroupWASM {
         js_member: &JsValue,
         member_required_power: GroupRequiredPower,
     ) -> Result<(), JsValue> {
-        let member = IdentifierWASM::try_from(js_member.clone())?;
+        let member = IdentifierWASM::try_from(js_member)?;
 
         self.0
             .set_member_power(member.into(), member_required_power);
