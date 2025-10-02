@@ -6,7 +6,6 @@ use dpp::data_contract::associated_token::token_configuration_convention::access
 use dpp::data_contract::associated_token::token_configuration_convention::v0::TokenConfigurationConventionV0;
 use dpp::data_contract::associated_token::token_configuration_localization::TokenConfigurationLocalization;
 use dpp::data_contract::associated_token::token_configuration_localization::v0::TokenConfigurationLocalizationV0;
-use dpp::platform_value::{Error, Value};
 use js_sys::{Object, Reflect};
 use pshenmic_dpp_utils::ToSerdeJSONExt;
 use std::collections::BTreeMap;
