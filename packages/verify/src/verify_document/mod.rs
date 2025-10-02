@@ -124,8 +124,8 @@ fn parse_query_internal_clause(where_clauses: &JsValue) -> Result<InternalClause
 
         let field = match js_field.as_string() {
             None => Err(JsValue::from(&format!(
-                "field is not a string {}",
-                where_clauses.as_string().unwrap()
+                "field is not a string {:?}",
+                where_clauses
             ))),
             Some(field) => Ok(field),
         }?;

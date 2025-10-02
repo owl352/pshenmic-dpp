@@ -80,8 +80,13 @@ impl DistributionFunctionWASM {
         let mut steps_with_amount: BTreeMap<u64, TokenAmount> = BTreeMap::new();
 
         for key in Object::keys(&obj) {
+            let string_key = match key.as_string() {
+                None => Err(JsValue::from("Cannot key as string")),
+                Some(str_key) => Ok(str_key),
+            }?;
+
             steps_with_amount.insert(
-                try_to_u64(BigInt::from_str(key.as_string().unwrap().as_str())?.into())?,
+                try_to_u64(BigInt::from_str(string_key.as_str())?.into())?,
                 try_to_u64(Reflect::get(&obj, &key)?)?,
             );
         }

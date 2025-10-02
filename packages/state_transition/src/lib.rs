@@ -82,10 +82,6 @@ impl StateTransitionWASM {
             )
             .with_js_error()?;
 
-        self.0.set_signature(self.0.signature().clone());
-        self.0
-            .set_signature_public_key_id(self.0.signature_public_key_id().unwrap());
-
         self.0.serialize_to_bytes().with_js_error()
     }
 
@@ -110,8 +106,9 @@ impl StateTransitionWASM {
             )
             .with_js_error();
 
-        if key_id.is_some() {
-            self.0.set_signature_public_key_id(key_id.unwrap());
+        match key_id {
+            Some(key_id) => self.0.set_signature_public_key_id(key_id),
+            None => {}
         }
 
         self.0.serialize_to_bytes().with_js_error()

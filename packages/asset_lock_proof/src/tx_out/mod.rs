@@ -39,11 +39,17 @@ impl TxOutWASM {
                 script_pubkey: ScriptBuf::from_bytes(Uint8Array::from(script_pubkey).to_vec()),
             }),
             false => match script_pubkey.is_string() {
-                true => Ok(TxOut {
-                    value,
-                    script_pubkey: ScriptBuf::from_hex(&script_pubkey.as_string().unwrap())
-                        .map_err(|err| JsValue::from(err.to_string()))?,
-                }),
+                true => {
+                    let option_str_script_pubkey = script_pubkey.as_string();
+                    match option_str_script_pubkey {
+                        Some(str_script_pubkey) => Ok(TxOut {
+                            value,
+                            script_pubkey: ScriptBuf::from_hex(&str_script_pubkey)
+                                .map_err(|err| JsValue::from(err.to_string()))?,
+                        }),
+                        None => Err(JsValue::from("Cannot parse script pub key from string")),
+                    }
+                }
                 false => Err(JsValue::from("Invalid script pubkey")),
             },
         };

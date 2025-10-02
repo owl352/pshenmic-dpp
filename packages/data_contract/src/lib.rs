@@ -445,14 +445,19 @@ impl DataContractWASM {
         let mut groups: BTreeMap<GroupContractPosition, Group> = BTreeMap::new();
 
         for js_position in Object::keys(&groups_object) {
-            if js_position.as_f64().unwrap() > u16::MAX as f64 {
+            let num_position = match js_position.as_f64() {
+                None => Err(JsValue::from("position must be a number")),
+                Some(key) => Ok(key),
+            }?;
+
+            if num_position > u16::MAX as f64 {
                 return Err(JsValue::from_str(&format!(
                     "Position value '{:?}' exceeds the maximum limit for u16.",
                     js_position.as_string()
                 )));
             }
 
-            let position = js_position.as_f64().unwrap() as u16;
+            let position = num_position as u16;
 
             let js_group = Reflect::get(&groups_object, &js_position)?;
 

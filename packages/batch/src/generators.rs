@@ -34,7 +34,7 @@ pub fn generate_create_transition(
             data_contract_id: document.rs_get_data_contract_id(),
             token_payment_info: token_payment_info.map(TokenPaymentInfo::from),
         }),
-        entropy: document.rs_get_entropy().unwrap(),
+        entropy: document.rs_get_entropy().unwrap_or([0; 32]),
         data: document.rs_get_properties(),
         prefunded_voting_balance: prefunded_voting_balance.map(|pb| pb.into()),
     })
@@ -71,7 +71,7 @@ pub fn generate_replace_transition(
             data_contract_id: document.rs_get_data_contract_id(),
             token_payment_info: token_payment_info.map(TokenPaymentInfo::from),
         }),
-        revision: document.get_revision().unwrap() + 1,
+        revision: document.get_revision().unwrap_or(1) + 1,
         data: document.rs_get_properties(),
     })
 }
@@ -91,7 +91,7 @@ pub fn generate_transfer_transition(
             data_contract_id: document.rs_get_data_contract_id(),
             token_payment_info: token_payment_info.map(TokenPaymentInfo::from),
         }),
-        revision: document.get_revision().unwrap() + 1,
+        revision: document.get_revision().unwrap_or(1) + 1,
         recipient_owner_id,
     })
 }
@@ -111,7 +111,7 @@ pub fn generate_update_price_transition(
             data_contract_id: document.rs_get_data_contract_id(),
             token_payment_info: token_payment_info.map(TokenPaymentInfo::from),
         }),
-        revision: document.get_revision().unwrap() + 1,
+        revision: document.get_revision().unwrap_or(1) + 1,
         price,
     })
 }
@@ -131,7 +131,7 @@ pub fn generate_purchase_transition(
             data_contract_id: document.rs_get_data_contract_id(),
             token_payment_info: token_payment_info.map(TokenPaymentInfo::from),
         }),
-        revision: document.get_revision().unwrap() + 1,
+        revision: document.get_revision().unwrap_or(1) + 1,
         price,
     })
 }

@@ -45,8 +45,18 @@ impl TokenPricingScheduleWASM {
         let prices: BTreeMap<TokenAmount, Credits> = js_prices
             .with_serde_to_platform_value_map()?
             .iter()
-            .map(|(k, v)| (k.clone().parse().unwrap(), v.clone().as_integer().unwrap()))
-            .collect();
+            .map(|(k, v)| {
+                let amount: TokenAmount = k
+                    .parse()
+                    .map_err(|_| JsValue::from("Cannot parse amount"))?;
+                let option_credits: Option<Credits> = v.clone().as_integer();
+
+                match option_credits {
+                    Some(credits) => Ok((amount, credits)),
+                    None => Err(JsValue::from("Cannot parse credits count")),
+                }
+            })
+            .collect::<Result<BTreeMap<TokenAmount, Credits>, JsValue>>()?;
 
         Ok(Self(TokenPricingSchedule::SetPrices(prices)))
     }

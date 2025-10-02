@@ -131,14 +131,19 @@ pub fn js_value_to_loaded_public_keys(
             let keys = Object::keys(&pub_keys_object);
 
             for key in keys.iter() {
-                if key.as_f64().unwrap() > u32::MAX as f64 {
+                let num_key = match key.as_f64() {
+                    None => Err(JsValue::from("key must be a number")),
+                    Some(key) => Ok(key),
+                }?;
+
+                if num_key > u32::MAX as f64 {
                     return Err(JsValue::from_str(&format!(
                         "Key id '{:?}' exceeds the maximum limit for u32.",
                         key.as_string()
                     )));
                 }
 
-                let key_id = KeyID::from(key.as_f64().unwrap() as u32);
+                let key_id = KeyID::from(num_key as u32);
 
                 let js_key = Reflect::get(&pub_keys_object, &key)?;
 
@@ -164,14 +169,19 @@ pub fn option_array_to_not_found(
                 .to_vec()
                 .iter()
                 .map(|key| {
-                    if key.as_f64().unwrap() > u32::MAX as f64 {
+                    let num_key = match key.as_f64() {
+                        None => Err(JsValue::from("key must be a number")),
+                        Some(key) => Ok(key),
+                    }?;
+
+                    if num_key > u32::MAX as f64 {
                         return Err(JsValue::from_str(&format!(
                             "Key id '{:?}' exceeds the maximum limit for u32.",
                             key.as_string()
                         )))?;
                     }
 
-                    Ok(key.as_f64().unwrap() as KeyID)
+                    Ok(num_key as KeyID)
                 })
                 .collect::<Result<Vec<KeyID>, JsValue>>()?;
 

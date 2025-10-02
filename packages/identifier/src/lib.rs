@@ -67,15 +67,18 @@ impl TryFrom<JsValue> for IdentifierWASM {
             false => match value.is_string() {
                 false => Ok(identifier_from_js_value(&value)?.into()),
                 true => {
-                    let id_str = value.as_string().unwrap();
-                    match id_str.len() == 64 {
-                        true => {
-                            let bytes = decode(value.as_string().unwrap().as_str(), Hex)
-                                .map_err(|err| JsValue::from(err.to_string()))?;
+                    let option_id_str = value.as_string();
+                    match option_id_str {
+                        Some(id_str) => match id_str.len() == 64 {
+                            true => {
+                                let bytes = decode(id_str.as_str(), Hex)
+                                    .map_err(|err| JsValue::from(err.to_string()))?;
 
-                            Ok(IdentifierWASM::try_from(bytes.as_slice())?)
-                        }
-                        false => Ok(identifier_from_js_value(&value)?.into()),
+                                Ok(IdentifierWASM::try_from(bytes.as_slice())?)
+                            }
+                            false => Ok(identifier_from_js_value(&value)?.into()),
+                        },
+                        None => Err(JsValue::from("Cannot parse identifier from string")),
                     }
                 }
             },

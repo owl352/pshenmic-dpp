@@ -61,8 +61,14 @@ pub fn verify_vote_state_proof(
         .map(|js_index_value| {
             let js_index_value_bytes = js_index_value.to_vec();
 
-            let value_type = js_index_value_bytes.get(0).unwrap();
-            let _value_len = js_index_value_bytes.get(0).unwrap();
+            let value_type = match js_index_value_bytes.get(0) {
+                Some(value_type) => Ok(value_type),
+                None => Err(JsValue::from("cannot get first index value")),
+            }?;
+            let _value_len = match js_index_value_bytes.get(0) {
+                Some(value_len) => Ok(value_len),
+                None => Err(JsValue::from("cannot get second index value")),
+            };
 
             if *value_type != 0x12 {
                 return Err(JsValue::from("can be used only string type (0x12)"));
@@ -70,7 +76,8 @@ pub fn verify_vote_state_proof(
 
             let (_, value_bytes) = js_index_value_bytes.split_at(2);
 
-            let value = core::str::from_utf8(value_bytes).unwrap();
+            let value =
+                core::str::from_utf8(value_bytes).map_err(|err| JsValue::from(err.to_string()))?;
 
             Ok(Value::Text(value.to_string()))
         })
@@ -96,7 +103,7 @@ pub fn verify_vote_state_proof(
             let start_identifier_included =
                 Reflect::get(&js_start_at, &JsValue::from_str("startIdentifierIncluded"))?
                     .as_bool()
-                    .unwrap();
+                    .unwrap_or(false);
 
             Some((
                 IdentifierWASM::try_from(start_identifier)?.to_slice(),

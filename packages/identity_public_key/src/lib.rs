@@ -81,7 +81,8 @@ impl IdentityPublicKeyWASM {
                 contract_bounds,
                 key_type: KeyType::from(key_type),
                 read_only,
-                data: BinaryData::from_string(binary_data, Hex).unwrap(),
+                data: BinaryData::from_string(binary_data, Hex)
+                    .map_err(|err| JsValue::from(err.to_string()))?,
                 disabled_at,
             },
         )))
@@ -214,10 +215,11 @@ impl IdentityPublicKeyWASM {
     }
 
     #[wasm_bindgen(setter = data)]
-    pub fn set_data(&mut self, binary_data: &str) {
-        let data = BinaryData::from_string(binary_data, Hex).unwrap();
+    pub fn set_data(&mut self, binary_data: &str) -> Result<(), JsValue> {
+        let data = BinaryData::from_string(binary_data, Hex)
+            .map_err(|err| JsValue::from(err.to_string()))?;
 
-        self.0.set_data(data)
+        Ok(self.0.set_data(data))
     }
 
     #[wasm_bindgen(setter = disabledAt)]
