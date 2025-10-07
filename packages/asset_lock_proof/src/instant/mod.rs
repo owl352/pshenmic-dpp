@@ -68,8 +68,8 @@ impl InstantAssetLockProofWASM {
 
     #[wasm_bindgen(js_name = "fromObject")]
     pub fn from_object(value: &JsValue) -> Result<InstantAssetLockProofWASM, JsValue> {
-        let parameters: InstantAssetLockProofRAW =
-            serde_wasm_bindgen::from_value(value.clone()).map_err(|err| JsValue::from(err.to_string()))?;
+        let parameters: InstantAssetLockProofRAW = serde_wasm_bindgen::from_value(value.clone())
+            .map_err(|err| JsValue::from(err.to_string()))?;
 
         InstantAssetLockProofWASM::new(
             parameters.instant_lock,

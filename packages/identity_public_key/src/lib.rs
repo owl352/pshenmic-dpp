@@ -187,7 +187,9 @@ impl IdentityPublicKeyWASM {
     pub fn set_security_level(&mut self, security_level: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
-            .set_security_level(SecurityLevel::from(SecurityLevelWASM::try_from(security_level.clone())?)))
+            .set_security_level(SecurityLevel::from(SecurityLevelWASM::try_from(
+                security_level.clone(),
+            )?)))
     }
 
     #[wasm_bindgen(setter = securityLevelNumber)]
