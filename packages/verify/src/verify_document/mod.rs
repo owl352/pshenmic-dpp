@@ -54,7 +54,7 @@ pub fn verify_document_proof(
     js_start_at: &JsValue,
     start_at_included: bool,
     block_time_ms: Option<u64>,
-    js_platform_version: JsValue,
+    js_platform_version: &JsValue,
 ) -> Result<VerifiedDocumentsWASM, JsValue> {
     let internal_clauses = match js_where_clauses.is_undefined() | js_order_by.is_null() {
         true => InternalClauses::default(),
@@ -69,7 +69,7 @@ pub fn verify_document_proof(
     let platform_version = match js_platform_version.is_undefined() | js_platform_version.is_null()
     {
         true => PlatformVersionWASM::default(),
-        false => PlatformVersionWASM::try_from(js_platform_version)?,
+        false => PlatformVersionWASM::try_from(js_platform_version.clone())?,
     };
 
     let order_by_map = parse_order_by_index_map(js_order_by)?;

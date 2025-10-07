@@ -8,7 +8,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.notEqual(identifier.__wbg_ptr, 0)
       assert.notEqual(script.__wbg_ptr, 0)
@@ -21,7 +21,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.outputScript.toString(), 'dqkUAQEBAQEBAQEBAQEBAQEBAQEBAQGIrA==')
     })
@@ -30,7 +30,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.pooling, 'Never')
     })
@@ -39,7 +39,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.identityId.base58(), identifier.base58())
     })
@@ -48,7 +48,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.userFeeIncrease, 1)
     })
@@ -57,7 +57,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.nonce, BigInt(1))
     })
@@ -66,7 +66,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.amount, BigInt(111))
     })
@@ -75,7 +75,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.signature, Uint8Array.from([]))
     })
@@ -84,7 +84,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       assert.deepEqual(transition.signaturePublicKeyId, 0)
     })
@@ -95,7 +95,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       const script2 = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
@@ -108,7 +108,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       transition.pooling = 'Standard'
 
@@ -119,7 +119,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       const identifier2 = new wasm.IdentifierWASM('11SAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
 
@@ -132,7 +132,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       transition.userFeeIncrease = 999
 
@@ -143,7 +143,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       transition.nonce = BigInt(1111)
 
@@ -154,7 +154,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       transition.amount = BigInt(2222)
 
@@ -165,7 +165,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       transition.signature = Uint8Array.from([1, 2, 3])
 
@@ -176,7 +176,7 @@ describe('IdentityCreditWithdrawalTransition', function () {
       const identifier = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
       const script = wasm.CoreScriptWASM.newP2PKH([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', script, BigInt(1), 1)
+      const transition = new wasm.IdentityCreditWithdrawalTransitionWASM(identifier, BigInt(111), 1, 'never', BigInt(1), script, 1)
 
       transition.signaturePublicKeyId = 11
 

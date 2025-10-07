@@ -4,8 +4,8 @@ use js_sys::Uint8Array;
 use pshenmic_dpp_data_contract::DataContractWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
-use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{JsError, JsValue};
 
 #[wasm_bindgen(js_name = "VerifiedContractWASM")]
 pub struct VerifiedContractWASM {
@@ -38,7 +38,7 @@ impl VerifiedContractWASM {
 
 #[wasm_bindgen(js_name = "verifyContractProof")]
 pub fn verify_contract(
-    proof: &Uint8Array,
+    proof: &[u8],
     contract_known_keeps_history: Option<bool>,
     is_proof_subset: bool,
     in_multiple_contract_proof_form: bool,
@@ -49,14 +49,14 @@ pub fn verify_contract(
     let platform_version = PlatformVersionWASM::try_from(js_platform_version.clone())?;
 
     let (root_hash, contract_option) = Drive::verify_contract(
-        &proof.to_vec(),
+        proof,
         contract_known_keeps_history,
         is_proof_subset,
         in_multiple_contract_proof_form,
         contract_id.to_slice(),
         &platform_version.into(),
     )
-    .map_err(|e| JsValue::from(e.to_string()))?;
+    .map_err(|e| JsError::from(e))?;
 
     Ok(VerifiedContractWASM {
         root_hash,

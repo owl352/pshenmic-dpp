@@ -34,7 +34,7 @@ impl DocumentWASM {
 
     #[wasm_bindgen(constructor)]
     pub fn new(
-        js_raw_document: JsValue,
+        js_raw_document: &JsValue,
         js_document_type_name: &str,
         js_revision: u64,
         js_data_contract_id: &JsValue,
@@ -183,7 +183,7 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(setter=entropy)]
-    pub fn set_entropy(&mut self, entropy: JsValue) -> Result<(), JsValue> {
+    pub fn set_entropy(&mut self, entropy: &JsValue) -> Result<(), JsValue> {
         match entropy.is_undefined() {
             false => {
                 let value = entropy.with_serde_to_platform_value()?;
@@ -217,7 +217,7 @@ impl DocumentWASM {
     }
 
     #[wasm_bindgen(setter=properties)]
-    pub fn set_properties(&mut self, properties: JsValue) -> Result<(), JsValue> {
+    pub fn set_properties(&mut self, properties: &JsValue) -> Result<(), JsValue> {
         self.properties = properties.with_serde_to_platform_value_map()?;
 
         Ok(())
@@ -285,11 +285,11 @@ impl DocumentWASM {
     pub fn to_bytes(
         &self,
         data_contract: &DataContractWASM,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default(),
-            false => PlatformVersionWASM::try_from(js_platform_version)?,
+            false => PlatformVersionWASM::try_from(js_platform_version.clone())?,
         };
 
         let rs_document: Document = Document::from(self.clone());
@@ -311,7 +311,7 @@ impl DocumentWASM {
     pub fn to_hex(
         &self,
         data_contract: &DataContractWASM,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<String, JsValue> {
         Ok(encode(
             self.to_bytes(data_contract, js_platform_version)?
@@ -324,7 +324,7 @@ impl DocumentWASM {
     pub fn to_base64(
         &self,
         data_contract: &DataContractWASM,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<String, JsValue> {
         Ok(encode(
             self.to_bytes(data_contract, js_platform_version)?
@@ -338,11 +338,11 @@ impl DocumentWASM {
         bytes: Vec<u8>,
         data_contract: &DataContractWASM,
         type_name: String,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<DocumentWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default(),
-            false => PlatformVersionWASM::try_from(js_platform_version)?,
+            false => PlatformVersionWASM::try_from(js_platform_version.clone())?,
         };
 
         let document_type_ref = match data_contract.get_document_type_ref_by_name(type_name.clone())
@@ -371,7 +371,7 @@ impl DocumentWASM {
         hex: String,
         data_contract: &DataContractWASM,
         type_name: String,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<DocumentWASM, JsValue> {
         DocumentWASM::from_bytes(
             decode(hex.as_str(), Hex).map_err(JsError::from)?,
@@ -386,7 +386,7 @@ impl DocumentWASM {
         base64: String,
         data_contract: &DataContractWASM,
         type_name: String,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<DocumentWASM, JsValue> {
         DocumentWASM::from_bytes(
             decode(base64.as_str(), Base64).map_err(JsError::from)?,

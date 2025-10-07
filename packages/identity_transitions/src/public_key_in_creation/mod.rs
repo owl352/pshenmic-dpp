@@ -78,17 +78,17 @@ impl IdentityPublicKeyInCreationWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         id: u32,
-        js_purpose: JsValue,
-        js_security_level: JsValue,
-        js_key_type: JsValue,
+        js_purpose: &JsValue,
+        js_security_level: &JsValue,
+        js_key_type: &JsValue,
         read_only: bool,
         binary_data: Vec<u8>,
         signature: Option<Vec<u8>>,
         js_contract_bounds: &JsValue,
     ) -> Result<IdentityPublicKeyInCreationWASM, JsValue> {
-        let purpose = PurposeWASM::try_from(js_purpose)?;
-        let security_level = SecurityLevelWASM::try_from(js_security_level)?;
-        let key_type = KeyTypeWASM::try_from(js_key_type)?;
+        let purpose = PurposeWASM::try_from(js_purpose.clone())?;
+        let security_level = SecurityLevelWASM::try_from(js_security_level.clone())?;
+        let key_type = KeyTypeWASM::try_from(js_key_type.clone())?;
         let contract_bounds: Option<ContractBounds> =
             match js_contract_bounds.is_undefined() | js_contract_bounds.is_null() {
                 true => None,
@@ -118,9 +118,9 @@ impl IdentityPublicKeyInCreationWASM {
     pub fn to_identity_public_key(&self) -> Result<IdentityPublicKeyWASM, JsValue> {
         IdentityPublicKeyWASM::new(
             self.0.id(),
-            JsValue::from(PurposeWASM::from(self.0.purpose())),
-            JsValue::from(SecurityLevelWASM::from(self.0.security_level())),
-            JsValue::from(KeyTypeWASM::from(self.0.key_type())),
+            &JsValue::from(PurposeWASM::from(self.0.purpose())),
+            &JsValue::from(SecurityLevelWASM::from(self.0.security_level())),
+            &JsValue::from(KeyTypeWASM::from(self.0.key_type())),
             self.0.read_only(),
             self.0.data().to_string(Hex).as_str(),
             None,
@@ -185,8 +185,8 @@ impl IdentityPublicKeyInCreationWASM {
     }
 
     #[wasm_bindgen(setter = purpose)]
-    pub fn set_purpose(&mut self, js_purpose: JsValue) -> Result<(), JsValue> {
-        let purpose = PurposeWASM::try_from(js_purpose)?;
+    pub fn set_purpose(&mut self, js_purpose: &JsValue) -> Result<(), JsValue> {
+        let purpose = PurposeWASM::try_from(js_purpose.clone())?;
         Ok(self.0.set_purpose(Purpose::from(purpose)))
     }
 

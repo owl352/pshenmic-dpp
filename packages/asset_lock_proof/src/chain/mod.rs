@@ -53,10 +53,10 @@ impl ChainAssetLockProofWASM {
 
     #[wasm_bindgen(js_name = "fromRawObject")]
     pub fn from_raw_value(
-        raw_asset_lock_proof: JsValue,
+        raw_asset_lock_proof: &JsValue,
     ) -> Result<ChainAssetLockProofWASM, JsValue> {
         let parameters: ChainAssetLockProofParams =
-            serde_wasm_bindgen::from_value(raw_asset_lock_proof)
+            serde_wasm_bindgen::from_value(raw_asset_lock_proof.clone())
                 .map_err(|err| JsError::from(err))?;
 
         let out_point: [u8; 36] = parameters

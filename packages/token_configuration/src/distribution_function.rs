@@ -74,8 +74,8 @@ impl DistributionFunctionWASM {
     }
 
     #[wasm_bindgen(js_name = "Stepwise")]
-    pub fn stepwise(js_steps_with_amount: JsValue) -> Result<DistributionFunctionWASM, JsValue> {
-        let obj = Object::from(js_steps_with_amount);
+    pub fn stepwise(js_steps_with_amount: &JsValue) -> Result<DistributionFunctionWASM, JsValue> {
+        let obj = Object::from(js_steps_with_amount.clone());
 
         let mut steps_with_amount: BTreeMap<u64, TokenAmount> = BTreeMap::new();
 

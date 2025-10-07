@@ -5,7 +5,7 @@ const { default: wasm } = require('..')
 describe('IdentityCreditTransferTransition', function () {
   describe('serialization / deserialization', function () {
     it('Should create IdentityCreditTransferTransition with empty platform version', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.notEqual(transition.__wbg_ptr, 0)
     })
@@ -14,7 +14,7 @@ describe('IdentityCreditTransferTransition', function () {
       const sender = new wasm.IdentifierWASM('11111111111111111111111111111111')
       const recipient = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
 
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), sender, recipient, BigInt(199), 'platform_v1')
+      const transition = new wasm.IdentityCreditTransferWASM(sender, BigInt(100), recipient, BigInt(199), 'platform_v1')
 
       assert.notEqual(transition.__wbg_ptr, 0)
       assert.notEqual(sender.__wbg_ptr, 0)
@@ -24,43 +24,43 @@ describe('IdentityCreditTransferTransition', function () {
 
   describe('getters', function () {
     it('Should return recipientId', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.recipientId.base58(), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
     })
 
     it('Should return senderId', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.senderId.base58(), '11111111111111111111111111111111')
     })
 
     it('Should return amount', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.amount, BigInt(100))
     })
 
     it('Should return nonce', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.nonce, BigInt(199))
     })
 
     it('Should return signature', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.signature, Uint8Array.from([]))
     })
 
     it('Should return signaturePublicKeyId', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.signaturePublicKeyId, 0)
     })
 
     it('Should return userFeeIncrease', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       assert.deepEqual(transition.userFeeIncrease, 0)
     })
@@ -68,7 +68,7 @@ describe('IdentityCreditTransferTransition', function () {
 
   describe('setters', function () {
     it('Should allow to set recipientId', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       const recipient = new wasm.IdentifierWASM('11111111111111111111111111111111')
 
@@ -83,7 +83,7 @@ describe('IdentityCreditTransferTransition', function () {
     })
 
     it('Should return senderId', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       const sender = new wasm.IdentifierWASM('GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec')
 
@@ -98,7 +98,7 @@ describe('IdentityCreditTransferTransition', function () {
     })
 
     it('Should return amount', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       transition.amount = BigInt(199)
 
@@ -106,7 +106,7 @@ describe('IdentityCreditTransferTransition', function () {
     })
 
     it('Should return nonce', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       transition.nonce = BigInt(1)
 
@@ -114,7 +114,7 @@ describe('IdentityCreditTransferTransition', function () {
     })
 
     it('Should return signature', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       transition.signature = [1, 1]
 
@@ -122,7 +122,7 @@ describe('IdentityCreditTransferTransition', function () {
     })
 
     it('Should return signaturePublicKeyId', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       transition.signaturePublicKeyId = 11
 
@@ -130,7 +130,7 @@ describe('IdentityCreditTransferTransition', function () {
     })
 
     it('Should return userFeeIncrease', async function () {
-      const transition = new wasm.IdentityCreditTransferWASM(BigInt(100), '11111111111111111111111111111111', 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
+      const transition = new wasm.IdentityCreditTransferWASM('11111111111111111111111111111111', BigInt(100), 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec', BigInt(199))
 
       transition.userFeeIncrease = 11
 
