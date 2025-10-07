@@ -90,11 +90,11 @@ impl StateTransitionWASM {
         &mut self,
         private_key: &PrivateKeyWASM,
         key_id: Option<KeyID>,
-        js_key_type: JsValue,
+        js_key_type: &JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let key_type = match js_key_type.is_undefined() {
             true => KeyTypeWASM::ECDSA_SECP256K1,
-            false => KeyTypeWASM::try_from(js_key_type)?,
+            false => KeyTypeWASM::try_from(js_key_type.clone())?,
         };
 
         let _sig = self

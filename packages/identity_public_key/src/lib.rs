@@ -51,17 +51,17 @@ impl IdentityPublicKeyWASM {
     #[wasm_bindgen(constructor)]
     pub fn new(
         id: u32,
-        js_purpose: JsValue,
-        js_security_level: JsValue,
-        js_key_type: JsValue,
+        js_purpose: &JsValue,
+        js_security_level: &JsValue,
+        js_key_type: &JsValue,
         read_only: bool,
         binary_data: &str,
         disabled_at: Option<TimestampMillis>,
         js_contract_bounds: &JsValue,
     ) -> Result<Self, JsValue> {
-        let purpose = PurposeWASM::try_from(js_purpose)?;
-        let security_level = SecurityLevelWASM::try_from(js_security_level)?;
-        let key_type = KeyTypeWASM::try_from(js_key_type)?;
+        let purpose = PurposeWASM::try_from(js_purpose.clone())?;
+        let security_level = SecurityLevelWASM::try_from(js_security_level.clone())?;
+        let key_type = KeyTypeWASM::try_from(js_key_type.clone())?;
         let contract_bounds: Option<ContractBounds> =
             match js_contract_bounds.is_undefined() | js_contract_bounds.is_null() {
                 true => None,
@@ -95,13 +95,13 @@ impl IdentityPublicKeyWASM {
     pub fn validate_private_key(
         &self,
         js_private_key_bytes: Vec<u8>,
-        js_network: JsValue,
+        js_network: &JsValue,
     ) -> Result<bool, JsValue> {
         let mut private_key_bytes = [0u8; 32];
         let len = js_private_key_bytes.len().min(32);
         private_key_bytes[..len].copy_from_slice(&js_private_key_bytes[..len]);
 
-        let network = Network::from(NetworkWASM::try_from(js_network)?);
+        let network = Network::from(NetworkWASM::try_from(js_network.clone())?);
 
         self.0
             .validate_private_key_bytes(&private_key_bytes, network)
@@ -172,40 +172,38 @@ impl IdentityPublicKeyWASM {
     }
 
     #[wasm_bindgen(setter = purpose)]
-    pub fn set_purpose(&mut self, purpose: JsValue) -> Result<(), JsValue> {
+    pub fn set_purpose(&mut self, purpose: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
-            .set_purpose(Purpose::from(PurposeWASM::try_from(purpose)?)))
+            .set_purpose(Purpose::from(PurposeWASM::try_from(purpose.clone())?)))
     }
 
     #[wasm_bindgen(setter = purposeNumber)]
-    pub fn set_purpose_number(&mut self, purpose: JsValue) -> Result<(), JsValue> {
+    pub fn set_purpose_number(&mut self, purpose: &JsValue) -> Result<(), JsValue> {
         self.set_purpose(purpose)
     }
 
     #[wasm_bindgen(setter = securityLevel)]
-    pub fn set_security_level(&mut self, security_level: JsValue) -> Result<(), JsValue> {
+    pub fn set_security_level(&mut self, security_level: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
-            .set_security_level(SecurityLevel::from(SecurityLevelWASM::try_from(
-                security_level,
-            )?)))
+            .set_security_level(SecurityLevel::from(SecurityLevelWASM::try_from(security_level.clone())?)))
     }
 
     #[wasm_bindgen(setter = securityLevelNumber)]
-    pub fn set_security_level_number(&mut self, security_level: JsValue) -> Result<(), JsValue> {
+    pub fn set_security_level_number(&mut self, security_level: &JsValue) -> Result<(), JsValue> {
         self.set_security_level(security_level)
     }
 
     #[wasm_bindgen(setter = keyType)]
-    pub fn set_key_type(&mut self, key_type: JsValue) -> Result<(), JsValue> {
+    pub fn set_key_type(&mut self, key_type: &JsValue) -> Result<(), JsValue> {
         Ok(self
             .0
-            .set_key_type(KeyType::from(KeyTypeWASM::try_from(key_type)?)))
+            .set_key_type(KeyType::from(KeyTypeWASM::try_from(key_type.clone())?)))
     }
 
     #[wasm_bindgen(setter = keyTypeNumber)]
-    pub fn set_key_type_number(&mut self, key_type: JsValue) -> Result<(), JsValue> {
+    pub fn set_key_type_number(&mut self, key_type: &JsValue) -> Result<(), JsValue> {
         self.set_key_type(key_type)
     }
 

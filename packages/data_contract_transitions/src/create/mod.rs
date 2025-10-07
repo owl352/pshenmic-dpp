@@ -39,13 +39,13 @@ impl DataContractCreateTransitionWASM {
     pub fn new(
         data_contract: &DataContractWASM,
         identity_nonce: IdentityNonce,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<DataContractCreateTransitionWASM, JsValue> {
         let rs_data_contract: DataContract = data_contract.clone().into();
 
         let platform_version = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default(),
-            false => PlatformVersionWASM::try_from(js_platform_version)?,
+            false => PlatformVersionWASM::try_from(js_platform_version.clone())?,
         };
 
         let rs_data_contract_in_serialized: Result<
@@ -135,11 +135,11 @@ impl DataContractCreateTransitionWASM {
     pub fn set_data_contract(
         &mut self,
         data_contract: &DataContractWASM,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
     ) -> Result<(), JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default(),
-            false => PlatformVersionWASM::try_from(js_platform_version)?,
+            false => PlatformVersionWASM::try_from(js_platform_version.clone())?,
         };
 
         let data_contract_serialization_format =
@@ -162,12 +162,12 @@ impl DataContractCreateTransitionWASM {
     #[wasm_bindgen(js_name = "getDataContract")]
     pub fn get_data_contract(
         &self,
-        js_platform_version: JsValue,
+        js_platform_version: &JsValue,
         full_validation: Option<bool>,
     ) -> Result<DataContractWASM, JsValue> {
         let platform_version = match js_platform_version.is_undefined() {
             true => PlatformVersionWASM::default(),
-            false => PlatformVersionWASM::try_from(js_platform_version)?,
+            false => PlatformVersionWASM::try_from(js_platform_version.clone())?,
         };
 
         let rs_data_contract_serialization_format = self.0.data_contract();

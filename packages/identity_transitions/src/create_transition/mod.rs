@@ -68,8 +68,8 @@ impl IdentityCreateTransitionWASM {
     }
 
     #[wasm_bindgen(js_name = "default")]
-    pub fn default(js_platform_version: JsValue) -> Result<IdentityCreateTransitionWASM, JsValue> {
-        let platform_version = PlatformVersionWASM::try_from(js_platform_version)?;
+    pub fn default(js_platform_version: &JsValue) -> Result<IdentityCreateTransitionWASM, JsValue> {
+        let platform_version = PlatformVersionWASM::try_from(js_platform_version.clone())?;
 
         IdentityCreateTransition::default_versioned(&platform_version.into())
             .map_err(|err| JsValue::from_str(&*err.to_string()))

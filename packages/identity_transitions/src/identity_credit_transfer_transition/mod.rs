@@ -31,8 +31,8 @@ impl IdentityCreditTransferWASM {
 
     #[wasm_bindgen(constructor)]
     pub fn new(
-        amount: u64,
         js_sender: &JsValue,
+        amount: u64,
         js_recipient: &JsValue,
         nonce: u64,
         user_fee_increase: Option<UserFeeIncrease>,

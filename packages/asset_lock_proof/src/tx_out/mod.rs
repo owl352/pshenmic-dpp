@@ -32,11 +32,11 @@ impl TxOutWASM {
     }
 
     #[wasm_bindgen(constructor)]
-    pub fn new(value: u64, script_pubkey: JsValue) -> Result<TxOutWASM, JsValue> {
+    pub fn new(value: u64, script_pubkey: &JsValue) -> Result<TxOutWASM, JsValue> {
         let tx_out: Result<TxOut, JsValue> = match script_pubkey.is_array() {
             true => Ok(TxOut {
                 value,
-                script_pubkey: ScriptBuf::from_bytes(Uint8Array::from(script_pubkey).to_vec()),
+                script_pubkey: ScriptBuf::from_bytes(Uint8Array::from(script_pubkey.clone()).to_vec()),
             }),
             false => match script_pubkey.is_string() {
                 true => {

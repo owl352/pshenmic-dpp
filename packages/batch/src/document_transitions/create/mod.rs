@@ -99,7 +99,7 @@ impl DocumentCreateTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "data")]
-    pub fn set_data(&mut self, js_data: JsValue) -> Result<(), JsValue> {
+    pub fn set_data(&mut self, js_data: &JsValue) -> Result<(), JsValue> {
         let data = js_data.with_serde_to_platform_value_map()?;
 
         Ok(self.0.set_data(data))

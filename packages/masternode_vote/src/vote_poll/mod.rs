@@ -40,7 +40,7 @@ impl VotePollWASM {
         js_contract_id: &JsValue,
         document_type_name: String,
         index_name: String,
-        js_index_values: JsValue,
+        js_index_values: &JsValue,
     ) -> Result<VotePollWASM, JsValue> {
         let contract_id = IdentifierWASM::try_from(js_contract_id)?;
 
@@ -151,7 +151,7 @@ impl VotePollWASM {
     }
 
     #[wasm_bindgen(setter = "indexValues")]
-    pub fn set_index_values(&mut self, js_index_values: JsValue) -> Result<(), JsValue> {
+    pub fn set_index_values(&mut self, js_index_values: &JsValue) -> Result<(), JsValue> {
         let index_values = match js_index_values.with_serde_to_platform_value()?.as_array() {
             None => Err(JsValue::from("index values must be array")),
             Some(array) => Ok(array.clone()),

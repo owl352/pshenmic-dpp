@@ -40,12 +40,12 @@ impl IdentityCreditWithdrawalTransitionWASM {
         js_identity_id: &JsValue,
         amount: u64,
         core_fee_per_byte: u32,
-        js_pooling: JsValue,
+        js_pooling: &JsValue,
+        nonce: IdentityNonce,
         js_output_script: &JsValue,
-        nonce: Option<IdentityNonce>,
         user_fee_increase: Option<UserFeeIncrease>,
     ) -> Result<IdentityCreditWithdrawalTransitionWASM, JsValue> {
-        let pooling = PoolingWASM::try_from(js_pooling)?;
+        let pooling = PoolingWASM::try_from(js_pooling.clone())?;
         let identity_id: Identifier = IdentifierWASM::try_from(js_identity_id)?.into();
 
         let output_script: Option<CoreScript> = match js_output_script.is_undefined() {
@@ -65,7 +65,7 @@ impl IdentityCreditWithdrawalTransitionWASM {
                 output_script,
                 core_fee_per_byte,
                 pooling: pooling.into(),
-                nonce: nonce.unwrap_or(0),
+                nonce,
                 user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: 0,
                 signature: Default::default(),
@@ -148,8 +148,8 @@ impl IdentityCreditWithdrawalTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "pooling")]
-    pub fn set_pooling(&mut self, js_pooling: JsValue) -> Result<(), JsValue> {
-        let pooling: PoolingWASM = PoolingWASM::try_from(js_pooling)?;
+    pub fn set_pooling(&mut self, js_pooling: &JsValue) -> Result<(), JsValue> {
+        let pooling: PoolingWASM = PoolingWASM::try_from(js_pooling.clone())?;
         Ok(self.0.set_pooling(pooling.into()))
     }
 
