@@ -27,7 +27,12 @@
   ],
   "exports": {
     ".": "./dist/wasm/index.js",
-    "./initAsync": "./dist/wasm/initAsync.js"
+    "./initAsync": "./dist/wasm/initAsync.js",
+    "./initInterface": "./dist/wasm/initInterface.js",
+    "./initWASM": "./dist/wasm/initWASM.js",
+    "./pshenmic_dpp_bg": "./dist/wasm/pshenmic_dpp_bg.js",
+    "./pshenmic_dpp": "./dist/wasm/pshenmic_dpp.js",
+    "./pshenmic_dpp_zipped": "./dist/wasm/pshenmic_dpp_zipped.js"
   },
   "author": "owl352",
   "license": "ISC",
