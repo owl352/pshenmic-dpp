@@ -25,7 +25,7 @@ gzip.on('data', data => {
 
 gzip.on('end', () => {
   const encodedData = Buffer.from(encode(compressedChunks)).toString('utf-8');
-  const outputContent = `export default "${encodedData}"`;
+  const outputContent = `const wasmBytes = "${encodedData}"\nexport {wasmBytes}`;
 
   fs.writeFileSync(outputFile, outputContent);
 
