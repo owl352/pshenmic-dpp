@@ -283,9 +283,25 @@ impl StateTransitionWASM {
         Ok(Sha256::digest(payload).to_hex_string(Lower))
     }
 
+    #[wasm_bindgen(js_name = "getActionName")]
+    pub fn get_action_name(&self) -> String {
+        self.0.name()
+    }
+
     #[wasm_bindgen(js_name = "getActionType")]
     pub fn get_action_type(&self) -> String {
-        self.0.name()
+        match self.0 {
+            DataContractCreate(_) => "DATA_CONTRACT_CREATE",
+            Batch(_) => "BATCH",
+            StateTransition::IdentityCreate(_) => "IDENTITY_CREATE",
+            IdentityTopUp(_) => "IDENTITY_TOP_UP",
+            DataContractUpdate(_) => "DATA_CONTRACT_UPDATE",
+            IdentityUpdate(_) => "IDENTITY_UPDATE",
+            IdentityCreditWithdrawal(_) => "IDENTITY_CREDIT_WITHDRAWAL",
+            IdentityCreditTransfer(_) => "IDENTITY_CREDIT_TRANSFER",
+            MasternodeVote(_) => "MASTERNODE_VOTE",
+        }
+        .to_string()
     }
 
     #[wasm_bindgen(js_name = "getActionTypeNumber")]
