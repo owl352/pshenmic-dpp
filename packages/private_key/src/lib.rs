@@ -36,7 +36,12 @@ impl PrivateKeyWASM {
     pub fn from_bytes(bytes: Vec<u8>, js_network: &JsValue) -> Result<Self, JsValue> {
         let network = NetworkWASM::try_from(js_network.clone())?;
 
-        let pk = PrivateKey::from_slice(bytes.as_slice(), network.into())
+        let fixed_bytes: [u8; 32] = bytes
+            .as_slice()
+            .try_into()
+            .map_err(|_| JsValue::from("Cannot parse private key from hex"))?;
+
+        let pk = PrivateKey::from_byte_array(&fixed_bytes, network.into())
             .map_err(|err| JsValue::from_str(&*err.to_string()))?;
 
         Ok(PrivateKeyWASM(pk))
@@ -44,14 +49,9 @@ impl PrivateKeyWASM {
 
     #[wasm_bindgen(js_name = "fromHex")]
     pub fn from_hex(hex_key: &str, js_network: &JsValue) -> Result<Self, JsValue> {
-        let network = NetworkWASM::try_from(js_network.clone())?;
-
         let bytes = Vec::from_hex(hex_key).map_err(|err| JsValue::from(err.to_string()))?;
 
-        let pk = PrivateKey::from_slice(bytes.as_slice(), network.into())
-            .map_err(|err| JsValue::from_str(&*err.to_string()))?;
-
-        Ok(PrivateKeyWASM(pk))
+        PrivateKeyWASM::from_bytes(bytes, js_network)
     }
 
     #[wasm_bindgen(js_name = "getPublicKey")]

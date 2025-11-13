@@ -40,9 +40,14 @@ impl DocumentWASM {
         js_data_contract_id: &JsValue,
         js_owner_id: &JsValue,
         js_document_id: &JsValue,
+        js_creator_id: &JsValue,
     ) -> Result<DocumentWASM, JsValue> {
         let data_contract_id = IdentifierWASM::try_from(js_data_contract_id)?;
         let owner_id = IdentifierWASM::try_from(js_owner_id)?;
+        let creator_id = match js_creator_id.is_undefined() || js_creator_id.is_null() {
+            true => None,
+            false => Some(IdentifierWASM::try_from(js_creator_id)?),
+        };
 
         let revision = Revision::from(js_revision);
 
@@ -82,6 +87,7 @@ impl DocumentWASM {
             created_at_core_block_height: None,
             updated_at_core_block_height: None,
             transferred_at_core_block_height: None,
+            creator_id,
         })
     }
 
@@ -174,6 +180,11 @@ impl DocumentWASM {
     #[wasm_bindgen(getter=documentTypeName)]
     pub fn get_document_type_name(&self) -> String {
         self.document_type_name.clone()
+    }
+
+    #[wasm_bindgen(getter=creatorId)]
+    pub fn get_creator_id(&self) -> Option<IdentifierWASM> {
+        self.creator_id
     }
 
     #[wasm_bindgen(setter=id)]
@@ -279,6 +290,18 @@ impl DocumentWASM {
     #[wasm_bindgen(setter=documentTypeName)]
     pub fn set_document_type_name(&mut self, document_type_name: &str) {
         self.document_type_name = document_type_name.to_string();
+    }
+
+    #[wasm_bindgen(setter=creatorId)]
+    pub fn set_creator_id(&mut self, js_creator_id: &JsValue) -> Result<(), JsValue> {
+        let creator_id = match js_creator_id.is_undefined() || js_creator_id.is_null() {
+            true => None,
+            false => Some(IdentifierWASM::try_from(js_creator_id)?),
+        };
+
+        self.creator_id = creator_id;
+
+        Ok(())
     }
 
     #[wasm_bindgen(js_name=bytes)]
