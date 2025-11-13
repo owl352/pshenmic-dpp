@@ -1,12 +1,12 @@
 import * as DPP from './pshenmic_dpp.js';
 
-export * from './pshenmic_dpp.js'
+export * from './pshenmic_dpp.js';
 
-export * from './base122.js'
+export * from './base122.js';
 
-export default dpp;
 
 declare const dpp: DashPlatformProtocolWASM;
+export default dpp;
 
 export class DashPlatformProtocolWASM {
     // CLASSES

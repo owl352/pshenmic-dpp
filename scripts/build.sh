@@ -65,7 +65,6 @@ if command -v wasm-opt &> /dev/null; then
     --remove-unused-module-elements \
     --remove-unused-names \
     --remove-unused-types \
-    --post-emscripten \
     --gufa \
     --once-reduction \
     -Oz \
