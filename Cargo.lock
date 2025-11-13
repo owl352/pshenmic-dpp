@@ -275,9 +275,8 @@ dependencies = [
 
 [[package]]
 name = "blsful"
-version = "3.0.0-pre8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "384e5e9866cb7f830f06a6633ba998697d5a826e99e8c78376deaadd33cda7be"
+version = "3.0.0"
+source = "git+https://github.com/dashpay/agora-blsful?rev=0c34a7a488a0bd1c9a9a2196e793b303ad35c900#0c34a7a488a0bd1c9a9a2196e793b303ad35c900"
 dependencies = [
  "anyhow",
  "blstrs_plus",
@@ -461,20 +460,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "dash-network"
+version = "0.40.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.40.0#c877c1a74d145e2003d549619698511513db925c"
+dependencies = [
+ "hex",
+ "serde",
+]
+
+[[package]]
 name = "dashcore"
-version = "0.39.6"
-source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.39.6#51df58f5d5d499f5ee80ab17076ff70b5347c7db"
+version = "0.40.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.40.0#c877c1a74d145e2003d549619698511513db925c"
 dependencies = [
  "anyhow",
  "base64-compat",
  "bech32",
- "bitflags",
+ "bitvec",
  "blake3",
  "blsful",
+ "dash-network",
  "dashcore-private",
  "dashcore_hashes",
  "hex",
  "hex_lit",
+ "log",
  "rustversion",
  "secp256k1",
  "serde",
@@ -483,13 +493,13 @@ dependencies = [
 
 [[package]]
 name = "dashcore-private"
-version = "0.39.6"
-source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.39.6#51df58f5d5d499f5ee80ab17076ff70b5347c7db"
+version = "0.40.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.40.0#c877c1a74d145e2003d549619698511513db925c"
 
 [[package]]
 name = "dashcore_hashes"
-version = "0.39.6"
-source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.39.6#51df58f5d5d499f5ee80ab17076ff70b5347c7db"
+version = "0.40.0"
+source = "git+https://github.com/dashpay/rust-dashcore?tag=v0.40.0#c877c1a74d145e2003d549619698511513db925c"
 dependencies = [
  "dashcore-private",
  "secp256k1",
@@ -497,32 +507,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "dashpay-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
-dependencies = [
- "platform-value",
- "platform-version",
- "serde_json",
- "thiserror 2.0.12",
-]
-
-[[package]]
 name = "data-contracts"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
- "dashpay-contract",
- "dpns-contract",
- "feature-flags-contract",
- "keyword-search-contract",
- "masternode-reward-shares-contract",
  "platform-value",
  "platform-version",
  "serde_json",
  "thiserror 2.0.12",
  "token-history-contract",
- "wallet-utils-contract",
  "withdrawals-contract",
 ]
 
@@ -580,20 +573,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "dpns-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
-dependencies = [
- "platform-value",
- "platform-version",
- "serde_json",
- "thiserror 2.0.12",
-]
-
-[[package]]
 name = "dpp"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -629,12 +611,13 @@ dependencies = [
  "sha2",
  "strum",
  "thiserror 2.0.12",
+ "tracing",
 ]
 
 [[package]]
 name = "drive"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "bincode",
  "byteorder",
@@ -705,9 +688,9 @@ dependencies = [
 
 [[package]]
 name = "elliptic-curve-tools"
-version = "0.1.2"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e48843edfbd0a370b3dd14cdbb4e446e9a8855311e6b2b57bf9a1fd1367bc317"
+checksum = "1de2b6fae800f08032a6ea32995b52925b1d451bff9d445c8ab2932323277faf"
 dependencies = [
  "elliptic-curve",
  "heapless",
@@ -770,17 +753,6 @@ name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
-
-[[package]]
-name = "feature-flags-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
-dependencies = [
- "platform-value",
- "platform-version",
- "serde_json",
- "thiserror 2.0.12",
-]
 
 [[package]]
 name = "ff"
@@ -952,9 +924,9 @@ dependencies = [
 
 [[package]]
 name = "grovedb"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "611077565b279965fa34897787ae52f79471f0476db785116cceb92077f237ad"
+checksum = "f12b2378c5eda5b7cadceb34fc6e0a8fd87fe03fc04841a7d32a74ff73ccef71"
 dependencies = [
  "bincode",
  "bincode_derive",
@@ -974,9 +946,9 @@ dependencies = [
 
 [[package]]
 name = "grovedb-costs"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ab159c3f82b0387f6a27a54930b18aa594b507013de947c8e909cf61abb75fe"
+checksum = "e74fafe53bf5ae27128799856e557ef5cb2d7109f1f7bc7f4440bbd0f97c7072"
 dependencies = [
  "integer-encoding",
  "intmap",
@@ -985,9 +957,9 @@ dependencies = [
 
 [[package]]
 name = "grovedb-epoch-based-storage-flags"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3dce2f34c6bfddb3a26696b42e6169f986330513e0e9f4c5d7ba290d09867a5e"
+checksum = "bc6bdc033cc229b17cd02ee9d5c5a5a344788ed0e69ad7468b0d34d94b021fc4"
 dependencies = [
  "grovedb-costs",
  "hex",
@@ -998,9 +970,9 @@ dependencies = [
 
 [[package]]
 name = "grovedb-merk"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4580e54da0031d2f36e50312f3361005099bceeb8adb0f6ccbf87a0880cd1b08"
+checksum = "b6dd6f733e9d5c15c98e05b68a2028e00b7f177baa51e8d8c1541102942a72b7"
 dependencies = [
  "bincode",
  "bincode_derive",
@@ -1019,18 +991,18 @@ dependencies = [
 
 [[package]]
 name = "grovedb-path"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d61e09bb3055358974ceb65b91752064979450092014d91a6bc4a52d77887ea"
+checksum = "01f716520d6c6b0f25dc4a68bc7dded645826ed57d38a06a80716a487c09d23c"
 dependencies = [
  "hex",
 ]
 
 [[package]]
 name = "grovedb-version"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d61d27c76d49758b365a9e4a9da7f995f976b9525626bf645aef258024defd2"
+checksum = "cdc855662f05f41b10dd022226cb78e345a33f35c390e25338d21dedd45966ae"
 dependencies = [
  "thiserror 2.0.12",
  "versioned-feature-core 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1038,9 +1010,9 @@ dependencies = [
 
 [[package]]
 name = "grovedb-visualize"
-version = "3.0.0"
+version = "3.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eaebfe3c1e5f263f14fd25ab060543b31eb4b9d6bdc44fe220e88df6be7ddf59"
+checksum = "34fa6f41c110d1d141bf912175f187ef51ac5d2a8f163dfd229be007461a548f"
 dependencies = [
  "hex",
  "itertools 0.14.0",
@@ -1517,9 +1489,9 @@ dependencies = [
 
 [[package]]
 name = "js-sys"
-version = "0.3.78"
+version = "0.3.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c0b063578492ceec17683ef2f8c5e89121fbd0b172cbc280635ab7567db2738"
+checksum = "b011eec8cc36da2aab2d5cff675ec18454fad408585853910a202391cf9f8e65"
 dependencies = [
  "once_cell",
  "wasm-bindgen",
@@ -1532,17 +1504,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ecc2af9a1119c51f12a14607e783cb977bde58bc069ff0c3da1095e635d70654"
 dependencies = [
  "cpufeatures",
-]
-
-[[package]]
-name = "keyword-search-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
-dependencies = [
- "platform-value",
- "platform-version",
- "serde_json",
- "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -1584,17 +1545,6 @@ name = "log"
 version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
-
-[[package]]
-name = "masternode-reward-shares-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
-dependencies = [
- "platform-value",
- "platform-version",
- "serde_json",
- "thiserror 2.0.12",
-]
 
 [[package]]
 name = "memchr"
@@ -1916,8 +1866,8 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 
 [[package]]
 name = "platform-serialization"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "bincode",
  "platform-version",
@@ -1925,8 +1875,8 @@ dependencies = [
 
 [[package]]
 name = "platform-serialization-derive"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1936,8 +1886,8 @@ dependencies = [
 
 [[package]]
 name = "platform-value"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "base64",
  "bincode",
@@ -1955,8 +1905,8 @@ dependencies = [
 
 [[package]]
 name = "platform-version"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "bincode",
  "grovedb-version",
@@ -1967,8 +1917,8 @@ dependencies = [
 
 [[package]]
 name = "platform-versioning"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3007,8 +2957,8 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "token-history-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -3146,7 +3096,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
 dependencies = [
  "pin-project-lite",
+ "tracing-attributes",
  "tracing-core",
+]
+
+[[package]]
+name = "tracing-attributes"
+version = "0.1.30"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81383ab64e72a7a8b8e13130c49e3dab29def6d0c7d76a03087b3cf71c5c6903"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
 ]
 
 [[package]]
@@ -3265,8 +3227,7 @@ checksum = "7302ac74a033bf17b6e609ceec0f891ca9200d502d31f02dc7908d3d98767c9d"
 [[package]]
 name = "vsss-rs"
 version = "5.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fec4ebcc5594130c31b49594d55c0583fe80621f252f570b222ca4845cafd3cf"
+source = "git+https://github.com/dashpay/vsss-rs?branch=main#668f1406bf25a4b9a95cd97c9069f7a1632897c3"
 dependencies = [
  "crypto-bigint",
  "elliptic-curve",
@@ -3279,17 +3240,6 @@ dependencies = [
  "sha3",
  "subtle",
  "zeroize",
-]
-
-[[package]]
-name = "wallet-utils-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
-dependencies = [
- "platform-value",
- "platform-version",
- "serde_json",
- "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -3318,9 +3268,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.101"
+version = "0.2.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e14915cadd45b529bb8d1f343c4ed0ac1de926144b746e2710f9cd05df6603b"
+checksum = "da95793dfc411fbbd93f5be7715b0578ec61fe87cb1a42b12eb625caa5c5ea60"
 dependencies = [
  "cfg-if",
  "once_cell",
@@ -3330,24 +3280,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasm-bindgen-backend"
-version = "0.2.101"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e28d1ba982ca7923fd01448d5c30c6864d0a14109560296a162f80f305fb93bb"
-dependencies = [
- "bumpalo",
- "log",
- "proc-macro2",
- "quote",
- "syn 2.0.101",
- "wasm-bindgen-shared",
-]
-
-[[package]]
 name = "wasm-bindgen-futures"
-version = "0.4.51"
+version = "0.4.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ca85039a9b469b38336411d6d6ced91f3fc87109a2a27b0c197663f5144dffe"
+checksum = "551f88106c6d5e7ccc7cd9a16f312dd3b5d36ea8b4954304657d5dfba115d4a0"
 dependencies = [
  "cfg-if",
  "js-sys",
@@ -3358,9 +3294,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.101"
+version = "0.2.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c3d463ae3eff775b0c45df9da45d68837702ac35af998361e2c84e7c5ec1b0d"
+checksum = "04264334509e04a7bf8690f2384ef5265f05143a4bff3889ab7a3269adab59c2"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -3368,31 +3304,31 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.101"
+version = "0.2.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7bb4ce89b08211f923caf51d527662b75bdc9c9c7aab40f86dcb9fb85ac552aa"
+checksum = "420bc339d9f322e562942d52e115d57e950d12d88983a14c79b86859ee6c7ebc"
 dependencies = [
+ "bumpalo",
  "proc-macro2",
  "quote",
  "syn 2.0.101",
- "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.101"
+version = "0.2.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f143854a3b13752c6950862c906306adb27c7e839f7414cec8fea35beab624c1"
+checksum = "76f218a38c84bcb33c25ec7059b07847d465ce0e0a76b995e134a45adcb6af76"
 dependencies = [
  "unicode-ident",
 ]
 
 [[package]]
 name = "web-sys"
-version = "0.3.78"
+version = "0.3.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77e4b637749ff0d92b8fad63aa1f7cff3cbe125fd49c175cd6345e7272638b12"
+checksum = "3a1f95c0d03a47f4ae1f7a64643a6bb97465d9b740f0fa8f90ea33915c99a9a1"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -3576,8 +3512,8 @@ checksum = "052283831dbae3d879dc7f51f3d92703a316ca49f91540417d38591826127814"
 
 [[package]]
 name = "withdrawals-contract"
-version = "2.0.1"
-source = "git+https://github.com/owl352/platform?rev=4aa29b8#4aa29b808a1a825d37043e118a26a892cfb8ad0a"
+version = "2.1.3"
+source = "git+https://github.com/owl352/platform?rev=3f13188#3f1318887530c7b6e75241b0d391ea1b35fdc42f"
 dependencies = [
  "num_enum 0.5.11",
  "platform-value",
