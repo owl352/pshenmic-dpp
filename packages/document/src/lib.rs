@@ -28,6 +28,7 @@ pub struct DocumentWASM {
     updated_at_core_block_height: Option<CoreBlockHeight>,
     transferred_at_core_block_height: Option<CoreBlockHeight>,
     entropy: Option<[u8; 32]>,
+    creator_id: Option<IdentifierWASM>,
 }
 
 impl From<DocumentWASM> for Document {
@@ -46,6 +47,7 @@ impl From<DocumentWASM> for Document {
             created_at_core_block_height: wasm_doc.created_at_core_block_height,
             updated_at_core_block_height: wasm_doc.updated_at_core_block_height,
             transferred_at_core_block_height: wasm_doc.transferred_at_core_block_height,
+            creator_id: wasm_doc.creator_id.map(|id| id.into()),
         })
     }
 }
@@ -69,6 +71,7 @@ impl From<Document> for DocumentWASM {
             updated_at_core_block_height: doc.updated_at_core_block_height(),
             transferred_at_core_block_height: doc.transferred_at_core_block_height(),
             entropy: None,
+            creator_id: doc.creator_id().map(|id| id.into()),
         }
     }
 }
@@ -97,6 +100,7 @@ impl DocumentWASM {
             updated_at_core_block_height: document.updated_at_core_block_height(),
             transferred_at_core_block_height: document.transferred_at_core_block_height(),
             entropy,
+            creator_id: document.creator_id().map(|id| id.into()),
         }
     }
 }
