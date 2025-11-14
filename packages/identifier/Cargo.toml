@@ -1,9 +1,0 @@
-[package]
-name = "pshenmic_dpp_identifier"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-wasm-bindgen = { workspace = true }
-dpp = { workspace = true, features = []}
-pshenmic_dpp_utils = { path = "../utils" }

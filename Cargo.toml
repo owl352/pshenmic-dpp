@@ -1,68 +1,23 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.1.0"
+authors = ["owl352 <kokosinca123@gmail.com>"]
+version = "2.0.0"
 edition = "2024"
-rust-version = "1.85"
-
-[workspace.dependencies]
-dpp = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false }
-drive = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false }
-wasm-bindgen = { version = "=0.2.105", default-features = false, features = ["std"]}
-js-sys = { version = "0.3.78" }
-serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
-
-[workspace.package]
-version = "1.0.5"
-
-[workspace]
-resolver = "2"
-members = [
-    "packages/document",
-    "packages/batch",
-    "packages/enums",
-    "packages/mock_bls",
-    "packages/private_key",
-    "packages/identity_public_key",
-    "packages/utils",
-    "packages/identity",
-    "packages/identity_transitions",
-    "packages/state_transition",
-    "packages/data_contract",
-    "packages/asset_lock_proof",
-    "packages/data_contract_transitions",
-    "packages/core_script",
-    "packages/batch",
-    "packages/group_state_transition_info",
-    "packages/encrypted_note",
-    "packages/token_configuration_change_item",
-    "packages/token_configuration",
-    "packages/masternode_vote",
-    "packages/contract_bounds",
-    "packages/public_key",
-    "packages/consensus_error",
-    "packages/verify",
-    "packages/partial_identity"
-]
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-talc = { version = "=4.4.2", default-features = false, features = ["lock_api"] }
-bincode = "=2.0.0-rc.3"
-bincode_derive = "=2.0.0-rc.3"
-pshenmic_dpp_verify = {path = "packages/verify"}
-pshenmic_dpp_consensus_error = { path = "packages/consensus_error" }
-pshenmic_dpp_batch = { path = "packages/batch" }
-pshenmic_dpp_identity = { path = "packages/identity" }
-pshenmic_dpp_partial_identity = { path = "packages/partial_identity" }
-pshenmic_dpp_identifier = { path = "packages/identifier" }
-pshenmic_dpp_state_transition = { path = "packages/state_transition" }
-pshenmic_dpp_identity_transitions = { path = "packages/identity_transitions" }
-pshenmic_dpp_data_contract = { path = "packages/data_contract" }
-pshenmic_dpp_data_contract_transitions = { path = "packages/data_contract_transitions" }
-pshenmic_dpp_enums = { path = "packages/enums" }
-pshenmic_dpp_masternode_vote = {path = "packages/masternode_vote"}
+dpp = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false, features = [
+    "identity-value-conversion",
+    "identity-serialization"
+] }
+drive = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false }
+napi = {version = "3.4.0", features = ["napi3"], default-features = false}
+napi-derive = "3.3.0"
+
+[build-dependencies]
+napi-build = "2.2.4"
 
 [profile.release]
 lto = "fat"

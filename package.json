@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "1.1.0",
+  "version": "2.0.0-dev.1",
   "main": "dist/wasm/index.js",
   "types": "dist/wasm/index.d.ts",
   "type": "module",
@@ -9,17 +9,15 @@
     "url": "https://github.com/owl352/pshenmic-dpp"
   },
   "scripts": {
-    "build:bin": "./scripts/build.sh",
-    "build:js": "npm run bundle && ./scripts/build-js.sh",
-    "build:full": "./scripts/build.sh && npm run bundle && ./scripts/build-js.sh",
-    "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
+    "build": "node build.cjs",
+    "ferric:build": "ferric build",
     "bundle": "rollup -c",
-    "docs": "tsx utils/generate-docs.ts && typedoc",
+    "docs": "tsx old/utils.old/generate-docs.ts && typedoc",
     "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.cjs",
     "lint": "cargo fmt",
     "lint:test": "standard --fix ./tests",
-    "convert:base122": "node ./utils/convertBinary.mjs"
+    "convert:base122": "node old/utils.old/convertBinary.mjs"
   },
   "files": [
     "dist/wasm",
@@ -49,9 +47,15 @@
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "ferric-cli": "^0.3.9",
+    "node-addon-api": "^8.5.0",
+    "toml": "^3.0.0"
   },
   "dependencies": {
-    "fflate": "^0.8.2"
+    "fflate": "^0.8.2",
+    "@emnapi/core": "^1.7.0",
+    "@emnapi/runtime": "^1.7.0",
+    "@tybys/wasm-util": "^0.10.1"
   }
 }
