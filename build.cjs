@@ -10,7 +10,7 @@ const { getStructsForEsmExport } = require('./utils/getStructsForEsmExport.mjs')
 const buildProfile = process.env.PROFILE ?? 'release'
 const wasmOptScript = process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, 'scripts/wasm-opt.sh')
 const binariesOutputDir = process.env.BIN_OUTPUT_DIR ?? path.join(__dirname, 'pkg', 'binaries')
-const jsOutputDir = process.env.JS_OUTPUT_DIR ?? path.join(__dirname, 'pkg')
+const templatesOutputDir = process.env.JS_OUTPUT_DIR ?? path.join(__dirname, 'pkg')
 
 const emnapi = path.join(require.resolve('emnapi'), '..', 'lib', 'wasm32-wasi-threads')
 
@@ -57,7 +57,7 @@ async function main () {
   await convertBinary(targetWasmFile, path.join(wasmOutputDir, 'wasmBytes.js'))
 
   console.log('Copying templates')
-  fs.cpSync('./templates', jsOutputDir, { recursive: true })
+  fs.cpSync('./templates', templatesOutputDir, { recursive: true })
 
   console.log('Patch exports to ESM for node-api')
   const exports = getStructsForEsmExport(path.join(binariesOutputDir, `${binName}.d.ts`).toString())
