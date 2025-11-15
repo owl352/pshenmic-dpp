@@ -1,11 +1,11 @@
 import {WASI} from "@tybys/wasm-util"
 import {getDefaultContext} from "@emnapi/runtime"
 import {instantiateNapiModuleSync} from "@emnapi/core"
-import wasmBytes from './binaries/wasm/wasmBytes.js'
-import {decode} from "../../utils/base122.mjs";
-import {decompressSync} from "fflate";
+import {bytes} from './wasm/wasmBytes.js'
+import {decode} from "../utils/base122.js"
+import {decompressSync} from "fflate"
 
-const bytes = new Uint8Array(decode(wasmBytes))
+const wasmBytes = new Uint8Array(decode(bytes))
 
 const wasi = new WASI({
   version: 'preview1',
@@ -20,12 +20,12 @@ const wasi = new WASI({
 const emnapiContext = getDefaultContext()
 
 const __sharedMemory = new WebAssembly.Memory({
-  "initial": 4000,
-  "maximum": 6000,
-  "shared": true,
+  initial: 1000,
+  maximum: 2000,
+  shared: true,
 })
 
-const wasm = instantiateNapiModuleSync(decompressSync(bytes), {
+const wasm = instantiateNapiModuleSync(decompressSync(wasmBytes), {
   context: emnapiContext,
   wasi,
   overwriteImports(importObject) {
