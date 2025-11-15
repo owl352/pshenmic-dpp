@@ -6,6 +6,8 @@ const fs = require('fs')
 const { convertBinary } = require('./utils/convertBinary.mjs')
 const { getStructsForEsmExport } = require('./utils/getStructsForEsmExport.mjs')
 
+const typingsForCodegen = 'export * from "./bindingsTypes.ts"'
+
 // release/debug
 const buildProfile = process.env.PROFILE ?? 'release'
 const wasmOptScript = process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, 'scripts/wasm-opt.sh')
@@ -25,7 +27,7 @@ const targetWasmFile = path.join(__dirname, 'target', 'wasm32-wasip1-threads', b
 const execTask = promisify(exec)
 
 async function main () {
-  console.log('Building wasm32-wasip1')
+  console.log('Building wasm32-wasip1-threads')
   await execTask(`cargo build --target wasm32-wasip1-threads --${buildProfile}`, {
     env: {
       ...process.env,
@@ -46,7 +48,7 @@ async function main () {
     }
   })
 
-  console.log('Generate WASM output')
+  console.log('Generate WASM output directory')
   const wasmOutputDir = path.join(binariesOutputDir, 'wasm')
 
   if (!fs.existsSync(wasmOutputDir)) {
@@ -60,7 +62,9 @@ async function main () {
   fs.cpSync('./templates', templatesOutputDir, { recursive: true })
 
   console.log('Patch exports to ESM for node-api')
-  const exports = getStructsForEsmExport(path.join(binariesOutputDir, `${binName}.d.ts`).toString())
+  const typesPath = path.join(binariesOutputDir, `${binName}.d.ts`)
+
+  const exports = getStructsForEsmExport(typesPath.toString())
 
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.js`), [
     '/* eslint-disable */',
@@ -68,10 +72,18 @@ async function main () {
     `export const { ${exports.join(', ')} } = requireNodeAddon('./${binName}.node')`
   ].join('\n\n') + '\n', 'utf8')
 
-  console.log('Adding export for WASM')
+  console.log('Adding ESM export for WASM')
   const wasmInitScript = fs.readFileSync(path.join(binariesOutputDir, 'wasm.js'), { encoding: 'utf8' })
 
   fs.writeFileSync(path.join(binariesOutputDir, 'wasm.js'), wasmInitScript.replace('/* exports here */', `export const { ${exports.join(', ')} } =`))
+
+  console.log('Patch typings')
+  const types = fs.readFileSync(typesPath, { encoding: 'utf8' })
+
+  fs.writeFileSync(path.join(binariesOutputDir, 'bindingsTypes.ts'), types.replace(/declare const/g, 'const'))
+
+  fs.writeFileSync(path.join(binariesOutputDir, 'wasm.d.ts'), typingsForCodegen)
+  fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen)
 
   console.log('Done')
 }
