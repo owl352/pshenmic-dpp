@@ -1,25 +1,31 @@
 const path = require('node:path')
 const toml = require('toml')
-const {exec} = require('child_process')
-const { promisify } = require('node:util');
+const { exec } = require('child_process')
+const { promisify } = require('node:util')
 const fs = require('fs')
+const { convertBinary } = require('./utils/convertBinary.mjs')
+const { getStructsForEsmExport } = require('./utils/getStructsForEsmExport.mjs')
 
 // release/debug
-const buildProfile = 'release'
+const buildProfile = process.env.PROFILE ?? 'release'
+const wasmOptScript = process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, 'scripts/wasm-opt.sh')
+const binariesOutputDir = process.env.BIN_OUTPUT_DIR ?? path.join(__dirname, 'pkg', 'binaries')
+const jsOutputDir = process.env.JS_OUTPUT_DIR ?? path.join(__dirname, 'pkg')
 
-const emnapi = path.join(require.resolve("emnapi"), "..", "lib", "wasm32-wasi-threads")
+const emnapi = path.join(require.resolve('emnapi'), '..', 'lib', 'wasm32-wasi-threads')
 
 const cargoTomlPath = path.join(__dirname, 'Cargo.toml')
 const fileContent = fs.readFileSync(cargoTomlPath, 'utf8')
-const {package: {name: rustCrateName}} = toml.parse(fileContent)
+const { package: { name: rustCrateName } } = toml.parse(fileContent)
 
-const targetWasmDir = path.join(__dirname, 'target', 'wasm32-wasip1-threads', buildProfile, `${rustCrateName}.wasm`)
-const outputDir = path.join(__dirname, 'pkg')
+const binName = rustCrateName.replace('-', '_')
+
+const targetWasmFile = path.join(__dirname, 'target', 'wasm32-wasip1-threads', buildProfile, `${binName}.wasm`)
 
 const execTask = promisify(exec)
 
-async function main() {
-  console.log(`Building wasm32-wasip1`)
+async function main () {
+  console.log('Building wasm32-wasip1')
   await execTask(`cargo build --target wasm32-wasip1-threads --${buildProfile}`, {
     env: {
       ...process.env,
@@ -29,64 +35,45 @@ async function main() {
     }
   })
 
-  console.log(`Building node-api by ferric`)
-  await execTask(`npm run ferric:build -- --configuration ${buildProfile} --output ${outputDir}`)
+  console.log('Building node-api by ferric')
+  await execTask(`npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`)
 
-  console.log(`Running wasm-opt`)
+  console.log('Running wasm-opt')
+  await execTask(wasmOptScript, {
+    env: {
+      ...process.env,
+      OUTPUT_FILE: targetWasmFile.toString()
+    }
+  })
 
-  await execTask("wasm-opt", [
-    "--code-folding",
-    "--const-hoisting",
-    "--abstract-type-refining",
-    "--dce",
-    "--strip-producers",
-    "-Oz",
-    "--generate-global-effects",
-    "--enable-bulk-memory",
-    "--enable-nontrapping-float-to-int",
-    "-tnh",
-    "--flatten",
-    "--rereloop",
-    "-Oz",
-    "--converge",
-    "--vacuum",
-    "--dce",
-    "--gsi",
-    "--inlining-optimizing",
-    "--merge-blocks",
-    "--simplify-locals",
-    "--optimize-added-constants",
-    "--optimize-casts",
-    "--optimize-instructions",
-    "--optimize-stack-ir",
-    "--remove-unused-brs",
-    "--remove-unused-module-elements",
-    "--remove-unused-names",
-    "--remove-unused-types",
-    "--gufa",
-    "--once-reduction",
-    "-Oz",
-    "-Oz",
-    targetWasmDir.toString(),
-    "-o",
-    targetWasmDir.toString(),
-  ]);
+  console.log('Generate WASM output')
+  const wasmOutputDir = path.join(binariesOutputDir, 'wasm')
 
-  console.log(`Generate wasm output`)
-  const wasmOutputDir = path.join(outputDir, 'wasm')
-
-  if(!fs.existsSync(wasmOutputDir)) {
+  if (!fs.existsSync(wasmOutputDir)) {
     fs.mkdirSync(wasmOutputDir)
   }
 
-  const wasmBytes = fs.readFileSync(targetWasmDir)
+  console.log('Generate zipped js base122 WASM output')
+  await convertBinary(targetWasmFile, path.join(wasmOutputDir, 'wasmBytes.js'))
 
-  fs.writeFileSync(path.join(wasmOutputDir, 'wasmBytes.js'), `export default "${wasmBytes.toString('base64')}"`)
+  console.log('Copying templates')
+  fs.cpSync('./templates', jsOutputDir, { recursive: true })
 
-  fs.copyFileSync('./templates/wasm.js', path.join(outputDir, 'wasm.js'))
-  fs.copyFileSync(path.join(outputDir, `${rustCrateName}.d.ts`), path.join(outputDir, 'wasm.d.ts'))
+  console.log('Patch exports to ESM for node-api')
+  const exports = getStructsForEsmExport(path.join(binariesOutputDir, `${binName}.d.ts`).toString())
 
-  console.log(`Done ✨`)
+  fs.writeFileSync(path.join(binariesOutputDir, `${binName}.js`), [
+    '/* eslint-disable */',
+    'import {requireNodeAddon} from \'react-native-node-api\'',
+    `export const { ${exports.join(', ')} } = requireNodeAddon('./${binName}.node')`
+  ].join('\n\n') + '\n', 'utf8')
+
+  console.log('Adding export for WASM')
+  const wasmInitScript = fs.readFileSync(path.join(binariesOutputDir, 'wasm.js'), { encoding: 'utf8' })
+
+  fs.writeFileSync(path.join(binariesOutputDir, 'wasm.js'), wasmInitScript.replace('/* exports here */', `export const { ${exports.join(', ')} } =`))
+
+  console.log('Done')
 }
 
-main().catch(console.error);
+main().catch(console.error)

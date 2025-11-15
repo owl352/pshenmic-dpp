@@ -3,9 +3,8 @@
 /.yarn
 /.idea
 /auto-docs
-*/wasm
-pkg/pshenmic_dpp.*.*
-pkg/pshenmic_dpp.*
+pkg/binaries
+pkg/utils
 /dist/cjs
 package-lock.json
 yarn.lock
