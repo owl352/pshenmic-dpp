@@ -1,10 +1,12 @@
-use napi::{Status, bindgen_prelude::{Null, Uint8Array}};
+use napi::{
+    Status,
+    bindgen_prelude::{Null, Uint8Array},
+};
 use napi_derive::napi;
 
 pub trait TryToU64 {
     fn try_to_u64(&self) -> Result<u64, napi::Error>;
 }
-
 
 #[napi(object)]
 pub struct Uint64String {
@@ -24,7 +26,9 @@ impl TryToU64 for Uint64String {
 
 impl From<u64> for Uint64String {
     fn from(value: u64) -> Self {
-        Uint64String { value: value.to_string() }
+        Uint64String {
+            value: value.to_string(),
+        }
     }
 }
 

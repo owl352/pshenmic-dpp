@@ -4,7 +4,7 @@ use napi_derive::napi;
 
 use crate::dynamic_value::{DynamicValue, TryToU64};
 
-#[napi(js_name="NetworkNAPI")]
+#[napi(js_name = "NetworkNAPI")]
 #[allow(non_camel_case_types)]
 pub enum NetworkNAPI {
     Mainnet = 0,
