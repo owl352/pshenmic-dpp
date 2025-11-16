@@ -11,4 +11,4 @@ export {
   PlatformVersionNAPI as PlatformVersionWASM,
   PurposeNAPI as Purpose,
   SecurityLevelNAPI as SecurityLevel
-} from '../binaries/bindingsTypes.ts'
+} from '../binaries/bindingsTypes.js'

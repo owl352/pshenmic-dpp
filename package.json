@@ -1,61 +1,52 @@
 {
   "name": "pshenmic-dpp",
   "version": "2.0.0-dev.1",
-  "main": "dist/wasm/index.js",
-  "types": "dist/wasm/index.d.ts",
+  "main": "dist/wasm.js",
+  "types": "dist/src/wasm.d.ts",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/owl352/pshenmic-dpp"
   },
   "scripts": {
-    "build": "node build.cjs",
+    "build:bin": "node build.cjs",
+    "build:ts": "tsc && cp -R pkg/**/*.*.node dist/binaries/",
+    "build:full": "npm run build:bin && npm run build:ts",
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
     "docs": "tsx old/utils.old/generate-docs.ts && typedoc",
-    "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
     "tests": "mocha ./tests/*.spec.cjs",
-    "lint": "cargo fmt",
-    "lint:test": "standard --fix ./tests",
-    "convert:base122": "node old/utils.old/convertBinary.mjs"
+    "lint": "cargo fmt"
   },
   "files": [
-    "dist/wasm",
+    "dist/",
     "tests/"
   ],
   "exports": {
-    ".": "./dist/wasm/index.js",
-    "./initAsync": "./dist/wasm/initAsync.js",
-    "./initInterface": "./dist/wasm/initInterface.js",
-    "./initWASM": "./dist/wasm/initWASM.js",
-    "./pshenmic_dpp_bg": "./dist/wasm/pshenmic_dpp_bg.js",
-    "./pshenmic_dpp": "./dist/wasm/pshenmic_dpp.js",
-    "./pshenmic_dpp_zipped": "./dist/wasm/pshenmic_dpp_zipped.js"
+    ".": "./dist/src/wasm.js",
+    "./react-native": "./dist/src/react-native.js"
   },
   "author": "owl352",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
     "@scure/base": "^1.2.4",
     "@types/node": "^24.0.13",
     "core-js": "^3.41.0",
+    "ferric-cli": "^0.3.9",
     "mocha": "^11.1.0",
+    "node-addon-api": "^8.5.0",
     "path": "^0.12.7",
-    "rollup": "^4.52.2",
-    "standard": "^17.1.2",
+    "toml": "^3.0.0",
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
-    "typescript": "^5.8.3",
-    "ferric-cli": "^0.3.9",
-    "node-addon-api": "^8.5.0",
-    "toml": "^3.0.0"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "fflate": "^0.8.2",
     "@emnapi/core": "^1.7.0",
     "@emnapi/runtime": "^1.7.0",
-    "@tybys/wasm-util": "^0.10.1"
+    "@tybys/wasm-util": "^0.10.1",
+    "fflate": "^0.8.2"
   }
 }
