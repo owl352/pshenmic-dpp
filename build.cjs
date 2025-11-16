@@ -28,6 +28,7 @@ const execTask = promisify(exec)
 
 async function main () {
   console.log('Building wasm32-wasip1-threads')
+  console.log('EMNAPI link:', emnapi)
   await execTask(`cargo build --target wasm32-wasip1-threads --${buildProfile}`, {
     env: {
       ...process.env,
