@@ -33,7 +33,7 @@ jobs:
 
     - name: GCC Multilib
       run: |
-        apt install gcc-multilib
+        sudo apt install gcc-multilib
 
     - name: Add rustup mobile targets
       run: |
