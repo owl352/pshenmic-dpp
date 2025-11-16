@@ -17,11 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use Android NDK
-      uses: nttld/setup-ndk@v1
-      with:
-        ndk-version: r26d
-
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
@@ -43,6 +38,10 @@ jobs:
     - name: Add rustup mobile targets
       run: |
         rustup target add aarch64-apple-ios-sim aarch64-linux-android x86_64-linux-android
+
+    - name: Install NDK
+      run: |
+        sdkmanager --install "ndk;27.1.12297006"
 
     - name: Check Rust code linting rules
       run: |
