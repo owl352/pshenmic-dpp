@@ -17,6 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Use Android NDK
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r26d
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
