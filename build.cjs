@@ -39,7 +39,7 @@ async function main () {
   })
 
   console.log('Building node-api by ferric')
-  await execTask(`npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir} --target x86_64-linux-android`)
+  await execTask(`npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`)
 
   console.log('Running wasm-opt')
   await execTask(wasmOptScript, {
