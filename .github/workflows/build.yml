@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ "master", "v1.1.0-dev", "v1.1.0", "v1.2.0-dev" ]
+    branches: [ "master", "v1.1.0-dev", "v1.1.0", "v2.0.0-dev" ]
   pull_request:
-    branches: [ "master", "v1.1.0-dev", "v1.1.0", "v1.2.0-dev" ]
+    branches: [ "master", "v1.1.0-dev", "v1.1.0", "v2.0.0-dev" ]
 
 jobs:
   build:
@@ -32,13 +32,17 @@ jobs:
       run: |
         rustup target add wasm32-unknown-unknown
 
+    - name: Add rustup mobile targets
+      run: |
+        rustup target add aarch64-apple-ios-sim aarch64-linux-android
+
     - name: Check Rust code linting rules
       run: |
         cargo fmt --check
 
     - name: Install Rust dependencies for WASM
       run: |
-        cargo install wasm-bindgen-cli@0.2.105 wasm-opt wasm-snip
+        cargo install wasm-bindgen-cli@0.2.105 wasm-opt
 
     - name: Install dependencies
       run: |

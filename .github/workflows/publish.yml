@@ -23,13 +23,17 @@ jobs:
         run: |
           rustup target add wasm32-unknown-unknown
 
+      - name: Add rustup mobile targets
+        run: |
+          rustup target add aarch64-apple-ios-sim aarch64-linux-android
+
       - name: Check Rust code linting rules
         run: |
           cargo fmt --check
 
       - name: Install Rust dependencies for WASM
         run: |
-          cargo install wasm-bindgen-cli@0.2.105 wasm-opt wasm-snip
+          cargo install wasm-bindgen-cli@0.2.105 wasm-opt
 
       - name: Install dependencies
         run: |
