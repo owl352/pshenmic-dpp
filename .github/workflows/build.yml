@@ -50,12 +50,11 @@ jobs:
 
     - name: Configure WASI C-Compiler for secp256k1-sys
       run: |
-        RUSTUP_TOOLCHAIN=$(rustup show active-toolchain | cut -d' ' -f1)
-        CLANG_PATH=$(rustc --print sysroot)/lib/rustlib/wasm32-wasip1-threads/bin/clang
-        echo "CC_wasm32_wasip1_threads=${CLANG_PATH}" >> $GITHUB_ENV
-        SYSROOT_PATH=$(rustc --print sysroot)/lib/rustlib/wasm32-wasip1-threads/
+        SYSROOT_PATH=$(rustc --print sysroot)/lib/rustlib/wasm32-wasip1-threads
+        echo "CC_wasm32_wasip1_threads=clang" >> $GITHUB_ENV"
         echo "CFLAGS_wasm32_wasip1_threads=--sysroot=${SYSROOT_PATH}" >> $GITHUB_ENV
-        echo "WASI C-Compiler configured successfully."
+        
+        echo "WASI C-Compiler configured successfully using system clang and rustup sysroot."
 
     - name: Build JS bundle
       run: |
