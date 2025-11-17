@@ -359,6 +359,16 @@ impl DataContractWASM {
         Ok(groups_object.into())
     }
 
+    #[wasm_bindgen(getter = "description")]
+    pub fn get_description(&self) -> Option<String> {
+        self.0.description().map(|st| st.clone())
+    }
+
+    #[wasm_bindgen(getter = "keywords")]
+    pub fn get_keywords(&self) -> Vec<String> {
+        self.0.keywords().clone()
+    }
+
     #[wasm_bindgen(setter = "id")]
     pub fn set_id(&mut self, js_data_contract_id: &JsValue) -> Result<(), JsValue> {
         self.0
@@ -469,6 +479,16 @@ impl DataContractWASM {
         self.0.set_groups(groups);
 
         Ok(())
+    }
+
+    #[wasm_bindgen(setter = "description")]
+    pub fn set_description(&mut self, description: Option<String>) {
+        self.0.set_description(description)
+    }
+
+    #[wasm_bindgen(setter = "keywords")]
+    pub fn set_keywords(&mut self, keywords: Vec<String>) {
+        self.0.set_keywords(keywords)
     }
 
     #[wasm_bindgen(js_name = "toJson")]
