@@ -1,5 +1,6 @@
 use dpp::dashcore::key::constants;
 use dpp::dashcore::{PublicKey, secp256k1};
+use dpp::util::hash::ripemd160_sha256;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -106,6 +107,11 @@ impl PublicKeyWASM {
     #[wasm_bindgen(js_name = getPublicKeyHash)]
     pub fn get_public_key_hash(&self) -> String {
         self.0.pubkey_hash().to_hex()
+    }
+
+    #[wasm_bindgen(js_name = hash160)]
+    pub fn get_public_key_hash_160(&self) -> Vec<u8> {
+        ripemd160_sha256(self.0.to_bytes().as_slice()).to_vec()
     }
 
     #[wasm_bindgen(js_name = "bytes")]
