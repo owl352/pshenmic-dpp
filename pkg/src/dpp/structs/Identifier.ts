@@ -48,7 +48,23 @@ export class IdentifierWASM {
     return this._rawIdentifier.bytes()
   }
 
-  static createFromRawInstance(rawInstance: IdentifierNAPI) {
+  static fromBase58(id: string): IdentifierWASM {
+    return this.createFromRawInstance(dpp.IdentifierNAPI.fromBase58(id))
+  }
+
+  static fromBase64(id: string): IdentifierWASM {
+    return this.createFromRawInstance(dpp.IdentifierNAPI.fromBase64(id))
+  }
+
+  static fromHex(id: string): IdentifierWASM {
+    return this.createFromRawInstance(dpp.IdentifierNAPI.fromHex(id))
+  }
+
+  static fromBytes(id: Uint8Array): IdentifierWASM {
+    return this.createFromRawInstance(dpp.IdentifierNAPI.fromBytes(id))
+  }
+
+  static createFromRawInstance(rawInstance: IdentifierNAPI): IdentifierWASM {
     const instance: IdentifierWASM = Object.create(this.prototype)
     instance._rawIdentifier = rawInstance
 

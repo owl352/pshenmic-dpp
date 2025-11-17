@@ -44,24 +44,56 @@ impl IdentifierNAPI {
         }
     }
 
-    #[napi]
+    #[napi(js_name = base58)]
     pub fn base58(&self) -> String {
         self.id.to_string(Encoding::Base58)
     }
 
-    #[napi]
+    #[napi(js_name = hex)]
     pub fn hex(&self) -> String {
         self.id.to_string(Encoding::Hex)
     }
 
-    #[napi]
+    #[napi(js_name = base64)]
     pub fn base64(&self) -> String {
         self.id.to_string(Encoding::Base64)
     }
 
-    #[napi]
+    #[napi(js_name = bytes)]
     pub fn bytes(&self) -> Uint8Array {
         self.id.to_vec().into()
+    }
+
+    #[napi(js_name = "fromBase58")]
+    pub fn from_base58(base58: String) -> Result<IdentifierNAPI, napi::Error> {
+        let identitfier = Identifier::from_string(base58.as_str(), Encoding::Base58)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
+
+        Ok(IdentifierNAPI { id: identitfier })
+    }
+
+    #[napi(js_name = "fromBase64")]
+    pub fn from_base64(base64: String) -> Result<IdentifierNAPI, napi::Error> {
+        let identitfier = Identifier::from_string(base64.as_str(), Encoding::Base64)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
+
+        Ok(IdentifierNAPI { id: identitfier })
+    }
+
+    #[napi(js_name = "fromHex")]
+    pub fn from_hex(hex: String) -> Result<IdentifierNAPI, napi::Error> {
+        let identitfier = Identifier::from_string(hex.as_str(), Encoding::Hex)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
+
+        Ok(IdentifierNAPI { id: identitfier })
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<IdentifierNAPI, napi::Error> {
+        let identifier = Identifier::from_vec(bytes.to_vec())
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
+
+        Ok(IdentifierNAPI { id: identifier })
     }
 }
 
