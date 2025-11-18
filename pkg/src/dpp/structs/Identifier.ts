@@ -8,6 +8,7 @@ export function setDpp (_dpp: DashPlatformProtocol): void {
 }
 
 export class IdentifierWASM {
+  /** @private **/
   _rawIdentifier: IdentifierNAPI
 
   constructor (rawId: IdentifierLike | IdentifierWASM) {

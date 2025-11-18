@@ -6,5 +6,36 @@
   "excludeExternals": true,
   "tsconfig": "tsconfig.json",
   "entryPointStrategy": "expand",
-  "entryPoints": ["./pkg/src/wasm.ts"]
+  "entryPoints": ["./pkg/src/wasm.ts"],
+  "sort": [
+    "enum-value-ascending",
+    "static-first",
+    "visibility",
+    "kind"
+  ],
+  "kindSortOrder": [
+    "Class",
+    "Reference",
+    "Project",
+    "Module",
+    "Namespace",
+    "Enum",
+    "EnumMember",
+    "Function",
+    "Interface",
+    "TypeAlias",
+    "Constructor",
+    "Property",
+    "Variable",
+    "Accessor",
+    "Method",
+    "Parameter",
+    "TypeParameter",
+    "TypeLiteral",
+    "CallSignature",
+    "ConstructorSignature",
+    "IndexSignature",
+    "GetSignature",
+    "SetSignature"
+  ]
 }

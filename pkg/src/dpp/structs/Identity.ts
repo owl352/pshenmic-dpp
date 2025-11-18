@@ -11,6 +11,7 @@ export function setDpp (_dpp: DashPlatformProtocol): void {
 }
 
 export class IdentityWASM {
+  /** @private **/
   _rawIdentity: IdentityNAPI
 
   constructor (rawId: IdentifierLike | IdentifierWASM, platformVersion?: PlatformVersionLike) {

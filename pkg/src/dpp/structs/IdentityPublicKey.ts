@@ -10,6 +10,7 @@ export function setDpp (_dpp: DashPlatformProtocol): void {
 }
 
 export class IdentityPublicKeyWASM {
+  /** @private **/
   _rawIdentityPublicKey: IdentityPublicKeyNAPI
 
   constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint) {
