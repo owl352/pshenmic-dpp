@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/wasm",
+    "outDir": "./dist",
     "noImplicitAny": true,
     "module": "NodeNext",
     "target": "ESNext",
-    "rootDir": "./",
-    "allowJs": false,
+    "rootDir": "./pkg",
+    "allowJs": true,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "declaration": true,
@@ -15,10 +17,11 @@
     ]
   },
   "include": [
-    "**/*.ts"
+    "./pkg/**/*",
+    "./test/**/*"
   ],
   "exclude": [
     "node_modules",
-    "lib"
+    "templates",
   ]
 }

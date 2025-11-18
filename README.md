@@ -1,193 +1,99 @@
+## NOTE: v2.0.0-dev under active development and until the first stable release, it may not correspond to previous versions in terms of functionality.
+___
 # PSHENMIC-DPP
 
 ## General
-Pshenmic-dpp is package with rust bindings for JS 
+Pshenmic-dpp is package with rust bindings for JS
 
 That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
 Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it.
 
-One of the advantages of this module is that you can build `.wasm` file not with all modules, but only with the ones you are interested in + minimal dependencies for them
 ___
 ## How To Install
 `yarn add pshenmic-dpp`
+
 ___
-## Manual Building
-### Install dependencies
-`yarn`
-
-### Build JS
-`yarn build:full`
-
-### Build with binary instead base122
-`yarn build:raw`
-Now you can import `.js` with base122 buffer for WebAssembly module, or binary which smaller
-___
-## Why you need to use `pshenmic-dpp` instead `wasm-dpp`
-
-- `pshenmic-dpp` weighs much less, currently taking up only 1.4mb(\*) or 2.2mb(\*) in base122 format with GZIP
-- You can build only necessary modules by removing imports from `lib.rs` before building
-- More accurately replicates `rs-dpp`
-- Some sugar, like enums, which you can pass in string with any case or just use numbers
-
-**(\*)** \- This module contains 2 builds for wasm js layer:
-- JS without bundling or GZIP (2.2mb)
-- Bundled JS with GZIP (1.4mb)
-
-These variations can be imported depending on requirements.
-In both cases, the binary wasm data will be compressed using gzip.
-___
-
 ## Current features
 
 **At this moment available structs:**
-- `DocumentWASM`
-- `BatchWASM`
-- `DocumentsBaseTransitionWASM`
-- `TokenBaseTransitionWASM`
-- `TokenPricingScheduleWASM`
-- `TokenTransitionWASM`
-- `BatchedTransitionWASM`
-- `TokenConfigurationChangeItemWASM`
-- `TokenConfigurationWASM`
-- `ActionTakerWASM`
-- `AuthorizedActionTakersWASM`
-- `ChangeControlRulesWASM`
-- `TokenConfigurationConventionWASM`
-- `DistributionFunctionWASM`
-- `TokenDistributionRecipientWASM`
-- `TokenDistributionRulesWASM`
-- distribution structs:
-  - `DistributionFixedAmountWASM`
-  - `DistributionRandomWASM`
-  - `DistributionStepDecreasingAmountWASM`
-  - `DistributionLinearWASM`
-  - `DistributionPolynomialWASM`
-  - `DistributionExponentialWASM`
-  - `DistributionLogarithmicWASM`
-  - `DistributionInvertedLogarithmicWASM`
-- `GroupWASM`
-- `TokenKeepsHistoryRulesWASM`
-- `TokenConfigurationLocalizationWASM`
-- `TokenMarketplaceRulesWASM`
-- `TokenPerpetualDistributionWASM`
-- `TokenPreProgrammedDistributionWASM`
-- `RewardDistributionTypeWASM`
-- `TokenTradeModeWASM`
-- `GroupStateTransitionInfoWASM`
-- `DocumentsTransitionWASM`
-- `PrefundedVotingBalanceWASM`
-- `PrivateEncryptedNoteWASM`
-- `SharedEncryptedNoteWASM`
-- DocumentsTransitions:
-  - `DocuemntCreateTransitionWASM`
-  - `DocuemntDeleteTransitionWASM`
-  - `DocuemntPurchaseTransitionWASM`
-  - `DocuemntReplaceTransitionWASM`
-  - `DocumentTransferTransitionWASM`
-  - `DocumentUpdatePriceTransitionWASM`
-- Tokens Transitions:
-  - `TokenConfigUpdateTransitionWASM`
-  - `TokenDirectPurchaseTransitionWASM`
-  - `TokenSetPriceForDirectPurchaseTransitionWASM`
-  - `TokenBurnTransitionWASM`
-  - `TokenClaimTransitionWASM`
-  - `TokenDestroyFrozenFundsTransitionWASM`
-  - `TokenEmergencyActionTransitionWASM`
-  - `TokenFreezeTransitionWASM`
-  - `TokenMintTransitionWASM`
-  - `TokenTransferTransitionWASM`
-  - `TokenUnFreezeTransitionWASM`
+- ~~`DocumentWASM`~~
+- ~~`BatchWASM`~~
+- ~~`DocumentsBaseTransitionWASM`~~
+- ~~`TokenBaseTransitionWASM`~~
+- ~~`TokenPricingScheduleWASM`~~
+- ~~`TokenTransitionWASM`~~
+- ~~`BatchedTransitionWASM`~~
+- ~~`TokenConfigurationChangeItemWASM`~~
+- ~~`TokenConfigurationWASM`~~
+- ~~`ActionTakerWASM`~~
+- ~~`AuthorizedActionTakersWASM`~~
+- ~~`ChangeControlRulesWASM`~~
+- ~~`TokenConfigurationConventionWASM`~~
+- ~~`DistributionFunctionWASM`~~
+- ~~`TokenDistributionRecipientWASM`~~
+- ~~`TokenDistributionRulesWASM`~~
+- ~~distribution structs:~~
+  - ~~`DistributionFixedAmountWASM`~~
+  - ~~`DistributionRandomWASM`~~
+  - ~~`DistributionStepDecreasingAmountWASM`~~
+  - ~~`DistributionLinearWASM`~~
+  - ~~`DistributionPolynomialWASM`~~
+  - ~~`DistributionExponentialWASM`~~
+  - ~~`DistributionLogarithmicWASM`~~
+  - ~~`DistributionInvertedLogarithmicWASM`~~
+- ~~`GroupWASM`~~
+- ~~`TokenKeepsHistoryRulesWASM`~~
+- ~~`TokenConfigurationLocalizationWASM`~~
+- ~~`TokenMarketplaceRulesWASM`~~
+- ~~`TokenPerpetualDistributionWASM`~~
+- ~~`TokenPreProgrammedDistributionWASM`~~
+- ~~`RewardDistributionTypeWASM`~~
+- ~~`TokenTradeModeWASM`~~
+- ~~`GroupStateTransitionInfoWASM`~~
+- ~~`DocumentsTransitionWASM`~~
+- ~~`PrefundedVotingBalanceWASM`~~
+- ~~`PrivateEncryptedNoteWASM`~~
+- ~~`SharedEncryptedNoteWASM`~~
+- ~~DocumentsTransitions:~~
+  - ~~`DocuemntCreateTransitionWASM`~~
+  - ~~`DocuemntDeleteTransitionWASM`~~
+  - ~~`DocuemntPurchaseTransitionWASM`~~
+  - ~~`DocuemntReplaceTransitionWASM`~~
+  - ~~`DocumentTransferTransitionWASM`~~
+  - ~~`DocumentUpdatePriceTransitionWASM`~~
+- ~~Tokens Transitions:~~
+  - ~~`TokenConfigUpdateTransitionWASM`~~
+  - ~~`TokenDirectPurchaseTransitionWASM`~~
+  - ~~`TokenSetPriceForDirectPurchaseTransitionWASM`~~
+  - ~~`TokenBurnTransitionWASM`~~
+  - ~~`TokenClaimTransitionWASM`~~
+  - ~~`TokenDestroyFrozenFundsTransitionWASM`~~
+  - ~~`TokenEmergencyActionTransitionWASM`~~
+  - ~~`TokenFreezeTransitionWASM`~~
+  - ~~`TokenMintTransitionWASM`~~
+  - ~~`TokenTransferTransitionWASM`~~
+  - ~~`TokenUnFreezeTransitionWASM`~~
 - `IdentityPublicKeyWASM`
-- IdentityTransitions:
-  - `IdentityCreateTransitionWASM`
-  - `IdentityCreditWithdrawalTransitionWASM`
-  - `IdentityCreditTransferTransitionWASM`
-  - `IdentityTopUpTransitionWASM`
-  - `IdentityUpdateTransitionWASM`
-- `IdentityPublicKeyInCreationWASM`
-- `AssetLockProofWASM`
-- `OutPointWASM`
-- `TxOutWASM`
-- `CoreScriptWASM`
-- `PrivateKeyWASM`
+- ~~IdentityTransitions:~~
+  - ~~`IdentityCreateTransitionWASM`~~
+  - ~~`IdentityCreditWithdrawalTransitionWASM`~~
+  - ~~`IdentityCreditTransferTransitionWASM`~~
+  - ~~`IdentityTopUpTransitionWASM`~~
+  - ~~`IdentityUpdateTransitionWASM`~~
+- ~~`IdentityPublicKeyInCreationWASM`~~
+- ~~`AssetLockProofWASM`~~
+- ~~`OutPointWASM`~~
+- ~~`TxOutWASM`~~
+- ~~`CoreScriptWASM`~~
+- ~~`PrivateKeyWASM`~~
 - `IdentityWASM`
-- `StateTransitionWASM`
-- `DataContractWASM`
-- `ContractBoundsWASM`
-- `MasternodeVoteTransitionWASM`
-- `VotePollWASM`
-- `VoteWASM`
-- `ResourceVoteChoiceWASM`
+- `IdentifierWASM`
+- ~~`StateTransitionWASM`~~
+- ~~`DataContractWASM`~~
+- ~~`ContractBoundsWASM`~~
+- ~~`MasternodeVoteTransitionWASM`~~
+- ~~`VotePollWASM`~~
+- ~~`VoteWASM`~~
+- ~~`ResourceVoteChoiceWASM`~~
 - `Enums`
 
-**At this moment available static methods**
-- `objectToCbor`
-- `cborToObject`
-- `generateId` for data contract class
-- `generateId` for document class
-- 
-
-## How to run unit tests
-```
-yarn tests
-```
-
-## Example
-
-This example show how to synchronously import module with size 2.2mb  
-```js
-import wasm from 'pshenmic_dpp';
-
-const document = new wasm.DocumentWASM(
-    {
-        "name": "MyPool",
-        "type": "EVONODE",
-        "status": "INACTIVE",
-        "description": "test pool"
-    },
-    'pool',
-    BigInt(1),
-    "6QMfQTdKpC3Y9uWBcTwXeY3KdzRLDqASUsDnQ4MEc9XC",
-    "B7kcE1juMBWEWkuYRJhVdAE2e6RaevrGxRsa1DrLCpQH"
-)
-
-const pubKey = new wasm.IdentityPublicKeyWASM(
-    1,
-    wasm.Purpose.AUTHENTICATION,
-    wasm.SecurityLevel.HIGH,
-    wasm.KeyType.ECDSA_SECP256K1,
-    false,
-    'your_binary_data_in_hex'
-)
-
-const privKey = new wasm.PrivateKeyWASM('your_wif_key')
-
-const createTransition = new wasm.DocumentCreateTransitionWASM(document, BigInt(1), 'preorder')
-
-const documentTransition = createTransition.toDocumentTransition()
-
-const batchTransition = new wasm.DocumentsBatchWASM([documentTransition, documentTransition], Array.from(documentInstance.getOwnerId()), 1)
-
-const st = batchTransition.toStateTransition()
-
-st.sign(privKey, pubKey)
-
-console.log(st.toBytes())
-console.log(st.hash(false))
-```
-
-This example show how to asynchronously import module with size 1.4mb
-```js
-const {default: initWASM} = require('pshenmic-dpp/initAsync')
-
-async function main() {
-  let wasm = await initWASM()
-
-  const dataContractIdentifier = new wasm.IdentifierWASM('6QMfQTdKpC3Y9uWBcTwXeY3KdzRLDqASUsDnQ4MEc9XC')
-  const ownerIdentifier = new wasm.IdentifierWASM('B7kcE1juMBWEWkuYRJhVdAE2e6RaevrGxRsa1DrLCpQH')
-
-  const documentInstance = new wasm.DocumentWASM(document, 'documentTypeName', BigInt(1), dataContractIdentifier, ownerIdentifier)
-}
-
-main().catch(console.error)
-```

@@ -1,10 +1,41 @@
 {
-  "entryPoints": ["dist/wasm/index.d.ts"],
   "out": "auto-docs",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeExternals": true,
   "tsconfig": "tsconfig.json",
-  "exclude": ["./lib/*", "./generate-docs.ts", "./tests/*"]
+  "entryPointStrategy": "expand",
+  "entryPoints": ["./pkg/src/wasm.ts"],
+  "sort": [
+    "enum-value-ascending",
+    "static-first",
+    "visibility",
+    "kind"
+  ],
+  "kindSortOrder": [
+    "Class",
+    "Reference",
+    "Project",
+    "Module",
+    "Namespace",
+    "Enum",
+    "EnumMember",
+    "Function",
+    "Interface",
+    "TypeAlias",
+    "Constructor",
+    "Property",
+    "Variable",
+    "Accessor",
+    "Method",
+    "Parameter",
+    "TypeParameter",
+    "TypeLiteral",
+    "CallSignature",
+    "ConstructorSignature",
+    "IndexSignature",
+    "GetSignature",
+    "SetSignature"
+  ]
 }

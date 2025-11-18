@@ -1,57 +1,60 @@
 {
   "name": "pshenmic-dpp",
-  "version": "1.1.0",
-  "main": "dist/wasm/index.js",
-  "types": "dist/wasm/index.d.ts",
+  "version": "2.0.0-dev.1",
+  "main": "dist/src/wasm.js",
+  "types": "dist/src/wasm.d.ts",
+  "react-native": "./dist/src/react-native.js",
   "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/owl352/pshenmic-dpp"
   },
   "scripts": {
-    "build:bin": "./scripts/build.sh",
-    "build:js": "npm run bundle && ./scripts/build-js.sh",
-    "build:full": "./scripts/build.sh && npm run bundle && ./scripts/build-js.sh",
-    "build:raw": "./scripts/build.sh && RAW=true ./scripts/build-js.sh",
+    "build:bin": "node build.cjs",
+    "build:ts": "tsc && cp -R pkg/**/*.*.node dist/binaries/",
+    "build:full": "npm run build:bin && npm run build:ts",
+    "ferric:build": "ferric build",
     "bundle": "rollup -c",
-    "docs": "tsx utils/generate-docs.ts && typedoc",
-    "babel": "babel dist/wasm --out-dir dist/cjs/wasm",
-    "tests": "mocha ./tests/*.spec.cjs",
-    "lint": "cargo fmt",
-    "lint:test": "standard --fix ./tests",
-    "convert:base122": "node ./utils/convertBinary.mjs"
+    "test": "jest",
+    "docs": "typedoc",
+    "lint:rust": "cargo fmt",
+    "lint:src": "ts-standard --fix ./pkg/src",
+    "lint:tests": "ts-standard --fix ./pkg/src",
+    "lint": "npm run lint:rust && npm run lint:src && npm run lint:tests"
   },
   "files": [
-    "dist/wasm",
+    "dist/",
     "tests/"
   ],
-  "exports": {
-    ".": "./dist/wasm/index.js",
-    "./initAsync": "./dist/wasm/initAsync.js",
-    "./initInterface": "./dist/wasm/initInterface.js",
-    "./initWASM": "./dist/wasm/initWASM.js",
-    "./pshenmic_dpp_bg": "./dist/wasm/pshenmic_dpp_bg.js",
-    "./pshenmic_dpp": "./dist/wasm/pshenmic_dpp.js",
-    "./pshenmic_dpp_zipped": "./dist/wasm/pshenmic_dpp_zipped.js"
-  },
   "author": "owl352",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@scure/base": "^1.2.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.13",
+    "babel": "^6.23.0",
+    "babel-jest": "^30.2.0",
     "core-js": "^3.41.0",
+    "ferric-cli": "^0.3.9",
+    "jest": "^30.2.0",
     "mocha": "^11.1.0",
+    "node-addon-api": "^8.5.0",
     "path": "^0.12.7",
-    "rollup": "^4.52.2",
-    "standard": "^17.1.2",
+    "toml": "^3.0.0",
     "ts-morph": "^26.0.0",
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "ts-standard": "^12.0.2"
   },
   "dependencies": {
+    "@emnapi/core": "^1.7.0",
+    "@emnapi/runtime": "^1.7.0",
+    "@tybys/wasm-util": "^0.10.1",
     "fflate": "^0.8.2"
   }
 }

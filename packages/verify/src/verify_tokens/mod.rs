@@ -1,5 +1,0 @@
-pub mod verify_token_balances_for_identities;
-pub mod verify_token_contract_info;
-pub mod verify_token_direct_purchase_prices;
-pub mod verify_token_total_supply;
-pub mod verify_tokens_balances_for_identity;

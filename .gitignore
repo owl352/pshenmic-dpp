@@ -3,8 +3,9 @@
 /.yarn
 /.idea
 /auto-docs
-/wasm
-/dist/cjs
+pkg/binaries
+pkg/utils
+/dist/*
 package-lock.json
 yarn.lock
 node_modules
