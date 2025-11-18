@@ -5,7 +5,6 @@
 /auto-docs
 pkg/binaries
 pkg/utils
-/dist/cjs
 package-lock.json
 yarn.lock
 node_modules
