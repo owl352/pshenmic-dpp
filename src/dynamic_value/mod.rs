@@ -1,8 +1,12 @@
 use napi::{
     Status,
-    bindgen_prelude::{Null, Uint8Array},
+    bindgen_prelude::{Null, Uint8Array, Undefined},
 };
 use napi_derive::napi;
+
+pub trait TypeChecker {
+    fn is_null(&self) -> bool;
+}
 
 pub trait TryToU64 {
     fn try_to_u64(&self) -> Result<u64, napi::Error>;
@@ -44,4 +48,13 @@ pub enum DynamicValue {
     Null(Null),
     Object(Vec<(DynamicValue, DynamicValue)>),
     Array(Vec<DynamicValue>),
+}
+
+impl TypeChecker for DynamicValue {
+    fn is_null(&self) -> bool {
+        match self {
+            DynamicValue::Null(_) => true,
+            _ => false,
+        }
+    }
 }

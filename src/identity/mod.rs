@@ -1,5 +1,5 @@
 use crate::{
-    dynamic_value::{DynamicValue, TryToU64, Uint64String},
+    dynamic_value::{DynamicValue, TryToU64, TypeChecker, Uint64String},
     enums::platform_version::PlatformVersionNAPI,
     identifier::IdentifierNAPI,
     identity_public_key::IdentityPublicKeyNAPI,
@@ -42,7 +42,10 @@ impl IdentityNAPI {
         id: &IdentifierNAPI,
         js_platform_version: DynamicValue,
     ) -> Result<Self, napi::Error> {
-        let platform_version: PlatformVersionNAPI = js_platform_version.try_into()?;
+        let platform_version: PlatformVersionNAPI = match js_platform_version.is_null() {
+            true => PlatformVersionNAPI::default(),
+            false => js_platform_version.try_into()?,
+        };
 
         Ok(IdentityNAPI {
             identity: Identity::create_basic_identity(id.clone().into(), &platform_version.into())
