@@ -1,64 +1,63 @@
-const assert = require('assert')
-const { describe, it, before } = require('mocha')
-const { IdentifierWASM, IdentityWASM, PlatformVersionWASM, IdentityPublicKeyWASM } = require('../')
+import {IdentifierWASM, IdentityWASM, PlatformVersionWASM, IdentityPublicKeyWASM} from '../../dist/src/wasm.js'
 
-let identifierBytes
-let identifier
+let identifierBytes: Uint8Array
+let identifier: IdentifierWASM
 
 describe('Identity', function () {
-  before(function () {
+  beforeAll(function () {
     identifierBytes = Uint8Array.from([9, 40, 40, 237, 192, 129, 211, 186, 26, 84, 240, 67, 37, 155, 148, 19, 104, 242, 199, 24, 136, 27, 6, 169, 211, 71, 136, 59, 33, 191, 227, 19])
     identifier = new IdentifierWASM(identifierBytes)
   })
 
   describe('serialization / deserialization', function () {
-    it('should generate identity from identifier str', async function () {
+    test('should generate identity from identifier str', async function () {
       const identity = new IdentityWASM('HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr')
 
-      assert.equal(identity.id.base58(), 'HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr')
+      expect(identity).toBeInstanceOf(IdentityWASM)
+      expect(identity.id.base58()).toEqual('HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr')
     })
 
-    it('should generate identity from identifier bytes ', async function () {
+    test('should generate identity from identifier bytes ', async function () {
       const identity = new IdentityWASM(identifierBytes)
 
-      assert.equal(identity.id.base58(), identifier.base58())
+      expect(identity.id.base58()).toEqual(identifier.base58())
     })
 
-    it('should generate identity from identifier bytes with PlatformVersion', async function () {
+    test('should generate identity from identifier bytes with PlatformVersion', async function () {
       const identity = new IdentityWASM(identifierBytes, PlatformVersionWASM.PLATFORM_V10)
 
-      assert.equal(identity.id.base58(), identifier.base58())
+      expect(identity.id.base58()).toEqual(identifier.base58())
     })
 
-    it('should generate identity from identifier and return bytes', async function () {
+    test('should generate identity from identifier and return bytes', async function () {
       const identity = new IdentityWASM(identifier)
 
       const newIdentity = IdentityWASM.fromBytes(identity.bytes())
 
-      assert.equal(identity.id.base58(), newIdentity.id.base58())
+      expect(identity.id.base58()).toEqual(newIdentity.id.base58())
     })
   })
 
   describe('getters', function () {
-    it('should get id buffer', function () {
+    test('should get id buffer', function () {
       const identity = new IdentityWASM(identifier)
 
-      assert.deepEqual(identity.id.bytes(), identifierBytes)
+      expect(identity.id.bytes()).toEqual(identifierBytes)
     })
 
-    it('should get balance', function () {
+    test('should get balance', function () {
       const identity = new IdentityWASM(identifier)
 
-      assert.deepEqual(identity.balance, BigInt(0))
+      expect(identity.balance).toEqual(BigInt(0))
     })
 
-    it('should get revision', function () {
+    test('should get revision', function () {
       const identity = new IdentityWASM(identifier)
 
-      assert.deepEqual(identity.revision, BigInt(0))
+      expect(identity.revision).toEqual(BigInt(0))
     })
 
-    it('should get public keys', function () {
+    test('should get public keys', function () {
       const identity = new IdentityWASM(identifier)
 
       const pubKey = new IdentityPublicKeyWASM(
@@ -80,12 +79,12 @@ describe('Identity', function () {
       identity.addPublicKey(pubKey)
       identity.addPublicKey(pubKey2)
 
-      assert.equal(identity.getPublicKeys().length, 2)
+      expect(identity.getPublicKeys().length).toEqual(2)
     })
   })
 
   describe('setters', function () {
-    it('should allows to set public key', function () {
+    test('should allows to set public key', function () {
       const pubKey = new IdentityPublicKeyWASM(
         0,
         0,
@@ -98,23 +97,23 @@ describe('Identity', function () {
 
       identity.addPublicKey(pubKey)
 
-      assert.deepEqual(identity.getPublicKeyById(0).bytes(), pubKey.bytes())
+      expect(identity.getPublicKeyById(0)?.bytes()).toEqual(pubKey.bytes())
     })
 
-    it('should allows to set balance', function () {
+    test('should allows to set balance', function () {
       const identity = new IdentityWASM(identifier)
 
       identity.balance = BigInt(21)
 
-      assert.equal(identity.balance, BigInt(21))
+      expect(identity.balance).toEqual(BigInt(21))
     })
 
-    it('should allows to set revision', function () {
+    test('should allows to set revision', function () {
       const identity = new IdentityWASM(identifier)
 
       identity.revision = BigInt(21)
 
-      assert.equal(identity.revision, BigInt(21))
+      expect(identity.revision).toEqual(BigInt(21))
     })
   })
 })

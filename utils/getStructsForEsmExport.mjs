@@ -1,19 +1,19 @@
-import {Project, SyntaxKind} from "ts-morph";
+import { Project, SyntaxKind } from 'ts-morph'
 
 const project = new Project({
-  tsConfigFilePath: "tsconfig.json",
-  skipAddingFilesFromTsConfig: true,
-});
+  tsConfigFilePath: 'tsconfig.json',
+  skipAddingFilesFromTsConfig: true
+})
 
 const allowedExportTypes = [
   SyntaxKind.ClassDeclaration,
   SyntaxKind.EnumDeclaration,
   SyntaxKind.VariableDeclaration,
-  SyntaxKind.FunctionDeclaration,
+  SyntaxKind.FunctionDeclaration
 ]
 
-export function getStructsForEsmExport(typesPath) {
-  const [types] = project.addSourceFilesAtPaths(typesPath);
+export function getStructsForEsmExport (typesPath) {
+  const [types] = project.addSourceFilesAtPaths(typesPath)
 
   const exports = []
 
@@ -22,7 +22,7 @@ export function getStructsForEsmExport(typesPath) {
 
     const declarationClassName = declaration.getKindName()
 
-    if(allowedExportTypes.includes(SyntaxKind[declarationClassName])) {
+    if (allowedExportTypes.includes(SyntaxKind[declarationClassName])) {
       exports.push(symbol.getEscapedName())
     }
   }
