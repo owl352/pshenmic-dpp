@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { describe, it, before } = require('mocha')
 const { IdentifierWASM, IdentityWASM, PlatformVersionWASM, IdentityPublicKeyWASM } = require('../')
 
 let identifierBytes
