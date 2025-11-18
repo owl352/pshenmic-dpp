@@ -5,7 +5,7 @@ const { promisify } = require('node:util')
 const fs = require('fs')
 const { convertBinary } = require('./utils/convertBinary.mjs')
 const { getStructsForEsmExport } = require('./utils/getStructsForEsmExport.mjs')
-
+const {name: moduleName} = require('./package.json');
 const typingsForCodegen = 'export * from "./bindingsTypes.ts"'
 
 // release/debug
@@ -70,7 +70,7 @@ async function main () {
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.js`), [
     '/* eslint-disable */',
     'import {requireNodeAddon} from \'react-native-node-api\'',
-    `export const { ${exports.join(', ')} } = requireNodeAddon('./${binName}.node')`
+    `export const { ${exports.join(', ')} } = requireNodeAddon('./${moduleName}--${binName}')`
   ].join('\n\n') + '\n', 'utf8')
 
   console.log('Adding ESM export for WASM')
