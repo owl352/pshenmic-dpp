@@ -1,8 +1,8 @@
-import * as protocol from '../binaries/bindingsTypes.js';
-import {IdentifierNAPI} from "../binaries/bindingsTypes.js";
-import {KeyType, NetworkWASM, PlatformVersionWASM, Purpose, SecurityLevel} from './enums.js'
+import * as protocol from '../binaries/bindingsTypes.js'
+import { IdentifierNAPI } from '../binaries/bindingsTypes.js'
+import { KeyType, NetworkWASM, PlatformVersionWASM, Purpose, SecurityLevel } from './enums.js'
 
-export type DashPlatformProtocol = typeof protocol;
+export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI
 
 export type KeyTypeLike = KeyType | string
