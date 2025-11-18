@@ -1,6 +1,7 @@
 import {valueToDynamicEnum} from "../helpers.js";
-import {DashPlatformProtocol, EnumLike, Purpose, SecurityLevel, KeyType} from "../../types.js";
+import {DashPlatformProtocol, KeyTypeLike, PurposeLike, SecurityLevelLike} from "../../types.js";
 import {IdentityPublicKeyNAPI} from "../../../binaries/bindingsTypes.js";
+import {KeyType, Purpose, SecurityLevel} from "../../enums.js";
 
 let dpp: DashPlatformProtocol;
 
@@ -11,7 +12,11 @@ export function setDpp(_dpp: DashPlatformProtocol) {
 export class IdentityPublicKeyWASM {
   _rawIdentityPublicKey: IdentityPublicKeyNAPI;
 
-  constructor(id: number, purpose: EnumLike, securityLevel: EnumLike, keyType: EnumLike, readOnly: boolean, binaryData: string, disabledAt?: bigint) {
+  constructor(id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint) {
+    if (purpose == undefined || securityLevel == undefined || keyType == undefined) {
+      throw new Error("purpose, securityLevel, keyType must be specified");
+    }
+
     this._rawIdentityPublicKey = new dpp.IdentityPublicKeyNAPI(
       id,
       valueToDynamicEnum(purpose),
@@ -69,27 +74,27 @@ export class IdentityPublicKeyWASM {
     this._rawIdentityPublicKey.keyId = keyId
   }
 
-  set purpose(purpose: EnumLike) {
+  set purpose(purpose: PurposeLike) {
     this._rawIdentityPublicKey.purpose = valueToDynamicEnum(purpose)
   }
 
-  set purposeNumber(purpose: EnumLike) {
+  set purposeNumber(purpose: Purpose) {
     this._rawIdentityPublicKey.purposeNumber = valueToDynamicEnum(purpose)
   }
 
-  set securityLevel(securityLevel: EnumLike) {
+  set securityLevel(securityLevel: SecurityLevelLike) {
     this._rawIdentityPublicKey.securityLevel = valueToDynamicEnum(securityLevel)
   }
 
-  set securityLevelNumber(securityLevel: EnumLike) {
+  set securityLevelNumber(securityLevel: SecurityLevel) {
     this._rawIdentityPublicKey.securityLevelNumber = valueToDynamicEnum(securityLevel)
   }
 
-  set keyType(keyType: EnumLike) {
+  set keyType(keyType: KeyTypeLike) {
     this._rawIdentityPublicKey.keyType = valueToDynamicEnum(keyType)
   }
 
-  set keyTypeNumber(keyType: EnumLike) {
+  set keyTypeNumber(keyType: KeyType) {
     this._rawIdentityPublicKey.keyTypeNumber = valueToDynamicEnum(keyType)
   }
 

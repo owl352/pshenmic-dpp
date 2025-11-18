@@ -1,7 +1,7 @@
 import {IdentifierWASM} from "./Identifier.js";
 import {IdentityPublicKeyWASM} from "./IdentityPublicKey.js";
 import {valueToDynamicEnum} from "../helpers.js";
-import {DashPlatformProtocol, EnumLike, IdentifierLike} from "../../types.js";
+import {DashPlatformProtocol, IdentifierLike, PlatformVersionLike} from "../../types.js";
 import {DynamicValue, IdentityNAPI} from "../../../binaries/bindingsTypes.js";
 
 let dpp: DashPlatformProtocol;
@@ -13,12 +13,12 @@ export function setDpp(_dpp: DashPlatformProtocol) {
 export class IdentityWASM {
   _rawIdentity: IdentityNAPI
 
-  constructor(rawId: IdentifierLike | IdentifierWASM, platformVersion: EnumLike) {
+  constructor(rawId: IdentifierLike | IdentifierWASM, platformVersion?: PlatformVersionLike) {
     const id = new IdentifierWASM(rawId);
 
-    let dynamicEnumValue: DynamicValue = valueToDynamicEnum(platformVersion)
+    const dynamicEnumValue: DynamicValue = valueToDynamicEnum(platformVersion)
 
-    this._rawIdentity = new dpp.IdentityNAPI(id, dynamicEnumValue)
+    this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, dynamicEnumValue)
   }
 
   set id(rawId: IdentifierLike | IdentifierWASM) {
@@ -53,7 +53,6 @@ export class IdentityWASM {
     const rawKeyInstance = this._rawIdentity.getPublicKeyById(keyId)
 
     if (rawKeyInstance) {
-
       return IdentityPublicKeyWASM.createFromRawInstance(rawKeyInstance)
     }
 
@@ -63,7 +62,7 @@ export class IdentityWASM {
   getPublicKeys(): Array<IdentityPublicKeyWASM> {
     const rawKeysArr = this._rawIdentity.getPublicKeys()
 
-    return rawKeysArr.map(IdentityPublicKeyWASM.createFromRawInstance)
+    return rawKeysArr.map((key) => IdentityPublicKeyWASM.createFromRawInstance(key))
   }
 
   static fromHex(hex: string): IdentityWASM {
