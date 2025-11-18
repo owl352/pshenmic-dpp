@@ -1,6 +1,6 @@
 use napi::{
     Status,
-    bindgen_prelude::{Null, Uint8Array, Undefined},
+    bindgen_prelude::{Null, Uint8Array},
 };
 use napi_derive::napi;
 
