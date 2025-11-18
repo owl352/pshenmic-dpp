@@ -3,6 +3,7 @@
   "version": "2.0.0-dev.1",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
+  "react-native": "./dist/src/react-native.js",
   "type": "module",
   "repository": {
     "type": "git",
@@ -25,10 +26,6 @@
     "dist/",
     "tests/"
   ],
-  "exports": {
-    ".": "./dist/src/wasm.js",
-    "./react-native": "./dist/src/react-native.js"
-  },
   "author": "owl352",
   "license": "ISC",
   "description": "",
