@@ -49,7 +49,7 @@ jobs:
 
       - name: Run tests
         run: |
-          yarn tests
+          yarn test
 
       - name: Publish package to NPM
         run: |
