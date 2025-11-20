@@ -1,12 +1,15 @@
 use dpp::dashcore::PrivateKey;
 use dpp::dashcore::hashes::hex::FromHex;
 use dpp::dashcore::key::Secp256k1;
+use dpp::dashcore::secp256k1::Message;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
+use dpp::dashcore::signer::{CompactSignature, double_sha};
 use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_public_key::PublicKeyWASM;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
+#[derive(Debug)]
 #[wasm_bindgen(js_name = "PrivateKeyWASM")]
 pub struct PrivateKeyWASM(PrivateKey);
 
@@ -86,5 +89,28 @@ impl PrivateKeyWASM {
         let secp = Secp256k1::new();
 
         self.0.public_key(&secp).pubkey_hash().to_hex()
+    }
+
+    #[wasm_bindgen(js_name = "sign")]
+    pub fn sign(&self, data: &[u8]) -> Result<Vec<u8>, JsValue> {
+        let data_hash = double_sha(data);
+        self.sign_hash(data_hash)
+    }
+
+    #[wasm_bindgen(js_name = "signHash")]
+    pub fn sign_hash(&self, data_hash: Vec<u8>) -> Result<Vec<u8>, JsValue> {
+        let secp = Secp256k1::new();
+        let msg = Message::from_digest(
+            data_hash
+                .as_slice()
+                .try_into()
+                .map_err(|_| JsValue::from("Cannot convert data_hash to [u8; 32]"))?,
+        );
+
+        let signature = secp
+            .sign_ecdsa_recoverable(&msg, &self.0.inner)
+            .to_compact_signature(self.0.compressed);
+
+        Ok(signature.to_vec())
     }
 }
