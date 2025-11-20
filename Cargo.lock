@@ -2298,7 +2298,9 @@ dependencies = [
  "pshenmic_dpp_enums",
  "pshenmic_dpp_identifier",
  "pshenmic_dpp_identity",
+ "pshenmic_dpp_masternode_vote",
  "pshenmic_dpp_partial_identity",
+ "pshenmic_dpp_state_transition",
  "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
