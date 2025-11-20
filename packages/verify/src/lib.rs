@@ -6,3 +6,4 @@ pub mod verify_identity;
 pub mod verify_signature_digest;
 pub mod verify_system;
 pub mod verify_tokens;
+pub mod verify_state_transition;
