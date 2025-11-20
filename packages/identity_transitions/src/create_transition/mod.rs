@@ -1,4 +1,3 @@
-use crate::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use dpp::identity::state_transition::AssetLockProved;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
@@ -13,6 +12,7 @@ use dpp::state_transition::{StateTransition, StateTransitionLike};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
+use pshenmic_dpp_identity_public_key::public_key_in_creation::IdentityPublicKeyInCreationWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
 use pshenmic_dpp_utils::WithJsError;
 use wasm_bindgen::prelude::wasm_bindgen;

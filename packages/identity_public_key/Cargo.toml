@@ -7,10 +7,12 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
+js-sys = { workspace = true }
 wasm-bindgen = { workspace = true }
 dpp = { workspace = true, features = [
-    "identity-value-conversion",
+    "identity-value-conversion"
 ]}
 pshenmic_dpp_enums = {path = "../enums"}
+pshenmic_dpp_private_key = {path = "../private_key"}
 pshenmic_dpp_contract_bounds = {path = "../contract_bounds"}
 pshenmic_dpp_utils = {path = "../utils"}

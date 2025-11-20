@@ -1,3 +1,4 @@
+use crate::public_key::IdentityPublicKeyWASM;
 use dpp::identity::contract_bounds::ContractBounds;
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
@@ -12,12 +13,12 @@ use pshenmic_dpp_contract_bounds::ContractBoundsWASM;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
-use pshenmic_dpp_identity_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 #[wasm_bindgen(js_name = "IdentityPublicKeyInCreationWASM")]
 pub struct IdentityPublicKeyInCreationWASM(IdentityPublicKeyInCreation);
 
@@ -126,6 +127,17 @@ impl IdentityPublicKeyInCreationWASM {
             None,
             &JsValue::from(self.get_contract_bounds().clone()),
         )
+    }
+
+    #[wasm_bindgen(js_name = "validatePrivateKey")]
+    pub fn validate_private_key(
+        &self,
+        private_key: &PrivateKeyWASM,
+        js_network: JsValue,
+    ) -> Result<bool, JsValue> {
+        let public_key: IdentityPublicKeyWASM = IdentityPublicKey::from(self.clone()).into();
+
+        public_key.validate_private_key_bytes(private_key, js_network)
     }
 
     #[wasm_bindgen(js_name = "getHash")]

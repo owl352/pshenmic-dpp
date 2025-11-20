@@ -1,6 +1,6 @@
 [package]
 name = "pshenmic-dpp"
-version = "1.1.2-dev.1"
+version = "1.1.2-dev.2"
 edition = "2024"
 rust-version = "1.85"
 
@@ -41,8 +41,7 @@ members = [
     "packages/public_key",
     "packages/consensus_error",
     "packages/verify",
-    "packages/partial_identity"
-]
+    "packages/partial_identity"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
