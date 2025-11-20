@@ -3,7 +3,7 @@ use dpp::identity::{IdentityPublicKey, KeyID, PartialIdentity};
 use dpp::prelude::Revision;
 use js_sys::{Array, Object, Reflect};
 use pshenmic_dpp_identifier::IdentifierWASM;
-use pshenmic_dpp_identity_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_identity_public_key::public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_utils::IntoWasm;
 use std::collections::{BTreeMap, BTreeSet};
 use wasm_bindgen::JsValue;

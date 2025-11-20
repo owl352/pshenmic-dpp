@@ -32,7 +32,7 @@ use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
-use pshenmic_dpp_identity_public_key::IdentityPublicKeyWASM;
+use pshenmic_dpp_identity_public_key::public_key::IdentityPublicKeyWASM;
 use pshenmic_dpp_mock_bls::MockBLS;
 use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_utils::WithJsError;
