@@ -57,7 +57,6 @@ if command -v wasm-opt &> /dev/null; then
     --inlining-optimizing \
     --merge-blocks \
     --simplify-locals \
-    --optimize-added-constants \
     --optimize-casts \
     --optimize-instructions \
     --optimize-stack-ir \
