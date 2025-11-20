@@ -41,8 +41,7 @@ members = [
     "packages/public_key",
     "packages/consensus_error",
     "packages/verify",
-    "packages/partial_identity"
-]
+    "packages/partial_identity"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
