@@ -103,6 +103,7 @@ export class DashPlatformProtocolWASM {
     Purpose: DPP.Purpose
     SecurityLevel: DPP.SecurityLevel
     ActionGoalWASM: DPP.ActionGoalWASM
+    GroupActionStatusWASM: DPP.GroupActionStatusWASM
     // METHODS
     initSync: Function
     verifyVotePollVoteStateProof: Function
@@ -123,4 +124,5 @@ export class DashPlatformProtocolWASM {
     verifyTokenTotalSupply: Function
     verifyTokensBalancesForIdentity: Function
     verifyTokenDirectPurchasePrices: Function
+    verifyStateTransitionResult: Function
 }

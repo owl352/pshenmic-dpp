@@ -1,5 +1,6 @@
 pub mod batch;
 pub mod contested;
+pub mod group;
 pub mod keys;
 pub mod lock_types;
 pub mod network;
