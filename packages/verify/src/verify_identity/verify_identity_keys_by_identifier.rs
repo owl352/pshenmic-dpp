@@ -58,7 +58,8 @@ pub fn verify_identity_keys_by_identifier(
             let key_id: KeyID = keys_array
                 .get(i)
                 .as_f64()
-                .ok_or_else(|| JsValue::from_str("Key ID must be a number"))? as u32;
+                .ok_or_else(|| JsValue::from_str("Key ID must be a number"))?
+                as u32;
 
             keys_vec.push(key_id);
         }
