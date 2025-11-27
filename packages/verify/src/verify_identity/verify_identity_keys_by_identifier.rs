@@ -1,3 +1,4 @@
+use dpp::identity::KeyID;
 use drive::drive::Drive;
 use drive::drive::identity::key::fetch::{IdentityKeysRequest, KeyRequestType};
 use drive::verify::RootHash;
@@ -54,12 +55,12 @@ pub fn verify_identity_keys_by_identifier(
     let request_type = if let Some(keys_array) = specific_key_ids {
         let mut keys_vec = Vec::new();
         for i in 0..keys_array.length() {
-            let key_id = keys_array
+            let key_id: KeyID = keys_array
                 .get(i)
-                .as_string()
-                .ok_or_else(|| JsValue::from_str("Key ID must be a string"))?
-                .parse::<u32>()
-                .map_err(|_| JsValue::from_str("Invalid key ID number"))?;
+                .as_f64()
+                .ok_or_else(|| JsValue::from_str("Key ID must be a number"))?
+                as u32;
+
             keys_vec.push(key_id);
         }
         KeyRequestType::SpecificKeys(keys_vec)
