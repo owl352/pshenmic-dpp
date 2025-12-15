@@ -4,13 +4,13 @@ const {
   document, dataContractId, ownerId, documentTypeName, revision, dataContractValue, id, document2, documentBytes
 } = require('./mocks/Document/index.js')
 const { fromHexString } = require('./utils/hex')
-const {initModule} = require('pshenmic-dpp/initAsync')
+const { initModule } = require('pshenmic-dpp/initAsync')
 
 let wasm
 
 describe('Async Import', function () {
   before(async () => {
-    wasm = await initModule();
+    wasm = await initModule()
   })
 
   describe('Document', function () {

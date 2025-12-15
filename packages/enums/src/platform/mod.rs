@@ -16,7 +16,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[derive(Default)]
 #[allow(non_camel_case_types)]
 pub enum PlatformVersionWASM {
-    #[default]
     PLATFORM_V1 = 1,
     PLATFORM_V2 = 2,
     PLATFORM_V3 = 3,
@@ -26,6 +25,7 @@ pub enum PlatformVersionWASM {
     PLATFORM_V7 = 7,
     PLATFORM_V8 = 8,
     PLATFORM_V9 = 9,
+    #[default]
     PLATFORM_V10 = 10,
 }
 

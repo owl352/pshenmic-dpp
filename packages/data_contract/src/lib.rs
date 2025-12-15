@@ -1,3 +1,4 @@
+use dpp::ProtocolError;
 use dpp::dashcore::hashes::serde::Serialize;
 use dpp::data_contract::accessors::v0::{DataContractV0Getters, DataContractV0Setters};
 use dpp::data_contract::accessors::v1::{DataContractV1Getters, DataContractV1Setters};
@@ -8,6 +9,7 @@ use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
 use dpp::data_contract::group::Group;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
+use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
 use dpp::data_contract::{
     DataContract, GroupContractPosition, TokenConfiguration, TokenContractPosition,
 };
@@ -19,7 +21,7 @@ use dpp::serialization::{
     PlatformDeserializableWithPotentialValidationFromVersionedStructure,
     PlatformSerializableWithPlatformVersion,
 };
-use dpp::version::PlatformVersion;
+use dpp::version::{PlatformVersion, TryIntoPlatformVersioned};
 use js_sys::{Object, Reflect};
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
@@ -294,6 +296,56 @@ impl DataContractWASM {
             .with_js_error()?
             .serialize(&serializer)
             .map_err(JsValue::from)
+    }
+
+    #[wasm_bindgen(getter = "systemVersion")]
+    pub fn data_contract_protocol_version(&self) -> u16 {
+        self.0.system_version_type()
+    }
+
+    #[wasm_bindgen(setter = "systemVersion")]
+    pub fn set_data_contract_protocol_version(&mut self, version: u8) -> Result<(), JsValue> {
+        match version {
+            0 => {
+                let platform_versioned_contract: Result<
+                    DataContractInSerializationFormat,
+                    ProtocolError,
+                > = self
+                    .0
+                    .clone()
+                    .try_into_platform_versioned(&PlatformVersionWASM::PLATFORM_V8.into());
+
+                self.0 = DataContract::try_from_platform_versioned(
+                    platform_versioned_contract.with_js_error()?,
+                    true,
+                    &mut vec![],
+                    &PlatformVersionWASM::PLATFORM_V8.into(),
+                )
+                .with_js_error()?;
+
+                Ok(())
+            }
+            1 => {
+                let platform_versioned_contract: Result<
+                    DataContractInSerializationFormat,
+                    ProtocolError,
+                > = self
+                    .0
+                    .clone()
+                    .try_into_platform_versioned(&PlatformVersionWASM::PLATFORM_V10.into());
+
+                self.0 = DataContract::try_from_platform_versioned(
+                    platform_versioned_contract.with_js_error()?,
+                    true,
+                    &mut vec![],
+                    &PlatformVersionWASM::PLATFORM_V10.into(),
+                )
+                .with_js_error()?;
+
+                Ok(())
+            }
+            _ => Err(JsValue::from("protocol version must be 0 or 1")),
+        }
     }
 
     #[wasm_bindgen(js_name = "getSchemas")]
