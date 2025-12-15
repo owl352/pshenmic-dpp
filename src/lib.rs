@@ -6,3 +6,5 @@ pub mod identifier;
 pub mod identity;
 pub mod identity_public_key;
 pub mod utils;
+pub mod contract_bounds;
+pub mod consensus_error;

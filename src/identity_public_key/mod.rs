@@ -18,6 +18,7 @@ use napi::Status;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
+use crate::contract_bounds::ContractBoundsNAPI;
 use crate::{
     dynamic_value::{DynamicValue, TryToU64, Uint64String},
     enums::{
@@ -56,7 +57,7 @@ impl IdentityPublicKeyNAPI {
         read_only: bool,
         binary_data: String,
         js_disabled_at: Option<Uint64String>,
-        // TODO: Implement js_contract_bounds
+        contract_bounds: Option<&ContractBoundsNAPI>,
     ) -> Result<Self, napi::Error> {
         let purpose: PurposeNAPI = js_purpose.try_into()?;
         let security_level: SecurityLevelNAPI = js_security_level.try_into()?;
@@ -68,7 +69,7 @@ impl IdentityPublicKeyNAPI {
                 id,
                 purpose: purpose.into(),
                 security_level: security_level.into(),
-                contract_bounds: None,
+                contract_bounds: contract_bounds.map(|bounds| bounds.clone().into()),
                 key_type: key_type.into(),
                 read_only,
                 data: BinaryData::from_string(binary_data.as_str(), Encoding::Hex)
@@ -77,7 +78,7 @@ impl IdentityPublicKeyNAPI {
             }),
         })
     }
-
+    
     #[napi(js_name = "validatePrivateKey")]
     pub fn validate_private_key(
         &self,

@@ -16,12 +16,25 @@ impl From<Identifier> for IdentifierNAPI {
     }
 }
 
+impl From<&Identifier> for IdentifierNAPI {
+    fn from(id: &Identifier) -> Self {
+        IdentifierNAPI { id: id.clone() }
+    }
+}
+
 impl From<IdentifierNAPI> for Identifier {
     fn from(value: IdentifierNAPI) -> Self {
         Identifier::from(value.id)
     }
 }
 
+impl From<&IdentifierNAPI> for Identifier {
+    fn from(value: &IdentifierNAPI) -> Self {
+        Identifier::from(value.id.clone())
+    }
+}
+
+//noinspection RsCompileErrorMacro
 #[napi]
 impl IdentifierNAPI {
     #[napi(constructor)]
@@ -43,23 +56,26 @@ impl IdentifierNAPI {
             ))?,
         }
     }
+}
 
-    #[napi(js_name = base58)]
+#[napi]
+impl IdentifierNAPI {
+    #[napi(js_name = "base58")]
     pub fn base58(&self) -> String {
         self.id.to_string(Encoding::Base58)
     }
 
-    #[napi(js_name = hex)]
+    #[napi(js_name = "hex")]
     pub fn hex(&self) -> String {
         self.id.to_string(Encoding::Hex)
     }
 
-    #[napi(js_name = base64)]
+    #[napi(js_name = "base64")]
     pub fn base64(&self) -> String {
         self.id.to_string(Encoding::Base64)
     }
 
-    #[napi(js_name = bytes)]
+    #[napi(js_name = "bytes")]
     pub fn bytes(&self) -> Uint8Array {
         self.id.to_vec().into()
     }
