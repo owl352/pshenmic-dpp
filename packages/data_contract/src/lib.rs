@@ -313,13 +313,13 @@ impl DataContractWASM {
                 > = self
                     .0
                     .clone()
-                    .try_into_platform_versioned(&PlatformVersionWASM::PLATFORM_V1.into());
+                    .try_into_platform_versioned(&PlatformVersionWASM::PLATFORM_V8.into());
 
                 self.0 = DataContract::try_from_platform_versioned(
                     platform_versioned_contract.with_js_error()?,
                     true,
                     &mut vec![],
-                    &PlatformVersionWASM::PLATFORM_V1.into(),
+                    &PlatformVersionWASM::PLATFORM_V8.into(),
                 )
                 .with_js_error()?;
 
