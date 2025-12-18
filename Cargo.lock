@@ -1988,7 +1988,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "1.1.2-dev.5"
+version = "1.1.2-dev.6"
 dependencies = [
  "bincode",
  "bincode_derive",
@@ -2220,8 +2220,10 @@ name = "pshenmic_dpp_private_key"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "js-sys",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_public_key",
+ "pshenmic_dpp_utils",
  "wasm-bindgen",
 ]
 

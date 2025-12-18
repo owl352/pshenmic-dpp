@@ -65,3 +65,15 @@ impl From<NetworkWASM> for Network {
         }
     }
 }
+
+impl From<Network> for NetworkWASM {
+    fn from(network: Network) -> Self {
+        match network {
+            Network::Dash => NetworkWASM::Mainnet,
+            Network::Testnet => NetworkWASM::Testnet,
+            Network::Devnet => NetworkWASM::Devnet,
+            Network::Regtest => NetworkWASM::Regtest,
+            _ => NetworkWASM::Testnet,
+        }
+    }
+}

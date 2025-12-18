@@ -94,7 +94,47 @@ describe('PublicKey', function () {
 
       const privateKey = wasm.PrivateKeyWASM.fromWIF(wif)
 
+      assert.equal(pubKey.validatePrivateKey(privateKey), false)
+    })
+
+    it('should allow to validate private key bytes', function () {
+      const pubKey = new wasm.IdentityPublicKeyWASM(
+        keyId,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      const privateKey = wasm.PrivateKeyWASM.fromWIF(wif)
+
       assert.equal(pubKey.validatePrivateKey(privateKey.bytes(), wasm.NetworkWASM.Mainnet), false)
+    })
+
+    it('should allow to validate private key hex', function () {
+      const pubKey = new wasm.IdentityPublicKeyWASM(
+        keyId,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      const privateKey = wasm.PrivateKeyWASM.fromWIF(wif)
+
+      assert.equal(pubKey.validatePrivateKey(privateKey.hex(), wasm.NetworkWASM.Mainnet), false)
+    })
+
+    it('should allow to validate private key wif', function () {
+      const pubKey = new wasm.IdentityPublicKeyWASM(
+        keyId,
+        purpose,
+        securityLevel,
+        keyType,
+        false,
+        binaryData)
+
+      assert.equal(pubKey.validatePrivateKey(wif), false)
     })
   })
 
