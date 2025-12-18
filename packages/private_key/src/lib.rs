@@ -1,17 +1,65 @@
-use dpp::dashcore::PrivateKey;
 use dpp::dashcore::hashes::hex::FromHex;
 use dpp::dashcore::key::Secp256k1;
 use dpp::dashcore::secp256k1::Message;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::dashcore::signer::{CompactSignature, double_sha};
+use dpp::dashcore::{Network, PrivateKey, base58};
 use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_public_key::PublicKeyWASM;
+use pshenmic_dpp_utils::{IntoWasm, get_class_type};
+use std::fmt::format;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[wasm_bindgen(js_name = "PrivateKeyWASM")]
 pub struct PrivateKeyWASM(PrivateKey);
+
+impl TryFrom<JsValue> for PrivateKeyWASM {
+    type Error = JsValue;
+    fn try_from(value: JsValue) -> Result<Self, Self::Error> {
+        match value.is_string() {
+            true => {
+                let str = value
+                    .as_string()
+                    .ok_or(JsValue::from_str("Invalid string"))?;
+
+                if str.len() == 64 {
+                    // raw hex
+                    Err(JsValue::from_str(
+                        "Private Key Bytes not allowed here please use wif",
+                    ))
+                } else {
+                    // base58 check
+                    let key_base58 = base58::decode_check(&str).map_err(|err| {
+                        JsValue::from(format!("Private Key error read wif ({})", err))
+                    })?;
+
+                    if key_base58.clone().len() == 33 || key_base58.clone().len() == 34 {
+                        PrivateKeyWASM::from_wif(&str)
+                    } else {
+                        Err(JsValue::from(format!(
+                            "Private key decoded wif must be 38 byte length ({})",
+                            key_base58.clone().len()
+                        )))
+                    }
+                }
+            }
+            false => match value.is_object() {
+                true => {
+                    if get_class_type(&value)?.as_str() == "PrivateKeyWASM" {
+                        Ok(value.to_wasm::<PrivateKeyWASM>("PrivateKeyWASM")?.clone())
+                    } else {
+                        Err(JsValue::from_str(
+                            "Cannot parse object as instance of PrivateKeyWASM",
+                        ))
+                    }
+                }
+                false => Err(JsValue::from("Cannot parse private key"))?,
+            },
+        }
+    }
+}
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
@@ -69,6 +117,11 @@ impl PrivateKeyWASM {
 
 #[wasm_bindgen]
 impl PrivateKeyWASM {
+    #[wasm_bindgen(js_name = "getNetwork")]
+    pub fn get_network(&self) -> String {
+        NetworkWASM::from(self.0.network).into()
+    }
+
     #[wasm_bindgen(js_name = "WIF")]
     pub fn get_wif(&self) -> String {
         self.0.to_wif()
@@ -112,5 +165,11 @@ impl PrivateKeyWASM {
             .to_compact_signature(self.0.compressed);
 
         Ok(signature.to_vec())
+    }
+}
+
+impl PrivateKeyWASM {
+    pub fn network(&self) -> Network {
+        self.0.network
     }
 }
