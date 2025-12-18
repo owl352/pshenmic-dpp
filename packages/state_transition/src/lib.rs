@@ -73,8 +73,9 @@ impl StateTransitionWASM {
         &mut self,
         js_private_key: &JsValue,
         public_key: &IdentityPublicKeyWASM,
+        js_network: &JsValue
     ) -> Result<Vec<u8>, JsValue> {
-        let private_key = PrivateKeyWASM::try_from(js_private_key.clone())?;
+        let private_key = PrivateKeyWASM::from_js_value(js_private_key, js_network)?;
 
         self.0
             .sign(
@@ -93,8 +94,9 @@ impl StateTransitionWASM {
         js_private_key: &JsValue,
         key_id: Option<KeyID>,
         js_key_type: &JsValue,
+        js_network: &JsValue
     ) -> Result<Vec<u8>, JsValue> {
-        let private_key = PrivateKeyWASM::try_from(js_private_key.clone())?;
+        let private_key = PrivateKeyWASM::from_js_value(js_private_key, js_network)?;
 
         let key_type = match js_key_type.is_undefined() {
             true => KeyTypeWASM::ECDSA_SECP256K1,

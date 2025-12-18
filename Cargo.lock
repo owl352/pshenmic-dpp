@@ -2220,6 +2220,7 @@ name = "pshenmic_dpp_private_key"
 version = "1.0.5"
 dependencies = [
  "dpp",
+ "js-sys",
  "pshenmic_dpp_enums",
  "pshenmic_dpp_public_key",
  "pshenmic_dpp_utils",

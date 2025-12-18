@@ -251,8 +251,8 @@ impl IdentityPublicKeyWASM {
     }
 
     #[wasm_bindgen(js_name = "validatePrivateKey")]
-    pub fn validate_private_key(&self, js_private_key: &JsValue) -> Result<bool, JsValue> {
-        let private_key = PrivateKeyWASM::try_from(js_private_key.clone())?;
+    pub fn validate_private_key(&self, js_private_key: &JsValue, js_network: &JsValue) -> Result<bool, JsValue> {
+        let private_key = PrivateKeyWASM::from_js_value(js_private_key, js_network)?;
 
         self.0
             .validate_private_key_bytes(
