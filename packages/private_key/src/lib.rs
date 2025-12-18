@@ -4,10 +4,10 @@ use dpp::dashcore::secp256k1::Message;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::dashcore::signer::{CompactSignature, double_sha};
 use dpp::dashcore::{Network, PrivateKey, base58};
+use js_sys::Uint8Array;
 use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_public_key::PublicKeyWASM;
 use pshenmic_dpp_utils::{IntoWasm, get_class_type};
-use js_sys::Uint8Array;
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -142,8 +142,10 @@ impl PrivateKeyWASM {
                 if str.len() == 64 {
                     // raw hex
                     if js_network.is_undefined() {
-                        Err(JsValue::from_str("You must specify a network when pass private key hex as arguments"))
-                    } else{
+                        Err(JsValue::from_str(
+                            "You must specify a network when pass private key hex as arguments",
+                        ))
+                    } else {
                         PrivateKeyWASM::from_hex(&str, js_network)
                     }
                 } else {

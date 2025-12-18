@@ -73,7 +73,7 @@ impl StateTransitionWASM {
         &mut self,
         js_private_key: &JsValue,
         public_key: &IdentityPublicKeyWASM,
-        js_network: &JsValue
+        js_network: &JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let private_key = PrivateKeyWASM::from_js_value(js_private_key, js_network)?;
 
@@ -94,7 +94,7 @@ impl StateTransitionWASM {
         js_private_key: &JsValue,
         key_id: Option<KeyID>,
         js_key_type: &JsValue,
-        js_network: &JsValue
+        js_network: &JsValue,
     ) -> Result<Vec<u8>, JsValue> {
         let private_key = PrivateKeyWASM::from_js_value(js_private_key, js_network)?;
 
