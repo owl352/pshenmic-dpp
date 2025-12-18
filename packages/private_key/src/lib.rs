@@ -4,6 +4,7 @@ use dpp::dashcore::secp256k1::Message;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::dashcore::signer::{CompactSignature, double_sha};
 use dpp::dashcore::{Network, PrivateKey, base58};
+use dpp::platform_value::string_encoding::{decode, Encoding};
 use js_sys::Uint8Array;
 use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_public_key::PublicKeyWASM;
@@ -173,6 +174,47 @@ impl PrivateKeyWASM {
                         let bytes = uint8_array.to_vec();
 
                         PrivateKeyWASM::from_bytes(bytes, js_network)
+                    }
+                }
+                false => Err(JsValue::from("Cannot parse private key"))?,
+            },
+        }
+    }
+
+    pub fn bytes_from_js_value(value: &JsValue) -> Result<Vec<u8>, JsValue> {
+        match value.is_string() {
+            true => {
+                let str = value
+                    .as_string()
+                    .ok_or(JsValue::from_str("Invalid string"))?;
+
+                if str.len() == 64 {
+                    // raw hex
+                    Ok(decode(&str, Encoding::Hex).map_err(|err| JsValue::from(err.to_string()))?)
+                } else {
+                    // base58 check
+                    let key_base58 = base58::decode_check(&str).map_err(|err| {
+                        JsValue::from(format!("Private Key error read wif ({})", err))
+                    })?;
+
+                    if key_base58.clone().len() == 33 || key_base58.clone().len() == 34 {
+                        Ok(PrivateKeyWASM::from_wif(&str)?.get_bytes())
+                    } else {
+                        Err(JsValue::from(format!(
+                            "Private key decoded wif must be 38 byte length ({})",
+                            key_base58.clone().len()
+                        )))
+                    }
+                }
+            }
+            false => match value.is_object() || value.is_array() {
+                true => {
+                    if get_class_type(&value) == Ok("PrivateKeyWASM".to_string()) {
+                        Ok(value.to_wasm::<PrivateKeyWASM>("PrivateKeyWASM")?.clone().get_bytes())
+                    } else {
+                        let uint8_array = Uint8Array::from(value.clone());
+                        
+                        Ok(uint8_array.to_vec())
                     }
                 }
                 false => Err(JsValue::from("Cannot parse private key"))?,
