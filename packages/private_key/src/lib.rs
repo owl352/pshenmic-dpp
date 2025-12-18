@@ -4,7 +4,7 @@ use dpp::dashcore::secp256k1::Message;
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::dashcore::signer::{CompactSignature, double_sha};
 use dpp::dashcore::{Network, PrivateKey, base58};
-use dpp::platform_value::string_encoding::{decode, Encoding};
+use dpp::platform_value::string_encoding::{Encoding, decode};
 use js_sys::Uint8Array;
 use pshenmic_dpp_enums::network::NetworkWASM;
 use pshenmic_dpp_public_key::PublicKeyWASM;
@@ -190,7 +190,10 @@ impl PrivateKeyWASM {
 
                 if str.len() == 64 {
                     // raw hex
-                    Ok(decode(&str, Encoding::Hex).map_err(|err| JsValue::from(err.to_string()))?)
+                    Ok(
+                        decode(&str, Encoding::Hex)
+                            .map_err(|err| JsValue::from(err.to_string()))?,
+                    )
                 } else {
                     // base58 check
                     let key_base58 = base58::decode_check(&str).map_err(|err| {
@@ -210,10 +213,13 @@ impl PrivateKeyWASM {
             false => match value.is_object() || value.is_array() {
                 true => {
                     if get_class_type(&value) == Ok("PrivateKeyWASM".to_string()) {
-                        Ok(value.to_wasm::<PrivateKeyWASM>("PrivateKeyWASM")?.clone().get_bytes())
+                        Ok(value
+                            .to_wasm::<PrivateKeyWASM>("PrivateKeyWASM")?
+                            .clone()
+                            .get_bytes())
                     } else {
                         let uint8_array = Uint8Array::from(value.clone());
-                        
+
                         Ok(uint8_array.to_vec())
                     }
                 }
