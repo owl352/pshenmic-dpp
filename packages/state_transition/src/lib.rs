@@ -71,9 +71,11 @@ impl StateTransitionWASM {
     #[wasm_bindgen(js_name = "sign")]
     pub fn sign(
         &mut self,
-        private_key: &PrivateKeyWASM,
+        js_private_key: &JsValue,
         public_key: &IdentityPublicKeyWASM,
     ) -> Result<Vec<u8>, JsValue> {
+        let private_key = PrivateKeyWASM::try_from(js_private_key.clone())?;
+
         self.0
             .sign(
                 &public_key.clone().into(),
@@ -88,10 +90,12 @@ impl StateTransitionWASM {
     #[wasm_bindgen(js_name = "signByPrivateKey")]
     pub fn sign_by_private_key(
         &mut self,
-        private_key: &PrivateKeyWASM,
+        js_private_key: &JsValue,
         key_id: Option<KeyID>,
         js_key_type: &JsValue,
     ) -> Result<Vec<u8>, JsValue> {
+        let private_key = PrivateKeyWASM::try_from(js_private_key.clone())?;
+
         let key_type = match js_key_type.is_undefined() {
             true => KeyTypeWASM::ECDSA_SECP256K1,
             false => KeyTypeWASM::try_from(js_key_type.clone())?,

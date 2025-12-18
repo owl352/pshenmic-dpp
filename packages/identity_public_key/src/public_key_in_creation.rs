@@ -13,7 +13,6 @@ use pshenmic_dpp_contract_bounds::ContractBoundsWASM;
 use pshenmic_dpp_enums::keys::key_type::KeyTypeWASM;
 use pshenmic_dpp_enums::keys::purpose::PurposeWASM;
 use pshenmic_dpp_enums::keys::security_level::SecurityLevelWASM;
-use pshenmic_dpp_private_key::PrivateKeyWASM;
 use pshenmic_dpp_utils::{IntoWasm, WithJsError};
 use wasm_bindgen::JsValue;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -130,14 +129,10 @@ impl IdentityPublicKeyInCreationWASM {
     }
 
     #[wasm_bindgen(js_name = "validatePrivateKey")]
-    pub fn validate_private_key(
-        &self,
-        private_key: &PrivateKeyWASM,
-        js_network: JsValue,
-    ) -> Result<bool, JsValue> {
+    pub fn validate_private_key(&self, js_private_key: &JsValue) -> Result<bool, JsValue> {
         let public_key: IdentityPublicKeyWASM = IdentityPublicKey::from(self.clone()).into();
 
-        public_key.validate_private_key_bytes(private_key, js_network)
+        public_key.validate_private_key(js_private_key)
     }
 
     #[wasm_bindgen(js_name = "getHash")]

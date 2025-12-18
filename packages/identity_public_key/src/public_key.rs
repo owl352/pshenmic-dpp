@@ -92,8 +92,8 @@ impl IdentityPublicKeyWASM {
 
 #[wasm_bindgen]
 impl IdentityPublicKeyWASM {
-    #[wasm_bindgen(js_name = "validatePrivateKey")]
-    pub fn validate_private_key(
+    #[wasm_bindgen(js_name = "validatePrivateKeyBytes")]
+    pub fn validate_private_key_bytes(
         &self,
         js_private_key_bytes: Vec<u8>,
         js_network: &JsValue,
@@ -250,13 +250,9 @@ impl IdentityPublicKeyWASM {
         self.0.is_master()
     }
 
-    #[wasm_bindgen(js_name = "validatePrivateKeyBytes")]
-    pub fn validate_private_key_bytes(
-        &self,
-        private_key: &PrivateKeyWASM,
-        js_network: JsValue,
-    ) -> Result<bool, JsValue> {
-        let network: NetworkWASM = js_network.try_into()?;
+    #[wasm_bindgen(js_name = "validatePrivateKey")]
+    pub fn validate_private_key(&self, js_private_key: &JsValue) -> Result<bool, JsValue> {
+        let private_key = PrivateKeyWASM::try_from(js_private_key.clone())?;
 
         self.0
             .validate_private_key_bytes(
@@ -265,7 +261,7 @@ impl IdentityPublicKeyWASM {
                     .as_slice()
                     .try_into()
                     .map_err(|_| JsValue::from("Cannot convert vec<u8> to [u8; 32]"))?,
-                network.into(),
+                private_key.network(),
             )
             .with_js_error()
     }
