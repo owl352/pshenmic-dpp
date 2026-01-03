@@ -1,8 +1,13 @@
 use napi::{
-    Status,
+    Either, Status,
     bindgen_prelude::{Null, Uint8Array},
 };
 use napi_derive::napi;
+
+use crate::identifier::IdentifierNAPI;
+
+#[napi(js_name = "IdentifierLikeNAPI")]
+pub type IdentifierLikeNAPI<'a> = Either<&'a IdentifierNAPI, DynamicValue>;
 
 pub trait TypeChecker {
     fn is_null(&self) -> bool;
@@ -25,6 +30,14 @@ impl TryToU64 for Uint64String {
                 "Cannot convert String from Uint64String to u64".to_string(),
             )
         })
+    }
+}
+
+impl TryFrom<Uint64String> for u64 {
+    type Error = napi::Error;
+
+    fn try_from(value: Uint64String) -> Result<Self, Self::Error> {
+        value.try_to_u64()
     }
 }
 
@@ -55,6 +68,20 @@ impl TypeChecker for DynamicValue {
         match self {
             DynamicValue::Null(_) => true,
             _ => false,
+        }
+    }
+}
+
+impl TryFrom<DynamicValue> for u64 {
+    type Error = napi::Error;
+
+    fn try_from(value: DynamicValue) -> Result<Self, Self::Error> {
+        match value {
+            DynamicValue::Uint64(val) => val.try_to_u64(),
+            _ => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot parse script pub key",
+            )),
         }
     }
 }
