@@ -11,10 +11,12 @@ crate-type = ["cdylib", "lib"]
 dpp = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false, features = [
     "identity-value-conversion",
     "identity-serialization",
-    "state-transition-signing"
+    "state-transition-signing",
+    "platform-value",
+    "document-json-conversion"
 ] }
 drive = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false }
-napi = {version = "3.8.1", features = ["napi3"], default-features = false}
+napi = {version = "3.8.1", features = ["napi3", "serde_json"], default-features = false}
 napi-derive = "3.5.0"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 hex = "0.4.3"
