@@ -1126,7 +1126,6 @@ dependencies = [
  "napi-sys",
  "nohash-hasher",
  "rustc-hash",
- "serde_json",
 ]
 
 [[package]]
