@@ -1,5 +1,5 @@
 use crate::{
-    dynamic_value::{DynamicValue, TryToU64, TypeChecker, Uint64String},
+    dynamic_value::{DynamicValue, IdentifierLikeNAPI, TypeChecker, Uint64String},
     enums::platform_version::PlatformVersionNAPI,
     identifier::IdentifierNAPI,
     identity_public_key::IdentityPublicKeyNAPI,
@@ -19,19 +19,17 @@ use napi_derive::napi;
 
 #[derive(Clone)]
 #[napi(js_name = IdentityNAPI)]
-pub struct IdentityNAPI {
-    identity: Identity,
-}
+pub struct IdentityNAPI(Identity);
 
 impl From<Identity> for IdentityNAPI {
     fn from(identity: Identity) -> Self {
-        IdentityNAPI { identity }
+        IdentityNAPI(identity)
     }
 }
 
 impl From<IdentityNAPI> for Identity {
     fn from(identity: IdentityNAPI) -> Self {
-        identity.identity
+        identity.0
     }
 }
 
@@ -39,67 +37,73 @@ impl From<IdentityNAPI> for Identity {
 impl IdentityNAPI {
     #[napi(constructor)]
     pub fn new(
-        id: &IdentifierNAPI,
+        js_id: IdentifierLikeNAPI,
         js_platform_version: DynamicValue,
     ) -> Result<Self, napi::Error> {
+        let id: IdentifierNAPI = js_id.try_into()?;
+
         let platform_version: PlatformVersionNAPI = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
             false => js_platform_version.try_into()?,
         };
 
-        Ok(IdentityNAPI {
-            identity: Identity::create_basic_identity(id.clone().into(), &platform_version.into())
+        Ok(IdentityNAPI(
+            Identity::create_basic_identity(id.clone().into(), &platform_version.into())
                 .with_js_error()?,
-        })
+        ))
     }
 
     #[napi(setter, js_name = "id")]
-    pub fn set_id(&mut self, id: &IdentifierNAPI) {
-        self.identity.set_id(id.clone().into());
+    pub fn set_id(&mut self, js_id: IdentifierLikeNAPI) -> Result<(), napi::Error> {
+        let id: IdentifierNAPI = js_id.try_into()?;
+
+        self.0.set_id(id.clone().into());
+
+        Ok(())
     }
 
     #[napi(setter, js_name = "balance")]
     pub fn set_balance(&mut self, balance: Uint64String) -> Result<(), napi::Error> {
-        self.identity.set_balance(balance.try_to_u64()?);
+        self.0.set_balance(balance.try_into()?);
         Ok(())
     }
 
     #[napi(setter, js_name = "revision")]
     pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
-        self.identity.set_revision(revision.try_to_u64()?);
+        self.0.set_revision(revision.try_into()?);
         Ok(())
     }
 
     #[napi(getter, js_name = "id")]
     pub fn get_id(&self) -> IdentifierNAPI {
-        self.identity.id().into()
+        self.0.id().into()
     }
 
     #[napi(getter, js_name = "balance")]
     pub fn get_balance(&self) -> Uint64String {
-        self.identity.balance().into()
+        self.0.balance().into()
     }
 
     #[napi(getter, js_name = "revision")]
     pub fn get_revision(&self) -> Uint64String {
-        self.identity.revision().into()
+        self.0.revision().into()
     }
 
     #[napi(js_name = "addPublicKey")]
     pub fn add_public_key(&mut self, public_key: &IdentityPublicKeyNAPI) {
-        self.identity.add_public_key(public_key.clone().into());
+        self.0.add_public_key(public_key.clone().into());
     }
 
     #[napi(js_name = "getPublicKeyById")]
     pub fn get_public_key_by_id(&self, key_id: u32) -> Option<IdentityPublicKeyNAPI> {
-        let identity_public_key = self.identity.get_public_key_by_id(key_id);
+        let identity_public_key = self.0.get_public_key_by_id(key_id);
         identity_public_key.map(|key| IdentityPublicKeyNAPI::from(key.clone()))
     }
 
     #[napi(js_name = "getPublicKeys")]
     pub fn get_public_keys(&self) -> Vec<IdentityPublicKeyNAPI> {
         let keys = self
-            .identity
+            .0
             .public_keys()
             .iter()
             .map(|(_index, key)| IdentityPublicKeyNAPI::from(key.clone()))
@@ -133,16 +137,13 @@ impl IdentityNAPI {
 
     #[napi(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<Uint8Array, napi::Error> {
-        Ok(self.identity.serialize_to_bytes().with_js_error()?.into())
+        Ok(self.0.serialize_to_bytes().with_js_error()?.into())
     }
 
     #[napi(js_name = "hex")]
     pub fn to_hex(&self) -> Result<String, napi::Error> {
         Ok(encode(
-            self.identity
-                .serialize_to_bytes()
-                .with_js_error()?
-                .as_slice(),
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
             Encoding::Hex,
         ))
     }
@@ -150,10 +151,7 @@ impl IdentityNAPI {
     #[napi(js_name = "base64")]
     pub fn to_base64(&self) -> Result<String, napi::Error> {
         Ok(encode(
-            self.identity
-                .serialize_to_bytes()
-                .with_js_error()?
-                .as_slice(),
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
             Encoding::Base64,
         ))
     }

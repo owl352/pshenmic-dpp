@@ -6,11 +6,24 @@ use crate::dynamic_value::{DynamicValue, TryToU64};
 
 #[napi(js_name = "NetworkNAPI")]
 #[allow(non_camel_case_types)]
+#[derive(Clone)]
 pub enum NetworkNAPI {
     Mainnet = 0,
     Testnet = 1,
     Devnet = 2,
     Regtest = 3,
+}
+
+impl From<Network> for NetworkNAPI {
+    fn from(value: Network) -> Self {
+        match value {
+            Network::Dash => NetworkNAPI::Mainnet,
+            Network::Devnet => NetworkNAPI::Devnet,
+            Network::Testnet => NetworkNAPI::Testnet,
+            Network::Regtest => NetworkNAPI::Regtest,
+            _ => NetworkNAPI::Testnet,
+        }
+    }
 }
 
 impl From<NetworkNAPI> for String {

@@ -19,6 +19,9 @@ const wasi = new WASI({
 
 const emnapiContext = getDefaultContext()
 
+emnapiContext.feature.supportNewFunction = false
+emnapiContext.feature.supportBigInt = false
+
 const __sharedMemory = new WebAssembly.Memory({
   initial: 1000,
   maximum: 2000,

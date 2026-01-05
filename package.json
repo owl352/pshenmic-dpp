@@ -39,7 +39,7 @@
     "babel": "^6.23.0",
     "babel-jest": "^30.2.0",
     "core-js": "^3.41.0",
-    "ferric-cli": "^0.3.9",
+    "ferric-cli": "0.3.9",
     "jest": "^30.2.0",
     "mocha": "^11.1.0",
     "node-addon-api": "^8.5.0",
