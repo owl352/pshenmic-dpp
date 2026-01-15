@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use dpp::{ProtocolError, platform_value::Value};
 use napi::{
     Env, Status,
@@ -48,4 +50,13 @@ pub fn with_serde_to_json_value(data: Object) -> Result<JsonValue, napi::Error> 
 
 pub fn with_serde_to_platform_value(data: Object) -> Result<Value, napi::Error> {
     Ok(with_serde_to_json_value(data.clone())?.into())
+}
+
+pub fn with_serde_to_platform_value_map(
+    data: Object,
+) -> Result<BTreeMap<String, Value>, napi::Error> {
+    with_serde_to_platform_value(data)?
+        .into_btree_string_map()
+        .map_err(ProtocolError::ValueError)
+        .with_js_error()
 }

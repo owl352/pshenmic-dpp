@@ -4,6 +4,7 @@ pub mod asset_lock_proof;
 pub mod consensus_error;
 pub mod contract_bounds;
 pub mod core_script;
+pub mod data_contract;
 pub mod dynamic_value;
 pub mod encrypted_note;
 pub mod enums;

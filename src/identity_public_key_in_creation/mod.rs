@@ -1,6 +1,6 @@
+use dpp::identity::IdentityPublicKey;
 use dpp::identity::contract_bounds::ContractBounds;
 use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
-use dpp::identity::{IdentityPublicKey, KeyType, Purpose, SecurityLevel};
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::Hex;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
@@ -62,20 +62,20 @@ impl IdentityPublicKeyInCreationNAPI {
     #[napi(constructor)]
     pub fn new(
         id: u32,
-        js_purpose: PurposeNAPI,
-        js_security_level: SecurityLevelNAPI,
-        js_key_type: KeyTypeNAPI,
+        js_purpose: DynamicValue,
+        js_security_level: DynamicValue,
+        js_key_type: DynamicValue,
         read_only: bool,
         binary_data: Uint8Array,
         signature: Option<Uint8Array>,
         js_contract_bounds: Option<&ContractBoundsNAPI>,
-    ) -> IdentityPublicKeyInCreationNAPI {
-        IdentityPublicKeyInCreationNAPI(IdentityPublicKeyInCreation::V0(
-            IdentityPublicKeyInCreationV0 {
+    ) -> Result<IdentityPublicKeyInCreationNAPI, napi::Error> {
+        Ok(IdentityPublicKeyInCreationNAPI(
+            IdentityPublicKeyInCreation::V0(IdentityPublicKeyInCreationV0 {
                 id,
-                key_type: KeyType::from(js_key_type),
-                purpose: Purpose::from(js_purpose),
-                security_level: SecurityLevel::from(js_security_level),
+                key_type: KeyTypeNAPI::try_from(js_key_type)?.into(),
+                purpose: PurposeNAPI::try_from(js_purpose)?.into(),
+                security_level: SecurityLevelNAPI::try_from(js_security_level)?.into(),
                 contract_bounds: js_contract_bounds
                     .map(|bounds| ContractBounds::from(bounds.clone())),
                 read_only,
@@ -83,7 +83,7 @@ impl IdentityPublicKeyInCreationNAPI {
                 signature: BinaryData::from(
                     signature.map(|sig| sig.to_vec()).unwrap_or(Vec::new()),
                 ),
-            },
+            }),
         ))
     }
 
@@ -163,19 +163,28 @@ impl IdentityPublicKeyInCreationNAPI {
     }
 
     #[napi(setter, js_name = "purpose")]
-    pub fn set_purpose(&mut self, js_purpose: PurposeNAPI) {
-        self.0.set_purpose(Purpose::from(js_purpose))
+    pub fn set_purpose(&mut self, js_purpose: DynamicValue) -> Result<(), napi::Error> {
+        self.0
+            .set_purpose(PurposeNAPI::try_from(js_purpose)?.into());
+        Ok(())
     }
 
     #[napi(setter, js_name = "securityLevel")]
-    pub fn set_security_level(&mut self, js_security_level: SecurityLevelNAPI) {
+    pub fn set_security_level(
+        &mut self,
+        js_security_level: DynamicValue,
+    ) -> Result<(), napi::Error> {
         self.0
-            .set_security_level(SecurityLevel::from(js_security_level))
+            .set_security_level(SecurityLevelNAPI::try_from(js_security_level)?.into());
+
+        Ok(())
     }
 
     #[napi(setter, js_name = "keyType")]
-    pub fn set_key_type(&mut self, key_type: KeyTypeNAPI) {
-        self.0.set_type(key_type.into());
+    pub fn set_key_type(&mut self, key_type: DynamicValue) -> Result<(), napi::Error> {
+        self.0.set_type(KeyTypeNAPI::try_from(key_type)?.into());
+
+        Ok(())
     }
 
     #[napi(setter, js_name = "readOnly")]
