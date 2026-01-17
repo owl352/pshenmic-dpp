@@ -1,5 +1,5 @@
 use crate::{
-    dynamic_value::{DynamicValue, IdentifierLikeNAPI, TypeChecker, Uint64String},
+    dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String},
     enums::platform_version::PlatformVersionNAPI,
     identifier::IdentifierNAPI,
     identity_public_key::IdentityPublicKeyNAPI,
@@ -38,7 +38,7 @@ impl IdentityNAPI {
     #[napi(constructor)]
     pub fn new(
         js_id: IdentifierLikeNAPI,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<Self, napi::Error> {
         let id: IdentifierNAPI = js_id.try_into()?;
 
@@ -64,13 +64,13 @@ impl IdentityNAPI {
 
     #[napi(setter, js_name = "balance")]
     pub fn set_balance(&mut self, balance: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_balance(balance.try_into()?);
+        self.0.set_balance(balance.try_to_u64()?);
         Ok(())
     }
 
     #[napi(setter, js_name = "revision")]
     pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_revision(revision.try_into()?);
+        self.0.set_revision(revision.try_to_u64()?);
         Ok(())
     }
 
@@ -81,12 +81,12 @@ impl IdentityNAPI {
 
     #[napi(getter, js_name = "balance")]
     pub fn get_balance(&self) -> Uint64String {
-        self.0.balance().into()
+        Uint64String::from_u64(self.0.balance())
     }
 
     #[napi(getter, js_name = "revision")]
     pub fn get_revision(&self) -> Uint64String {
-        self.0.revision().into()
+        Uint64String::from_u64(self.0.revision())
     }
 
     #[napi(js_name = "addPublicKey")]

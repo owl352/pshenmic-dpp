@@ -1,4 +1,4 @@
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, TypeChecker, Uint64String};
+use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::utils::{WithJsError, with_serde_to_platform_value, with_serde_to_platform_value_map};
@@ -78,7 +78,7 @@ impl DataContractNAPI {
         js_definitions: Option<Object>,
         // js_tokens: &BTreeMap<u16, TokenConfiguration>,
         full_validation: bool,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
         let owner_id = IdentifierNAPI::try_from(js_owner_id)?;
 
@@ -94,9 +94,9 @@ impl DataContractNAPI {
         //     false => tokens_configuration_from_js_value(js_tokens)?,
         // };
 
-        let platform_version: PlatformVersion = match js_platform_version {
-            DynamicValue::Null(_) => PlatformVersionNAPI::default().into(),
-            _ => PlatformVersionNAPI::try_from(js_platform_version)?.into(),
+        let platform_version: PlatformVersion = match js_platform_version.is_undefined_or_null() {
+            true => PlatformVersionNAPI::default().into(),
+            false => PlatformVersionNAPI::try_from(js_platform_version)?.into(),
         };
 
         let data_contract_structure_version_value = Value::from(
@@ -174,7 +174,7 @@ impl DataContractNAPI {
     pub fn from_value(
         js_value: Object,
         full_validation: bool,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
@@ -193,7 +193,7 @@ impl DataContractNAPI {
     pub fn from_bytes(
         js_bytes: Uint8Array,
         full_validation: bool,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
@@ -216,7 +216,7 @@ impl DataContractNAPI {
     pub fn from_hex(
         hex: String,
         full_validation: bool,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
         DataContractNAPI::from_bytes(
             decode(hex.as_str(), Hex)
@@ -231,7 +231,7 @@ impl DataContractNAPI {
     pub fn from_base64(
         base64: String,
         full_validation: bool,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
         DataContractNAPI::from_bytes(
             decode(base64.as_str(), Base64)
@@ -243,7 +243,7 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "bytes")]
-    pub fn to_bytes(&self, js_platform_version: DynamicValue) -> Result<Uint8Array, napi::Error> {
+    pub fn to_bytes(&self, js_platform_version: &DynamicValue) -> Result<Uint8Array, napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
@@ -258,7 +258,7 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "hex")]
-    pub fn to_hex(&self, js_platform_version: DynamicValue) -> Result<String, napi::Error> {
+    pub fn to_hex(&self, js_platform_version: &DynamicValue) -> Result<String, napi::Error> {
         Ok(encode(
             self.to_bytes(js_platform_version)?.to_vec().as_slice(),
             Hex,
@@ -266,7 +266,7 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "base64")]
-    pub fn to_base64(&self, js_platform_version: DynamicValue) -> Result<String, napi::Error> {
+    pub fn to_base64(&self, js_platform_version: &DynamicValue) -> Result<String, napi::Error> {
         Ok(encode(
             self.to_bytes(js_platform_version)?.to_vec().as_slice(),
             Base64,
@@ -274,7 +274,7 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "toValue", ts_return_type = "object")]
-    pub fn to_value(&self, js_platform_version: DynamicValue) -> Result<JsonValue, napi::Error> {
+    pub fn to_value(&self, js_platform_version: &DynamicValue) -> Result<JsonValue, napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
@@ -470,7 +470,7 @@ impl DataContractNAPI {
     pub fn set_config(
         &mut self,
         js_config: Object,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
@@ -493,7 +493,7 @@ impl DataContractNAPI {
         js_schema: Object,
         js_definitions: Option<Object>,
         full_validation: bool,
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
@@ -572,7 +572,7 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "toJson", ts_return_type = "object")]
-    pub fn to_json(&self, js_platform_version: DynamicValue) -> Result<JsonValue, napi::Error> {
+    pub fn to_json(&self, js_platform_version: &DynamicValue) -> Result<JsonValue, napi::Error> {
         let platform_version = match js_platform_version.is_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,

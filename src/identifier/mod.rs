@@ -33,50 +33,49 @@ impl From<&IdentifierNAPI> for Identifier {
     }
 }
 
-impl TryFrom<Either<&IdentifierNAPI, DynamicValue>> for IdentifierNAPI {
+impl TryFrom<Either<&IdentifierNAPI, &DynamicValue>> for IdentifierNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: Either<&IdentifierNAPI, DynamicValue>) -> Result<Self, Self::Error> {
+    fn try_from(value: Either<&IdentifierNAPI, &DynamicValue>) -> Result<Self, Self::Error> {
         match value {
             Either::A(id) => Ok(id.clone()),
-            Either::B(dyn_val) => match dyn_val {
-                DynamicValue::Text(txt) => {
+            Either::B(dyn_val) => {
+                if dyn_val.is_string() {
+                    let txt = dyn_val.as_string().unwrap();
                     if txt.len() == 64 {
                         return IdentifierNAPI::from_hex(txt);
                     } else {
                         return IdentifierNAPI::from_base58(txt);
                     }
+                } else if dyn_val.is_uint_8_array() {
+                    let uint8_array = dyn_val.as_uint_8_array().unwrap();
+                    IdentifierNAPI::from_bytes(Uint8Array::from(uint8_array.to_vec()))
+                } else {
+                    Err(napi::Error::new(
+                        napi::Status::InvalidArg,
+                        "Invalid Identifier value",
+                    ))
                 }
-                DynamicValue::Bytes(uint8_array) => IdentifierNAPI::from_bytes(uint8_array),
-                _ => Err(napi::Error::new(
-                    napi::Status::InvalidArg,
-                    "Invalid Identifier value",
-                )),
-            },
+            }
         }
+    }
+}
+
+impl TryFrom<&DynamicValue> for IdentifierNAPI {
+    type Error = napi::Error;
+
+    fn try_from(value: &DynamicValue) -> Result<Self, Self::Error> {
+        let either: Either<&IdentifierNAPI, &DynamicValue> = Either::B(value);
+
+        either.try_into()
     }
 }
 
 #[napi]
 impl IdentifierNAPI {
     #[napi(constructor)]
-    pub fn new(js_id: DynamicValue) -> Result<IdentifierNAPI, napi::Error> {
-        match js_id {
-            DynamicValue::Text(str) => Ok(IdentifierNAPI(
-                Identifier::from_string(str.as_str(), Encoding::Base58)
-                    .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
-                    .clone(),
-            )),
-            DynamicValue::Bytes(bytes) => Ok(IdentifierNAPI(
-                Identifier::from_vec(bytes.to_vec()).map_err(|err| {
-                    napi::Error::new(napi::Status::GenericFailure, err.to_string())
-                })?,
-            )),
-            _ => Err(napi::Error::new(
-                napi::Status::GenericFailure,
-                "Bad identifier type",
-            ))?,
-        }
+    pub fn new(js_id: &DynamicValue) -> Result<IdentifierNAPI, napi::Error> {
+        js_id.try_into()
     }
 }
 

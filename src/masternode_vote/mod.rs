@@ -15,7 +15,7 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, Uint64String};
+use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
 use crate::identifier::IdentifierNAPI;
 use crate::masternode_vote::vote::VoteNAPI;
 use crate::state_transition::StateTransitionNAPI;
@@ -56,7 +56,7 @@ impl MasternodeVoteTransitionNAPI {
                 pro_tx_hash: pro_tx_hash.into(),
                 voter_identity_id: voter_identity_id.into(),
                 vote: vote.clone().into(),
-                nonce: nonce.try_into()?,
+                nonce: nonce.try_to_u64()?,
                 signature_public_key_id: signature_public_key.unwrap_or(0),
                 signature: BinaryData::from(js_signature.map(|sig| sig.to_vec()).unwrap_or(vec![])),
             },
@@ -80,7 +80,7 @@ impl MasternodeVoteTransitionNAPI {
 
     #[napi(getter, js_name = "nonce")]
     pub fn nonce(&self) -> Uint64String {
-        self.0.nonce().into()
+        Uint64String::from_u64(self.0.nonce())
     }
 
     #[napi(getter, js_name = "signaturePublicKeyId")]
@@ -126,7 +126,7 @@ impl MasternodeVoteTransitionNAPI {
     pub fn set_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
         self.0 = match self.0.clone() {
             MasternodeVoteTransition::V0(mut vote) => {
-                vote.nonce = nonce.try_into()?;
+                vote.nonce = nonce.try_to_u64()?;
 
                 MasternodeVoteTransition::V0(vote)
             }

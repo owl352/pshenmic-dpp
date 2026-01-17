@@ -62,9 +62,9 @@ impl IdentityPublicKeyInCreationNAPI {
     #[napi(constructor)]
     pub fn new(
         id: u32,
-        js_purpose: DynamicValue,
-        js_security_level: DynamicValue,
-        js_key_type: DynamicValue,
+        js_purpose: &DynamicValue,
+        js_security_level: &DynamicValue,
+        js_key_type: &DynamicValue,
         read_only: bool,
         binary_data: Uint8Array,
         signature: Option<Uint8Array>,
@@ -91,9 +91,9 @@ impl IdentityPublicKeyInCreationNAPI {
     pub fn to_identity_public_key(&self) -> Result<IdentityPublicKeyNAPI, napi::Error> {
         IdentityPublicKeyNAPI::new(
             self.0.id(),
-            DynamicValue::Text(PurposeNAPI::from(self.0.purpose()).into()),
-            DynamicValue::Text(SecurityLevelNAPI::from(self.0.security_level()).into()),
-            DynamicValue::Text(KeyTypeNAPI::from(self.0.key_type()).into()),
+            &String::from(PurposeNAPI::from(self.0.purpose())).into(),
+            &String::from(SecurityLevelNAPI::from(self.0.security_level())).into(),
+            &String::from(KeyTypeNAPI::from(self.0.key_type())).into(),
             self.0.read_only(),
             self.0.data().to_string(Hex),
             None,
@@ -104,8 +104,8 @@ impl IdentityPublicKeyInCreationNAPI {
     #[napi(js_name = "validatePrivateKey")]
     pub fn validate_private_key(
         &self,
-        js_private_key: Either<DynamicValue, &PrivateKeyNAPI>,
-        js_network: DynamicValue,
+        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_network: &DynamicValue,
     ) -> Result<bool, napi::Error> {
         let public_key: IdentityPublicKeyNAPI = IdentityPublicKey::from(self.clone()).into();
 
@@ -163,7 +163,7 @@ impl IdentityPublicKeyInCreationNAPI {
     }
 
     #[napi(setter, js_name = "purpose")]
-    pub fn set_purpose(&mut self, js_purpose: DynamicValue) -> Result<(), napi::Error> {
+    pub fn set_purpose(&mut self, js_purpose: &DynamicValue) -> Result<(), napi::Error> {
         self.0
             .set_purpose(PurposeNAPI::try_from(js_purpose)?.into());
         Ok(())
@@ -172,7 +172,7 @@ impl IdentityPublicKeyInCreationNAPI {
     #[napi(setter, js_name = "securityLevel")]
     pub fn set_security_level(
         &mut self,
-        js_security_level: DynamicValue,
+        js_security_level: &DynamicValue,
     ) -> Result<(), napi::Error> {
         self.0
             .set_security_level(SecurityLevelNAPI::try_from(js_security_level)?.into());
@@ -181,7 +181,7 @@ impl IdentityPublicKeyInCreationNAPI {
     }
 
     #[napi(setter, js_name = "keyType")]
-    pub fn set_key_type(&mut self, key_type: DynamicValue) -> Result<(), napi::Error> {
+    pub fn set_key_type(&mut self, key_type: &DynamicValue) -> Result<(), napi::Error> {
         self.0.set_type(KeyTypeNAPI::try_from(key_type)?.into());
 
         Ok(())

@@ -2,7 +2,7 @@ use dpp::dashcore::Network;
 use napi::Status;
 use napi_derive::napi;
 
-use crate::dynamic_value::{DynamicValue, TryToU64};
+use crate::dynamic_value::DynamicValue;
 
 #[napi(js_name = "NetworkNAPI")]
 #[allow(non_camel_case_types)]
@@ -48,10 +48,10 @@ impl From<NetworkNAPI> for Network {
     }
 }
 
-impl TryFrom<u8> for NetworkNAPI {
+impl TryFrom<u64> for NetworkNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(NetworkNAPI::Mainnet),
             1 => Ok(NetworkNAPI::Testnet),
@@ -82,20 +82,25 @@ impl TryFrom<String> for NetworkNAPI {
     }
 }
 
-impl TryFrom<DynamicValue> for NetworkNAPI {
+impl TryFrom<&DynamicValue> for NetworkNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: DynamicValue) -> Result<Self, Self::Error> {
-        match value {
-            DynamicValue::Text(str) => NetworkNAPI::try_from(str),
-            DynamicValue::Uint8(num) => NetworkNAPI::try_from(num),
-            DynamicValue::Uint16(num) => NetworkNAPI::try_from(num as u8),
-            DynamicValue::Uint32(num) => NetworkNAPI::try_from(num as u8),
-            DynamicValue::Uint64(num_str) => NetworkNAPI::try_from(num_str.try_to_u64()? as u8),
-            _ => Err(napi::Error::new(
+    fn try_from(value: &DynamicValue) -> Result<Self, Self::Error> {
+        let is_number = value.is_number();
+        let is_string = value.is_string();
+
+        if is_number {
+            let num = value.try_to_u64()?;
+            NetworkNAPI::try_from(num)
+        } else if is_string {
+            let string = value.as_string().unwrap();
+
+            NetworkNAPI::try_from(string)
+        } else {
+            Err(napi::Error::new(
                 Status::InvalidArg,
-                "Invalid platform version value",
-            )),
+                "Invalid network value",
+            ))
         }
     }
 }

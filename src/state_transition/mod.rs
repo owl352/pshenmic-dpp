@@ -32,7 +32,7 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 use sha2::{Digest, Sha256};
 
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, Uint64String};
+use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
 use crate::enums::key_type::KeyTypeNAPI;
 use crate::enums::purpose::PurposeNAPI;
 use crate::enums::security_level::SecurityLevelNAPI;
@@ -63,7 +63,7 @@ impl StateTransitionNAPI {
     #[napi(js_name = "sign")]
     pub fn sign(
         &mut self,
-        js_private_key: Either<DynamicValue, &PrivateKeyNAPI>,
+        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
         public_key: &IdentityPublicKeyNAPI,
     ) -> Result<Uint8Array, napi::Error> {
         let private_key_bytes = PrivateKeyNAPI::bytes_from_js_value(js_private_key)?.to_vec();
@@ -85,9 +85,9 @@ impl StateTransitionNAPI {
     #[napi(js_name = "signByPrivateKey")]
     pub fn sign_by_private_key(
         &mut self,
-        js_private_key: Either<DynamicValue, &PrivateKeyNAPI>,
+        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
         key_id: Option<u32>,
-        js_key_type: Option<DynamicValue>,
+        js_key_type: Option<&DynamicValue>,
     ) -> Result<Uint8Array, napi::Error> {
         let private_key_bytes = PrivateKeyNAPI::bytes_from_js_value(js_private_key)?.to_vec();
 
@@ -363,7 +363,7 @@ impl StateTransitionNAPI {
     #[napi(js_name = "getKeyLevelRequirement")]
     pub fn get_key_level_requirement(
         &self,
-        js_purpose: DynamicValue,
+        js_purpose: &DynamicValue,
     ) -> Result<Option<Vec<String>>, napi::Error> {
         let purpose = PurposeNAPI::try_from(js_purpose)?;
 
@@ -384,20 +384,20 @@ impl StateTransitionNAPI {
     pub fn get_identity_contract_nonce(&self) -> Option<Uint64String> {
         match self.0.clone() {
             DataContractCreate(_) => None,
-            DataContractUpdate(contract_update) => {
-                Some(contract_update.identity_contract_nonce().into())
-            }
+            DataContractUpdate(contract_update) => Some(Uint64String::from_u64(
+                contract_update.identity_contract_nonce(),
+            )),
             Batch(batch) => match batch {
-                BatchTransition::V0(v0) => {
-                    Some(v0.transitions.first()?.identity_contract_nonce().into())
-                }
+                BatchTransition::V0(v0) => Some(Uint64String::from_u64(
+                    v0.transitions.first()?.identity_contract_nonce(),
+                )),
                 BatchTransition::V1(v1) => match v1.transitions.first()? {
                     BatchedTransition::Document(doc_batch) => {
-                        Some(doc_batch.identity_contract_nonce().into())
+                        Some(Uint64String::from_u64(doc_batch.identity_contract_nonce()))
                     }
-                    BatchedTransition::Token(token_batch) => {
-                        Some(token_batch.identity_contract_nonce().into())
-                    }
+                    BatchedTransition::Token(token_batch) => Some(Uint64String::from_u64(
+                        token_batch.identity_contract_nonce(),
+                    )),
                 },
             },
             StateTransition::IdentityCreate(_) => None,
@@ -412,15 +412,23 @@ impl StateTransitionNAPI {
     #[napi(js_name = "getIdentityNonce")]
     pub fn get_identity_nonce(&self) -> Option<Uint64String> {
         match self.0.clone() {
-            DataContractCreate(contract_create) => Some(contract_create.identity_nonce().into()),
+            DataContractCreate(contract_create) => {
+                Some(Uint64String::from_u64(contract_create.identity_nonce()))
+            }
             DataContractUpdate(_) => None,
             Batch(_) => None,
             StateTransition::IdentityCreate(_) => None,
             IdentityTopUp(_) => None,
-            IdentityCreditWithdrawal(withdrawal) => Some(withdrawal.nonce().into()),
-            IdentityUpdate(identity_update) => Some(identity_update.nonce().into()),
-            IdentityCreditTransfer(credit_transfer) => Some(credit_transfer.nonce().into()),
-            MasternodeVote(mn_vote) => Some(mn_vote.nonce().into()),
+            IdentityCreditWithdrawal(withdrawal) => {
+                Some(Uint64String::from_u64(withdrawal.nonce()))
+            }
+            IdentityUpdate(identity_update) => {
+                Some(Uint64String::from_u64(identity_update.nonce()))
+            }
+            IdentityCreditTransfer(credit_transfer) => {
+                Some(Uint64String::from_u64(credit_transfer.nonce()))
+            }
+            MasternodeVote(mn_vote) => Some(Uint64String::from_u64(mn_vote.nonce())),
         }
     }
 
@@ -541,13 +549,13 @@ impl StateTransitionNAPI {
             ))?,
             DataContractUpdate(contract_update) => match contract_update {
                 DataContractUpdateTransition::V0(mut v0) => {
-                    v0.identity_contract_nonce = nonce.try_into()?;
+                    v0.identity_contract_nonce = nonce.try_to_u64()?;
 
                     DataContractUpdateTransition::V0(v0).into()
                 }
             },
             Batch(mut batch) => {
-                batch.set_identity_contract_nonce(nonce.try_into()?);
+                batch.set_identity_contract_nonce(nonce.try_to_u64()?);
 
                 batch.into()
             }
@@ -586,7 +594,7 @@ impl StateTransitionNAPI {
             DataContractCreate(mut contract_create) => {
                 contract_create = match contract_create {
                     DataContractCreateTransition::V0(mut v0) => {
-                        v0.identity_nonce = nonce.try_into()?;
+                        v0.identity_nonce = nonce.try_to_u64()?;
                         v0.into()
                     }
                 };
@@ -610,24 +618,24 @@ impl StateTransitionNAPI {
                 "Cannot set identity nonce for Identity Top Up",
             ))?,
             IdentityCreditWithdrawal(mut withdrawal) => {
-                withdrawal.set_nonce(nonce.try_into()?);
+                withdrawal.set_nonce(nonce.try_to_u64()?);
 
                 withdrawal.into()
             }
             IdentityUpdate(mut identity_update) => {
-                identity_update.set_nonce(nonce.try_into()?);
+                identity_update.set_nonce(nonce.try_to_u64()?);
 
                 identity_update.into()
             }
             IdentityCreditTransfer(mut credit_transfer) => {
-                credit_transfer.set_nonce(nonce.try_into()?);
+                credit_transfer.set_nonce(nonce.try_to_u64()?);
 
                 credit_transfer.into()
             }
             MasternodeVote(mut mn_vote) => {
                 mn_vote = match mn_vote {
                     MasternodeVoteTransition::V0(mut v0) => {
-                        v0.nonce = nonce.try_into()?;
+                        v0.nonce = nonce.try_to_u64()?;
 
                         v0.into()
                     }

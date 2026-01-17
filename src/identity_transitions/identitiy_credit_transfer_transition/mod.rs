@@ -10,7 +10,7 @@ use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, Stat
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
-use crate::dynamic_value::{IdentifierLikeNAPI, Uint64String};
+use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::WithJsError;
@@ -37,8 +37,8 @@ impl IdentityCreditTransferNAPI {
             IdentityCreditTransferTransition::V0(IdentityCreditTransferTransitionV0 {
                 identity_id: sender,
                 recipient_id: recipient,
-                amount: amount.try_into()?,
-                nonce: nonce.try_into()?,
+                amount: amount.try_to_u64()?,
+                nonce: nonce.try_to_u64()?,
                 user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: 0,
                 signature: Default::default(),
@@ -115,14 +115,14 @@ impl IdentityCreditTransferNAPI {
 
     #[napi(setter, js_name = "amount")]
     pub fn set_amount(&mut self, amount: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_amount(amount.try_into()?);
+        self.0.set_amount(amount.try_to_u64()?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "nonce")]
     pub fn set_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_nonce(nonce.try_into()?);
+        self.0.set_nonce(nonce.try_to_u64()?);
 
         Ok(())
     }
@@ -174,12 +174,12 @@ impl IdentityCreditTransferNAPI {
 
     #[napi(getter, js_name = "amount")]
     pub fn get_amount(&self) -> Uint64String {
-        self.0.amount().into()
+        Uint64String::from_u64(self.0.amount())
     }
 
     #[napi(getter, js_name = "nonce")]
     pub fn get_nonce(&self) -> Uint64String {
-        self.0.nonce().into()
+        Uint64String::from_u64(self.0.nonce())
     }
 
     #[napi(js_name = "toStateTransition")]

@@ -60,7 +60,7 @@ impl IdentityCreateTransitionNAPI {
 
     #[napi(js_name = "default")]
     pub fn default(
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<IdentityCreateTransitionNAPI, napi::Error> {
         let platform_version = PlatformVersionNAPI::try_from(js_platform_version)?;
 
