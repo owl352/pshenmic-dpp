@@ -5,7 +5,7 @@ import type{
   IdentityCreateFromAddressesTransitionWASM, IdentityCreditTransferToAddressesTransitionWASM,
   IdentityTopUpFromAddressesTransitionWASM, InputAddressWASM, OutputAddressWASM,
   PlatformAddressWASM, RecipientAddressWASM
-} from "../wasm/pshenmic_dpp";
+} from "../wasm/pshenmic_dpp.d.ts";
 
 export * from './pshenmic_dpp.js';
 
