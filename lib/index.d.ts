@@ -1,4 +1,11 @@
 import * as DPP from './pshenmic_dpp.js';
+import {
+  AddressCreditWithdrawalTransitionWASM, AddressFundingFromAssetLockTransitionWASM,
+  AddressFundsFeeStrategyStepWASM, AddressFundsTransferTransitionWASM, AddressWitnessWASM,
+  IdentityCreateFromAddressesTransitionWASM, IdentityCreditTransferToAddressesTransitionWASM,
+  IdentityTopUpFromAddressesTransitionWASM, InputAddressWASM, OutputAddressWASM,
+  PlatformAddressWASM, RecipientAddressWASM
+} from "../wasm/pshenmic_dpp";
 
 export * from './pshenmic_dpp.js';
 
@@ -93,6 +100,19 @@ export class DashPlatformProtocolWASM {
     VoteWASM: DPP.VoteWASM
     VotePollWASM: DPP.VotePollWASM
     ResourceVoteChoiceWASM: DPP.ResourceVoteChoiceWASM
+    AddressCreditWithdrawalTransitionWASM: DPP.AddressCreditWithdrawalTransitionWASM
+    AddressFundingFromAssetLockTransitionWASM: DPP.AddressFundingFromAssetLockTransitionWASM
+    AddressFundsFeeStrategyStepWASM: DPP.AddressFundsFeeStrategyStepWASM
+    AddressFundsTransferTransitionWASM: DPP.AddressFundsTransferTransitionWASM
+    IdentityCreateFromAddressesTransitionWASM: DPP.IdentityCreateFromAddressesTransitionWASM
+    IdentityCreditTransferToAddressesTransitionWASM: DPP.IdentityCreditTransferToAddressesTransitionWASM
+    OutputAddressWASM: DPP.OutputAddressWASM
+    InputAddressWASM: DPP.InputAddressWASM
+    IdentityTopUpFromAddressesTransitionWASM: DPP.IdentityTopUpFromAddressesTransitionWASM
+    RecipientAddressWASM: DPP.RecipientAddressWASM
+    AddressWitnessWASM: DPP.AddressWitnessWASM
+    PlatformAddressWASM: DPP.PlatformAddressWASM
+
     // ENUMS
     AssetLockProofTypeWASM: DPP.AssetLockProofTypeWASM
     BatchType: DPP.BatchType

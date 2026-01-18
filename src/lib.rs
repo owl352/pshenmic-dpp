@@ -22,5 +22,6 @@ pub use pshenmic_dpp_identity;
 pub use pshenmic_dpp_identity_transitions;
 pub use pshenmic_dpp_masternode_vote;
 pub use pshenmic_dpp_partial_identity;
+pub use pshenmic_dpp_platform_address;
 pub use pshenmic_dpp_state_transition;
 pub use pshenmic_dpp_verify;

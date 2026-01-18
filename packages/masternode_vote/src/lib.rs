@@ -13,7 +13,10 @@ use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable}
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
 use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
 use dpp::state_transition::masternode_vote_transition::v0::MasternodeVoteTransitionV0;
-use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use dpp::state_transition::{
+    StateTransition, StateTransitionIdentitySigned, StateTransitionLike,
+    StateTransitionSingleSigned,
+};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_state_transition::StateTransitionWASM;
@@ -219,9 +222,7 @@ impl MasternodeVoteTransitionWASM {
 
         match rs_st {
             StateTransition::MasternodeVote(st) => Ok(MasternodeVoteTransitionWASM(st)),
-            _ => Err(JsValue::from_str(
-                &"Invalid state document_transition type)",
-            )),
+            _ => Err(JsValue::from_str(&"Invalid state transition type)")),
         }
     }
 }
