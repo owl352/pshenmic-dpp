@@ -1,5 +1,5 @@
 import * as DPP from './pshenmic_dpp.js';
-import {
+import type{
   AddressCreditWithdrawalTransitionWASM, AddressFundingFromAssetLockTransitionWASM,
   AddressFundsFeeStrategyStepWASM, AddressFundsTransferTransitionWASM, AddressWitnessWASM,
   IdentityCreateFromAddressesTransitionWASM, IdentityCreditTransferToAddressesTransitionWASM,
