@@ -2,11 +2,11 @@
 name = "pshenmic-dpp"
 version = "1.1.2-dev.7"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.92"
 
 [workspace.dependencies]
-dpp = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false }
-drive = { git = "https://github.com/owl352/platform", rev = "3f13188", default-features = false }
+dpp = { git = "https://github.com/owl352/platform", rev = "3a4fd23", default-features = false }
+drive = { git = "https://github.com/owl352/platform", rev = "3a4fd23", default-features = false }
 wasm-bindgen = { version = "=0.2.105", default-features = false, features = ["std"]}
 js-sys = { version = "0.3.78" }
 serde-wasm-bindgen = { git = "https://github.com/QuantumExplorer/serde-wasm-bindgen", branch = "feat/not_human_readable" }
@@ -41,7 +41,8 @@ members = [
     "packages/public_key",
     "packages/consensus_error",
     "packages/verify",
-    "packages/partial_identity"]
+    "packages/partial_identity",
+    "packages/platform_address"]
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -62,6 +63,7 @@ pshenmic_dpp_data_contract = { path = "packages/data_contract" }
 pshenmic_dpp_data_contract_transitions = { path = "packages/data_contract_transitions" }
 pshenmic_dpp_enums = { path = "packages/enums" }
 pshenmic_dpp_masternode_vote = {path = "packages/masternode_vote"}
+pshenmic_dpp_platform_address = {path = "packages/platform_address"}
 
 [profile.release]
 lto = "fat"

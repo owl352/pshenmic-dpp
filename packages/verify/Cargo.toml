@@ -16,6 +16,7 @@ dpp = { workspace = true, features = [
 js-sys = { workspace = true }
 indexmap = { version = "2.0.2" }
 pshenmic_dpp_data_contract = { path = "../data_contract" }
+pshenmic_dpp_platform_address = { path = "../platform_address" }
 pshenmic_dpp_document = { path = "../document" }
 pshenmic_dpp_identifier = { path = "../identifier" }
 pshenmic_dpp_identity = { path = "../identity" }

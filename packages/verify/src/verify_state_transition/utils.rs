@@ -11,6 +11,7 @@ use pshenmic_dpp_identifier::IdentifierWASM;
 use pshenmic_dpp_identity::IdentityWASM;
 use pshenmic_dpp_masternode_vote::vote::VoteWASM;
 use pshenmic_dpp_partial_identity::PartialIdentityWASM;
+use pshenmic_dpp_platform_address::PlatformAddressWASM;
 use wasm_bindgen::JsValue;
 
 pub fn state_transition_proof_result_to_js(
@@ -215,6 +216,105 @@ pub fn state_transition_proof_result_to_js(
         }
         StateTransitionProofResult::VerifiedNextDistribution(vote) => {
             Ok(VoteWASM::from(vote.clone()).into())
+        }
+        StateTransitionProofResult::VerifiedAddressInfos(infos) => {
+            let infos_arr = Array::new();
+
+            for (address, amounts) in infos.iter() {
+                let info_obj = Object::new();
+
+                Reflect::set(
+                    &info_obj,
+                    &"address".into(),
+                    &PlatformAddressWASM::from(address.clone()).into(),
+                )?;
+                Reflect::set(
+                    &info_obj,
+                    &"nonce".into(),
+                    &amounts.unwrap_or((0, 0)).0.into(),
+                )?;
+                Reflect::set(
+                    &info_obj,
+                    &"credits".into(),
+                    &amounts.unwrap_or((0, 0)).1.into(),
+                )?;
+
+                infos_arr.push(&info_obj.into());
+            }
+
+            Ok(infos_arr.into())
+        }
+        StateTransitionProofResult::VerifiedIdentityFullWithAddressInfos(identity, infos) => {
+            let out_obj = Object::new();
+            let infos_arr = Array::new();
+
+            Reflect::set(
+                &out_obj,
+                &"identity".into(),
+                &IdentityWASM::from(identity.clone()).into(),
+            )?;
+
+            for (address, amounts) in infos.iter() {
+                let info_obj = Object::new();
+
+                Reflect::set(
+                    &info_obj,
+                    &"address".into(),
+                    &PlatformAddressWASM::from(address.clone()).into(),
+                )?;
+                Reflect::set(
+                    &info_obj,
+                    &"nonce".into(),
+                    &amounts.unwrap_or((0, 0)).0.into(),
+                )?;
+                Reflect::set(
+                    &info_obj,
+                    &"credits".into(),
+                    &amounts.unwrap_or((0, 0)).1.into(),
+                )?;
+
+                infos_arr.push(&info_obj.into());
+            }
+
+            Reflect::set(&out_obj, &"info".into(), &infos_arr.into())?;
+
+            Ok(out_obj.into())
+        }
+        StateTransitionProofResult::VerifiedIdentityWithAddressInfos(identity, infos) => {
+            let out_obj = Object::new();
+            let infos_arr = Array::new();
+
+            Reflect::set(
+                &out_obj,
+                &"partialIdentity".into(),
+                &PartialIdentityWASM::from(identity.clone()).into(),
+            )?;
+
+            for (address, amounts) in infos.iter() {
+                let info_obj = Object::new();
+
+                Reflect::set(
+                    &info_obj,
+                    &"address".into(),
+                    &PlatformAddressWASM::from(address.clone()).into(),
+                )?;
+                Reflect::set(
+                    &info_obj,
+                    &"nonce".into(),
+                    &amounts.unwrap_or((0, 0)).0.into(),
+                )?;
+                Reflect::set(
+                    &info_obj,
+                    &"credits".into(),
+                    &amounts.unwrap_or((0, 0)).1.into(),
+                )?;
+
+                infos_arr.push(&info_obj.into());
+            }
+
+            Reflect::set(&out_obj, &"info".into(), &infos_arr.into())?;
+
+            Ok(out_obj.into())
         }
     }
 }

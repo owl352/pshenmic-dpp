@@ -8,7 +8,7 @@ use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
 use dpp::state_transition::identity_create_transition::v0::IdentityCreateTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
-use dpp::state_transition::{StateTransition, StateTransitionLike};
+use dpp::state_transition::{StateTransition, StateTransitionLike, StateTransitionSingleSigned};
 use pshenmic_dpp_asset_lock_proof::AssetLockProofWASM;
 use pshenmic_dpp_enums::platform::PlatformVersionWASM;
 use pshenmic_dpp_identifier::IdentifierWASM;
@@ -180,9 +180,7 @@ impl IdentityCreateTransitionWASM {
 
         match rs_st {
             StateTransition::IdentityCreate(st) => Ok(IdentityCreateTransitionWASM(st)),
-            _ => Err(JsValue::from_str(
-                &"Invalid state document_transition type)",
-            )),
+            _ => Err(JsValue::from_str(&"Invalid state transition type)")),
         }
     }
 }
