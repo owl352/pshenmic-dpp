@@ -14,18 +14,8 @@ export class IdentifierWASM {
   constructor (rawId: IdentifierLike | IdentifierWASM) {
     if (rawId instanceof IdentifierWASM) {
       return rawId
-    } else if (typeof rawId === 'string') {
-      const id: DynamicValue = {
-        type: 'Text',
-        field0: rawId
-      }
-
-      this._rawIdentifier = new dpp.IdentifierNAPI(id)
-    } else if (rawId instanceof Uint8Array) {
-      const id: DynamicValue = {
-        type: 'Bytes',
-        field0: rawId
-      }
+    } else if (rawId instanceof Uint8Array || typeof rawId === 'string') {
+      const id = new DynamicValue(rawId)
 
       this._rawIdentifier = new dpp.IdentifierNAPI(id)
     } else {

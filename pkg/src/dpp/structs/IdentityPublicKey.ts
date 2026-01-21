@@ -1,6 +1,5 @@
-import { valueToDynamicEnum } from '../helpers.js'
 import { DashPlatformProtocol, KeyTypeLike, PurposeLike, SecurityLevelLike } from '../../types.js'
-import { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import {DynamicValue, IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
 import { KeyType, Purpose, SecurityLevel } from '../../enums.js'
 
 let dpp: DashPlatformProtocol
@@ -13,19 +12,19 @@ export class IdentityPublicKeyWASM {
   /** @private **/
   _rawIdentityPublicKey: IdentityPublicKeyNAPI
 
-  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint) {
+  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number) {
     if (purpose == null || securityLevel == null || keyType == null) {
       throw new Error('purpose, securityLevel, keyType must be specified')
     }
 
     this._rawIdentityPublicKey = new dpp.IdentityPublicKeyNAPI(
       id,
-      valueToDynamicEnum(purpose),
-      valueToDynamicEnum(securityLevel),
-      valueToDynamicEnum(keyType),
+      new DynamicValue(purpose),
+      new DynamicValue(securityLevel),
+      new DynamicValue(keyType),
       readOnly,
       binaryData,
-      disabledAt != null ? { value: disabledAt.toString() } : undefined
+      disabledAt != null ? disabledAt.toString() : undefined
     )
   }
 
@@ -42,7 +41,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set purpose (purpose: PurposeLike) {
-    this._rawIdentityPublicKey.purpose = valueToDynamicEnum(purpose)
+    this._rawIdentityPublicKey.purpose = new DynamicValue(purpose)
   }
 
   get purposeNumber (): Purpose {
@@ -50,7 +49,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set purposeNumber (purpose: Purpose) {
-    this._rawIdentityPublicKey.purposeNumber = valueToDynamicEnum(purpose)
+    this._rawIdentityPublicKey.purposeNumber = purpose
   }
 
   get securityLevel (): string {
@@ -58,7 +57,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set securityLevel (securityLevel: SecurityLevelLike) {
-    this._rawIdentityPublicKey.securityLevel = valueToDynamicEnum(securityLevel)
+    this._rawIdentityPublicKey.securityLevel = new DynamicValue(securityLevel)
   }
 
   get securityLevelNumber (): SecurityLevel {
@@ -66,7 +65,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set securityLevelNumber (securityLevel: SecurityLevel) {
-    this._rawIdentityPublicKey.securityLevelNumber = valueToDynamicEnum(securityLevel)
+    this._rawIdentityPublicKey.securityLevelNumber = securityLevel
   }
 
   get keyType (): string {
@@ -74,7 +73,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set keyType (keyType: KeyTypeLike) {
-    this._rawIdentityPublicKey.keyType = valueToDynamicEnum(keyType)
+    this._rawIdentityPublicKey.keyType = new DynamicValue(keyType)
   }
 
   get keyTypeNumber (): KeyType {
@@ -82,7 +81,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set keyTypeNumber (keyType: KeyType) {
-    this._rawIdentityPublicKey.keyTypeNumber = valueToDynamicEnum(keyType)
+    this._rawIdentityPublicKey.keyTypeNumber = keyType
   }
 
   get readOnly (): boolean {
@@ -104,11 +103,11 @@ export class IdentityPublicKeyWASM {
   get disabledAt (): BigInt | undefined {
     const timestamp = this._rawIdentityPublicKey.disabledAt
 
-    return (timestamp != null) ? BigInt(timestamp.value) : undefined
+    return (timestamp != null) ? BigInt(timestamp) : undefined
   }
 
-  set disabledAt (disabledAt: string) {
-    this._rawIdentityPublicKey.disabledAt = { value: disabledAt }
+  set disabledAt (disabledAt: bigint | number) {
+    this._rawIdentityPublicKey.disabledAt = disabledAt.toString()
   }
 
   removeDisabledAt (): void {
