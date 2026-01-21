@@ -1,5 +1,5 @@
 import { DashPlatformProtocol, KeyTypeLike, PurposeLike, SecurityLevelLike } from '../../types.js'
-import {DynamicValue, IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import { DynamicValue, IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
 import { KeyType, Purpose, SecurityLevel } from '../../enums.js'
 
 let dpp: DashPlatformProtocol
