@@ -23,4 +23,5 @@ pub mod private_key;
 pub mod public_key;
 pub mod state_transition;
 pub mod token_configuration;
+pub mod token_configuration_change_item;
 pub mod utils;
