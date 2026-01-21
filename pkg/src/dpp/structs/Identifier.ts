@@ -1,5 +1,5 @@
 import { DashPlatformProtocol, IdentifierLike } from '../../types.js'
-import { DynamicValue, IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
+import { IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
 
 let dpp: DashPlatformProtocol
 
@@ -15,7 +15,7 @@ export class IdentifierWASM {
     if (rawId instanceof IdentifierWASM) {
       return rawId
     } else if (rawId instanceof Uint8Array || typeof rawId === 'string') {
-      const id = new DynamicValue(rawId)
+      const id = new dpp.DynamicValue(rawId)
 
       this._rawIdentifier = new dpp.IdentifierNAPI(id)
     } else {

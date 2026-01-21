@@ -160,7 +160,7 @@ impl DataContractNAPI {
         full_validation: bool,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -179,7 +179,7 @@ impl DataContractNAPI {
         full_validation: bool,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -228,7 +228,7 @@ impl DataContractNAPI {
 
     #[napi(js_name = "bytes")]
     pub fn to_bytes(&self, js_platform_version: &DynamicValue) -> Result<Uint8Array, napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -259,7 +259,7 @@ impl DataContractNAPI {
 
     #[napi(js_name = "toValue", ts_return_type = "object")]
     pub fn to_value(&self, js_platform_version: &DynamicValue) -> Result<JsonValue, napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -442,7 +442,7 @@ impl DataContractNAPI {
         js_config: Object,
         js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -465,7 +465,7 @@ impl DataContractNAPI {
         full_validation: bool,
         js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -524,7 +524,7 @@ impl DataContractNAPI {
 
     #[napi(js_name = "toJson", ts_return_type = "object")]
     pub fn to_json(&self, js_platform_version: &DynamicValue) -> Result<JsonValue, napi::Error> {
-        let platform_version = match js_platform_version.is_null() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };

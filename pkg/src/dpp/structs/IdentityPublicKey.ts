@@ -1,5 +1,5 @@
 import { DashPlatformProtocol, KeyTypeLike, PurposeLike, SecurityLevelLike } from '../../types.js'
-import { DynamicValue, IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
 import { KeyType, Purpose, SecurityLevel } from '../../enums.js'
 
 let dpp: DashPlatformProtocol
@@ -19,9 +19,9 @@ export class IdentityPublicKeyWASM {
 
     this._rawIdentityPublicKey = new dpp.IdentityPublicKeyNAPI(
       id,
-      new DynamicValue(purpose),
-      new DynamicValue(securityLevel),
-      new DynamicValue(keyType),
+      new dpp.DynamicValue(purpose),
+      new dpp.DynamicValue(securityLevel),
+      new dpp.DynamicValue(keyType),
       readOnly,
       binaryData,
       disabledAt != null ? disabledAt.toString() : undefined
@@ -41,7 +41,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set purpose (purpose: PurposeLike) {
-    this._rawIdentityPublicKey.purpose = new DynamicValue(purpose)
+    this._rawIdentityPublicKey.purpose = new dpp.DynamicValue(purpose)
   }
 
   get purposeNumber (): Purpose {
@@ -57,7 +57,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set securityLevel (securityLevel: SecurityLevelLike) {
-    this._rawIdentityPublicKey.securityLevel = new DynamicValue(securityLevel)
+    this._rawIdentityPublicKey.securityLevel = new dpp.DynamicValue(securityLevel)
   }
 
   get securityLevelNumber (): SecurityLevel {
@@ -73,7 +73,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set keyType (keyType: KeyTypeLike) {
-    this._rawIdentityPublicKey.keyType = new DynamicValue(keyType)
+    this._rawIdentityPublicKey.keyType = new dpp.DynamicValue(keyType)
   }
 
   get keyTypeNumber (): KeyType {

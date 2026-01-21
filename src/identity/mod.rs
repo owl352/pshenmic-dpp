@@ -42,7 +42,8 @@ impl IdentityNAPI {
     ) -> Result<Self, napi::Error> {
         let id: IdentifierNAPI = js_id.try_into()?;
 
-        let platform_version: PlatformVersionNAPI = match js_platform_version.is_null() {
+        let platform_version: PlatformVersionNAPI = match js_platform_version.is_undefined_or_null()
+        {
             true => PlatformVersionNAPI::default(),
             false => js_platform_version.try_into()?,
         };

@@ -100,6 +100,11 @@ impl DynamicValue {
 
         Self(owned)
     }
+
+    #[napi(getter, js_name = "place")]
+    pub fn place_holder(&self) -> String {
+        "holder".to_string()
+    }
 }
 
 impl From<String> for DynamicValue {

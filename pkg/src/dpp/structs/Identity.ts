@@ -1,7 +1,7 @@
 import { IdentifierWASM } from './Identifier.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
 import { DashPlatformProtocol, IdentifierLike, PlatformVersionLike } from '../../types.js'
-import { DynamicValue, IdentityNAPI } from '../../../binaries/bindingsTypes.js'
+import { IdentityNAPI } from '../../../binaries/bindingsTypes.js'
 
 let dpp: DashPlatformProtocol
 
@@ -16,7 +16,7 @@ export class IdentityWASM {
   constructor (rawId: IdentifierLike | IdentifierWASM, platformVersion?: PlatformVersionLike) {
     const id = new IdentifierWASM(rawId)
 
-    const dynamicEnumValue = new DynamicValue(platformVersion)
+    const dynamicEnumValue = new dpp.DynamicValue(platformVersion)
 
     this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, dynamicEnumValue)
   }
