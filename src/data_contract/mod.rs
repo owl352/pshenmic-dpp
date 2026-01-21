@@ -1,6 +1,8 @@
 use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
+use crate::token_configuration::TokenConfigurationNAPI;
+use crate::token_configuration::group::GroupNAPI;
 use crate::utils::{WithJsError, with_serde_to_platform_value, with_serde_to_platform_value_map};
 use dpp::data_contract::accessors::v0::{DataContractV0Getters, DataContractV0Setters};
 use dpp::data_contract::accessors::v1::{DataContractV1Getters, DataContractV1Setters};
@@ -9,9 +11,12 @@ use dpp::data_contract::conversion::json::DataContractJsonConversionMethodsV0;
 use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethodsV0;
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
+use dpp::data_contract::group::Group;
 use dpp::data_contract::schema::DataContractSchemaMethodsV0;
 use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
-use dpp::data_contract::{DataContract, TokenConfiguration, TokenContractPosition};
+use dpp::data_contract::{
+    DataContract, GroupContractPosition, TokenConfiguration, TokenContractPosition,
+};
 use dpp::platform_value::string_encoding::Encoding::{Base58, Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::platform_value::{Value, ValueMap};
@@ -42,32 +47,6 @@ impl From<DataContractNAPI> for DataContract {
     }
 }
 
-// pub fn tokens_configuration_from_js_value(
-//     js_configuration: &JsValue,
-// ) -> Result<BTreeMap<TokenContractPosition, TokenConfiguration>, JsValue> {
-//     let configuration_object = Object::from(js_configuration.clone());
-//     let configuration_keys = Object::keys(&configuration_object);
-
-//     let mut configuration: BTreeMap<TokenContractPosition, TokenConfiguration> = BTreeMap::new();
-
-//     for key in configuration_keys.iter() {
-//         let contract_position = match key.as_string() {
-//             None => Err(JsValue::from("Cannot read timestamp in distribution rules")),
-//             Some(contract_position) => Ok(contract_position
-//                 .parse::<GroupContractPosition>()
-//                 .map_err(JsError::from)?),
-//         }?;
-
-//         let js_config = Reflect::get(&js_configuration, &key)?
-//             .to_wasm::<TokenConfigurationWASM>("TokenConfigurationWASM")?
-//             .clone();
-
-//         configuration.insert(contract_position, js_config.into());
-//     }
-
-//     Ok(configuration)
-// }
-
 #[napi]
 impl DataContractNAPI {
     #[napi(constructor)]
@@ -76,8 +55,8 @@ impl DataContractNAPI {
         js_identity_nonce: Uint64String,
         js_schema: Object,
         js_definitions: Option<Object>,
-        // js_tokens: &BTreeMap<u16, TokenConfiguration>,
-        full_validation: bool,
+        js_tokens: Option<Vec<(u16, &TokenConfigurationNAPI)>>,
+        full_validation: Option<bool>,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
         let owner_id = IdentifierNAPI::try_from(js_owner_id)?;
@@ -88,11 +67,13 @@ impl DataContractNAPI {
 
         let schema: Value = with_serde_to_platform_value(js_schema)?;
 
-        let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> = BTreeMap::new();
-        // match js_tokens.is_undefined() {
-        //     true => BTreeMap::new(),
-        //     false => tokens_configuration_from_js_value(js_tokens)?,
-        // };
+        let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> = match js_tokens {
+            Some(tokens) => tokens
+                .into_iter()
+                .map(|(pos, config)| (pos.clone(), config.clone().into()))
+                .collect(),
+            None => BTreeMap::new(),
+        };
 
         let platform_version: PlatformVersion = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default().into(),
@@ -154,9 +135,12 @@ impl DataContractNAPI {
             .set_value("documentSchemas", schema)
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
-        let data_contract =
-            DataContract::from_value(contract_value, full_validation, &platform_version)
-                .with_js_error()?;
+        let data_contract = DataContract::from_value(
+            contract_value,
+            full_validation.unwrap_or(true),
+            &platform_version,
+        )
+        .with_js_error()?;
 
         let data_contract_with_tokens = match data_contract {
             DataContract::V0(v0) => DataContract::from(v0),
@@ -405,37 +389,23 @@ impl DataContractNAPI {
         Ok(json)
     }
 
-    // TODO: Implement tokens
+    #[napi(getter, js_name = "tokens")]
+    pub fn get_tokens(&self) -> Vec<(u16, TokenConfigurationNAPI)> {
+        self.0
+            .tokens()
+            .iter()
+            .map(|(id, config)| (id.clone(), config.clone().into()))
+            .collect()
+    }
 
-    // #[napi(getter, js_name = "tokens")]
-    // pub fn get_tokens(&self) -> Result<Object, JsValue> {
-    //     let tokens_object = Object::new();
-
-    //     for (key, value) in self.0.tokens().iter() {
-    //         Reflect::set(
-    //             &tokens_object,
-    //             &JsValue::from(key.clone()),
-    //             &JsValue::from(TokenConfigurationWASM::from(value.clone())),
-    //         )?;
-    //     }
-
-    //     Ok(tokens_object)
-    // }
-
-    // #[napi(getter, js_name = "groups")]
-    // pub fn get_groups(&self) -> Result<JsValue, JsValue> {
-    //     let groups_object = Object::new();
-
-    //     for (key, value) in self.0.groups().iter() {
-    //         Reflect::set(
-    //             &groups_object,
-    //             &JsValue::from(key.clone()),
-    //             &JsValue::from(GroupWASM::from(value.clone())),
-    //         )?;
-    //     }
-
-    //     Ok(groups_object.into())
-    // }
+    #[napi(getter, js_name = "groups")]
+    pub fn get_groups(&self) -> Vec<(u16, GroupNAPI)> {
+        self.0
+            .groups()
+            .iter()
+            .map(|(id, group)| (id.clone(), group.clone().into()))
+            .collect()
+    }
 
     #[napi(getter, js_name = "description")]
     pub fn get_description(&self) -> Option<String> {
@@ -519,47 +489,28 @@ impl DataContractNAPI {
         Ok(())
     }
 
-    // TODO: tokens
+    #[napi(setter, js_name = "tokens")]
+    pub fn set_tokens(&mut self, js_tokens: Option<Vec<(u16, &TokenConfigurationNAPI)>>) {
+        let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> = match js_tokens {
+            Some(tokens) => tokens
+                .into_iter()
+                .map(|(pos, config)| (pos.clone(), config.clone().into()))
+                .collect(),
+            None => BTreeMap::new(),
+        };
 
-    // #[napi(setter, js_name = "tokens")]
-    // pub fn set_tokens(&mut self, js_tokens: &JsValue) -> Result<(), JsValue> {
-    //     Ok(self
-    //         .0
-    //         .set_tokens(tokens_configuration_from_js_value(js_tokens)?))
-    // }
+        self.0.set_tokens(tokens)
+    }
 
-    // #[napi(setter, js_name = "groups")]
-    // pub fn set_groups(&mut self, js_groups: &JsValue) -> Result<(), JsValue> {
-    //     let groups_object = Object::from(js_groups.clone());
+    #[napi(setter, js_name = "groups")]
+    pub fn set_groups(&mut self, js_groups: Vec<(u16, &GroupNAPI)>) {
+        let groups: BTreeMap<GroupContractPosition, Group> = js_groups
+            .into_iter()
+            .map(|(pos, group)| (pos.clone(), group.clone().into()))
+            .collect();
 
-    //     let mut groups: BTreeMap<GroupContractPosition, Group> = BTreeMap::new();
-
-    //     for js_position in Object::keys(&groups_object) {
-    //         let num_position = match js_position.as_f64() {
-    //             None => Err(JsValue::from("position must be a number")),
-    //             Some(key) => Ok(key),
-    //         }?;
-
-    //         if num_position > u16::MAX as f64 {
-    //             return Err(JsValue::from_str(&format!(
-    //                 "Position value '{:?}' exceeds the maximum limit for u16.",
-    //                 js_position.as_string()
-    //             )));
-    //         }
-
-    //         let position = num_position as u16;
-
-    //         let js_group = Reflect::get(&groups_object, &js_position)?;
-
-    //         let group = js_group.to_wasm::<GroupWASM>("GroupWASM")?.clone();
-
-    //         groups.insert(position, group.into());
-    //     }
-
-    //     self.0.set_groups(groups);
-
-    //     Ok(())
-    // }
+        self.0.set_groups(groups);
+    }
 
     #[napi(setter, js_name = "description")]
     pub fn set_description(&mut self, description: Option<String>) {

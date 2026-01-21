@@ -45,11 +45,12 @@ impl TryToU64 for Uint64String {
     }
 }
 
+#[derive(Clone)]
 #[napi(js_name = "DynamicValue")]
-pub struct DynamicValue{
-    pub val: Either11<
+pub struct DynamicValue(
+    Either11<
         String,
-        Uint8Array,
+        Vec<u8>,
         u8,
         u16,
         u32,
@@ -58,9 +59,48 @@ pub struct DynamicValue{
         BTreeMap<String, DynamicValue>,
         Vec<DynamicValue>,
         Null,
-        Undefined
+        Undefined,
     >,
-};
+);
+
+#[napi]
+impl DynamicValue {
+    #[napi(constructor)]
+    pub fn new(
+        value: Either11<
+            String,
+            Uint8Array,
+            u8,
+            u16,
+            u32,
+            Uint64String,
+            bool,
+            BTreeMap<String, &DynamicValue>,
+            Vec<&DynamicValue>,
+            Null,
+            Undefined,
+        >,
+    ) -> Self {
+        let owned = match value {
+            Either11::A(v) => Either11::A(v),
+            Either11::B(v) => Either11::B(v.to_vec()),
+            Either11::C(v) => Either11::C(v),
+            Either11::D(v) => Either11::D(v),
+            Either11::E(v) => Either11::E(v),
+            Either11::F(v) => Either11::F(v),
+            Either11::G(v) => Either11::G(v),
+
+            Either11::H(map) => Either11::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
+
+            Either11::I(vec) => Either11::I(vec.into_iter().cloned().collect()),
+
+            Either11::J(v) => Either11::J(v),
+            Either11::K(v) => Either11::K(v),
+        };
+
+        Self(owned)
+    }
+}
 
 impl From<String> for DynamicValue {
     fn from(value: String) -> Self {
@@ -199,7 +239,7 @@ impl DynamicValue {
         }
     }
 
-    pub fn as_uint_8_array(&self) -> Option<&Uint8Array> {
+    pub fn as_bytes(&self) -> Option<&Vec<u8>> {
         match &self.0 {
             Either11::B(bytes) => Some(bytes),
             _ => None,
@@ -226,6 +266,27 @@ impl DynamicValue {
             Either11::C(val) => Some(val as u32),
             Either11::D(val) => Some(val as u32),
             Either11::E(val) => Some(val),
+            _ => None,
+        }
+    }
+
+    pub fn as_bool(&self) -> Option<bool> {
+        match self.0 {
+            Either11::G(val) => Some(val),
+            _ => None,
+        }
+    }
+
+    pub fn as_map(&self) -> Option<&BTreeMap<String, DynamicValue>> {
+        match &self.0 {
+            Either11::H(val) => Some(val),
+            _ => None,
+        }
+    }
+
+    pub fn as_array(&self) -> Option<&Vec<DynamicValue>> {
+        match &self.0 {
+            Either11::I(val) => Some(val),
             _ => None,
         }
     }

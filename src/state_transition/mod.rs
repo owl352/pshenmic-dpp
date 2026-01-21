@@ -6,8 +6,10 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition::{
-    Batch, DataContractCreate, DataContractUpdate, IdentityCreditTransfer,
-    IdentityCreditWithdrawal, IdentityTopUp, IdentityUpdate, MasternodeVote,
+    AddressCreditWithdrawal, AddressFundingFromAssetLock, AddressFundsTransfer, Batch,
+    DataContractCreate, DataContractUpdate, IdentityCreateFromAddresses, IdentityCreditTransfer,
+    IdentityCreditTransferToAddresses, IdentityCreditWithdrawal, IdentityTopUp,
+    IdentityTopUpFromAddresses, IdentityUpdate, MasternodeVote,
 };
 use dpp::state_transition::batch_transition::BatchTransition;
 use dpp::state_transition::batch_transition::batched_transition::BatchedTransition;
@@ -18,8 +20,10 @@ use dpp::state_transition::data_contract_create_transition::DataContractCreateTr
 use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV0;
 use dpp::state_transition::data_contract_update_transition::DataContractUpdateTransition;
 use dpp::state_transition::data_contract_update_transition::accessors::DataContractUpdateTransitionAccessorsV0;
+use dpp::state_transition::identity_credit_transfer_to_addresses_transition::accessors::IdentityCreditTransferToAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_withdrawal_transition::accessors::IdentityCreditWithdrawalTransitionAccessorsV0;
+use dpp::state_transition::identity_topup_from_addresses_transition::accessors::IdentityTopUpFromAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_topup_transition::accessors::IdentityTopUpTransitionAccessorsV0;
 use dpp::state_transition::identity_update_transition::accessors::IdentityUpdateTransitionAccessorsV0;
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
@@ -306,6 +310,12 @@ impl StateTransitionNAPI {
             IdentityCreditWithdrawal(_) => "IDENTITY_CREDIT_WITHDRAWAL",
             IdentityCreditTransfer(_) => "IDENTITY_CREDIT_TRANSFER",
             MasternodeVote(_) => "MASTERNODE_VOTE",
+            IdentityCreditTransferToAddresses(_) => "IDENTITY_CREDIT_TRANSFER_TO_ADDRESSES",
+            IdentityCreateFromAddresses(_) => "IDENTITY_CREATE_FROM_ADDRESSES",
+            IdentityTopUpFromAddresses(_) => "IDENTITY_TOP_UP_FROM_ADDRESSES",
+            AddressFundsTransfer(_) => "ADDRESS_FUNDS_TRANSFER",
+            AddressFundingFromAssetLock(_) => "ADDRESS_FUNDING_FROM_ASSET_LOCK",
+            AddressCreditWithdrawal(_) => "ADDRESS_CREDIT_WITHDRAWAL",
         }
         .to_string()
     }
@@ -322,17 +332,23 @@ impl StateTransitionNAPI {
             IdentityCreditWithdrawal(_) => 6,
             IdentityCreditTransfer(_) => 7,
             MasternodeVote(_) => 8,
+            IdentityCreditTransferToAddresses(_) => 9,
+            IdentityCreateFromAddresses(_) => 10,
+            IdentityTopUpFromAddresses(_) => 11,
+            AddressFundsTransfer(_) => 12,
+            AddressFundingFromAssetLock(_) => 13,
+            AddressCreditWithdrawal(_) => 14,
         }
     }
 
     #[napi(js_name = "getOwnerId")]
-    pub fn get_owner_id(&self) -> IdentifierNAPI {
-        self.0.owner_id().into()
+    pub fn get_owner_id(&self) -> Option<IdentifierNAPI> {
+        self.0.owner_id().map(Into::into)
     }
 
     #[napi(getter, js_name = "signature")]
-    pub fn get_signature(&self) -> Uint8Array {
-        self.0.signature().to_vec().into()
+    pub fn get_signature(&self) -> Option<Uint8Array> {
+        self.0.signature().map(|v| v.to_vec().into())
     }
 
     #[napi(getter, js_name = "signaturePublicKeyId")]
@@ -406,6 +422,12 @@ impl StateTransitionNAPI {
             IdentityUpdate(_) => None,
             IdentityCreditTransfer(_) => None,
             MasternodeVote(_) => None,
+            IdentityCreditTransferToAddresses(_) => None,
+            IdentityCreateFromAddresses(_) => None,
+            IdentityTopUpFromAddresses(_) => None,
+            AddressFundsTransfer(_) => None,
+            AddressFundingFromAssetLock(_) => None,
+            AddressCreditWithdrawal(_) => None,
         }
     }
 
@@ -429,11 +451,17 @@ impl StateTransitionNAPI {
                 Some(Uint64String::from_u64(credit_transfer.nonce()))
             }
             MasternodeVote(mn_vote) => Some(Uint64String::from_u64(mn_vote.nonce())),
+            IdentityCreditTransferToAddresses(st) => Some(Uint64String::from_u64(st.nonce())),
+            IdentityCreateFromAddresses(_) => None,
+            IdentityTopUpFromAddresses(_) => None,
+            AddressFundsTransfer(_) => None,
+            AddressFundingFromAssetLock(_) => None,
+            AddressCreditWithdrawal(_) => None,
         }
     }
 
     #[napi(setter, js_name = "signature")]
-    pub fn set_signature(&mut self, signature: Uint8Array) {
+    pub fn set_signature(&mut self, signature: Uint8Array) -> bool {
         self.0.set_signature(BinaryData::from(signature.to_vec()))
     }
 
@@ -535,6 +563,40 @@ impl StateTransitionNAPI {
 
                 self.0 = MasternodeVote(mn_vote);
             }
+            IdentityCreditTransferToAddresses(mut st) => {
+                st.set_identity_id(owner_id.into());
+
+                self.0 = IdentityCreditTransferToAddresses(st);
+            }
+            IdentityTopUpFromAddresses(mut st) => {
+                st.set_identity_id(owner_id.into());
+
+                self.0 = IdentityTopUpFromAddresses(st);
+            }
+            IdentityCreateFromAddresses(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for IdentityCreateFromAddresses",
+                ))?;
+            }
+            AddressFundsTransfer(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for AddressFundsTransfer",
+                ))?;
+            }
+            AddressFundingFromAssetLock(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for AddressFundingFromAssetLock",
+                ))?;
+            }
+            AddressCreditWithdrawal(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for AddressCreditWithdrawal",
+                ))?;
+            }
         };
 
         Ok(())
@@ -582,6 +644,30 @@ impl StateTransitionNAPI {
             MasternodeVote(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot set identity contract nonce for Masternode Vote",
+            ))?,
+            IdentityCreditTransferToAddresses(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for IdentityCreditTransferToAddresses",
+            ))?,
+            IdentityCreateFromAddresses(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for IdentityCreateFromAddresses",
+            ))?,
+            IdentityTopUpFromAddresses(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for IdentityTopUpFromAddresses",
+            ))?,
+            AddressFundsTransfer(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for AddressFundsTransfer",
+            ))?,
+            AddressFundingFromAssetLock(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for AddressFundingFromAssetLock",
+            ))?,
+            AddressCreditWithdrawal(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for AddressCreditWithdrawal",
             ))?,
         };
 
@@ -643,6 +729,31 @@ impl StateTransitionNAPI {
 
                 mn_vote.into()
             }
+            IdentityCreditTransferToAddresses(mut st) => {
+                st.set_nonce(nonce.try_to_u64()?);
+
+                st.into()
+            }
+            StateTransition::IdentityCreateFromAddresses(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for IdentityCreateFromAddresses",
+            ))?,
+            IdentityTopUpFromAddresses(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for IdentityTopUpFromAddresses",
+            ))?,
+            StateTransition::AddressFundsTransfer(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for AddressFundsTransfer",
+            ))?,
+            StateTransition::AddressFundingFromAssetLock(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for AddressFundingFromAssetLock",
+            ))?,
+            StateTransition::AddressCreditWithdrawal(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for AddressCreditWithdrawal",
+            ))?,
         };
 
         Ok(())

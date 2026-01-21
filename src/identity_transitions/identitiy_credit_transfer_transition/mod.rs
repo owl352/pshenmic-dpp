@@ -6,7 +6,10 @@ use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable}
 use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_transfer_transition::v0::IdentityCreditTransferTransitionV0;
-use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use dpp::state_transition::{
+    StateTransition, StateTransitionIdentitySigned, StateTransitionLike,
+    StateTransitionSingleSigned,
+};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 

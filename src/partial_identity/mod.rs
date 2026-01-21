@@ -24,7 +24,7 @@ impl PartialIdentityNAPI {
     #[napi(constructor)]
     pub fn new(
         js_id: IdentifierLikeNAPI,
-        js_loaded_public_keys: BTreeMap<String, &IdentityPublicKeyNAPI>,
+        js_loaded_public_keys: Vec<(String, &IdentityPublicKeyNAPI)>,
         balance: Option<Uint64String>,
         revision: Option<Uint64String>,
         js_not_found_public_keys: Option<Vec<u32>>,
@@ -52,7 +52,7 @@ impl PartialIdentityNAPI {
     }
 
     #[napi(getter, js_name = "loadedPublicKeys")]
-    pub fn loaded_public_keys(&self) -> BTreeMap<String, IdentityPublicKeyNAPI> {
+    pub fn loaded_public_keys(&self) -> Vec<(String, IdentityPublicKeyNAPI)> {
         self.0
             .loaded_public_keys
             .clone()
@@ -88,7 +88,7 @@ impl PartialIdentityNAPI {
     #[napi(setter, js_name = "loadedPublicKeys")]
     pub fn set_loaded_public_keys(
         &mut self,
-        loaded_public_keys: BTreeMap<String, &IdentityPublicKeyNAPI>,
+        loaded_public_keys: Vec<(String, &IdentityPublicKeyNAPI)>,
     ) {
         self.0.loaded_public_keys = loaded_public_keys
             .into_iter()

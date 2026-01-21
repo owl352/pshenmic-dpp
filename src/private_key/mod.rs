@@ -169,9 +169,9 @@ impl PrivateKeyNAPI {
                         }
                     }
                 } else if is_bytes {
-                    let bytes = value.as_uint_8_array().unwrap();
+                    let bytes = value.as_bytes().unwrap();
 
-                    return PrivateKeyNAPI::from_bytes(bytes.to_vec().into(), js_network);
+                    return PrivateKeyNAPI::from_bytes(bytes.clone().into(), js_network);
                 } else {
                     return Err(napi::Error::new(
                         napi::Status::InvalidArg,
@@ -223,9 +223,9 @@ impl PrivateKeyNAPI {
                         }
                     }
                 } else if is_bytes {
-                    let bytes = value.as_uint_8_array().unwrap();
+                    let bytes = value.as_bytes().unwrap().clone();
 
-                    return Ok(bytes.to_vec().into());
+                    return Ok(bytes.into());
                 } else {
                     return Err(napi::Error::new(
                         napi::Status::InvalidArg,

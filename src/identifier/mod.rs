@@ -33,6 +33,12 @@ impl From<&IdentifierNAPI> for Identifier {
     }
 }
 
+impl From<[u8; 32]> for IdentifierNAPI {
+    fn from(value: [u8; 32]) -> Self {
+        IdentifierNAPI(Identifier::from(value))
+    }
+}
+
 impl TryFrom<Either<&IdentifierNAPI, &DynamicValue>> for IdentifierNAPI {
     type Error = napi::Error;
 
@@ -48,7 +54,7 @@ impl TryFrom<Either<&IdentifierNAPI, &DynamicValue>> for IdentifierNAPI {
                         return IdentifierNAPI::from_base58(txt);
                     }
                 } else if dyn_val.is_uint_8_array() {
-                    let uint8_array = dyn_val.as_uint_8_array().unwrap();
+                    let uint8_array = dyn_val.as_bytes().unwrap();
                     IdentifierNAPI::from_bytes(Uint8Array::from(uint8_array.to_vec()))
                 } else {
                     Err(napi::Error::new(
