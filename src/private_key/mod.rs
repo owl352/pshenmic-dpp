@@ -21,10 +21,10 @@ pub struct PrivateKeyNAPI(PrivateKey);
 impl PrivateKeyNAPI {
     #[napi(constructor)]
     pub fn new(
-        value: Either<DynamicValue, &PrivateKeyNAPI>,
-        js_network: NetworkNAPI,
+        value: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_network: &DynamicValue,
     ) -> Result<PrivateKeyNAPI, napi::Error> {
-        PrivateKeyNAPI::from_js_value(value, js_network)
+        PrivateKeyNAPI::from_js_value(value, js_network.try_into()?)
     }
 
     #[napi(js_name = "fromWIF")]
@@ -133,43 +133,50 @@ impl PrivateKeyNAPI {
     }
 
     pub fn from_js_value(
-        value: Either<DynamicValue, &PrivateKeyNAPI>,
+        value: Either<&DynamicValue, &PrivateKeyNAPI>,
         js_network: NetworkNAPI,
     ) -> Result<Self, napi::Error> {
         match value {
             Either::A(value) => {
-                match value {
-                    DynamicValue::Text(str) => {
-                        if str.len() == 64 {
-                            // raw hex
-                            PrivateKeyNAPI::from_hex(str, js_network)
-                        } else {
-                            // base58 check
-                            let key_base58 = base58::decode_check(&str).map_err(|err| {
-                                napi::Error::new(
-                                    napi::Status::InvalidArg,
-                                    format!("Private Key error read wif ({})", err),
-                                )
-                            })?;
+                let is_text = value.is_string();
+                let is_bytes = value.is_uint_8_array();
 
-                            if key_base58.clone().len() == 33 || key_base58.clone().len() == 34 {
-                                PrivateKeyNAPI::from_wif(str)
-                            } else {
-                                Err(napi::Error::new(
-                                    napi::Status::InvalidArg,
-                                    format!(
-                                        "Private key decoded wif must be 38 byte length ({})",
-                                        key_base58.clone().len()
-                                    ),
-                                ))
-                            }
+                if is_text {
+                    let text = value.as_string().unwrap();
+
+                    if text.len() == 64 {
+                        // raw hex
+                        return PrivateKeyNAPI::from_hex(text, js_network);
+                    } else {
+                        // base58 check
+                        let key_base58 = base58::decode_check(&text).map_err(|err| {
+                            napi::Error::new(
+                                napi::Status::InvalidArg,
+                                format!("Private Key error read wif ({})", err),
+                            )
+                        })?;
+
+                        if key_base58.clone().len() == 33 || key_base58.clone().len() == 34 {
+                            return PrivateKeyNAPI::from_wif(text);
+                        } else {
+                            return Err(napi::Error::new(
+                                napi::Status::InvalidArg,
+                                format!(
+                                    "Private key decoded wif must be 38 byte length ({})",
+                                    key_base58.clone().len()
+                                ),
+                            ));
                         }
                     }
-                    DynamicValue::Bytes(bytes) => PrivateKeyNAPI::from_bytes(bytes, js_network),
-                    _ => Err(napi::Error::new(
+                } else if is_bytes {
+                    let bytes = value.as_bytes().unwrap();
+
+                    return PrivateKeyNAPI::from_bytes(bytes.clone().into(), js_network);
+                } else {
+                    return Err(napi::Error::new(
                         napi::Status::InvalidArg,
                         "Cannot parse private key",
-                    ))?,
+                    ));
                 }
             }
             Either::B(key) => Ok(key.clone()),
@@ -177,46 +184,53 @@ impl PrivateKeyNAPI {
     }
 
     pub fn bytes_from_js_value(
-        value: Either<DynamicValue, &PrivateKeyNAPI>,
+        value: Either<&DynamicValue, &PrivateKeyNAPI>,
     ) -> Result<Uint8Array, napi::Error> {
         match value {
             Either::A(value) => {
-                match value {
-                    DynamicValue::Text(str) => {
-                        if str.len() == 64 {
-                            // raw hex
-                            Ok(decode(&str, Encoding::Hex)
-                                .map_err(|err| {
-                                    napi::Error::new(napi::Status::InvalidArg, err.to_string())
-                                })?
-                                .into())
-                        } else {
-                            // base58 check
-                            let key_base58 = base58::decode_check(&str).map_err(|err| {
-                                napi::Error::new(
-                                    napi::Status::InvalidArg,
-                                    format!("Private Key error read wif ({})", err),
-                                )
-                            })?;
+                let is_text = value.is_string();
+                let is_bytes = value.is_uint_8_array();
 
-                            if key_base58.clone().len() == 33 || key_base58.clone().len() == 34 {
-                                Ok(PrivateKeyNAPI::from_wif(str)?.get_bytes())
-                            } else {
-                                Err(napi::Error::new(
-                                    napi::Status::InvalidArg,
-                                    format!(
-                                        "Private key decoded wif must be 38 byte length ({})",
-                                        key_base58.clone().len()
-                                    ),
-                                ))
-                            }
+                if is_text {
+                    let text = value.as_string().unwrap();
+
+                    if text.len() == 64 {
+                        // raw hex
+                        return Ok(decode(&text, Encoding::Hex)
+                            .map_err(|err| {
+                                napi::Error::new(napi::Status::InvalidArg, err.to_string())
+                            })?
+                            .into());
+                    } else {
+                        // base58 check
+                        let key_base58 = base58::decode_check(&text).map_err(|err| {
+                            napi::Error::new(
+                                napi::Status::InvalidArg,
+                                format!("Private Key error read wif ({})", err),
+                            )
+                        })?;
+
+                        if key_base58.clone().len() == 33 || key_base58.clone().len() == 34 {
+                            return Ok(PrivateKeyNAPI::from_wif(text)?.get_bytes());
+                        } else {
+                            return Err(napi::Error::new(
+                                napi::Status::InvalidArg,
+                                format!(
+                                    "Private key decoded wif must be 38 byte length ({})",
+                                    key_base58.clone().len()
+                                ),
+                            ));
                         }
                     }
-                    DynamicValue::Bytes(bytes) => Ok(bytes),
-                    _ => Err(napi::Error::new(
+                } else if is_bytes {
+                    let bytes = value.as_bytes().unwrap().clone();
+
+                    return Ok(bytes.into());
+                } else {
+                    return Err(napi::Error::new(
                         napi::Status::InvalidArg,
                         "Cannot create private key",
-                    )),
+                    ));
                 }
             }
             Either::B(key) => Ok(key.get_bytes()),

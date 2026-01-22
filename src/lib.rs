@@ -1,9 +1,13 @@
 #![no_main]
 
+pub mod address_transitions;
 pub mod asset_lock_proof;
 pub mod consensus_error;
 pub mod contract_bounds;
 pub mod core_script;
+pub mod data_contract;
+pub mod data_contract_transitions;
+pub mod document;
 pub mod dynamic_value;
 pub mod encrypted_note;
 pub mod enums;
@@ -17,7 +21,10 @@ pub mod instant_lock;
 pub mod masternode_vote;
 pub mod mock_bls;
 pub mod partial_identity;
+pub mod platform_address;
 pub mod private_key;
 pub mod public_key;
 pub mod state_transition;
+pub mod token_configuration;
+pub mod token_configuration_change_item;
 pub mod utils;

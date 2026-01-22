@@ -4,7 +4,7 @@ use dpp::identity::{IdentityPublicKey, PartialIdentity};
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{IdentifierLikeNAPI, Uint64String},
+    dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String},
     identifier::IdentifierNAPI,
     identity_public_key::IdentityPublicKeyNAPI,
 };
@@ -24,7 +24,7 @@ impl PartialIdentityNAPI {
     #[napi(constructor)]
     pub fn new(
         js_id: IdentifierLikeNAPI,
-        js_loaded_public_keys: BTreeMap<String, &IdentityPublicKeyNAPI>,
+        js_loaded_public_keys: Vec<(String, &IdentityPublicKeyNAPI)>,
         balance: Option<Uint64String>,
         revision: Option<Uint64String>,
         js_not_found_public_keys: Option<Vec<u32>>,
@@ -38,8 +38,8 @@ impl PartialIdentityNAPI {
         Ok(PartialIdentityNAPI(PartialIdentity {
             id: id.into(),
             loaded_public_keys,
-            balance: balance.map(|b| b.try_into()).transpose()?,
-            revision: revision.map(|r| r.try_into()).transpose()?,
+            balance: balance.map(|b| b.try_to_u64()).transpose()?,
+            revision: revision.map(|r| r.try_to_u64()).transpose()?,
             not_found_public_keys: js_not_found_public_keys
                 .map(|arr| BTreeSet::from_iter(arr.into_iter()))
                 .unwrap_or(BTreeSet::new()),
@@ -52,7 +52,7 @@ impl PartialIdentityNAPI {
     }
 
     #[napi(getter, js_name = "loadedPublicKeys")]
-    pub fn loaded_public_keys(&self) -> BTreeMap<String, IdentityPublicKeyNAPI> {
+    pub fn loaded_public_keys(&self) -> Vec<(String, IdentityPublicKeyNAPI)> {
         self.0
             .loaded_public_keys
             .clone()
@@ -63,12 +63,12 @@ impl PartialIdentityNAPI {
 
     #[napi(getter, js_name = "balance")]
     pub fn balance(&self) -> Option<Uint64String> {
-        self.0.balance.map(Into::into)
+        self.0.balance.map(Uint64String::from_u64)
     }
 
     #[napi(getter, js_name = "revision")]
     pub fn revision(&self) -> Option<Uint64String> {
-        self.0.revision.map(Into::into)
+        self.0.revision.map(Uint64String::from_u64)
     }
 
     #[napi(getter, js_name = "notFoundPublicKeys")]
@@ -88,7 +88,7 @@ impl PartialIdentityNAPI {
     #[napi(setter, js_name = "loadedPublicKeys")]
     pub fn set_loaded_public_keys(
         &mut self,
-        loaded_public_keys: BTreeMap<String, &IdentityPublicKeyNAPI>,
+        loaded_public_keys: Vec<(String, &IdentityPublicKeyNAPI)>,
     ) {
         self.0.loaded_public_keys = loaded_public_keys
             .into_iter()
@@ -98,13 +98,13 @@ impl PartialIdentityNAPI {
 
     #[napi(setter, js_name = "balance")]
     pub fn set_balance(&mut self, balance: Option<Uint64String>) -> Result<(), napi::Error> {
-        self.0.balance = balance.map(|bal| bal.try_into()).transpose()?;
+        self.0.balance = balance.map(|bal| bal.try_to_u64()).transpose()?;
         Ok(())
     }
 
     #[napi(setter, js_name = "revision")]
     pub fn set_revision(&mut self, revision: Option<Uint64String>) -> Result<(), napi::Error> {
-        self.0.revision = revision.map(|rev| rev.try_into()).transpose()?;
+        self.0.revision = revision.map(|rev| rev.try_to_u64()).transpose()?;
         Ok(())
     }
 

@@ -1,8 +1,7 @@
 import { IdentifierWASM } from './Identifier.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
-import { valueToDynamicEnum } from '../helpers.js'
 import { DashPlatformProtocol, IdentifierLike, PlatformVersionLike } from '../../types.js'
-import { DynamicValue, IdentityNAPI } from '../../../binaries/bindingsTypes.js'
+import { IdentityNAPI } from '../../../binaries/bindingsTypes.js'
 
 let dpp: DashPlatformProtocol
 
@@ -17,7 +16,7 @@ export class IdentityWASM {
   constructor (rawId: IdentifierLike | IdentifierWASM, platformVersion?: PlatformVersionLike) {
     const id = new IdentifierWASM(rawId)
 
-    const dynamicEnumValue: DynamicValue = valueToDynamicEnum(platformVersion)
+    const dynamicEnumValue = new dpp.DynamicValue(platformVersion)
 
     this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, dynamicEnumValue)
   }
@@ -31,19 +30,19 @@ export class IdentityWASM {
   }
 
   set balance (balance: BigInt) {
-    this._rawIdentity.balance = { value: balance.toString() }
+    this._rawIdentity.balance = balance.toString()
   }
 
   get balance (): BigInt {
-    return BigInt(this._rawIdentity.balance.value)
+    return BigInt(this._rawIdentity.balance)
   }
 
   set revision (revision: BigInt) {
-    this._rawIdentity.revision = { value: revision.toString() }
+    this._rawIdentity.revision = revision.toString()
   }
 
   get revision (): BigInt {
-    return BigInt(this._rawIdentity.revision.value)
+    return BigInt(this._rawIdentity.revision)
   }
 
   addPublicKey (publicKey: IdentityPublicKeyWASM): void {

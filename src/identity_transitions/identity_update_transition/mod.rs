@@ -6,12 +6,15 @@ use dpp::state_transition::identity_update_transition::IdentityUpdateTransition;
 use dpp::state_transition::identity_update_transition::accessors::IdentityUpdateTransitionAccessorsV0;
 use dpp::state_transition::identity_update_transition::v0::IdentityUpdateTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
-use dpp::state_transition::{StateTransition, StateTransitionIdentitySigned, StateTransitionLike};
+use dpp::state_transition::{
+    StateTransition, StateTransitionIdentitySigned, StateTransitionLike,
+    StateTransitionSingleSigned,
+};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, Uint64String};
+use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
 use crate::enums::purpose::PurposeNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI;
@@ -38,8 +41,8 @@ impl IdentityUpdateTransitionNAPI {
         Ok(IdentityUpdateTransitionNAPI(IdentityUpdateTransition::V0(
             IdentityUpdateTransitionV0 {
                 identity_id: identity_id.into(),
-                revision: revision.try_into()?,
-                nonce: nonce.try_into()?,
+                revision: revision.try_to_u64()?,
+                nonce: nonce.try_to_u64()?,
                 add_public_keys: js_add_public_keys
                     .into_iter()
                     .map(|key| key.clone().into())
@@ -54,12 +57,12 @@ impl IdentityUpdateTransitionNAPI {
 
     #[napi(getter, js_name = "revision")]
     pub fn get_revision(&self) -> Uint64String {
-        self.0.revision().into()
+        Uint64String::from_u64(self.0.revision())
     }
 
     #[napi(getter, js_name = "nonce")]
     pub fn get_nonce(&self) -> Uint64String {
-        self.0.nonce().into()
+        Uint64String::from_u64(self.0.nonce())
     }
 
     #[napi(getter, js_name = "identityIdentifier")]
@@ -114,13 +117,13 @@ impl IdentityUpdateTransitionNAPI {
 
     #[napi(setter, js_name = "revision")]
     pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_revision(revision.try_into()?);
+        self.0.set_revision(revision.try_to_u64()?);
         Ok(())
     }
 
     #[napi(setter, js_name = "nonce")]
     pub fn set_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_nonce(nonce.try_into()?);
+        self.0.set_nonce(nonce.try_to_u64()?);
         Ok(())
     }
 

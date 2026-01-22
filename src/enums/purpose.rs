@@ -2,7 +2,7 @@ use dpp::identity::Purpose;
 use napi::Status;
 use napi_derive::napi;
 
-use crate::dynamic_value::{DynamicValue, TryToU64};
+use crate::dynamic_value::DynamicValue;
 
 #[napi(js_name = "PurposeNAPI")]
 pub enum PurposeNAPI {
@@ -57,10 +57,10 @@ impl From<PurposeNAPI> for String {
     }
 }
 
-impl TryFrom<u8> for PurposeNAPI {
+impl TryFrom<u64> for PurposeNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(PurposeNAPI::AUTHENTICATION),
             1 => Ok(PurposeNAPI::ENCRYPTION),
@@ -97,20 +97,25 @@ impl TryFrom<String> for PurposeNAPI {
     }
 }
 
-impl TryFrom<DynamicValue> for PurposeNAPI {
+impl TryFrom<&DynamicValue> for PurposeNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: DynamicValue) -> Result<Self, Self::Error> {
-        match value {
-            DynamicValue::Text(str) => PurposeNAPI::try_from(str),
-            DynamicValue::Uint8(num) => PurposeNAPI::try_from(num),
-            DynamicValue::Uint16(num) => PurposeNAPI::try_from(num as u8),
-            DynamicValue::Uint32(num) => PurposeNAPI::try_from(num as u8),
-            DynamicValue::Uint64(num_str) => PurposeNAPI::try_from(num_str.try_to_u64()? as u8),
-            _ => Err(napi::Error::new(
+    fn try_from(value: &DynamicValue) -> Result<Self, Self::Error> {
+        let is_number = value.is_number();
+        let is_string = value.is_string();
+
+        if is_number {
+            let num = value.try_to_u64()?;
+            PurposeNAPI::try_from(num)
+        } else if is_string {
+            let string = value.as_string().unwrap();
+
+            PurposeNAPI::try_from(string)
+        } else {
+            Err(napi::Error::new(
                 Status::InvalidArg,
                 "Invalid purpose value",
-            )),
+            ))
         }
     }
 }

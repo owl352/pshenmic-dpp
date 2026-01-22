@@ -3,7 +3,7 @@ use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::{
     identity::{
-        KeyType, Purpose, SecurityLevel,
+        KeyType, Purpose,
         hash::IdentityPublicKeyHashMethodsV0,
         identity_public_key::{
             accessors::v0::{IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0},
@@ -18,6 +18,7 @@ use napi::{Either, Status};
 use napi_derive::napi;
 
 use crate::contract_bounds::ContractBoundsNAPI;
+use crate::dynamic_value::TryToU64;
 use crate::private_key::PrivateKeyNAPI;
 use crate::{
     dynamic_value::{DynamicValue, Uint64String},
@@ -49,9 +50,9 @@ impl IdentityPublicKeyNAPI {
     #[napi(constructor)]
     pub fn new(
         id: u32,
-        js_purpose: DynamicValue,
-        js_security_level: DynamicValue,
-        js_key_type: DynamicValue,
+        js_purpose: &DynamicValue,
+        js_security_level: &DynamicValue,
+        js_key_type: &DynamicValue,
         read_only: bool,
         binary_data: String,
         js_disabled_at: Option<Uint64String>,
@@ -60,7 +61,7 @@ impl IdentityPublicKeyNAPI {
         let purpose: PurposeNAPI = js_purpose.try_into()?;
         let security_level: SecurityLevelNAPI = js_security_level.try_into()?;
         let key_type: KeyTypeNAPI = js_key_type.try_into()?;
-        let disabled_at = js_disabled_at.map(|val| val.try_into()).transpose()?;
+        let disabled_at = js_disabled_at.map(|val| val.try_to_u64()).transpose()?;
 
         Ok(IdentityPublicKeyNAPI(IdentityPublicKey::from(
             IdentityPublicKeyV0 {
@@ -80,8 +81,8 @@ impl IdentityPublicKeyNAPI {
     #[napi(js_name = "validatePrivateKey")]
     pub fn validate_private_key(
         &self,
-        js_private_key: Either<DynamicValue, &PrivateKeyNAPI>,
-        js_network: DynamicValue,
+        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_network: &DynamicValue,
     ) -> Result<bool, napi::Error> {
         let network = NetworkNAPI::try_from(js_network)?;
 
@@ -103,95 +104,99 @@ impl IdentityPublicKeyNAPI {
         self.0.id()
     }
 
-    #[napi(getter, js_name = purpose)]
+    #[napi(getter, js_name = "purpose")]
     pub fn get_purpose(&self) -> String {
         PurposeNAPI::from(self.0.purpose()).into()
     }
 
-    #[napi(getter, js_name = purposeNumber)]
+    #[napi(getter, js_name = "purposeNumber")]
     pub fn get_purpose_number(&self) -> PurposeNAPI {
         PurposeNAPI::from(self.0.purpose())
     }
 
-    #[napi(getter, js_name = securityLevel)]
+    #[napi(getter, js_name = "securityLevel")]
     pub fn get_security_level(&self) -> String {
         SecurityLevelNAPI::from(self.0.security_level()).into()
     }
 
-    #[napi(getter, js_name = securityLevelNumber)]
+    #[napi(getter, js_name = "securityLevelNumber")]
     pub fn get_security_level_number(&self) -> SecurityLevelNAPI {
         SecurityLevelNAPI::from(self.0.security_level())
     }
 
-    #[napi(getter, js_name = keyType)]
+    #[napi(getter, js_name = "keyType")]
     pub fn get_key_type(&self) -> String {
         KeyTypeNAPI::from(self.0.key_type()).into()
     }
 
-    #[napi(getter, js_name = keyTypeNumber)]
+    #[napi(getter, js_name = "keyTypeNumber")]
     pub fn get_key_type_number(&self) -> KeyTypeNAPI {
         KeyTypeNAPI::from(self.0.key_type())
     }
 
-    #[napi(getter, js_name = readOnly)]
+    #[napi(getter, js_name = "readOnly")]
     pub fn get_read_only(&self) -> bool {
         self.0.read_only()
     }
 
-    #[napi(getter, js_name = data)]
+    #[napi(getter, js_name = "data")]
     pub fn get_data(&self) -> String {
         self.0.data().to_string(Encoding::Hex)
     }
 
-    #[napi(getter, js_name = disabledAt)]
+    #[napi(getter, js_name = "disabledAt")]
     pub fn get_disabled_at(&self) -> Option<Uint64String> {
-        self.0.disabled_at().map(|num| num.into())
+        self.0.disabled_at().map(|num| Uint64String::from_u64(num))
     }
 
-    #[napi(setter, js_name = keyId)]
+    #[napi(setter, js_name = "keyId")]
     pub fn set_key_id(&mut self, key_id: u32) {
         self.0.set_id(key_id)
     }
 
-    #[napi(setter, js_name = purpose)]
-    pub fn set_purpose(&mut self, purpose: DynamicValue) -> Result<(), napi::Error> {
+    #[napi(setter, js_name = "purpose")]
+    pub fn set_purpose(&mut self, purpose: &DynamicValue) -> Result<(), napi::Error> {
         Ok(self
             .0
             .set_purpose(Purpose::from(PurposeNAPI::try_from(purpose)?)))
     }
 
-    #[napi(setter, js_name = purposeNumber)]
-    pub fn set_purpose_number(&mut self, purpose: DynamicValue) -> Result<(), napi::Error> {
-        self.set_purpose(purpose)
+    #[napi(setter, js_name = "purposeNumber")]
+    pub fn set_purpose_number(&mut self, purpose: u32) -> Result<(), napi::Error> {
+        self.0
+            .set_purpose(PurposeNAPI::try_from(purpose as u64)?.into());
+
+        Ok(())
     }
 
-    #[napi(setter, js_name = securityLevel)]
-    pub fn set_security_level(&mut self, security_level: DynamicValue) -> Result<(), napi::Error> {
+    #[napi(setter, js_name = "securityLevel")]
+    pub fn set_security_level(&mut self, security_level: &DynamicValue) -> Result<(), napi::Error> {
         Ok(self
             .0
-            .set_security_level(SecurityLevel::from(SecurityLevelNAPI::try_from(
-                security_level,
-            )?)))
+            .set_security_level(SecurityLevelNAPI::try_from(security_level)?.into()))
     }
 
-    #[napi(setter, js_name = securityLevelNumber)]
-    pub fn set_security_level_number(
-        &mut self,
-        security_level: DynamicValue,
-    ) -> Result<(), napi::Error> {
-        self.set_security_level(security_level)
+    #[napi(setter, js_name = "securityLevelNumber")]
+    pub fn set_security_level_number(&mut self, security_level: u32) -> Result<(), napi::Error> {
+        self.0
+            .set_security_level(SecurityLevelNAPI::try_from(security_level as u64)?.into());
+
+        Ok(())
     }
 
-    #[napi(setter, js_name = keyType)]
-    pub fn set_key_type(&mut self, key_type: DynamicValue) -> Result<(), napi::Error> {
+    #[napi(setter, js_name = "keyType")]
+    pub fn set_key_type(&mut self, key_type: &DynamicValue) -> Result<(), napi::Error> {
         Ok(self
             .0
             .set_key_type(KeyType::from(KeyTypeNAPI::try_from(key_type)?)))
     }
 
-    #[napi(setter, js_name = keyTypeNumber)]
-    pub fn set_key_type_number(&mut self, key_type: DynamicValue) -> Result<(), napi::Error> {
-        self.set_key_type(key_type)
+    #[napi(setter, js_name = "keyTypeNumber")]
+    pub fn set_key_type_number(&mut self, key_type: u32) -> Result<(), napi::Error> {
+        self.0
+            .set_key_type(KeyTypeNAPI::try_from(key_type as u64)?.into());
+
+        Ok(())
     }
 
     #[napi(setter, js_name = readOnly)]
@@ -209,7 +214,7 @@ impl IdentityPublicKeyNAPI {
 
     #[napi(setter, js_name = disabledAt)]
     pub fn set_disabled_at(&mut self, disabled_at: Uint64String) -> Result<(), napi::Error> {
-        self.0.set_disabled_at(disabled_at.try_into()?);
+        self.0.set_disabled_at(disabled_at.try_to_u64()?);
         Ok(())
     }
 

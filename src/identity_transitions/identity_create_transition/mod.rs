@@ -7,7 +7,7 @@ use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
 use dpp::state_transition::identity_create_transition::accessors::IdentityCreateTransitionAccessorsV0;
 use dpp::state_transition::identity_create_transition::v0::IdentityCreateTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
-use dpp::state_transition::{StateTransition, StateTransitionLike};
+use dpp::state_transition::{StateTransition, StateTransitionLike, StateTransitionSingleSigned};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -60,7 +60,7 @@ impl IdentityCreateTransitionNAPI {
 
     #[napi(js_name = "default")]
     pub fn default(
-        js_platform_version: DynamicValue,
+        js_platform_version: &DynamicValue,
     ) -> Result<IdentityCreateTransitionNAPI, napi::Error> {
         let platform_version = PlatformVersionNAPI::try_from(js_platform_version)?;
 
@@ -176,7 +176,7 @@ impl IdentityCreateTransitionNAPI {
             StateTransition::IdentityCreate(st) => Ok(IdentityCreateTransitionNAPI(st)),
             _ => Err(napi::Error::new(
                 napi::Status::InvalidArg,
-                "Invalid state document_transition type",
+                "Invalid state IdentityCreate type",
             )),
         }
     }

@@ -1,8 +1,8 @@
 use dpp::dashcore::{ScriptBuf, TxOut};
-use napi::bindgen_prelude::Uint8Array;
+use napi::{Either, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
 
-use crate::dynamic_value::DynamicValue;
+use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
 
 #[napi(js_name = "TxOutNAPI")]
 #[derive(Clone)]
@@ -24,34 +24,30 @@ impl From<TxOutNAPI> for TxOut {
 impl TxOutNAPI {
     #[napi(constructor)]
     pub fn new(
-        js_value: DynamicValue,
-        script_pubkey: DynamicValue,
+        js_value: &DynamicValue,
+        js_script_pubkey: Either<String, Uint8Array>,
     ) -> Result<TxOutNAPI, napi::Error> {
         let value: u64 = js_value.try_into()?;
 
-        let tx_out: TxOut = match script_pubkey {
-            DynamicValue::Bytes(script_pubkey) => Ok(TxOut {
-                value,
-                script_pubkey: ScriptBuf::from_bytes(script_pubkey.to_vec()),
-            }),
-            DynamicValue::Text(script_pubkey) => Ok(TxOut {
+        let tx_out: TxOut = match js_script_pubkey {
+            Either::A(script_pubkey) => TxOut {
                 value,
                 script_pubkey: ScriptBuf::from_hex(&script_pubkey).map_err(|err| {
                     napi::Error::new(napi::Status::GenericFailure, err.to_string())
                 })?,
-            }),
-            _ => Err(napi::Error::new(
-                napi::Status::GenericFailure,
-                "Cannot parse script pub key",
-            )),
-        }?;
+            },
+            Either::B(script_pubkey) => TxOut {
+                value,
+                script_pubkey: ScriptBuf::from_bytes(script_pubkey.to_vec()),
+            },
+        };
 
         Ok(TxOutNAPI(tx_out))
     }
 
     #[napi(getter, js_name = "value")]
-    pub fn get_value(&self) -> DynamicValue {
-        DynamicValue::Uint64(self.0.value.into())
+    pub fn get_value(&self) -> Uint64String {
+        Uint64String::from_u64(self.0.value)
     }
 
     #[napi(getter, js_name = "scriptPubKeyHex")]
@@ -65,8 +61,8 @@ impl TxOutNAPI {
     }
 
     #[napi(setter, js_name = "value")]
-    pub fn set_value(&mut self, value: DynamicValue) -> Result<(), napi::Error> {
-        self.0.value = value.try_into()?;
+    pub fn set_value(&mut self, value: Uint64String) -> Result<(), napi::Error> {
+        self.0.value = value.try_to_u64()?;
 
         Ok(())
     }

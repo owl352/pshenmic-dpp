@@ -2,7 +2,7 @@ use dpp::identity::SecurityLevel;
 use napi::Status;
 use napi_derive::napi;
 
-use crate::dynamic_value::{DynamicValue, TryToU64};
+use crate::dynamic_value::DynamicValue;
 
 #[napi(js_name = "SecurityLevelNAPI")]
 pub enum SecurityLevelNAPI {
@@ -45,10 +45,10 @@ impl From<SecurityLevel> for SecurityLevelNAPI {
     }
 }
 
-impl TryFrom<u8> for SecurityLevelNAPI {
+impl TryFrom<u64> for SecurityLevelNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(SecurityLevelNAPI::MASTER),
             1 => Ok(SecurityLevelNAPI::CRITICAL),
@@ -79,22 +79,25 @@ impl TryFrom<String> for SecurityLevelNAPI {
     }
 }
 
-impl TryFrom<DynamicValue> for SecurityLevelNAPI {
+impl TryFrom<&DynamicValue> for SecurityLevelNAPI {
     type Error = napi::Error;
 
-    fn try_from(value: DynamicValue) -> Result<Self, Self::Error> {
-        match value {
-            DynamicValue::Text(str) => SecurityLevelNAPI::try_from(str),
-            DynamicValue::Uint8(num) => SecurityLevelNAPI::try_from(num),
-            DynamicValue::Uint16(num) => SecurityLevelNAPI::try_from(num as u8),
-            DynamicValue::Uint32(num) => SecurityLevelNAPI::try_from(num as u8),
-            DynamicValue::Uint64(num_str) => {
-                SecurityLevelNAPI::try_from(num_str.try_to_u64()? as u8)
-            }
-            _ => Err(napi::Error::new(
+    fn try_from(value: &DynamicValue) -> Result<Self, Self::Error> {
+        let is_number = value.is_number();
+        let is_string = value.is_string();
+
+        if is_number {
+            let num = value.try_to_u64()?;
+            SecurityLevelNAPI::try_from(num)
+        } else if is_string {
+            let string = value.as_string().unwrap();
+
+            SecurityLevelNAPI::try_from(string)
+        } else {
+            Err(napi::Error::new(
                 Status::InvalidArg,
                 "Invalid security level value",
-            )),
+            ))
         }
     }
 }
