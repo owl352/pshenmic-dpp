@@ -176,7 +176,7 @@ impl IdentityCreateTransitionNAPI {
             StateTransition::IdentityCreate(st) => Ok(IdentityCreateTransitionNAPI(st)),
             _ => Err(napi::Error::new(
                 napi::Status::InvalidArg,
-                "Invalid state document_transition type",
+                "Invalid state IdentityCreate type",
             )),
         }
     }
