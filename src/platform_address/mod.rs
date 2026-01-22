@@ -61,7 +61,7 @@ impl PlatformAddressNAPI {
     }
 
     #[napi(js_name = "hash")]
-    pub fn hash(&self) -> Vec<u8> {
-        self.0.hash().to_vec()
+    pub fn hash(&self) -> Uint8Array {
+        self.0.hash().to_vec().into()
     }
 }

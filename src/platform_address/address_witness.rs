@@ -69,12 +69,12 @@ impl AddressWitnessNAPI {
     }
 }
 
-#[napi(js_name = "AddressWitnessP2pkhNAPI")]
+#[napi(object, js_name = "AddressWitnessP2pkhNAPI")]
 pub struct AddressWitnessP2pkhNAPI {
     pub signature: Uint8Array,
 }
 
-#[napi(js_name = "AddressWitnessP2shNAPI")]
+#[napi(object, js_name = "AddressWitnessP2shNAPI")]
 pub struct AddressWitnessP2shNAPI {
     pub signatures: Vec<Vec<u8>>,
     pub redeem_script: Uint8Array,

@@ -7,6 +7,7 @@ pub mod contract_bounds;
 pub mod core_script;
 pub mod data_contract;
 pub mod data_contract_transitions;
+pub mod document;
 pub mod dynamic_value;
 pub mod encrypted_note;
 pub mod enums;
