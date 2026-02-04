@@ -16,7 +16,9 @@ dpp = { git = "https://github.com/owl352/platform", rev = "3a4fd23", default-fea
     "document-json-conversion",
     "data-contract-json-conversion"
 ] }
-drive = { git = "https://github.com/owl352/platform", rev = "3a4fd23", default-features = false }
+drive = { git = "https://github.com/owl352/platform", rev = "3a4fd23", default-features = false, features = [
+    "verify"
+] }
 napi = {version = "3.8.1", features = ["napi3", "serde-json"], default-features = false}
 napi-derive = "3.5.0"
 serde_json = { version = "1.0", features = ["preserve_order"] }

@@ -29,3 +29,4 @@ pub mod state_transition;
 pub mod token_configuration;
 pub mod token_configuration_change_item;
 pub mod utils;
+pub mod verify;
