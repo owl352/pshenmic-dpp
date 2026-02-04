@@ -2,6 +2,7 @@
 
 pub mod address_transitions;
 pub mod asset_lock_proof;
+pub mod batch;
 pub mod consensus_error;
 pub mod contract_bounds;
 pub mod core_script;

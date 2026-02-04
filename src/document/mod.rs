@@ -575,6 +575,10 @@ impl DocumentNAPI {
         self.owner_id.clone().into()
     }
 
+    pub fn rs_get_revision(&self) -> Option<Revision> {
+        self.revision
+    }
+
     pub fn rs_get_id(&self) -> Identifier {
         self.id.clone().into()
     }

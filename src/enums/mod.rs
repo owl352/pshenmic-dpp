@@ -1,6 +1,8 @@
 pub mod action_goal;
+pub mod batch_type;
 pub mod distribution_type;
 pub mod emergency_action;
+pub mod gas_fees_paid_by;
 pub mod key_type;
 pub mod lock_types;
 pub mod network;
