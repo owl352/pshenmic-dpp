@@ -1,17 +1,14 @@
-use dpp::ProtocolError;
 use dpp::document::serialization_traits::DocumentPlatformConversionMethodsV0;
 use dpp::document::{Document, DocumentV0, DocumentV0Getters};
 use dpp::identifier::Identifier;
 use dpp::identity::TimestampMillis;
 use dpp::platform_value::Value;
-use dpp::platform_value::converter::serde_json::BTreeValueJsonConverter;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::{BlockHeight, CoreBlockHeight, Revision};
 use dpp::util::entropy_generator::{self, EntropyGenerator};
-use napi::bindgen_prelude::{Object, Uint8Array};
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
-use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
 
 use crate::data_contract::DataContractNAPI;
@@ -120,7 +117,7 @@ impl DocumentNAPI {
 impl DocumentNAPI {
     #[napi(constructor)]
     pub fn new(
-        js_raw_document: Object,
+        js_raw_document: &DynamicValue,
         js_document_type_name: String,
         js_revision: Uint64String,
         js_data_contract_id: IdentifierLikeNAPI,
@@ -199,12 +196,14 @@ impl DocumentNAPI {
     }
 
     #[napi(getter, js_name = "properties", ts_return_type = "object")]
-    pub fn get_properties(&self) -> Result<JsonValue, napi::Error> {
-        self.properties
+    pub fn get_properties(&self) -> Result<DynamicValue, napi::Error> {
+        let platform_value: Vec<(Value, Value)> = self
+            .properties
             .clone()
-            .to_json_value()
-            .map_err(ProtocolError::ValueError)
-            .with_js_error()
+            .iter()
+            .map(|(k, v)| (Value::Text(k.clone()), v.clone()))
+            .collect();
+        Value::Map(platform_value).try_into()
     }
 
     #[napi(getter, js_name = "revision")]
@@ -304,7 +303,7 @@ impl DocumentNAPI {
     }
 
     #[napi(setter, js_name = "properties")]
-    pub fn set_properties(&mut self, properties: Object) -> Result<(), napi::Error> {
+    pub fn set_properties(&mut self, properties: &DynamicValue) -> Result<(), napi::Error> {
         self.properties = with_serde_to_platform_value_map(properties)?;
 
         Ok(())

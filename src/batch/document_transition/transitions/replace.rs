@@ -1,17 +1,16 @@
+use dpp::platform_value::Value;
 use dpp::state_transition::batch_transition::batched_transition::document_transition::DocumentTransition;
 use dpp::state_transition::batch_transition::document_base_transition::document_base_transition_trait::DocumentBaseTransitionAccessors;
 use dpp::state_transition::batch_transition::document_replace_transition::v0::v0_methods::DocumentReplaceTransitionV0Methods;
 use dpp::state_transition::batch_transition::DocumentReplaceTransition;
-use napi::bindgen_prelude::Object;
 use napi_derive::napi;
-use serde_json::{Map, Value as JsonValue};
 
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_replace_transition;
 use crate::batch::token_payment_info::TokenPaymentInfoNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
 use crate::utils::with_serde_to_platform_value_map;
 
 #[napi(js_name = "DocumentReplaceTransitionNAPI")]
@@ -47,30 +46,17 @@ impl DocumentReplaceTransitionNAPI {
         Ok(DocumentReplaceTransitionNAPI(rs_update_transition))
     }
 
-    #[napi(getter, js_name = "data", ts_return_type = "object")]
-    pub fn get_data(&self) -> Result<JsonValue, napi::Error> {
-        let mut data: Map<String, JsonValue> = Map::new();
+    #[napi(getter, js_name = "data")]
+    pub fn get_data(&self) -> Result<DynamicValue, napi::Error> {
+        let rs_data = Value::Map(
+            self.0
+                .data()
+                .iter()
+                .map(|(k, v)| (Value::Text(k.clone()), v.clone()))
+                .collect(),
+        );
 
-        let rs_data = self.0.data();
-        let keys = rs_data.keys();
-
-        for key in keys {
-            let value = rs_data.get(key).cloned().ok_or(0).map_err(|_| {
-                napi::Error::new(
-                    napi::Status::GenericFailure,
-                    format!("cannot get value by key {}", key),
-                )
-            })?;
-
-            data.insert(
-                key.clone(),
-                value.clone().try_into().map_err(|_| {
-                    napi::Error::new(napi::Status::GenericFailure, "cannot convert value to json")
-                })?,
-            );
-        }
-
-        Ok(JsonValue::Object(data))
+        rs_data.try_into()
     }
 
     #[napi(getter, js_name = "base")]
@@ -84,7 +70,7 @@ impl DocumentReplaceTransitionNAPI {
     }
 
     #[napi(setter, js_name = "data")]
-    pub fn set_data(&mut self, js_data: Object) -> Result<(), napi::Error> {
+    pub fn set_data(&mut self, js_data: &DynamicValue) -> Result<(), napi::Error> {
         let data = with_serde_to_platform_value_map(js_data)?;
 
         Ok(self.0.set_data(data))

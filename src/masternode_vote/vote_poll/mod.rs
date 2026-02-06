@@ -1,12 +1,10 @@
-use dpp::bincode;
+use dpp::platform_value::Value;
 use dpp::voting::vote_polls::VotePoll;
 use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
-use napi::bindgen_prelude::{Object, Uint8Array};
 use napi_derive::napi;
 
-use crate::dynamic_value::IdentifierLikeNAPI;
+use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI};
 use crate::identifier::IdentifierNAPI;
-use crate::utils::with_serde_to_platform_value;
 
 #[derive(Clone)]
 #[napi(js_name = "VotePollNAPI")]
@@ -31,16 +29,21 @@ impl VotePollNAPI {
         js_contract_id: IdentifierLikeNAPI,
         document_type_name: String,
         index_name: String,
-        js_index_values: Object,
+        js_index_values: &DynamicValue,
     ) -> Result<VotePollNAPI, napi::Error> {
         let contract_id = IdentifierNAPI::try_from(js_contract_id)?;
 
-        let index_values = match with_serde_to_platform_value(js_index_values)?.as_array() {
-            None => Err(napi::Error::new(
+        let index_values = match js_index_values.is_array() {
+            false => Err(napi::Error::new(
                 napi::Status::InvalidArg,
                 "index values must be array",
             )),
-            Some(array) => Ok(array.clone()),
+            true => Ok(js_index_values
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|el| Value::try_from(el.clone()))
+                .collect::<Result<Vec<Value>, napi::Error>>()?),
         }?;
 
         Ok(VotePollNAPI(VotePoll::ContestedDocumentResourceVotePoll(
@@ -80,27 +83,16 @@ impl VotePollNAPI {
     }
 
     #[napi(getter, js_name = "indexValues")]
-    pub fn index_values(&self) -> Result<Vec<Uint8Array>, napi::Error> {
-        let config = bincode::config::standard()
-            .with_big_endian()
-            .with_no_limit();
-
+    pub fn index_values(&self) -> Result<Vec<DynamicValue>, napi::Error> {
         match self.0.clone() {
             VotePoll::ContestedDocumentResourceVotePoll(poll) => {
-                let encoded: Result<Vec<Vec<u8>>, napi::Error> = poll
+                let encoded: Vec<DynamicValue> = poll
                     .index_values
                     .iter()
-                    .map(|value| {
-                        bincode::encode_to_vec(value, config).map_err(|err| {
-                            napi::Error::new(napi::Status::GenericFailure, err.to_string())
-                        })
-                    })
-                    .collect();
+                    .map(|value| DynamicValue::try_from(value.clone()))
+                    .collect::<Result<Vec<DynamicValue>, napi::Error>>()?;
 
-                Ok(encoded?
-                    .into_iter()
-                    .map(|bytes| Uint8Array::from(bytes))
-                    .collect())
+                Ok(encoded)
             }
         }
     }
@@ -146,13 +138,18 @@ impl VotePollNAPI {
     }
 
     #[napi(setter, js_name = "indexValues")]
-    pub fn set_index_values(&mut self, js_index_values: Object) -> Result<(), napi::Error> {
-        let index_values = match with_serde_to_platform_value(js_index_values)?.as_array() {
-            None => Err(napi::Error::new(
+    pub fn set_index_values(&mut self, js_index_values: &DynamicValue) -> Result<(), napi::Error> {
+        let index_values = match js_index_values.is_array() {
+            false => Err(napi::Error::new(
                 napi::Status::InvalidArg,
                 "index values must be array",
             )),
-            Some(array) => Ok(array.clone()),
+            true => Ok(js_index_values
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|el| Value::try_from(el.clone()))
+                .collect::<Result<Vec<Value>, napi::Error>>()?),
         }?;
 
         self.0 = match self.0.clone() {

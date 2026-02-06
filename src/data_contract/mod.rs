@@ -3,11 +3,10 @@ use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::token_configuration::TokenConfigurationNAPI;
 use crate::token_configuration::group::GroupNAPI;
-use crate::utils::{WithJsError, with_serde_to_platform_value, with_serde_to_platform_value_map};
+use crate::utils::{WithJsError, with_serde_to_platform_value_map};
 use dpp::data_contract::accessors::v0::{DataContractV0Getters, DataContractV0Setters};
 use dpp::data_contract::accessors::v1::{DataContractV1Getters, DataContractV1Setters};
 use dpp::data_contract::config::DataContractConfig;
-use dpp::data_contract::conversion::json::DataContractJsonConversionMethodsV0;
 use dpp::data_contract::conversion::value::v0::DataContractValueConversionMethodsV0;
 use dpp::data_contract::document_type::DocumentTypeRef;
 use dpp::data_contract::errors::DataContractError;
@@ -26,9 +25,8 @@ use dpp::serialization::{
 };
 use dpp::version::{PlatformVersion, TryIntoPlatformVersioned};
 use dpp::{ProtocolError, platform_value};
-use napi::bindgen_prelude::{Object, Uint8Array};
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
-use serde_json::{Map, Value as JsonValue};
 use std::collections::BTreeMap;
 
 #[napi(js_name = "DataContractNAPI")]
@@ -53,8 +51,8 @@ impl DataContractNAPI {
     pub fn from_js_values(
         js_owner_id: IdentifierLikeNAPI,
         js_identity_nonce: Uint64String,
-        js_schema: Object,
-        js_definitions: Option<Object>,
+        js_schema: &DynamicValue,
+        js_definitions: &DynamicValue,
         js_tokens: Option<Vec<(u16, &TokenConfigurationNAPI)>>,
         full_validation: Option<bool>,
         js_platform_version: &DynamicValue,
@@ -65,7 +63,7 @@ impl DataContractNAPI {
 
         let identity_nonce = js_identity_nonce.try_to_u64()?;
 
-        let schema: Value = with_serde_to_platform_value(js_schema)?;
+        let schema: Value = js_schema.clone().try_into()?;
 
         let tokens: BTreeMap<TokenContractPosition, TokenConfiguration> = match js_tokens {
             Some(tokens) => tokens
@@ -88,9 +86,10 @@ impl DataContractNAPI {
                 .to_string(),
         );
 
-        let definitions = js_definitions
-            .map(|definitions| with_serde_to_platform_value(definitions))
-            .transpose()?;
+        let definitions: Option<Value> = match js_definitions.is_undefined_or_null() {
+            true => None,
+            false => Some(js_definitions.clone().try_into()?),
+        };
 
         let definitions_value = Value::from(definitions);
 
@@ -156,7 +155,7 @@ impl DataContractNAPI {
 
     #[napi(js_name = "fromValue")]
     pub fn from_value(
-        js_value: Object,
+        js_value: &DynamicValue,
         full_validation: bool,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
@@ -165,7 +164,7 @@ impl DataContractNAPI {
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
 
-        let value = with_serde_to_platform_value(js_value)?;
+        let value: Value = js_value.clone().try_into()?;
 
         let contract = DataContract::from_value(value, full_validation, &platform_version.into())
             .with_js_error()?;
@@ -258,7 +257,10 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "toValue", ts_return_type = "object")]
-    pub fn to_value(&self, js_platform_version: &DynamicValue) -> Result<JsonValue, napi::Error> {
+    pub fn to_value(
+        &self,
+        js_platform_version: &DynamicValue,
+    ) -> Result<DynamicValue, napi::Error> {
         let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
@@ -270,14 +272,7 @@ impl DataContractNAPI {
             .to_value(&platform_version.into())
             .with_js_error()?;
 
-        let json: JsonValue = value.try_into().map_err(|_| {
-            napi::Error::new(
-                napi::Status::GenericFailure,
-                "cannot convert contract to json value",
-            )
-        })?;
-
-        Ok(json)
+        value.try_into()
     }
 
     #[napi(getter, js_name = "systemVersion")]
@@ -334,29 +329,16 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "getSchemas", ts_return_type = "object")]
-    pub fn get_schemas(&self) -> Result<JsonValue, napi::Error> {
-        let mut schema: Map<String, JsonValue> = Map::new();
+    pub fn get_schemas(&self) -> Result<DynamicValue, napi::Error> {
+        let schema = self.0.document_schemas();
 
-        let rs_schema = self.0.document_schemas().clone();
-        let keys = rs_schema.keys();
+        let schema_vec: Vec<(Value, Value)> = schema
+            .clone()
+            .into_iter()
+            .map(|(k, v)| (Value::Text(k.clone()), v.clone()))
+            .collect();
 
-        for key in keys {
-            let value = rs_schema.get(key).cloned().ok_or(0).map_err(|_| {
-                napi::Error::new(
-                    napi::Status::GenericFailure,
-                    format!("cannot get value by key {}", key),
-                )
-            })?;
-
-            schema.insert(
-                key.clone(),
-                value.clone().try_into().map_err(|_| {
-                    napi::Error::new(napi::Status::GenericFailure, "cannot convert value to json")
-                })?,
-            );
-        }
-
-        Ok(JsonValue::Object(schema))
+        Value::Map(schema_vec).try_into()
     }
 
     #[napi(getter, js_name = "version")]
@@ -375,18 +357,10 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "getConfig", ts_return_type = "object")]
-    pub fn get_config(&self) -> Result<JsonValue, napi::Error> {
-        let json: JsonValue = platform_value::to_value(self.0.config())
+    pub fn get_config(&self) -> Result<DynamicValue, napi::Error> {
+        platform_value::to_value(self.0.config())
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
             .try_into()
-            .map_err(|_| {
-                napi::Error::new(
-                    napi::Status::GenericFailure,
-                    "cannot convert config value to json",
-                )
-            })?;
-
-        Ok(json)
     }
 
     #[napi(getter, js_name = "tokens")]
@@ -439,7 +413,7 @@ impl DataContractNAPI {
     #[napi(js_name = "setConfig")]
     pub fn set_config(
         &mut self,
-        js_config: Object,
+        js_config: &DynamicValue,
         js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
         let platform_version = match js_platform_version.is_undefined_or_null() {
@@ -447,7 +421,7 @@ impl DataContractNAPI {
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
 
-        let config_value: Value = with_serde_to_platform_value(js_config)?;
+        let config_value: Value = js_config.clone().try_into()?;
 
         let config = DataContractConfig::from_value(config_value, &platform_version.into())
             .with_js_error()?;
@@ -460,8 +434,8 @@ impl DataContractNAPI {
     #[napi(js_name = "setSchemas")]
     pub fn set_schemas(
         &mut self,
-        js_schema: Object,
-        js_definitions: Option<Object>,
+        js_schema: &DynamicValue,
+        js_definitions: &DynamicValue,
         full_validation: bool,
         js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
@@ -472,9 +446,11 @@ impl DataContractNAPI {
 
         let schema = with_serde_to_platform_value_map(js_schema)?;
 
-        let definitions: Option<BTreeMap<String, Value>> = js_definitions
-            .map(|definitions| with_serde_to_platform_value_map(definitions))
-            .transpose()?;
+        let definitions: Option<BTreeMap<String, Value>> =
+            match js_definitions.is_undefined_or_null() {
+                true => None,
+                false => Some(with_serde_to_platform_value_map(js_definitions)?),
+            };
 
         self.0
             .set_document_schemas(
@@ -523,15 +499,15 @@ impl DataContractNAPI {
     }
 
     #[napi(js_name = "toJson", ts_return_type = "object")]
-    pub fn to_json(&self, js_platform_version: &DynamicValue) -> Result<JsonValue, napi::Error> {
+    pub fn to_json(&self, js_platform_version: &DynamicValue) -> Result<DynamicValue, napi::Error> {
         let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
 
-        let json = self.0.to_json(&platform_version.into()).with_js_error()?;
+        let json: Value = self.0.to_value(&platform_version.into()).with_js_error()?;
 
-        Ok(json)
+        DynamicValue::try_from(json)
     }
 
     #[napi(js_name = "generateId")]

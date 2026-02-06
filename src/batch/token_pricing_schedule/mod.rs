@@ -1,13 +1,12 @@
-use dpp::balances::credits::TokenAmount;
 use dpp::fee::Credits;
 use dpp::tokens::token_pricing_schedule::TokenPricingSchedule;
-use napi::{Either, bindgen_prelude::Object};
+use dpp::{balances::credits::TokenAmount, platform_value::Value};
+use napi::Either;
 use napi_derive::napi;
-use serde_json::{Map, Value as JsonValue};
 use std::collections::BTreeMap;
 
 use crate::{
-    dynamic_value::{TryToU64, Uint64String},
+    dynamic_value::{DynamicValue, TryToU64, Uint64String},
     utils::with_serde_to_platform_value_map,
 };
 
@@ -37,7 +36,7 @@ impl TokenPricingScheduleNAPI {
     }
 
     #[napi(js_name = "SetPrices")]
-    pub fn set_prices(js_prices: Object) -> Result<TokenPricingScheduleNAPI, napi::Error> {
+    pub fn set_prices(js_prices: &DynamicValue) -> Result<TokenPricingScheduleNAPI, napi::Error> {
         let prices: BTreeMap<TokenAmount, Credits> = with_serde_to_platform_value_map(js_prices)?
             .iter()
             .map(|(k, v)| {
@@ -65,24 +64,21 @@ impl TokenPricingScheduleNAPI {
         }
     }
 
-    #[napi(js_name = "getValue", ts_return_type = "Uint64String | object")]
-    pub fn get_value(&self) -> Either<Uint64String, JsonValue> {
-        match &self.0 {
+    #[napi(js_name = "getValue")]
+    pub fn get_value(&self) -> Result<Either<Uint64String, DynamicValue>, napi::Error> {
+        Ok(match &self.0 {
             TokenPricingSchedule::SinglePrice(credits) => {
                 Either::A(Uint64String::from_u64(credits.clone()))
             }
-            TokenPricingSchedule::SetPrices(prices) => {
-                let mut data: Map<Uint64String, JsonValue> = Map::new();
-
-                for (key, value) in prices.iter() {
-                    data.insert(
-                        Uint64String::from_u64(key.clone()),
-                        JsonValue::String(Uint64String::from_u64(value.clone())),
-                    );
-                }
-
-                Either::B(JsonValue::Object(data))
-            }
-        }
+            TokenPricingSchedule::SetPrices(prices) => Either::B(
+                Value::Map(
+                    prices
+                        .iter()
+                        .map(|(k, v)| (Value::U64(k.clone().into()), Value::U64(v.clone().into())))
+                        .collect(),
+                )
+                .try_into()?,
+            ),
+        })
     }
 }
