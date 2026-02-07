@@ -4,14 +4,14 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{DynamicValue, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, DynamicValue, TryToU64},
     enums::platform_version::PlatformVersionNAPI,
 };
 
 #[napi(js_name = "VerifiedTotalCreditsNAPI")]
 pub struct VerifiedTotalCreditsWASM {
     pub root_hash: Uint8Array,
-    pub total_credits: Uint64String,
+    pub total_credits: BigIntString,
 }
 
 #[napi(js_name = "verifyTotalCreditsProof")]
@@ -38,6 +38,6 @@ pub fn verify_total_credits(
 
     Ok(VerifiedTotalCreditsWASM {
         root_hash: Uint8Array::from(root_hash),
-        total_credits: Uint64String::from_u64(total_credits),
+        total_credits: BigIntString::from_u64(total_credits),
     })
 }

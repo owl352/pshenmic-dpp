@@ -1,4 +1,4 @@
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::token_configuration::TokenConfigurationNAPI;
@@ -50,7 +50,7 @@ impl DataContractNAPI {
     #[napi(constructor)]
     pub fn from_js_values(
         js_owner_id: IdentifierLikeNAPI,
-        js_identity_nonce: Uint64String,
+        js_identity_nonce: BigIntString,
         js_schema: &DynamicValue,
         js_definitions: &DynamicValue,
         js_tokens: Option<Vec<(u16, &TokenConfigurationNAPI)>>,
@@ -513,7 +513,7 @@ impl DataContractNAPI {
     #[napi(js_name = "generateId")]
     pub fn generate_id(
         js_owner_id: IdentifierLikeNAPI,
-        js_identity_nonce: Uint64String,
+        js_identity_nonce: BigIntString,
     ) -> Result<IdentifierNAPI, napi::Error> {
         let identity_nonce = js_identity_nonce.try_to_u64()?;
 

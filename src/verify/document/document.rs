@@ -11,7 +11,7 @@ use napi_derive::napi;
 
 use crate::data_contract::DataContractNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 
@@ -44,7 +44,7 @@ pub fn verify_document_proof(
     limit: Option<u16>,
     js_start_at: Option<IdentifierLikeNAPI>,
     start_at_included: bool,
-    block_time_ms: Option<Uint64String>,
+    block_time_ms: Option<BigIntString>,
     js_platform_version: &DynamicValue,
 ) -> Result<VerifiedDocumentsNAPI, napi::Error> {
     let internal_clauses = match js_where_clauses.is_undefined_or_null() {

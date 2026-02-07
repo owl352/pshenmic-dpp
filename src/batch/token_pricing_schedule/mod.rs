@@ -6,7 +6,7 @@ use napi_derive::napi;
 use std::collections::BTreeMap;
 
 use crate::{
-    dynamic_value::{DynamicValue, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, DynamicValue, TryToU64},
     utils::with_serde_to_platform_value_map,
 };
 
@@ -29,7 +29,7 @@ impl From<TokenPricingSchedule> for TokenPricingScheduleNAPI {
 #[napi]
 impl TokenPricingScheduleNAPI {
     #[napi(js_name = "SinglePrice")]
-    pub fn single_price(credits: Uint64String) -> Result<Self, napi::Error> {
+    pub fn single_price(credits: BigIntString) -> Result<Self, napi::Error> {
         Ok(Self(TokenPricingSchedule::SinglePrice(
             credits.try_to_u64()?,
         )))
@@ -44,7 +44,7 @@ impl TokenPricingScheduleNAPI {
                 let option_credits: Option<&str> = v.as_text();
 
                 match option_credits {
-                    Some(credits) => Ok((amount, Uint64String::from(credits).try_to_u64()?)),
+                    Some(credits) => Ok((amount, BigIntString::from(credits).try_to_u64()?)),
                     None => Err(napi::Error::new(
                         napi::Status::InvalidArg,
                         "Cannot parse credits count",
@@ -65,10 +65,10 @@ impl TokenPricingScheduleNAPI {
     }
 
     #[napi(js_name = "getValue")]
-    pub fn get_value(&self) -> Result<Either<Uint64String, DynamicValue>, napi::Error> {
+    pub fn get_value(&self) -> Result<Either<BigIntString, DynamicValue>, napi::Error> {
         Ok(match &self.0 {
             TokenPricingSchedule::SinglePrice(credits) => {
-                Either::A(Uint64String::from_u64(credits.clone()))
+                Either::A(BigIntString::from_u64(credits.clone()))
             }
             TokenPricingSchedule::SetPrices(prices) => Either::B(
                 Value::Map(

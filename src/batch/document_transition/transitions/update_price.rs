@@ -9,7 +9,7 @@ use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_update_price_transition;
 use crate::batch::token_payment_info::TokenPaymentInfoNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, TryToU64};
 
 #[napi(js_name = "DocumentUpdatePriceTransitionNAPI")]
 pub struct DocumentUpdatePriceTransitionNAPI(DocumentUpdatePriceTransition);
@@ -25,8 +25,8 @@ impl DocumentUpdatePriceTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         document: &DocumentNAPI,
-        identity_contract_nonce: Uint64String,
-        price: Uint64String,
+        identity_contract_nonce: BigIntString,
+        price: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
     ) -> Result<DocumentUpdatePriceTransitionNAPI, napi::Error> {
         let rs_document_update_price_transition = generate_update_price_transition(
@@ -48,8 +48,8 @@ impl DocumentUpdatePriceTransitionNAPI {
     }
 
     #[napi(getter, js_name = "price")]
-    pub fn get_price(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.price())
+    pub fn get_price(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.price())
     }
 
     #[napi(setter, js_name = "base")]
@@ -58,7 +58,7 @@ impl DocumentUpdatePriceTransitionNAPI {
     }
 
     #[napi(setter, js_name = "price")]
-    pub fn set_price(&mut self, price: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_price(&mut self, price: BigIntString) -> Result<(), napi::Error> {
         self.0.set_price(price.try_to_u64()?);
         Ok(())
     }

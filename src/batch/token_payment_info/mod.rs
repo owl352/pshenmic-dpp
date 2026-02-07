@@ -5,7 +5,7 @@ use dpp::tokens::token_payment_info::v0::TokenPaymentInfoV0;
 use dpp::tokens::token_payment_info::v0::v0_accessors::TokenPaymentInfoAccessorsV0;
 use napi_derive::napi;
 
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::gas_fees_paid_by::GasFeesPaidByNAPI;
 use crate::identifier::IdentifierNAPI;
 
@@ -31,8 +31,8 @@ impl TokenPaymentInfoNAPI {
     pub fn new(
         js_payment_token_contract_id: Option<IdentifierLikeNAPI>,
         token_contract_position: u16,
-        minimum_token_cost: Option<Uint64String>,
-        maximum_token_cost: Option<Uint64String>,
+        minimum_token_cost: Option<BigIntString>,
+        maximum_token_cost: Option<BigIntString>,
         js_gas_fees_paid_by: &DynamicValue,
     ) -> Result<Self, napi::Error> {
         let payment_token_contract_id: Option<Identifier> = js_payment_token_contract_id
@@ -69,13 +69,13 @@ impl TokenPaymentInfoNAPI {
     }
 
     #[napi(getter, js_name = "minimumTokenCost")]
-    pub fn minimum_token_cost(&self) -> Option<Uint64String> {
-        self.0.minimum_token_cost().map(Uint64String::from_u64)
+    pub fn minimum_token_cost(&self) -> Option<BigIntString> {
+        self.0.minimum_token_cost().map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "maximumTokenCost")]
-    pub fn maximum_token_cost(&self) -> Option<Uint64String> {
-        self.0.maximum_token_cost().map(Uint64String::from_u64)
+    pub fn maximum_token_cost(&self) -> Option<BigIntString> {
+        self.0.maximum_token_cost().map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "gasFeesPaidBy")]
@@ -107,7 +107,7 @@ impl TokenPaymentInfoNAPI {
     #[napi(setter, js_name = "minimumTokenCost")]
     pub fn set_minimum_token_cost(
         &mut self,
-        minimum_cost: Option<Uint64String>,
+        minimum_cost: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.0
             .set_maximum_token_cost(minimum_cost.map(|n| n.try_to_u64()).transpose()?);
@@ -117,7 +117,7 @@ impl TokenPaymentInfoNAPI {
     #[napi(setter, js_name = "maximumTokenCost")]
     pub fn set_maximum_token_cost(
         &mut self,
-        maximum_cost: Option<Uint64String>,
+        maximum_cost: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.0
             .set_maximum_token_cost(maximum_cost.map(|n| n.try_to_u64()).transpose()?);

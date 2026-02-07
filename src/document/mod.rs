@@ -12,7 +12,7 @@ use napi_derive::napi;
 use std::collections::BTreeMap;
 
 use crate::data_contract::DataContractNAPI;
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::utils::{WithJsError, generate_document_id_v0, with_serde_to_platform_value_map};
@@ -119,7 +119,7 @@ impl DocumentNAPI {
     pub fn new(
         js_raw_document: &DynamicValue,
         js_document_type_name: String,
-        js_revision: Uint64String,
+        js_revision: BigIntString,
         js_data_contract_id: IdentifierLikeNAPI,
         js_owner_id: IdentifierLikeNAPI,
         js_document_id: Option<IdentifierLikeNAPI>,
@@ -207,38 +207,38 @@ impl DocumentNAPI {
     }
 
     #[napi(getter, js_name = "revision")]
-    pub fn get_revision(&self) -> Option<Uint64String> {
-        self.revision.map(Uint64String::from_u64)
+    pub fn get_revision(&self) -> Option<BigIntString> {
+        self.revision.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "createdAt")]
-    pub fn get_created_at(&self) -> Option<Uint64String> {
-        self.created_at.map(Uint64String::from_u64)
+    pub fn get_created_at(&self) -> Option<BigIntString> {
+        self.created_at.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "updatedAt")]
-    pub fn get_updated_at(&self) -> Option<Uint64String> {
-        self.updated_at.map(Uint64String::from_u64)
+    pub fn get_updated_at(&self) -> Option<BigIntString> {
+        self.updated_at.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "transferredAt")]
-    pub fn get_transferred_at(&self) -> Option<Uint64String> {
-        self.transferred_at.map(Uint64String::from_u64)
+    pub fn get_transferred_at(&self) -> Option<BigIntString> {
+        self.transferred_at.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "createdAtBlockHeight")]
-    pub fn get_created_at_block_height(&self) -> Option<Uint64String> {
-        self.created_at_block_height.map(Uint64String::from_u64)
+    pub fn get_created_at_block_height(&self) -> Option<BigIntString> {
+        self.created_at_block_height.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "updatedAtBlockHeight")]
-    pub fn get_updated_at_block_height(&self) -> Option<Uint64String> {
-        self.updated_at_block_height.map(Uint64String::from_u64)
+    pub fn get_updated_at_block_height(&self) -> Option<BigIntString> {
+        self.updated_at_block_height.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "transferredAtBlockHeight")]
-    pub fn get_transferred_at_block_height(&self) -> Option<Uint64String> {
-        self.transferred_at_block_height.map(Uint64String::from_u64)
+    pub fn get_transferred_at_block_height(&self) -> Option<BigIntString> {
+        self.transferred_at_block_height.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "createdAtCoreBlockHeight")]
@@ -310,19 +310,19 @@ impl DocumentNAPI {
     }
 
     #[napi(setter, js_name = "revision")]
-    pub fn set_revision(&mut self, revision: Option<Uint64String>) -> Result<(), napi::Error> {
+    pub fn set_revision(&mut self, revision: Option<BigIntString>) -> Result<(), napi::Error> {
         self.revision = revision.map(|r| r.try_to_u64()).transpose()?;
         Ok(())
     }
 
     #[napi(setter, js_name = "createdAt")]
-    pub fn set_created_at(&mut self, created_at: Option<Uint64String>) -> Result<(), napi::Error> {
+    pub fn set_created_at(&mut self, created_at: Option<BigIntString>) -> Result<(), napi::Error> {
         self.created_at = created_at.map(|t| t.try_to_u64()).transpose()?;
         Ok(())
     }
 
     #[napi(setter, js_name = "updatedAt")]
-    pub fn set_updated_at(&mut self, updated_at: Option<Uint64String>) -> Result<(), napi::Error> {
+    pub fn set_updated_at(&mut self, updated_at: Option<BigIntString>) -> Result<(), napi::Error> {
         self.updated_at = updated_at.map(|t| t.try_to_u64()).transpose()?;
         Ok(())
     }
@@ -330,7 +330,7 @@ impl DocumentNAPI {
     #[napi(setter, js_name = "transferredAt")]
     pub fn set_transferred_at(
         &mut self,
-        transferred_at: Option<Uint64String>,
+        transferred_at: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.transferred_at = transferred_at.map(|t| t.try_to_u64()).transpose()?;
         Ok(())
@@ -339,7 +339,7 @@ impl DocumentNAPI {
     #[napi(setter, js_name = "createdAtBlockHeight")]
     pub fn set_created_at_block_height(
         &mut self,
-        created_at_block_height: Option<Uint64String>,
+        created_at_block_height: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.created_at_block_height = created_at_block_height
             .map(|t| t.try_to_u64())
@@ -350,7 +350,7 @@ impl DocumentNAPI {
     #[napi(setter, js_name = "updatedAtBlockHeight")]
     pub fn set_updated_at_block_height(
         &mut self,
-        updated_at_block_height: Option<Uint64String>,
+        updated_at_block_height: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.updated_at_block_height = updated_at_block_height
             .map(|t| t.try_to_u64())
@@ -361,7 +361,7 @@ impl DocumentNAPI {
     #[napi(setter, js_name = "transferredAtBlockHeight")]
     pub fn set_transferred_at_block_height(
         &mut self,
-        transferred_at_block_height: Option<Uint64String>,
+        transferred_at_block_height: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.transferred_at_block_height = transferred_at_block_height
             .map(|t| t.try_to_u64())

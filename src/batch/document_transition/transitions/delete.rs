@@ -8,7 +8,7 @@ use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_delete_transition;
 use crate::batch::token_payment_info::TokenPaymentInfoNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, TryToU64};
 
 #[napi(js_name = "DocumentDeleteTransitionNAPI")]
 pub struct DocumentDeleteTransitionNAPI(DocumentDeleteTransition);
@@ -24,7 +24,7 @@ impl DocumentDeleteTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         document: &DocumentNAPI,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
     ) -> Result<DocumentDeleteTransitionNAPI, napi::Error> {
         let rs_delete_transition = generate_delete_transition(

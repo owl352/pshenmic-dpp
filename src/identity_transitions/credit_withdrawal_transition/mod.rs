@@ -16,7 +16,7 @@ use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
 use crate::core_script::CoreScriptNAPI;
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::pooling::PoolingNAPI;
 use crate::enums::purpose::PurposeNAPI;
 use crate::identifier::IdentifierNAPI;
@@ -31,10 +31,10 @@ impl IdentityCreditWithdrawalTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         js_identity_id: IdentifierLikeNAPI,
-        amount: Uint64String,
+        amount: BigIntString,
         core_fee_per_byte: u32,
         js_pooling: &DynamicValue,
-        nonce: Uint64String,
+        nonce: BigIntString,
         js_output_script: Option<&CoreScriptNAPI>,
         user_fee_increase: Option<u16>,
     ) -> Result<IdentityCreditWithdrawalTransitionNAPI, napi::Error> {
@@ -80,13 +80,13 @@ impl IdentityCreditWithdrawalTransitionNAPI {
     }
 
     #[napi(getter, js_name = "nonce")]
-    pub fn get_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.nonce())
+    pub fn get_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.nonce())
     }
 
     #[napi(getter, js_name = "amount")]
-    pub fn get_amount(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.amount())
+    pub fn get_amount(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.amount())
     }
 
     #[napi(js_name = "getPurposeRequirement")]
@@ -142,14 +142,14 @@ impl IdentityCreditWithdrawalTransitionNAPI {
     }
 
     #[napi(setter, js_name = "nonce")]
-    pub fn set_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0.set_nonce(nonce.try_to_u64()?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "amount")]
-    pub fn set_amount(&mut self, amount: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_amount(&mut self, amount: BigIntString) -> Result<(), napi::Error> {
         self.0.set_amount(amount.try_to_u64()?);
 
         Ok(())

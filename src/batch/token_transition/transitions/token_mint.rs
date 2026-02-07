@@ -6,7 +6,7 @@ use dpp::state_transition::batch_transition::token_mint_transition::v0::v0_metho
 use napi_derive::napi;
 
 use crate::batch::token_base_transition::TokenBaseTransitionNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::token_configuration::TokenConfigurationNAPI;
 use crate::utils::WithJsError;
@@ -33,7 +33,7 @@ impl TokenMintTransitionNAPI {
     pub fn new(
         base: &TokenBaseTransitionNAPI,
         js_issued_to_identity_id: Option<IdentifierLikeNAPI>,
-        amount: Uint64String,
+        amount: BigIntString,
         public_note: Option<String>,
     ) -> Result<TokenMintTransitionNAPI, napi::Error> {
         let issued_to_identity_id: Option<Identifier> = js_issued_to_identity_id
@@ -60,8 +60,8 @@ impl TokenMintTransitionNAPI {
     }
 
     #[napi(getter, js_name = amount)]
-    pub fn get_amount(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.amount())
+    pub fn get_amount(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.amount())
     }
 
     #[napi(getter, js_name = base)]
@@ -102,7 +102,7 @@ impl TokenMintTransitionNAPI {
     }
 
     #[napi(setter, js_name = amount)]
-    pub fn set_amount(&mut self, amount: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_amount(&mut self, amount: BigIntString) -> Result<(), napi::Error> {
         self.0.set_amount(amount.try_to_u64()?);
         Ok(())
     }

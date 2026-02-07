@@ -18,7 +18,7 @@ use napi_derive::napi;
 
 use crate::batch::batched_transition::BatchedTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::WithJsError;
@@ -135,12 +135,12 @@ impl BatchTransitionNAPI {
     }
 
     #[napi(getter, js_name = "allPurchasesAmount")]
-    pub fn get_all_purchases_amount(&self) -> Result<Option<Uint64String>, napi::Error> {
+    pub fn get_all_purchases_amount(&self) -> Result<Option<BigIntString>, napi::Error> {
         Ok(self
             .0
             .all_document_purchases_amount()
             .with_js_error()?
-            .map(Uint64String::from_u64))
+            .map(BigIntString::from_u64))
     }
 
     #[napi(getter, js_name = "ownerId")]
@@ -160,12 +160,12 @@ impl BatchTransitionNAPI {
     #[napi(getter, js_name = "allConflictingIndexCollateralVotingFunds")]
     pub fn get_all_conflicting_index_collateral_voting_funds(
         &self,
-    ) -> Result<Option<Uint64String>, napi::Error> {
+    ) -> Result<Option<BigIntString>, napi::Error> {
         Ok(self
             .0
             .all_conflicting_index_collateral_voting_funds()
             .with_js_error()?
-            .map(Uint64String::from_u64))
+            .map(BigIntString::from_u64))
     }
 
     #[napi(setter, js_name = "signature")]
@@ -180,7 +180,7 @@ impl BatchTransitionNAPI {
     }
 
     #[napi(js_name = "setIdentityContractNonce")]
-    pub fn set_identity_contract_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_identity_contract_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0.set_identity_contract_nonce(nonce.try_to_u64()?);
         Ok(())
     }

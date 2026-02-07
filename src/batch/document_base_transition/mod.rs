@@ -7,7 +7,7 @@ use napi_derive::napi;
 
 use crate::{
     batch::token_payment_info::TokenPaymentInfoNAPI,
-    dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64},
     identifier::IdentifierNAPI,
 };
 
@@ -32,7 +32,7 @@ impl DocumentBaseTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         js_document_id: IdentifierLikeNAPI,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
         document_type_name: String,
         js_data_contract_id: IdentifierLikeNAPI,
         js_token_payment_info: Option<&TokenPaymentInfoNAPI>,
@@ -57,8 +57,8 @@ impl DocumentBaseTransitionNAPI {
     }
 
     #[napi(getter, js_name = "identityContractNonce")]
-    pub fn get_identity_contract_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.identity_contract_nonce())
+    pub fn get_identity_contract_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.identity_contract_nonce())
     }
 
     #[napi(getter, js_name = "dataContractId")]
@@ -83,7 +83,7 @@ impl DocumentBaseTransitionNAPI {
     }
 
     #[napi(setter, js_name = "identityContractNonce")]
-    pub fn set_identity_contract_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_identity_contract_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0.set_identity_contract_nonce(nonce.try_to_u64()?);
         Ok(())
     }

@@ -12,7 +12,7 @@ use crate::batch::generators::generate_create_transition;
 use crate::batch::prefunded_voting_balance::PrefundedVotingBalanceNAPI;
 use crate::batch::token_payment_info::TokenPaymentInfoNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::utils::with_serde_to_platform_value_map;
 
 #[napi(js_name = "DocumentCreateTransitionNAPI")]
@@ -36,7 +36,7 @@ impl DocumentCreateTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         document: &DocumentNAPI,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
         prefunded_voting_balance: Option<&PrefundedVotingBalanceNAPI>,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
     ) -> Result<DocumentCreateTransitionNAPI, napi::Error> {

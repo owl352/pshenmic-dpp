@@ -21,7 +21,7 @@ use crate::batch::token_transition::transitions::token_freeze::TokenFreezeTransi
 use crate::batch::token_transition::transitions::token_mint::TokenMintTransitionNAPI;
 use crate::batch::token_transition::transitions::token_transfer::TokenTransferTransitionNAPI;
 use crate::batch::token_transition::transitions::token_unfreeze::TokenUnFreezeTransitionNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 
 pub mod transitions;
@@ -189,8 +189,8 @@ impl TokenTransitionNAPI {
     }
 
     #[napi(getter, js_name = "identityContractNonce")]
-    pub fn get_identity_contract_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.identity_contract_nonce())
+    pub fn get_identity_contract_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.identity_contract_nonce())
     }
 
     #[napi(getter, js_name = "tokenId")]
@@ -204,7 +204,7 @@ impl TokenTransitionNAPI {
     }
 
     #[napi(setter, js_name = "identityContractNonce")]
-    pub fn set_identity_contract_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_identity_contract_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0.set_identity_contract_nonce(nonce.try_to_u64()?);
         Ok(())
     }

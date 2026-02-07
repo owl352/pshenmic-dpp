@@ -6,7 +6,7 @@ use dpp::prelude::{Identifier, TimestampMillis};
 use napi_derive::napi;
 use std::collections::BTreeMap;
 
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -29,7 +29,7 @@ impl From<TokenPreProgrammedDistribution> for TokenPreProgrammedDistributionNAPI
 impl TokenPreProgrammedDistributionNAPI {
     #[napi(constructor)]
     pub fn new(
-        js_distributions: Vec<(Uint64String, Vec<(IdentifierLikeNAPI, Uint64String)>)>,
+        js_distributions: Vec<(BigIntString, Vec<(IdentifierLikeNAPI, BigIntString)>)>,
     ) -> Result<TokenPreProgrammedDistributionNAPI, napi::Error> {
         let mut distributions: BTreeMap<TimestampMillis, BTreeMap<Identifier, TokenAmount>> =
             BTreeMap::new();
@@ -53,7 +53,7 @@ impl TokenPreProgrammedDistributionNAPI {
     }
 
     #[napi(getter, js_name = "distributions")]
-    pub fn get_distributions(&self) -> Vec<(Uint64String, Vec<(IdentifierNAPI, Uint64String)>)> {
+    pub fn get_distributions(&self) -> Vec<(BigIntString, Vec<(IdentifierNAPI, BigIntString)>)> {
         let mut result = Vec::new();
 
         for (timestamp, inner_map) in self.0.distributions().iter() {
@@ -62,11 +62,11 @@ impl TokenPreProgrammedDistributionNAPI {
             for (identifier, token_amount) in inner_map {
                 js_inner_vec.push((
                     identifier.clone().into(),
-                    Uint64String::from_u64(*token_amount),
+                    BigIntString::from_u64(*token_amount),
                 ));
             }
 
-            result.push((Uint64String::from_u64(*timestamp), js_inner_vec));
+            result.push((BigIntString::from_u64(*timestamp), js_inner_vec));
         }
 
         result
@@ -75,7 +75,7 @@ impl TokenPreProgrammedDistributionNAPI {
     #[napi(setter, js_name = "distributions")]
     pub fn set_distributions(
         &mut self,
-        js_distributions: Vec<(Uint64String, Vec<(IdentifierLikeNAPI, Uint64String)>)>,
+        js_distributions: Vec<(BigIntString, Vec<(IdentifierLikeNAPI, BigIntString)>)>,
     ) -> Result<(), napi::Error> {
         let mut distributions: BTreeMap<TimestampMillis, BTreeMap<Identifier, TokenAmount>> =
             BTreeMap::new();

@@ -12,7 +12,7 @@ use crate::batch::document_transition::transitions::purchase::DocumentPurchaseTr
 use crate::batch::document_transition::transitions::replace::DocumentReplaceTransitionNAPI;
 use crate::batch::document_transition::transitions::transfer::DocumentTransferTransitionNAPI;
 use crate::batch::document_transition::transitions::update_price::DocumentUpdatePriceTransitionNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::enums::batch_type::BatchTypeNAPI;
 use crate::identifier::IdentifierNAPI;
 
@@ -70,13 +70,13 @@ impl DocumentTransitionNAPI {
     }
 
     #[napi(getter, js_name = "identityContractNonce")]
-    pub fn get_identity_contract_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.identity_contract_nonce())
+    pub fn get_identity_contract_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.identity_contract_nonce())
     }
 
     #[napi(getter, js_name = "revision")]
-    pub fn get_revision(&self) -> Option<Uint64String> {
-        self.0.revision().map(Uint64String::from_u64)
+    pub fn get_revision(&self) -> Option<BigIntString> {
+        self.0.revision().map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "entropy")]
@@ -171,14 +171,14 @@ impl DocumentTransitionNAPI {
     }
 
     #[napi(setter, js_name = "revision")]
-    pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_revision(&mut self, revision: BigIntString) -> Result<(), napi::Error> {
         Ok(self.0.set_revision(revision.try_to_u64()?))
     }
 
     #[napi(setter, js_name = "identityContractNonce")]
     pub fn set_identity_contract_nonce(
         &mut self,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
     ) -> Result<(), napi::Error> {
         Ok(self
             .0

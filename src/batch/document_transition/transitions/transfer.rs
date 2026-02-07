@@ -9,7 +9,7 @@ use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_transfer_transition;
 use crate::batch::token_payment_info::TokenPaymentInfoNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 
 #[napi(js_name = "DocumentTransferTransitionNAPI")]
@@ -32,7 +32,7 @@ impl DocumentTransferTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         document: &DocumentNAPI,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
         js_recipient_owner_id: IdentifierLikeNAPI,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
     ) -> Result<DocumentTransferTransitionNAPI, napi::Error> {

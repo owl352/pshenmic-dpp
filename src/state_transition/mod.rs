@@ -36,7 +36,7 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 use sha2::{Digest, Sha256};
 
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::key_type::KeyTypeNAPI;
 use crate::enums::purpose::PurposeNAPI;
 use crate::enums::security_level::SecurityLevelNAPI;
@@ -397,21 +397,21 @@ impl StateTransitionNAPI {
     }
 
     #[napi(js_name = "getIdentityContractNonce")]
-    pub fn get_identity_contract_nonce(&self) -> Option<Uint64String> {
+    pub fn get_identity_contract_nonce(&self) -> Option<BigIntString> {
         match self.0.clone() {
             DataContractCreate(_) => None,
-            DataContractUpdate(contract_update) => Some(Uint64String::from_u64(
+            DataContractUpdate(contract_update) => Some(BigIntString::from_u64(
                 contract_update.identity_contract_nonce(),
             )),
             Batch(batch) => match batch {
-                BatchTransition::V0(v0) => Some(Uint64String::from_u64(
+                BatchTransition::V0(v0) => Some(BigIntString::from_u64(
                     v0.transitions.first()?.identity_contract_nonce(),
                 )),
                 BatchTransition::V1(v1) => match v1.transitions.first()? {
                     BatchedTransition::Document(doc_batch) => {
-                        Some(Uint64String::from_u64(doc_batch.identity_contract_nonce()))
+                        Some(BigIntString::from_u64(doc_batch.identity_contract_nonce()))
                     }
-                    BatchedTransition::Token(token_batch) => Some(Uint64String::from_u64(
+                    BatchedTransition::Token(token_batch) => Some(BigIntString::from_u64(
                         token_batch.identity_contract_nonce(),
                     )),
                 },
@@ -432,26 +432,26 @@ impl StateTransitionNAPI {
     }
 
     #[napi(js_name = "getIdentityNonce")]
-    pub fn get_identity_nonce(&self) -> Option<Uint64String> {
+    pub fn get_identity_nonce(&self) -> Option<BigIntString> {
         match self.0.clone() {
             DataContractCreate(contract_create) => {
-                Some(Uint64String::from_u64(contract_create.identity_nonce()))
+                Some(BigIntString::from_u64(contract_create.identity_nonce()))
             }
             DataContractUpdate(_) => None,
             Batch(_) => None,
             StateTransition::IdentityCreate(_) => None,
             IdentityTopUp(_) => None,
             IdentityCreditWithdrawal(withdrawal) => {
-                Some(Uint64String::from_u64(withdrawal.nonce()))
+                Some(BigIntString::from_u64(withdrawal.nonce()))
             }
             IdentityUpdate(identity_update) => {
-                Some(Uint64String::from_u64(identity_update.nonce()))
+                Some(BigIntString::from_u64(identity_update.nonce()))
             }
             IdentityCreditTransfer(credit_transfer) => {
-                Some(Uint64String::from_u64(credit_transfer.nonce()))
+                Some(BigIntString::from_u64(credit_transfer.nonce()))
             }
-            MasternodeVote(mn_vote) => Some(Uint64String::from_u64(mn_vote.nonce())),
-            IdentityCreditTransferToAddresses(st) => Some(Uint64String::from_u64(st.nonce())),
+            MasternodeVote(mn_vote) => Some(BigIntString::from_u64(mn_vote.nonce())),
+            IdentityCreditTransferToAddresses(st) => Some(BigIntString::from_u64(st.nonce())),
             IdentityCreateFromAddresses(_) => None,
             IdentityTopUpFromAddresses(_) => None,
             AddressFundsTransfer(_) => None,
@@ -603,7 +603,7 @@ impl StateTransitionNAPI {
     }
 
     #[napi(js_name = "setIdentityContractNonce")]
-    pub fn set_identity_contract_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_identity_contract_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0 = match self.0.clone() {
             DataContractCreate(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
@@ -675,7 +675,7 @@ impl StateTransitionNAPI {
     }
 
     #[napi(js_name = "setIdentityNonce")]
-    pub fn set_identity_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_identity_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0 = match self.0.clone() {
             DataContractCreate(mut contract_create) => {
                 contract_create = match contract_create {

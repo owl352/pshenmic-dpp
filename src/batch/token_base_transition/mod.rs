@@ -5,7 +5,7 @@ use dpp::state_transition::batch_transition::token_base_transition::v0::v0_metho
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64},
     group_state_transition_info::GroupStateTransitionInfoNAPI,
     identifier::IdentifierNAPI,
 };
@@ -30,7 +30,7 @@ impl From<TokenBaseTransitionNAPI> for TokenBaseTransition {
 impl TokenBaseTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
         token_contract_position: u16,
         js_data_contract_id: IdentifierLikeNAPI,
         js_token_id: IdentifierLikeNAPI,
@@ -51,8 +51,8 @@ impl TokenBaseTransitionNAPI {
     }
 
     #[napi(getter, js_name = "identityContractNonce")]
-    pub fn get_identity_contract_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.identity_contract_nonce())
+    pub fn get_identity_contract_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.identity_contract_nonce())
     }
 
     #[napi(getter, js_name = "tokenContractPosition")]
@@ -78,7 +78,7 @@ impl TokenBaseTransitionNAPI {
     #[napi(setter, js_name = "identityContractNonce")]
     pub fn set_identity_contract_nonce(
         &mut self,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
     ) -> Result<(), napi::Error> {
         self.0
             .set_identity_contract_nonce(identity_contract_nonce.try_to_u64()?);

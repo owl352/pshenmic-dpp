@@ -5,7 +5,7 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{DynamicValue, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, DynamicValue, TryToU64},
     enums::platform_version::PlatformVersionNAPI,
 };
 
@@ -13,10 +13,10 @@ use crate::{
 #[napi(js_name = "ExtendedEpochInfoNAPI")]
 pub struct ExtendedEpochInfoNAPI {
     pub index: u16,
-    pub first_block_time: Uint64String,
-    pub first_block_height: Uint64String,
+    pub first_block_time: BigIntString,
+    pub first_block_height: BigIntString,
     pub first_core_block_height: u32,
-    pub fee_multiplier_permille: Uint64String,
+    pub fee_multiplier_permille: BigIntString,
     pub protocol_version: u32,
 }
 
@@ -24,10 +24,10 @@ impl From<ExtendedEpochInfo> for ExtendedEpochInfoNAPI {
     fn from(info: ExtendedEpochInfo) -> ExtendedEpochInfoNAPI {
         ExtendedEpochInfoNAPI {
             index: info.index(),
-            first_block_time: Uint64String::from_u64(info.first_block_time()),
-            first_block_height: Uint64String::from_u64(info.first_block_height()),
+            first_block_time: BigIntString::from_u64(info.first_block_time()),
+            first_block_height: BigIntString::from_u64(info.first_block_height()),
             first_core_block_height: info.first_core_block_height(),
-            fee_multiplier_permille: Uint64String::from_u64(info.fee_multiplier_permille()),
+            fee_multiplier_permille: BigIntString::from_u64(info.fee_multiplier_permille()),
             protocol_version: info.protocol_version(),
         }
     }

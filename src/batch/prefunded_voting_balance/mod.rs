@@ -1,7 +1,7 @@
 use dpp::fee::Credits;
 use napi_derive::napi;
 
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, TryToU64};
 
 #[napi(js_name = "PrefundedVotingBalanceNAPI")]
 #[derive(Clone)]
@@ -30,7 +30,7 @@ impl PrefundedVotingBalanceNAPI {
     #[napi(constructor)]
     pub fn new(
         index_name: String,
-        credits: Uint64String,
+        credits: BigIntString,
     ) -> Result<PrefundedVotingBalanceNAPI, napi::Error> {
         Ok(PrefundedVotingBalanceNAPI {
             index_name,
@@ -44,7 +44,7 @@ impl PrefundedVotingBalanceNAPI {
     }
 
     #[napi(getter, js_name = "credits")]
-    pub fn credits(&self) -> Uint64String {
-        Uint64String::from_u64(self.credits.clone())
+    pub fn credits(&self) -> BigIntString {
+        BigIntString::from_u64(self.credits.clone())
     }
 }

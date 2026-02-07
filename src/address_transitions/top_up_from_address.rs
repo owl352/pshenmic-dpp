@@ -14,7 +14,7 @@ use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
 use crate::address_transitions::utils::js_inputs_to_inputs;
 use crate::dynamic_value::TryToU64;
-use crate::dynamic_value::{IdentifierLikeNAPI, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI};
 use crate::identifier::IdentifierNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
@@ -87,7 +87,7 @@ impl IdentityTopUpFromAddressesTransitionNAPI {
             .map(|(address, (nonce, credits))| InputAddressNAPI {
                 address: address.clone().into(),
                 nonce: nonce.clone(),
-                credits: Uint64String::from_u64(credits.clone()),
+                credits: BigIntString::from_u64(credits.clone()),
             })
             .collect()
     }
@@ -96,7 +96,7 @@ impl IdentityTopUpFromAddressesTransitionNAPI {
     pub fn output(&self) -> Option<OutputAddressNAPI> {
         self.0.output().map(|(address, credits)| OutputAddressNAPI {
             address: address.clone().into(),
-            credits: Uint64String::from_u64(credits.clone()),
+            credits: BigIntString::from_u64(credits.clone()),
         })
     }
 

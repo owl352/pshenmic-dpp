@@ -10,7 +10,7 @@ use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_replace_transition;
 use crate::batch::token_payment_info::TokenPaymentInfoNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::utils::with_serde_to_platform_value_map;
 
 #[napi(js_name = "DocumentReplaceTransitionNAPI")]
@@ -33,7 +33,7 @@ impl DocumentReplaceTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         document: &DocumentNAPI,
-        identity_contract_nonce: Uint64String,
+        identity_contract_nonce: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
     ) -> Result<DocumentReplaceTransitionNAPI, napi::Error> {
         let rs_update_transition = generate_replace_transition(
@@ -65,8 +65,8 @@ impl DocumentReplaceTransitionNAPI {
     }
 
     #[napi(getter, js_name = "revision")]
-    pub fn get_revision(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.revision())
+    pub fn get_revision(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.revision())
     }
 
     #[napi(setter, js_name = "data")]
@@ -82,7 +82,7 @@ impl DocumentReplaceTransitionNAPI {
     }
 
     #[napi(setter, js_name = "revision")]
-    pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_revision(&mut self, revision: BigIntString) -> Result<(), napi::Error> {
         self.0.set_revision(revision.try_to_u64()?);
         Ok(())
     }

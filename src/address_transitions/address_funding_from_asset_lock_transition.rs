@@ -14,7 +14,7 @@ use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNullableCreditsNAPI;
 use crate::address_transitions::utils::{js_inputs_to_inputs, js_outputs_to_outputs_nullable};
 use crate::asset_lock_proof::AssetLockProofNAPI;
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, TryToU64};
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
 
@@ -89,7 +89,7 @@ impl AddressFundingFromAssetLockTransitionNAPI {
             .map(|(address, (nonce, credits))| InputAddressNAPI {
                 address: address.clone().into(),
                 nonce: nonce.clone(),
-                credits: Uint64String::from_u64(credits.clone()),
+                credits: BigIntString::from_u64(credits.clone()),
             })
             .collect()
     }
@@ -101,7 +101,7 @@ impl AddressFundingFromAssetLockTransitionNAPI {
             .iter()
             .map(|(address, credits)| OutputAddressNullableCreditsNAPI {
                 address: address.clone().into(),
-                credits: credits.clone().map(|c| Uint64String::from_u64(c)),
+                credits: credits.clone().map(|c| BigIntString::from_u64(c)),
             })
             .collect()
     }

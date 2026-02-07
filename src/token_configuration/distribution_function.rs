@@ -5,7 +5,7 @@ use napi_derive::napi;
 use std::collections::BTreeMap;
 
 use crate::{
-    dynamic_value::{TryToU64, Uint64String},
+    dynamic_value::{BigIntString, TryToU64},
     token_configuration::distribution_structs::{
         DistributionExponentialNAPI, DistributionFixedAmountNAPI,
         DistributionInvertedLogarithmicNAPI, DistributionLinearNAPI, DistributionLogarithmicNAPI,
@@ -33,7 +33,7 @@ impl From<DistributionFunction> for DistributionFunctionNAPI {
 impl DistributionFunctionNAPI {
     #[napi(js_name = "FixedAmountDistribution")]
     pub fn fixed_amount_distribution(
-        amount: Uint64String,
+        amount: BigIntString,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         Ok(DistributionFunctionNAPI(
             DistributionFunction::FixedAmount {
@@ -43,7 +43,7 @@ impl DistributionFunctionNAPI {
     }
 
     #[napi(js_name = "Random")]
-    pub fn random(min: Uint64String, max: Uint64String) -> Result<Self, napi::Error> {
+    pub fn random(min: BigIntString, max: BigIntString) -> Result<Self, napi::Error> {
         Ok(DistributionFunctionNAPI(DistributionFunction::Random {
             min: min.try_to_u64()?,
             max: max.try_to_u64()?,
@@ -55,11 +55,11 @@ impl DistributionFunctionNAPI {
         step_count: u32,
         decrease_per_interval_numerator: u16,
         decrease_per_interval_denominator: u16,
-        start_decreasing_offset: Option<Uint64String>,
+        start_decreasing_offset: Option<BigIntString>,
         max_interval_count: Option<u16>,
-        distribution_start_amount: Uint64String,
-        trailing_distribution_interval_amount: Uint64String,
-        min_value: Option<Uint64String>,
+        distribution_start_amount: BigIntString,
+        trailing_distribution_interval_amount: BigIntString,
+        min_value: Option<BigIntString>,
     ) -> Result<Self, napi::Error> {
         Ok(DistributionFunctionNAPI(
             DistributionFunction::StepDecreasingAmount {
@@ -80,7 +80,7 @@ impl DistributionFunctionNAPI {
 
     #[napi(js_name = "Stepwise")]
     pub fn stepwise(
-        js_steps_with_amount: Vec<(Uint64String, Uint64String)>,
+        js_steps_with_amount: Vec<(BigIntString, BigIntString)>,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         let steps_with_amount: BTreeMap<u64, TokenAmount> = js_steps_with_amount
             .iter()
@@ -97,11 +97,11 @@ impl DistributionFunctionNAPI {
     #[napi(js_name = "Linear")]
     pub fn linear(
         a: i64,
-        d: Uint64String,
-        start_step: Option<Uint64String>,
-        starting_amount: Uint64String,
-        min_value: Option<Uint64String>,
-        max_value: Option<Uint64String>,
+        d: BigIntString,
+        start_step: Option<BigIntString>,
+        starting_amount: BigIntString,
+        min_value: Option<BigIntString>,
+        max_value: Option<BigIntString>,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         Ok(DistributionFunctionNAPI(DistributionFunction::Linear {
             a,
@@ -116,14 +116,14 @@ impl DistributionFunctionNAPI {
     #[napi(js_name = "Polynomial")]
     pub fn polynomial(
         a: i64,
-        d: Uint64String,
+        d: BigIntString,
         m: i64,
-        n: Uint64String,
+        n: BigIntString,
         o: i64,
-        start_moment: Option<Uint64String>,
-        b: Uint64String,
-        min_value: Option<Uint64String>,
-        max_value: Option<Uint64String>,
+        start_moment: Option<BigIntString>,
+        b: BigIntString,
+        min_value: Option<BigIntString>,
+        max_value: Option<BigIntString>,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         Ok(DistributionFunctionNAPI(DistributionFunction::Polynomial {
             a,
@@ -140,15 +140,15 @@ impl DistributionFunctionNAPI {
 
     #[napi(js_name = "Exponential")]
     pub fn exponential(
-        a: Uint64String,
-        d: Uint64String,
+        a: BigIntString,
+        d: BigIntString,
         m: i64,
-        n: Uint64String,
+        n: BigIntString,
         o: i64,
-        start_moment: Option<Uint64String>,
-        b: Uint64String,
-        min_value: Option<Uint64String>,
-        max_value: Option<Uint64String>,
+        start_moment: Option<BigIntString>,
+        b: BigIntString,
+        min_value: Option<BigIntString>,
+        max_value: Option<BigIntString>,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         Ok(DistributionFunctionNAPI(
             DistributionFunction::Exponential {
@@ -168,14 +168,14 @@ impl DistributionFunctionNAPI {
     #[napi(js_name = "Logarithmic")]
     pub fn logarithmic(
         a: i64,
-        d: Uint64String,
-        m: Uint64String,
-        n: Uint64String,
+        d: BigIntString,
+        m: BigIntString,
+        n: BigIntString,
         o: i64,
-        start_moment: Option<Uint64String>,
-        b: Uint64String,
-        min_value: Option<Uint64String>,
-        max_value: Option<Uint64String>,
+        start_moment: Option<BigIntString>,
+        b: BigIntString,
+        min_value: Option<BigIntString>,
+        max_value: Option<BigIntString>,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         Ok(DistributionFunctionNAPI(
             DistributionFunction::Logarithmic {
@@ -195,14 +195,14 @@ impl DistributionFunctionNAPI {
     #[napi(js_name = "InvertedLogarithmic")]
     pub fn inverted_logarithmic(
         a: i64,
-        d: Uint64String,
-        m: Uint64String,
-        n: Uint64String,
+        d: BigIntString,
+        m: BigIntString,
+        n: BigIntString,
         o: i64,
-        start_moment: Option<Uint64String>,
-        b: Uint64String,
-        min_value: Option<Uint64String>,
-        max_value: Option<Uint64String>,
+        start_moment: Option<BigIntString>,
+        b: BigIntString,
+        min_value: Option<BigIntString>,
+        max_value: Option<BigIntString>,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         Ok(DistributionFunctionNAPI(
             DistributionFunction::InvertedLogarithmic {
@@ -243,7 +243,7 @@ impl DistributionFunctionNAPI {
         DistributionFixedAmountNAPI,
         DistributionRandomNAPI,
         DistributionStepDecreasingAmountNAPI,
-        Vec<(Uint64String, Uint64String)>,
+        Vec<(BigIntString, BigIntString)>,
         DistributionLinearNAPI,
         DistributionPolynomialNAPI,
         DistributionExponentialNAPI,
@@ -253,12 +253,12 @@ impl DistributionFunctionNAPI {
         match self.0.clone() {
             DistributionFunction::FixedAmount { amount } => {
                 Either9::A(DistributionFixedAmountNAPI {
-                    amount: Uint64String::from_u64(amount),
+                    amount: BigIntString::from_u64(amount),
                 })
             }
             DistributionFunction::Random { min, max } => Either9::B(DistributionRandomNAPI {
-                min: Uint64String::from_u64(min),
-                max: Uint64String::from_u64(max),
+                min: BigIntString::from_u64(min),
+                max: BigIntString::from_u64(max),
             }),
             DistributionFunction::StepDecreasingAmount {
                 step_count,
@@ -274,21 +274,21 @@ impl DistributionFunctionNAPI {
                 decrease_per_interval_numerator,
                 decrease_per_interval_denominator,
                 start_decreasing_offset: start_decreasing_offset
-                    .map(|offset| Uint64String::from_u64(offset)),
+                    .map(|offset| BigIntString::from_u64(offset)),
                 max_interval_count,
-                distribution_start_amount: Uint64String::from_u64(distribution_start_amount),
-                trailing_distribution_interval_amount: Uint64String::from_u64(
+                distribution_start_amount: BigIntString::from_u64(distribution_start_amount),
+                trailing_distribution_interval_amount: BigIntString::from_u64(
                     trailing_distribution_interval_amount,
                 ),
-                min_value: min_value.map(Uint64String::from_u64),
+                min_value: min_value.map(BigIntString::from_u64),
             }),
             DistributionFunction::Stepwise(steps) => Either9::D(
                 steps
                     .iter()
                     .map(|(a, b)| {
                         (
-                            Uint64String::from_u64(a.clone()),
-                            Uint64String::from_u64(b.clone()),
+                            BigIntString::from_u64(a.clone()),
+                            BigIntString::from_u64(b.clone()),
                         )
                     })
                     .collect(),
@@ -302,11 +302,11 @@ impl DistributionFunctionNAPI {
                 max_value,
             } => Either9::E(DistributionLinearNAPI {
                 a,
-                d: Uint64String::from_u64(d),
-                start_step: start_step.map(Uint64String::from_u64),
-                starting_amount: Uint64String::from_u64(starting_amount),
-                min_value: min_value.map(Uint64String::from_u64),
-                max_value: max_value.map(Uint64String::from_u64),
+                d: BigIntString::from_u64(d),
+                start_step: start_step.map(BigIntString::from_u64),
+                starting_amount: BigIntString::from_u64(starting_amount),
+                min_value: min_value.map(BigIntString::from_u64),
+                max_value: max_value.map(BigIntString::from_u64),
             }),
             DistributionFunction::Polynomial {
                 a,
@@ -320,14 +320,14 @@ impl DistributionFunctionNAPI {
                 max_value,
             } => Either9::F(DistributionPolynomialNAPI {
                 a,
-                d: Uint64String::from_u64(d),
+                d: BigIntString::from_u64(d),
                 m,
-                n: Uint64String::from_u64(n),
+                n: BigIntString::from_u64(n),
                 o,
-                start_moment: start_moment.map(Uint64String::from_u64),
-                b: Uint64String::from_u64(b),
-                min_value: min_value.map(Uint64String::from_u64),
-                max_value: max_value.map(Uint64String::from_u64),
+                start_moment: start_moment.map(BigIntString::from_u64),
+                b: BigIntString::from_u64(b),
+                min_value: min_value.map(BigIntString::from_u64),
+                max_value: max_value.map(BigIntString::from_u64),
             }),
             DistributionFunction::Exponential {
                 a,
@@ -340,15 +340,15 @@ impl DistributionFunctionNAPI {
                 min_value,
                 max_value,
             } => Either9::G(DistributionExponentialNAPI {
-                a: Uint64String::from_u64(a),
-                d: Uint64String::from_u64(d),
+                a: BigIntString::from_u64(a),
+                d: BigIntString::from_u64(d),
                 m,
-                n: Uint64String::from_u64(n),
+                n: BigIntString::from_u64(n),
                 o,
-                start_moment: start_moment.map(Uint64String::from_u64),
-                b: Uint64String::from_u64(b),
-                min_value: min_value.map(Uint64String::from_u64),
-                max_value: max_value.map(Uint64String::from_u64),
+                start_moment: start_moment.map(BigIntString::from_u64),
+                b: BigIntString::from_u64(b),
+                min_value: min_value.map(BigIntString::from_u64),
+                max_value: max_value.map(BigIntString::from_u64),
             }),
             DistributionFunction::Logarithmic {
                 a,
@@ -362,14 +362,14 @@ impl DistributionFunctionNAPI {
                 max_value,
             } => Either9::H(DistributionLogarithmicNAPI {
                 a,
-                d: Uint64String::from_u64(d),
-                m: Uint64String::from_u64(m),
-                n: Uint64String::from_u64(n),
+                d: BigIntString::from_u64(d),
+                m: BigIntString::from_u64(m),
+                n: BigIntString::from_u64(n),
                 o,
-                start_moment: start_moment.map(Uint64String::from_u64),
-                b: Uint64String::from_u64(b),
-                min_value: min_value.map(Uint64String::from_u64),
-                max_value: max_value.map(Uint64String::from_u64),
+                start_moment: start_moment.map(BigIntString::from_u64),
+                b: BigIntString::from_u64(b),
+                min_value: min_value.map(BigIntString::from_u64),
+                max_value: max_value.map(BigIntString::from_u64),
             }),
             DistributionFunction::InvertedLogarithmic {
                 a,
@@ -383,14 +383,14 @@ impl DistributionFunctionNAPI {
                 max_value,
             } => Either9::I(DistributionInvertedLogarithmicNAPI {
                 a,
-                d: Uint64String::from_u64(d),
-                m: Uint64String::from_u64(m),
-                n: Uint64String::from_u64(n),
+                d: BigIntString::from_u64(d),
+                m: BigIntString::from_u64(m),
+                n: BigIntString::from_u64(n),
                 o,
-                start_moment: start_moment.map(Uint64String::from_u64),
-                b: Uint64String::from_u64(b),
-                min_value: min_value.map(Uint64String::from_u64),
-                max_value: max_value.map(Uint64String::from_u64),
+                start_moment: start_moment.map(BigIntString::from_u64),
+                b: BigIntString::from_u64(b),
+                min_value: min_value.map(BigIntString::from_u64),
+                max_value: max_value.map(BigIntString::from_u64),
             }),
         }
     }
