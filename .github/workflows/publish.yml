@@ -23,6 +23,11 @@ jobs:
         run: |
           rustup target add wasm32-wasip1-threads
 
+      - name: GCC Multilib
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib --fix-missing
+
       - name: Add rustup mobile targets
         run: |
           rustup target add aarch64-apple-ios-sim aarch64-linux-android
