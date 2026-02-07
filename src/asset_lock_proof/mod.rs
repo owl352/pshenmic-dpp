@@ -129,9 +129,13 @@ impl AssetLockProofNAPI {
 
     #[napi(js_name = "hex")]
     pub fn to_string(&self) -> Result<String, napi::Error> {
-        Ok(hex::encode(serde_json::to_string(&self.0).map_err(
-            |err| napi::Error::new(napi::Status::GenericFailure, err.to_string()),
-        )?))
+        Ok(hex::encode(
+            self.0.to_raw_object().with_js_error()?.to_string(),
+        ))
+        // TODO: Check hex encoding
+        // Ok(hex::encode(serde_json::to_string(&self.0).map_err(
+        //     |err| napi::Error::new(napi::Status::GenericFailure, err.to_string()),
+        // )?))
     }
 
     #[napi(js_name = "fromHex")]
@@ -149,6 +153,8 @@ impl AssetLockProofNAPI {
                 format!("Invalid UTF-8 in asset lock proof: {}", e),
             )
         })?;
+
+        // TODO: Implement without serde_json
 
         let asset_lock_proof = serde_json::from_str(&json_str).map_err(|e| {
             napi::Error::new(

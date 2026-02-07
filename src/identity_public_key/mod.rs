@@ -21,7 +21,7 @@ use crate::contract_bounds::ContractBoundsNAPI;
 use crate::dynamic_value::TryToU64;
 use crate::private_key::PrivateKeyNAPI;
 use crate::{
-    dynamic_value::{DynamicValue, Uint64String},
+    dynamic_value::{BigIntString, DynamicValue},
     enums::{
         key_type::KeyTypeNAPI, network::NetworkNAPI, purpose::PurposeNAPI,
         security_level::SecurityLevelNAPI,
@@ -55,7 +55,7 @@ impl IdentityPublicKeyNAPI {
         js_key_type: &DynamicValue,
         read_only: bool,
         binary_data: String,
-        js_disabled_at: Option<Uint64String>,
+        js_disabled_at: Option<BigIntString>,
         contract_bounds: Option<&ContractBoundsNAPI>,
     ) -> Result<Self, napi::Error> {
         let purpose: PurposeNAPI = js_purpose.try_into()?;
@@ -145,8 +145,8 @@ impl IdentityPublicKeyNAPI {
     }
 
     #[napi(getter, js_name = "disabledAt")]
-    pub fn get_disabled_at(&self) -> Option<Uint64String> {
-        self.0.disabled_at().map(|num| Uint64String::from_u64(num))
+    pub fn get_disabled_at(&self) -> Option<BigIntString> {
+        self.0.disabled_at().map(|num| BigIntString::from_u64(num))
     }
 
     #[napi(setter, js_name = "keyId")]
@@ -213,7 +213,7 @@ impl IdentityPublicKeyNAPI {
     }
 
     #[napi(setter, js_name = disabledAt)]
-    pub fn set_disabled_at(&mut self, disabled_at: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_disabled_at(&mut self, disabled_at: BigIntString) -> Result<(), napi::Error> {
         self.0.set_disabled_at(disabled_at.try_to_u64()?);
         Ok(())
     }

@@ -2,7 +2,7 @@ use dpp::dashcore::{ScriptBuf, TxOut};
 use napi::{Either, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
 
-use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 
 #[napi(js_name = "TxOutNAPI")]
 #[derive(Clone)]
@@ -46,8 +46,8 @@ impl TxOutNAPI {
     }
 
     #[napi(getter, js_name = "value")]
-    pub fn get_value(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.value)
+    pub fn get_value(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.value)
     }
 
     #[napi(getter, js_name = "scriptPubKeyHex")]
@@ -61,7 +61,7 @@ impl TxOutNAPI {
     }
 
     #[napi(setter, js_name = "value")]
-    pub fn set_value(&mut self, value: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_value(&mut self, value: BigIntString) -> Result<(), napi::Error> {
         self.0.value = value.try_to_u64()?;
 
         Ok(())

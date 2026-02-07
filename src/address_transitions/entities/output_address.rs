@@ -1,18 +1,18 @@
 use napi_derive::napi;
 
-use crate::{dynamic_value::Uint64String, platform_address::PlatformAddressNAPI};
+use crate::{dynamic_value::BigIntString, platform_address::PlatformAddressNAPI};
 
 #[derive(Clone)]
 #[napi(js_name = "OutputAddressNAPI")]
 pub struct OutputAddressNAPI {
     pub(crate) address: PlatformAddressNAPI,
-    pub(crate) credits: Uint64String,
+    pub(crate) credits: BigIntString,
 }
 
 #[napi]
 impl OutputAddressNAPI {
     #[napi(constructor)]
-    pub fn new(address: &PlatformAddressNAPI, credits: Uint64String) -> Self {
+    pub fn new(address: &PlatformAddressNAPI, credits: BigIntString) -> Self {
         OutputAddressNAPI {
             address: address.clone(),
             credits,
@@ -25,7 +25,7 @@ impl OutputAddressNAPI {
     }
 
     #[napi(getter, js_name = "credits")]
-    pub fn credits(&self) -> Uint64String {
+    pub fn credits(&self) -> BigIntString {
         self.credits.clone()
     }
 
@@ -35,7 +35,7 @@ impl OutputAddressNAPI {
     }
 
     #[napi(setter, js_name = "credits")]
-    pub fn set_credits(&mut self, credits: Uint64String) {
+    pub fn set_credits(&mut self, credits: BigIntString) {
         self.credits = credits
     }
 }
@@ -44,13 +44,13 @@ impl OutputAddressNAPI {
 #[napi(js_name = "OutputAddressNullableCreditsNAPI")]
 pub struct OutputAddressNullableCreditsNAPI {
     pub(crate) address: PlatformAddressNAPI,
-    pub(crate) credits: Option<Uint64String>,
+    pub(crate) credits: Option<BigIntString>,
 }
 
 #[napi]
 impl OutputAddressNullableCreditsNAPI {
     #[napi(constructor)]
-    pub fn new(address: &PlatformAddressNAPI, credits: Option<Uint64String>) -> Self {
+    pub fn new(address: &PlatformAddressNAPI, credits: Option<BigIntString>) -> Self {
         OutputAddressNullableCreditsNAPI {
             address: address.clone(),
             credits,
@@ -63,7 +63,7 @@ impl OutputAddressNullableCreditsNAPI {
     }
 
     #[napi(getter, js_name = "credits")]
-    pub fn credits(&self) -> Option<Uint64String> {
+    pub fn credits(&self) -> Option<BigIntString> {
         self.credits.clone()
     }
 
@@ -73,7 +73,7 @@ impl OutputAddressNullableCreditsNAPI {
     }
 
     #[napi(setter, js_name = "credits")]
-    pub fn set_credits(&mut self, credits: Option<Uint64String>) {
+    pub fn set_credits(&mut self, credits: Option<BigIntString>) {
         self.credits = credits
     }
 }

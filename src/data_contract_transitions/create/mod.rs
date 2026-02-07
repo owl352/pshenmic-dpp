@@ -15,7 +15,7 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::data_contract::DataContractNAPI;
-use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::WithJsError;
@@ -28,7 +28,7 @@ impl DataContractCreateTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         data_contract: &DataContractNAPI,
-        identity_nonce: Uint64String,
+        identity_nonce: BigIntString,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractCreateTransitionNAPI, napi::Error> {
         let rs_data_contract: DataContract = data_contract.clone().into();
@@ -144,8 +144,8 @@ impl DataContractCreateTransitionNAPI {
     }
 
     #[napi(getter, js_name = "identityNonce")]
-    pub fn get_identity_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.identity_nonce())
+    pub fn get_identity_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.identity_nonce())
     }
 
     #[napi(js_name = "getDataContract")]

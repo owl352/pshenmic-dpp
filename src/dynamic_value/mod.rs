@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
 
+use dpp::platform_value::Value;
 use napi::{
     Either, Status,
-    bindgen_prelude::{Either11, Null, Uint8Array, Undefined},
+    bindgen_prelude::{Either16, Null, Uint8Array, Undefined},
 };
 use napi_derive::napi;
 
@@ -13,14 +14,15 @@ pub type IdentifierLikeNAPI<'a> = Either<&'a IdentifierNAPI, &'a DynamicValue>;
 
 pub trait TryToU64 {
     fn try_to_u64(&self) -> Result<u64, napi::Error>;
-    fn try_from_string(val: String) -> Result<Uint64String, napi::Error>;
-    fn from_u64(val: u64) -> Uint64String;
+    fn try_from_string(val: String) -> Result<BigIntString, napi::Error>;
+    fn from_u64(val: u64) -> BigIntString;
+    fn from_i64(val: i64) -> BigIntString;
 }
 
 #[napi]
-pub type Uint64String = String;
+pub type BigIntString = String;
 
-impl TryToU64 for Uint64String {
+impl TryToU64 for BigIntString {
     fn try_to_u64(&self) -> Result<u64, napi::Error> {
         self.parse().map_err(|_| {
             napi::Error::new(
@@ -43,23 +45,32 @@ impl TryToU64 for Uint64String {
     fn from_u64(val: u64) -> Self {
         val.to_string()
     }
+
+    fn from_i64(val: i64) -> Self {
+        val.to_string()
+    }
 }
 
 #[derive(Clone)]
 #[napi(js_name = "DynamicValue")]
 pub struct DynamicValue(
-    Either11<
+    Either16<
         String,
         Vec<u8>,
         u8,
         u16,
         u32,
-        Uint64String,
+        BigIntString,
         bool,
         BTreeMap<String, DynamicValue>,
         Vec<DynamicValue>,
         Null,
         Undefined,
+        i8,
+        i16,
+        i32,
+        i64,
+        f64,
     >,
 );
 
@@ -67,87 +78,312 @@ pub struct DynamicValue(
 impl DynamicValue {
     #[napi(constructor)]
     pub fn new(
-        value: Either11<
+        value: Either16<
             String,
             Uint8Array,
             u8,
             u16,
             u32,
-            Uint64String,
+            BigIntString,
             bool,
             BTreeMap<String, &DynamicValue>,
             Vec<&DynamicValue>,
             Null,
             Undefined,
+            i8,
+            i16,
+            i32,
+            i64,
+            f64,
         >,
     ) -> Self {
         let owned = match value {
-            Either11::A(v) => Either11::A(v),
-            Either11::B(v) => Either11::B(v.to_vec()),
-            Either11::C(v) => Either11::C(v),
-            Either11::D(v) => Either11::D(v),
-            Either11::E(v) => Either11::E(v),
-            Either11::F(v) => Either11::F(v),
-            Either11::G(v) => Either11::G(v),
-
-            Either11::H(map) => Either11::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
-
-            Either11::I(vec) => Either11::I(vec.into_iter().cloned().collect()),
-
-            Either11::J(v) => Either11::J(v),
-            Either11::K(v) => Either11::K(v),
+            Either16::A(v) => Either16::A(v),
+            Either16::B(v) => Either16::B(v.to_vec()),
+            Either16::C(v) => Either16::C(v),
+            Either16::D(v) => Either16::D(v),
+            Either16::E(v) => Either16::E(v),
+            Either16::F(v) => Either16::F(v),
+            Either16::G(v) => Either16::G(v),
+            Either16::H(map) => Either16::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
+            Either16::I(vec) => Either16::I(vec.into_iter().cloned().collect()),
+            Either16::J(v) => Either16::J(v),
+            Either16::K(v) => Either16::K(v),
+            Either16::L(v) => Either16::L(v),
+            Either16::M(v) => Either16::M(v),
+            Either16::N(v) => Either16::N(v),
+            Either16::O(v) => Either16::O(v),
+            Either16::P(v) => Either16::P(v),
         };
 
         Self(owned)
     }
 
-    #[napi(getter, js_name = "place")]
-    pub fn place_holder(&self) -> String {
-        "holder".to_string()
+    #[napi(getter, js_name = "value")]
+    pub fn value(
+        &self,
+    ) -> Either16<
+        String,
+        Uint8Array,
+        u8,
+        u16,
+        u32,
+        BigIntString,
+        bool,
+        BTreeMap<String, DynamicValue>,
+        Vec<DynamicValue>,
+        Null,
+        Undefined,
+        i8,
+        i16,
+        i32,
+        i64,
+        f64,
+    > {
+        match self.0.clone() {
+            Either16::A(v) => Either16::A(v),
+            Either16::B(v) => Either16::B(v.into()),
+            Either16::C(v) => Either16::C(v),
+            Either16::D(v) => Either16::D(v),
+            Either16::E(v) => Either16::E(v),
+            Either16::F(v) => Either16::F(v),
+            Either16::G(v) => Either16::G(v),
+            Either16::H(map) => Either16::H(map),
+            Either16::I(vec) => Either16::I(vec),
+            Either16::J(v) => Either16::J(v),
+            Either16::K(v) => Either16::K(v),
+            Either16::L(v) => Either16::L(v),
+            Either16::M(v) => Either16::M(v),
+            Either16::N(v) => Either16::N(v),
+            Either16::O(v) => Either16::O(v),
+            Either16::P(v) => Either16::P(v),
+        }
+    }
+
+    #[napi(setter, js_name = "value")]
+    pub fn set_value(
+        &mut self,
+        value: Either16<
+            String,
+            Uint8Array,
+            u8,
+            u16,
+            u32,
+            BigIntString,
+            bool,
+            BTreeMap<String, &DynamicValue>,
+            Vec<&DynamicValue>,
+            Null,
+            Undefined,
+            i8,
+            i16,
+            i32,
+            i64,
+            f64,
+        >,
+    ) {
+        let owned = match value {
+            Either16::A(v) => Either16::A(v),
+            Either16::B(v) => Either16::B(v.to_vec()),
+            Either16::C(v) => Either16::C(v),
+            Either16::D(v) => Either16::D(v),
+            Either16::E(v) => Either16::E(v),
+            Either16::F(v) => Either16::F(v),
+            Either16::G(v) => Either16::G(v),
+            Either16::H(map) => Either16::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
+            Either16::I(vec) => Either16::I(vec.into_iter().cloned().collect()),
+            Either16::J(v) => Either16::J(v),
+            Either16::K(v) => Either16::K(v),
+            Either16::L(v) => Either16::L(v),
+            Either16::M(v) => Either16::M(v),
+            Either16::N(v) => Either16::N(v),
+            Either16::O(v) => Either16::O(v),
+            Either16::P(v) => Either16::P(v),
+        };
+
+        self.0 = owned;
+    }
+}
+
+impl TryFrom<Value> for DynamicValue {
+    type Error = napi::Error;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::U128(num) => Ok(DynamicValue(Either16::F(BigIntString::from(
+                num.to_string(),
+            )))),
+            Value::I128(num) => Ok(DynamicValue(Either16::F(BigIntString::from(
+                num.to_string(),
+            )))),
+            Value::U64(num) => Ok(DynamicValue(Either16::F(BigIntString::from(
+                num.to_string(),
+            )))),
+            Value::I64(num) => Ok(DynamicValue(Either16::O(num))),
+            Value::U32(num) => Ok(DynamicValue(Either16::E(num))),
+            Value::I32(num) => Ok(DynamicValue(Either16::N(num))),
+            Value::U16(num) => Ok(DynamicValue(Either16::D(num))),
+            Value::I16(num) => Ok(DynamicValue(Either16::M(num))),
+            Value::U8(num) => Ok(DynamicValue(Either16::C(num))),
+            Value::I8(num) => Ok(DynamicValue(Either16::L(num))),
+            Value::Bytes(bytes) => Ok(DynamicValue(Either16::B(bytes))),
+            Value::Bytes20(bytes) => Ok(DynamicValue(Either16::B(bytes.to_vec()))),
+            Value::Bytes32(bytes) => Ok(DynamicValue(Either16::B(bytes.to_vec()))),
+            Value::Bytes36(bytes) => Ok(DynamicValue(Either16::B(bytes.to_vec()))),
+            Value::EnumU8(bytes) => Ok(DynamicValue(Either16::B(bytes))),
+            Value::EnumString(items) => Ok(DynamicValue(Either16::I(
+                items
+                    .iter()
+                    .map(|i| DynamicValue::from(i.clone()))
+                    .collect(),
+            ))),
+            Value::Identifier(bytes) => Ok(DynamicValue(Either16::B(bytes.to_vec()))),
+            Value::Float(num) => Ok(DynamicValue(Either16::P(num))),
+            Value::Text(text) => Ok(DynamicValue::from(text)),
+            Value::Bool(flag) => Ok(DynamicValue::from(flag)),
+            Value::Null => Ok(DynamicValue(Either16::J(Null))),
+            Value::Array(arr) => Ok(DynamicValue(Either16::I(
+                arr.iter()
+                    .map(|v| Ok::<DynamicValue, napi::Error>(v.clone().try_into()?))
+                    .collect::<Result<Vec<DynamicValue>, napi::Error>>()?,
+            ))),
+            Value::Map(val) => Ok(DynamicValue(Either16::H(
+                val.into_iter()
+                    .map(|(k, v)| {
+                        Ok::<(String, DynamicValue), napi::Error>((k.to_string(), v.try_into()?))
+                    })
+                    .collect::<Result<BTreeMap<String, DynamicValue>, napi::Error>>()?,
+            ))),
+            _ => Err(napi::Error::new(
+                napi::Status::InvalidArg,
+                "Unimplemented type",
+            )),
+        }
+    }
+}
+
+impl TryFrom<DynamicValue> for Value {
+    type Error = napi::Error;
+    fn try_from(value: DynamicValue) -> Result<Self, Self::Error> {
+        match value.0 {
+            Either16::A(v) => Ok(Value::Text(v)),
+            Either16::B(v) => Ok(Value::Bytes(v.to_vec())),
+            Either16::C(v) => Ok(Value::U8(v)),
+            Either16::D(v) => Ok(Value::U16(v)),
+            Either16::E(v) => Ok(Value::U32(v)),
+            Either16::F(v) => Ok(Value::U64(v.try_to_u64()?)),
+            Either16::G(v) => Ok(Value::Bool(v)),
+            Either16::H(obj) => {
+                let mut map: Vec<(Value, Value)> = Vec::new();
+                for (k, v) in obj.iter() {
+                    let val = Value::try_from(v.clone())?;
+                    map.push((Value::Text(k.clone()), val));
+                }
+
+                Ok(Value::Map(map))
+            }
+            Either16::I(js_array) => {
+                let mut arr: Vec<Value> = Vec::new();
+
+                for v in js_array {
+                    let val = Value::try_from(v.clone())?;
+                    arr.push(val);
+                }
+
+                Ok(Value::Array(arr))
+            }
+            Either16::J(_) => Ok(Value::Null),
+            Either16::K(_) => Ok(Value::Null),
+            Either16::L(num) => Ok(Value::I8(num)),
+            Either16::M(num) => Ok(Value::I16(num)),
+            Either16::N(num) => Ok(Value::I32(num)),
+            Either16::O(num) => Ok(Value::I64(num)),
+            Either16::P(num) => Ok(Value::Float(num)),
+        }
     }
 }
 
 impl From<String> for DynamicValue {
     fn from(value: String) -> Self {
-        DynamicValue(Either11::A(value))
+        DynamicValue::string(value)
+    }
+}
+
+impl From<&str> for DynamicValue {
+    fn from(value: &str) -> Self {
+        DynamicValue::from(value.to_string())
+    }
+}
+
+impl From<&[u8]> for DynamicValue {
+    fn from(value: &[u8]) -> Self {
+        DynamicValue::uint8_array(value.to_vec())
+    }
+}
+
+impl From<Vec<u8>> for DynamicValue {
+    fn from(value: Vec<u8>) -> Self {
+        DynamicValue::uint8_array(value)
     }
 }
 
 impl From<u8> for DynamicValue {
     fn from(value: u8) -> Self {
-        DynamicValue(Either11::C(value))
+        DynamicValue(Either16::C(value))
     }
 }
 
 impl From<u16> for DynamicValue {
     fn from(value: u16) -> Self {
-        DynamicValue(Either11::D(value))
+        DynamicValue(Either16::D(value))
     }
 }
 
 impl From<u32> for DynamicValue {
     fn from(value: u32) -> Self {
-        DynamicValue(Either11::E(value))
+        DynamicValue(Either16::E(value))
+    }
+}
+
+impl From<u64> for DynamicValue {
+    fn from(value: u64) -> Self {
+        DynamicValue(Either16::F(BigIntString::from_u64(value)))
     }
 }
 
 impl From<bool> for DynamicValue {
     fn from(value: bool) -> Self {
-        DynamicValue(Either11::G(value))
+        DynamicValue(Either16::G(value))
     }
 }
 
 impl DynamicValue {
+    pub fn null() -> Self {
+        DynamicValue(Either16::J(Null))
+    }
+
+    pub fn object(value: BTreeMap<String, DynamicValue>) -> Self {
+        DynamicValue(Either16::H(value))
+    }
+
+    pub fn string(value: String) -> Self {
+        DynamicValue(Either16::A(value))
+    }
+
+    pub fn uint8_array(value: Vec<u8>) -> Self {
+        DynamicValue(Either16::B(value))
+    }
+
     pub fn is_undefined(&self) -> bool {
         match self.0 {
-            Either11::K(_) => true,
+            Either16::K(_) => true,
             _ => false,
         }
     }
 
     pub fn is_null(&self) -> bool {
         match self.0 {
-            Either11::J(_) => true,
+            Either16::J(_) => true,
             _ => false,
         }
     }
@@ -158,11 +394,11 @@ impl DynamicValue {
 
     pub fn try_to_u64(&self) -> Result<u64, napi::Error> {
         match &self.0 {
-            Either11::C(val) => Ok(val.clone() as u64),
-            Either11::D(val) => Ok(val.clone() as u64),
-            Either11::E(val) => Ok(val.clone() as u64),
-            Either11::F(val) => val.try_to_u64(),
-            Either11::A(val) => Uint64String::from(val).try_to_u64(),
+            Either16::C(val) => Ok(val.clone() as u64),
+            Either16::D(val) => Ok(val.clone() as u64),
+            Either16::E(val) => Ok(val.clone() as u64),
+            Either16::F(val) => val.try_to_u64(),
+            Either16::A(val) => BigIntString::from(val).try_to_u64(),
             _ => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot convert value to u64",
@@ -172,126 +408,169 @@ impl DynamicValue {
 
     pub fn is_string(&self) -> bool {
         match self.0 {
-            Either11::A(_) => true,
+            Either16::A(_) => true,
             _ => false,
         }
     }
 
     pub fn is_uint_8_array(&self) -> bool {
         match self.0 {
-            Either11::B(_) => true,
+            Either16::B(_) => true,
             _ => false,
         }
     }
 
     pub fn is_uint8(&self) -> bool {
         match self.0 {
-            Either11::C(_) => true,
+            Either16::C(_) => true,
             _ => false,
         }
     }
 
     pub fn is_uint16(&self) -> bool {
         match self.0 {
-            Either11::D(_) => true,
+            Either16::D(_) => true,
             _ => false,
         }
     }
 
     pub fn is_uint32(&self) -> bool {
         match self.0 {
-            Either11::E(_) => true,
+            Either16::E(_) => true,
             _ => false,
         }
     }
 
     pub fn is_uint64(&self) -> bool {
         match self.0 {
-            Either11::F(_) => true,
+            Either16::F(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_int8(&self) -> bool {
+        match self.0 {
+            Either16::L(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_int16(&self) -> bool {
+        match self.0 {
+            Either16::M(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_int32(&self) -> bool {
+        match self.0 {
+            Either16::N(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_int64(&self) -> bool {
+        match self.0 {
+            Either16::O(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_f64(&self) -> bool {
+        match self.0 {
+            Either16::P(_) => true,
             _ => false,
         }
     }
 
     pub fn is_bool(&self) -> bool {
         match self.0 {
-            Either11::G(_) => true,
+            Either16::G(_) => true,
             _ => false,
         }
     }
 
-    pub fn is_map(&self) -> bool {
+    pub fn is_object(&self) -> bool {
         match self.0 {
-            Either11::H(_) => true,
+            Either16::H(_) => true,
             _ => false,
         }
     }
 
     pub fn is_array(&self) -> bool {
         match self.0 {
-            Either11::I(_) => true,
+            Either16::I(_) => true,
             _ => false,
         }
     }
 
     pub fn is_number(&self) -> bool {
-        self.is_uint8() || self.is_uint16() || self.is_uint32() || self.is_uint64()
+        self.is_uint8()
+            || self.is_uint16()
+            || self.is_uint32()
+            || self.is_uint64()
+            || self.is_int8()
+            || self.is_int16()
+            || self.is_int32()
+            || self.is_int64()
+            || self.is_f64()
     }
 
     pub fn as_string(&self) -> Option<String> {
         match &self.0 {
-            Either11::A(string) => Some(string.clone()),
+            Either16::A(string) => Some(string.clone()),
             _ => None,
         }
     }
 
     pub fn as_bytes(&self) -> Option<&Vec<u8>> {
         match &self.0 {
-            Either11::B(bytes) => Some(bytes),
+            Either16::B(bytes) => Some(bytes),
             _ => None,
         }
     }
 
     pub fn as_uint8(&self) -> Option<u8> {
         match self.0 {
-            Either11::C(value) => Some(value),
+            Either16::C(value) => Some(value),
             _ => None,
         }
     }
 
     pub fn as_uint16(&self) -> Option<u16> {
         match self.0 {
-            Either11::C(val) => Some(val as u16),
-            Either11::D(val) => Some(val),
+            Either16::C(val) => Some(val as u16),
+            Either16::D(val) => Some(val),
             _ => None,
         }
     }
 
     pub fn as_uint32(&self) -> Option<u32> {
         match self.0 {
-            Either11::C(val) => Some(val as u32),
-            Either11::D(val) => Some(val as u32),
-            Either11::E(val) => Some(val),
+            Either16::C(val) => Some(val as u32),
+            Either16::D(val) => Some(val as u32),
+            Either16::E(val) => Some(val),
             _ => None,
         }
     }
 
     pub fn as_bool(&self) -> Option<bool> {
         match self.0 {
-            Either11::G(val) => Some(val),
+            Either16::G(val) => Some(val),
             _ => None,
         }
     }
 
-    pub fn as_map(&self) -> Option<&BTreeMap<String, DynamicValue>> {
+    pub fn as_object(&self) -> Option<&BTreeMap<String, DynamicValue>> {
         match &self.0 {
-            Either11::H(val) => Some(val),
+            Either16::H(val) => Some(val),
             _ => None,
         }
     }
 
     pub fn as_array(&self) -> Option<&Vec<DynamicValue>> {
         match &self.0 {
-            Either11::I(val) => Some(val),
+            Either16::I(val) => Some(val),
             _ => None,
         }
     }

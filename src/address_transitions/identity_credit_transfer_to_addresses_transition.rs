@@ -10,7 +10,7 @@ use napi_derive::napi;
 
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
 use crate::address_transitions::utils::js_outputs_to_outputs;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
 
@@ -41,7 +41,7 @@ impl IdentityCreditTransferToAddressesTransitionNAPI {
     pub fn new(
         js_identifier: IdentifierLikeNAPI,
         js_recipients: Vec<&OutputAddressNAPI>,
-        nonce: Uint64String,
+        nonce: BigIntString,
         user_fee_increase: u16,
     ) -> Result<Self, napi::Error> {
         let identifier = IdentifierNAPI::try_from(js_identifier)?;
@@ -75,14 +75,14 @@ impl IdentityCreditTransferToAddressesTransitionNAPI {
             .iter()
             .map(|(address, credits)| OutputAddressNAPI {
                 address: address.clone().into(),
-                credits: Uint64String::from_u64(credits.clone()),
+                credits: BigIntString::from_u64(credits.clone()),
             })
             .collect()
     }
 
     #[napi(getter, js_name = "nonce")]
-    pub fn nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.nonce())
+    pub fn nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.nonce())
     }
 
     #[napi(getter, js_name = "userFeeIncrease")]
@@ -121,7 +121,7 @@ impl IdentityCreditTransferToAddressesTransitionNAPI {
     }
 
     #[napi(setter, js_name = "nonce")]
-    pub fn set_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0.set_nonce(nonce.try_to_u64()?);
 
         Ok(())

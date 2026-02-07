@@ -14,7 +14,7 @@ use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
 use crate::address_transitions::utils::js_inputs_to_inputs;
 use crate::core_script::CoreScriptNAPI;
-use crate::dynamic_value::{DynamicValue, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::enums::pooling::PoolingNAPI;
 use crate::platform_address::PlatformAddressNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
@@ -107,7 +107,7 @@ impl AddressCreditWithdrawalTransitionNAPI {
             .map(|(address, (nonce, credits))| InputAddressNAPI {
                 address: address.clone().into(),
                 nonce: nonce.clone(),
-                credits: Uint64String::from_u64(credits.clone()),
+                credits: BigIntString::from_u64(credits.clone()),
             })
             .collect()
     }
@@ -116,7 +116,7 @@ impl AddressCreditWithdrawalTransitionNAPI {
     pub fn output(&self) -> Option<OutputAddressNAPI> {
         self.0.output().map(|(address, credits)| OutputAddressNAPI {
             address: address.clone().into(),
-            credits: Uint64String::from_u64(credits.clone()),
+            credits: BigIntString::from_u64(credits.clone()),
         })
     }
 
@@ -172,7 +172,7 @@ impl AddressCreditWithdrawalTransitionNAPI {
     #[napi(setter, js_name = "output")]
     pub fn set_output(
         &mut self,
-        js_output: Option<(&PlatformAddressNAPI, Uint64String)>,
+        js_output: Option<(&PlatformAddressNAPI, BigIntString)>,
     ) -> Result<(), napi::Error> {
         let output: Option<(PlatformAddress, Credits)> = js_output
             .map(|(address, credits)| {

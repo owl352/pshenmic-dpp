@@ -9,7 +9,7 @@ use napi::bindgen_prelude::Either9;
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64},
     identifier::IdentifierNAPI,
     token_configuration::{
         authorized_action_taker::AuthorizedActionTakersNAPI,
@@ -127,7 +127,7 @@ impl TokenConfigurationChangeItemNAPI {
         String,
         TokenConfigurationConventionNAPI,
         AuthorizedActionTakersNAPI,
-        Option<Uint64String>,
+        Option<BigIntString>,
         Option<TokenPerpetualDistributionNAPI>,
         Option<IdentifierNAPI>,
         bool,
@@ -148,7 +148,7 @@ impl TokenConfigurationChangeItemNAPI {
                 Either9::C(AuthorizedActionTakersNAPI::from(action_takers))
             }
             TokenConfigurationChangeItem::MaxSupply(amount) => {
-                Either9::D(amount.map(Uint64String::from_u64))
+                Either9::D(amount.map(BigIntString::from_u64))
             }
             TokenConfigurationChangeItem::MaxSupplyControlGroup(action_takers) => {
                 Either9::C(AuthorizedActionTakersNAPI::from(action_takers))
@@ -393,7 +393,7 @@ impl TokenConfigurationChangeItemNAPI {
 #[napi]
 impl TokenConfigurationChangeItemNAPI {
     #[napi(js_name = "MaxSupplyItem")]
-    pub fn max_supply_item(supply: Option<Uint64String>) -> Result<Self, napi::Error> {
+    pub fn max_supply_item(supply: Option<BigIntString>) -> Result<Self, napi::Error> {
         Ok(TokenConfigurationChangeItemNAPI(
             TokenConfigurationChangeItem::MaxSupply(supply.map(|s| s.try_to_u64()).transpose()?),
         ))

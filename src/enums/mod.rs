@@ -1,6 +1,9 @@
 pub mod action_goal;
+pub mod batch_type;
 pub mod distribution_type;
 pub mod emergency_action;
+pub mod gas_fees_paid_by;
+pub mod group_action_status;
 pub mod key_type;
 pub mod lock_types;
 pub mod network;
@@ -8,3 +11,4 @@ pub mod platform_version;
 pub mod pooling;
 pub mod purpose;
 pub mod security_level;
+pub mod vote_state_result_type;

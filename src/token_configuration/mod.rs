@@ -1,5 +1,5 @@
 use crate::{
-    dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64},
     identifier::IdentifierNAPI,
     token_configuration::{
         authorized_action_taker::AuthorizedActionTakersNAPI,
@@ -61,8 +61,8 @@ impl TokenConfigurationNAPI {
     pub fn new(
         conventions: &TokenConfigurationConventionNAPI,
         conventions_change_rules: &ChangeControlRulesNAPI,
-        base_supply: Uint64String,
-        max_supply: Option<Uint64String>,
+        base_supply: BigIntString,
+        max_supply: Option<BigIntString>,
         keeps_history: &TokenKeepsHistoryRulesNAPI,
         start_as_paused: bool,
         allow_transfer_to_frozen_balance: bool,
@@ -117,8 +117,8 @@ impl TokenConfigurationNAPI {
     }
 
     #[napi(getter, js_name = "baseSupply")]
-    pub fn get_base_supply(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.base_supply())
+    pub fn get_base_supply(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.base_supply())
     }
 
     #[napi(getter, js_name = "keepsHistory")]
@@ -137,8 +137,8 @@ impl TokenConfigurationNAPI {
     }
 
     #[napi(getter, js_name = "maxSupply")]
-    pub fn get_max_supply(&self) -> Option<Uint64String> {
-        self.0.max_supply().map(Uint64String::from_u64)
+    pub fn get_max_supply(&self) -> Option<BigIntString> {
+        self.0.max_supply().map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "maxSupplyChangeRules")]
@@ -214,7 +214,7 @@ impl TokenConfigurationNAPI {
     }
 
     #[napi(setter, js_name = "baseSupply")]
-    pub fn set_base_supply(&mut self, base_supply: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_base_supply(&mut self, base_supply: BigIntString) -> Result<(), napi::Error> {
         self.0.set_base_supply(base_supply.try_to_u64()?);
         Ok(())
     }
@@ -245,7 +245,7 @@ impl TokenConfigurationNAPI {
     }
 
     #[napi(setter, js_name = "maxSupply")]
-    pub fn set_max_supply(&mut self, max_supply: Option<Uint64String>) -> Result<(), napi::Error> {
+    pub fn set_max_supply(&mut self, max_supply: Option<BigIntString>) -> Result<(), napi::Error> {
         self.0
             .set_max_supply(max_supply.map(|v| v.try_to_u64()).transpose()?);
         Ok(())

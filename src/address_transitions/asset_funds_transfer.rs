@@ -14,7 +14,7 @@ use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFe
 use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
 use crate::address_transitions::utils::{js_inputs_to_inputs, js_outputs_to_outputs};
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, TryToU64};
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
 
@@ -74,7 +74,7 @@ impl AddressFundsTransferTransitionNAPI {
             .map(|(address, (nonce, credits))| InputAddressNAPI {
                 address: address.clone().into(),
                 nonce: nonce.clone(),
-                credits: Uint64String::from_u64(credits.clone()),
+                credits: BigIntString::from_u64(credits.clone()),
             })
             .collect()
     }
@@ -86,7 +86,7 @@ impl AddressFundsTransferTransitionNAPI {
             .iter()
             .map(|(address, credits)| OutputAddressNAPI {
                 address: address.clone().into(),
-                credits: Uint64String::from_u64(credits.clone()),
+                credits: BigIntString::from_u64(credits.clone()),
             })
             .collect()
     }

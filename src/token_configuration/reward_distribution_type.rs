@@ -3,7 +3,7 @@ use dpp::data_contract::associated_token::token_perpetual_distribution::reward_d
 use napi::bindgen_prelude::Either3;
 use napi_derive::napi;
 
-use crate::dynamic_value::{TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, TryToU64};
 use crate::token_configuration::distribution_function::DistributionFunctionNAPI;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -26,7 +26,7 @@ impl From<RewardDistributionTypeNAPI> for RewardDistributionType {
 impl RewardDistributionTypeNAPI {
     #[napi(js_name = "BlockBasedDistribution")]
     pub fn block_based_distribution(
-        interval: Uint64String,
+        interval: BigIntString,
         distribution_function: &DistributionFunctionNAPI,
     ) -> Result<Self, napi::Error> {
         Ok(RewardDistributionTypeNAPI(BlockBasedDistribution {
@@ -37,7 +37,7 @@ impl RewardDistributionTypeNAPI {
 
     #[napi(js_name = "TimeBasedDistribution")]
     pub fn time_based_distribution(
-        interval: Uint64String,
+        interval: BigIntString,
         distribution_function: &DistributionFunctionNAPI,
     ) -> Result<Self, napi::Error> {
         Ok(RewardDistributionTypeNAPI(TimeBasedDistribution {
@@ -65,13 +65,13 @@ impl RewardDistributionTypeNAPI {
         match self.0.clone() {
             RewardDistributionType::BlockBasedDistribution { interval, function } => {
                 Either3::A(BlockBasedDistributionNAPI {
-                    interval: Uint64String::from_u64(interval),
+                    interval: BigIntString::from_u64(interval),
                     function: function.clone().into(),
                 })
             }
             RewardDistributionType::TimeBasedDistribution { interval, function } => {
                 Either3::B(TimeBasedDistributionNAPI {
-                    interval: Uint64String::from_u64(interval),
+                    interval: BigIntString::from_u64(interval),
                     function: function.clone().into(),
                 })
             }
@@ -88,14 +88,14 @@ impl RewardDistributionTypeNAPI {
 #[derive(Clone, Debug, PartialEq)]
 #[napi(js_name = "BlockBasedDistributionNAPI")]
 pub struct BlockBasedDistributionNAPI {
-    pub interval: Uint64String,
+    pub interval: BigIntString,
     function: DistributionFunctionNAPI,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 #[napi(js_name = "TimeBasedDistributionNAPI")]
 pub struct TimeBasedDistributionNAPI {
-    pub interval: Uint64String,
+    pub interval: BigIntString,
     function: DistributionFunctionNAPI,
 }
 

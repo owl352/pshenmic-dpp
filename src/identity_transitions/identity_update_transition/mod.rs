@@ -14,7 +14,7 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
-use crate::dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String};
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::enums::purpose::PurposeNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI;
@@ -30,8 +30,8 @@ impl IdentityUpdateTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
         js_identity_id: IdentifierLikeNAPI,
-        revision: Uint64String,
-        nonce: Uint64String,
+        revision: BigIntString,
+        nonce: BigIntString,
         js_add_public_keys: Vec<&IdentityPublicKeyInCreationNAPI>,
         disable_public_keys: Vec<u32>,
         user_fee_increase: Option<u16>,
@@ -56,13 +56,13 @@ impl IdentityUpdateTransitionNAPI {
     }
 
     #[napi(getter, js_name = "revision")]
-    pub fn get_revision(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.revision())
+    pub fn get_revision(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.revision())
     }
 
     #[napi(getter, js_name = "nonce")]
-    pub fn get_nonce(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.nonce())
+    pub fn get_nonce(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.nonce())
     }
 
     #[napi(getter, js_name = "identityIdentifier")]
@@ -116,13 +116,13 @@ impl IdentityUpdateTransitionNAPI {
     }
 
     #[napi(setter, js_name = "revision")]
-    pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_revision(&mut self, revision: BigIntString) -> Result<(), napi::Error> {
         self.0.set_revision(revision.try_to_u64()?);
         Ok(())
     }
 
     #[napi(setter, js_name = "nonce")]
-    pub fn set_nonce(&mut self, nonce: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_nonce(&mut self, nonce: BigIntString) -> Result<(), napi::Error> {
         self.0.set_nonce(nonce.try_to_u64()?);
         Ok(())
     }

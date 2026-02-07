@@ -1,6 +1,6 @@
 use napi_derive::napi;
 
-use crate::dynamic_value::Uint64String;
+use crate::dynamic_value::BigIntString;
 use crate::platform_address::PlatformAddressNAPI;
 
 #[derive(Clone)]
@@ -8,7 +8,7 @@ use crate::platform_address::PlatformAddressNAPI;
 pub struct InputAddressNAPI {
     pub(crate) address: PlatformAddressNAPI,
     pub(crate) nonce: u32,
-    pub(crate) credits: Uint64String,
+    pub(crate) credits: BigIntString,
 }
 
 #[napi]
@@ -17,7 +17,7 @@ impl InputAddressNAPI {
     pub fn new(
         address: &PlatformAddressNAPI,
         nonce: u32,
-        credits: Uint64String,
+        credits: BigIntString,
     ) -> Result<Self, napi::Error> {
         Ok(InputAddressNAPI {
             address: address.clone(),
@@ -37,7 +37,7 @@ impl InputAddressNAPI {
     }
 
     #[napi(getter, js_name = "credits")]
-    pub fn credits(&self) -> Uint64String {
+    pub fn credits(&self) -> BigIntString {
         self.credits.clone()
     }
 
@@ -52,7 +52,7 @@ impl InputAddressNAPI {
     }
 
     #[napi(setter, js_name = "credits")]
-    pub fn set_credits(&mut self, credits: Uint64String) {
+    pub fn set_credits(&mut self, credits: BigIntString) {
         self.credits = credits
     }
 }

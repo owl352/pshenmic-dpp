@@ -4,7 +4,7 @@ use dpp::identity::{IdentityPublicKey, PartialIdentity};
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{IdentifierLikeNAPI, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64},
     identifier::IdentifierNAPI,
     identity_public_key::IdentityPublicKeyNAPI,
 };
@@ -25,8 +25,8 @@ impl PartialIdentityNAPI {
     pub fn new(
         js_id: IdentifierLikeNAPI,
         js_loaded_public_keys: Vec<(String, &IdentityPublicKeyNAPI)>,
-        balance: Option<Uint64String>,
-        revision: Option<Uint64String>,
+        balance: Option<BigIntString>,
+        revision: Option<BigIntString>,
         js_not_found_public_keys: Option<Vec<u32>>,
     ) -> Result<Self, napi::Error> {
         let id = IdentifierNAPI::try_from(js_id)?;
@@ -62,13 +62,13 @@ impl PartialIdentityNAPI {
     }
 
     #[napi(getter, js_name = "balance")]
-    pub fn balance(&self) -> Option<Uint64String> {
-        self.0.balance.map(Uint64String::from_u64)
+    pub fn balance(&self) -> Option<BigIntString> {
+        self.0.balance.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "revision")]
-    pub fn revision(&self) -> Option<Uint64String> {
-        self.0.revision.map(Uint64String::from_u64)
+    pub fn revision(&self) -> Option<BigIntString> {
+        self.0.revision.map(BigIntString::from_u64)
     }
 
     #[napi(getter, js_name = "notFoundPublicKeys")]
@@ -97,13 +97,13 @@ impl PartialIdentityNAPI {
     }
 
     #[napi(setter, js_name = "balance")]
-    pub fn set_balance(&mut self, balance: Option<Uint64String>) -> Result<(), napi::Error> {
+    pub fn set_balance(&mut self, balance: Option<BigIntString>) -> Result<(), napi::Error> {
         self.0.balance = balance.map(|bal| bal.try_to_u64()).transpose()?;
         Ok(())
     }
 
     #[napi(setter, js_name = "revision")]
-    pub fn set_revision(&mut self, revision: Option<Uint64String>) -> Result<(), napi::Error> {
+    pub fn set_revision(&mut self, revision: Option<BigIntString>) -> Result<(), napi::Error> {
         self.0.revision = revision.map(|rev| rev.try_to_u64()).transpose()?;
         Ok(())
     }

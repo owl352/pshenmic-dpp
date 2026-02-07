@@ -1,5 +1,5 @@
 use crate::{
-    dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64, Uint64String},
+    dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64},
     enums::platform_version::PlatformVersionNAPI,
     identifier::IdentifierNAPI,
     identity_public_key::IdentityPublicKeyNAPI,
@@ -64,13 +64,13 @@ impl IdentityNAPI {
     }
 
     #[napi(setter, js_name = "balance")]
-    pub fn set_balance(&mut self, balance: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_balance(&mut self, balance: BigIntString) -> Result<(), napi::Error> {
         self.0.set_balance(balance.try_to_u64()?);
         Ok(())
     }
 
     #[napi(setter, js_name = "revision")]
-    pub fn set_revision(&mut self, revision: Uint64String) -> Result<(), napi::Error> {
+    pub fn set_revision(&mut self, revision: BigIntString) -> Result<(), napi::Error> {
         self.0.set_revision(revision.try_to_u64()?);
         Ok(())
     }
@@ -81,13 +81,13 @@ impl IdentityNAPI {
     }
 
     #[napi(getter, js_name = "balance")]
-    pub fn get_balance(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.balance())
+    pub fn get_balance(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.balance())
     }
 
     #[napi(getter, js_name = "revision")]
-    pub fn get_revision(&self) -> Uint64String {
-        Uint64String::from_u64(self.0.revision())
+    pub fn get_revision(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.revision())
     }
 
     #[napi(js_name = "addPublicKey")]

@@ -3,11 +3,9 @@ use std::collections::BTreeMap;
 use dpp::{
     ProtocolError, platform_value::Value, prelude::Identifier, util::hash::hash_double_to_vec,
 };
-use napi::{
-    Env, Status,
-    bindgen_prelude::{Function, JsObjectValue, JsValuesTuple, Object},
-};
-use serde_json::Value as JsonValue;
+use napi::Status;
+
+use crate::dynamic_value::DynamicValue;
 
 pub trait WithJsError<T> {
     fn with_js_error(self) -> Result<T, napi::Error>;
@@ -31,33 +29,29 @@ impl<T> WithJsError<T> for Result<T, ProtocolError> {
     }
 }
 
-pub fn with_serde_to_json_value(data: Object) -> Result<JsonValue, napi::Error> {
-    let json: Object = Env::from(data.env())
-        .get_global()?
-        .get_named_property("JSON")?;
+// pub fn with_serde_to_json_value(data: Object) -> Result<JsonValue, napi::Error> {
+//     let json: Object = Env::from(data.env())
+//         .get_global()?
+//         .get_named_property("JSON")?;
 
-    let stringify: Option<Function<Object, String>> = json.get("stringify")?;
+//     let stringify: Option<Function<Object, String>> = json.get("stringify")?;
 
-    if stringify.is_none() {
-        return Err(napi::Error::new(
-            Status::GenericFailure,
-            "JSON.stringify not found",
-        ));
-    }
+//     if stringify.is_none() {
+//         return Err(napi::Error::new(
+//             Status::GenericFailure,
+//             "JSON.stringify not found",
+//         ));
+//     }
 
-    let value: JsonValue = serde_json::from_str(&stringify.unwrap().call(data)?)
-        .map_err(|e| napi::Error::new(napi::Status::GenericFailure, format!("{e:#}")))?;
-    Ok(value)
-}
-
-pub fn with_serde_to_platform_value(data: Object) -> Result<Value, napi::Error> {
-    Ok(with_serde_to_json_value(data.clone())?.into())
-}
+//     let value: JsonValue = serde_json::from_str(&stringify.unwrap().call(data)?)
+//         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, format!("{e:#}")))?;
+//     Ok(value)
+// }
 
 pub fn with_serde_to_platform_value_map(
-    data: Object,
+    data: &DynamicValue,
 ) -> Result<BTreeMap<String, Value>, napi::Error> {
-    with_serde_to_platform_value(data)?
+    Value::try_from(data.clone())?
         .into_btree_string_map()
         .map_err(ProtocolError::ValueError)
         .with_js_error()
