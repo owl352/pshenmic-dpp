@@ -2,7 +2,7 @@ use dpp::dashcore::{ScriptBuf, TxOut};
 use napi::{Either, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
 
-use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
+use crate::dynamic_value::{BigIntString, TryToU64};
 
 #[napi(js_name = "TxOutNAPI")]
 #[derive(Clone)]
@@ -24,10 +24,10 @@ impl From<TxOutNAPI> for TxOut {
 impl TxOutNAPI {
     #[napi(constructor)]
     pub fn new(
-        js_value: &DynamicValue,
+        js_value: BigIntString,
         js_script_pubkey: Either<String, Uint8Array>,
     ) -> Result<TxOutNAPI, napi::Error> {
-        let value: u64 = js_value.try_into()?;
+        let value: u64 = js_value.try_to_u64()?;
 
         let tx_out: TxOut = match js_script_pubkey {
             Either::A(script_pubkey) => TxOut {

@@ -1,19 +1,16 @@
 import { IdentifierWASM } from './Identifier.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
-import { DashPlatformProtocol, IdentifierLike, PlatformVersionLike } from '../../types.js'
+import { IdentifierLike, PlatformVersionLike } from '../../types.js'
 import { IdentityNAPI } from '../../../binaries/bindingsTypes.js'
-
-let dpp: DashPlatformProtocol
-
-export function setDpp (_dpp: DashPlatformProtocol): void {
-  dpp = _dpp
-}
+import {dppProvider} from "../provider.js";
 
 export class IdentityWASM {
   /** @private **/
   _rawIdentity: IdentityNAPI
 
-  constructor (rawId: IdentifierLike | IdentifierWASM, platformVersion?: PlatformVersionLike) {
+  constructor (rawId: IdentifierLike, platformVersion?: PlatformVersionLike) {
+    const dpp = dppProvider.getDpp()
+
     const id = new IdentifierWASM(rawId)
 
     const dynamicEnumValue = new dpp.DynamicValue(platformVersion)
@@ -21,7 +18,7 @@ export class IdentityWASM {
     this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, dynamicEnumValue)
   }
 
-  set id (rawId: IdentifierLike | IdentifierWASM) {
+  set id (rawId: IdentifierLike) {
     this._rawIdentity.id = new IdentifierWASM(rawId)
   }
 
@@ -46,7 +43,7 @@ export class IdentityWASM {
   }
 
   addPublicKey (publicKey: IdentityPublicKeyWASM): void {
-    this._rawIdentity.addPublicKey(publicKey.getRawInstance())
+    this._rawIdentity.addPublicKey(publicKey._rawIdentityPublicKey)
   }
 
   getPublicKeyById (keyId: number): IdentityPublicKeyWASM | undefined {
@@ -66,19 +63,19 @@ export class IdentityWASM {
   }
 
   static fromHex (hex: string): IdentityWASM {
-    const rawInstance = dpp.IdentityNAPI.fromHex(hex)
+    const rawInstance = dppProvider.getDpp().IdentityNAPI.fromHex(hex)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBase64 (base64: string): IdentityWASM {
-    const rawInstance = dpp.IdentityNAPI.fromBase64(base64)
+    const rawInstance = dppProvider.getDpp().IdentityNAPI.fromBase64(base64)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBytes (bytes: Uint8Array): IdentityWASM {
-    const rawInstance = dpp.IdentityNAPI.fromBytes(bytes)
+    const rawInstance = dppProvider.getDpp().IdentityNAPI.fromBytes(bytes)
 
     return this.createFromRawInstance(rawInstance)
   }
