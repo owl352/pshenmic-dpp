@@ -1,6 +1,8 @@
-import {BigIntString, DynamicValue} from "../../binaries/bindingsTypes.js";
+import {BigIntString, DynamicValue, IdentifierLikeNAPI} from "../../binaries/bindingsTypes.js";
 import {dppProvider} from "./provider.js";
 import {UINT32MAX} from "./constants.js";
+import {IdentifierLike} from "./types.js";
+import {IdentifierWASM} from "./structs/Identifier.js";
 
 export function valueToDynamicValue(value: any): DynamicValue {
   if (typeof value === 'bigint' || value > UINT32MAX) {
@@ -44,5 +46,15 @@ export function valueFromDynamicValue(dynamicValue: DynamicValue): any {
     return obj
   } else {
     return dynamicValue.value
+  }
+}
+
+export function prepareIdentifierValue(identifier: IdentifierLike): IdentifierLikeNAPI {
+  if (identifier instanceof IdentifierWASM) {
+    return identifier._rawIdentifier
+  } else if (identifier instanceof dppProvider.dpp.IdentifierNAPI) {
+    return identifier
+  } else {
+    return new dppProvider.dpp.DynamicValue(identifier)
   }
 }
