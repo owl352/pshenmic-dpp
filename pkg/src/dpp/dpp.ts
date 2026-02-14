@@ -12,3 +12,6 @@ export {TxOutWASM} from "./structs/AssetLockProof/TxOut.js";
 export {TransactionWASM} from './structs/AssetLockProof/Transaction.js'
 export {WitnessWASM} from './structs/AssetLockProof/Witness.js'
 export {TxInWASM} from './structs/AssetLockProof/TxIn.js'
+export {CoreScriptWASM} from './structs/CoreScript.js'
+export {PrivateKeyWASM} from './structs/PrivateKey.js'
+export {PublicKeyWASM} from './structs/PublicKey.js'

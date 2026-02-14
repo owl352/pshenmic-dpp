@@ -86,7 +86,7 @@ impl IdentityPublicKeyNAPI {
     ) -> Result<bool, napi::Error> {
         let network = NetworkNAPI::try_from(js_network)?;
 
-        let private_key = PrivateKeyNAPI::from_js_value(js_private_key, network.clone().into())?;
+        let private_key = PrivateKeyNAPI::from_js_value(js_private_key, js_network)?;
 
         let mut private_key_bytes = [0u8; 32];
         let len = private_key.get_bytes().len().min(32);
