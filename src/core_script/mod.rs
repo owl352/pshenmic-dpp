@@ -7,6 +7,7 @@ use napi::Status;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
+use crate::dynamic_value::DynamicValue;
 use crate::enums::network::NetworkNAPI;
 
 #[napi(js_name = "CoreScriptNAPI")]
@@ -64,7 +65,8 @@ impl CoreScriptNAPI {
     }
 
     #[napi(js_name = "toAddress")]
-    pub fn to_address(&self, network: NetworkNAPI) -> Result<String, napi::Error> {
+    pub fn to_address(&self, js_network: &DynamicValue) -> Result<String, napi::Error> {
+        let network = NetworkNAPI::try_from(js_network)?;
         let payload = Payload::from_script(self.0.as_script())
             .map_err(|e| napi::Error::new(Status::GenericFailure, e.to_string()))?;
 
