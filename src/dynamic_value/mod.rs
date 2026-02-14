@@ -81,42 +81,49 @@ impl DynamicValue {
         value: Either16<
             String,
             Uint8Array,
-            u8,
+            f64,
             u16,
             u32,
             BigIntString,
             bool,
-            BTreeMap<String, &DynamicValue>,
             Vec<&DynamicValue>,
+            BTreeMap<String, &DynamicValue>,
             Null,
             Undefined,
             i8,
             i16,
             i32,
             i64,
-            f64,
+            u8,
         >,
     ) -> Self {
+        // f64 go first, else number will be automatically converted to integer
+        // arr go first also
         let owned = match value {
             Either16::A(v) => Either16::A(v),
             Either16::B(v) => Either16::B(v.to_vec()),
-            Either16::C(v) => Either16::C(v),
+            Either16::C(v) => Either16::P(v),
             Either16::D(v) => Either16::D(v),
             Either16::E(v) => Either16::E(v),
             Either16::F(v) => Either16::F(v),
             Either16::G(v) => Either16::G(v),
-            Either16::H(map) => Either16::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
-            Either16::I(vec) => Either16::I(vec.into_iter().cloned().collect()),
+            Either16::H(vec) => Either16::I(vec.into_iter().cloned().collect()),
+            Either16::I(map) => Either16::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
             Either16::J(v) => Either16::J(v),
             Either16::K(v) => Either16::K(v),
             Either16::L(v) => Either16::L(v),
             Either16::M(v) => Either16::M(v),
             Either16::N(v) => Either16::N(v),
             Either16::O(v) => Either16::O(v),
-            Either16::P(v) => Either16::P(v),
+            Either16::P(v) => Either16::C(v),
         };
 
         Self(owned)
+    }
+
+    #[napi(js_name = "fromBigIntString")]
+    pub fn from_big_int_string(value: String) -> Self {
+        Self(Either16::F(value))
     }
 
     #[napi(getter, js_name = "value")]
@@ -166,42 +173,52 @@ impl DynamicValue {
         value: Either16<
             String,
             Uint8Array,
-            u8,
+            f64,
             u16,
             u32,
             BigIntString,
             bool,
-            BTreeMap<String, &DynamicValue>,
             Vec<&DynamicValue>,
+            BTreeMap<String, &DynamicValue>,
             Null,
             Undefined,
             i8,
             i16,
             i32,
             i64,
-            f64,
+            u8,
         >,
     ) {
+        // f64 go first, else number will be automatically converted to integer
+        // arr go first also
         let owned = match value {
             Either16::A(v) => Either16::A(v),
             Either16::B(v) => Either16::B(v.to_vec()),
-            Either16::C(v) => Either16::C(v),
+            Either16::C(v) => Either16::P(v),
             Either16::D(v) => Either16::D(v),
             Either16::E(v) => Either16::E(v),
             Either16::F(v) => Either16::F(v),
             Either16::G(v) => Either16::G(v),
-            Either16::H(map) => Either16::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
-            Either16::I(vec) => Either16::I(vec.into_iter().cloned().collect()),
+            Either16::H(vec) => Either16::I(vec.into_iter().cloned().collect()),
+            Either16::I(map) => Either16::H(map.into_iter().map(|(k, v)| (k, v.clone())).collect()),
             Either16::J(v) => Either16::J(v),
             Either16::K(v) => Either16::K(v),
             Either16::L(v) => Either16::L(v),
             Either16::M(v) => Either16::M(v),
             Either16::N(v) => Either16::N(v),
             Either16::O(v) => Either16::O(v),
-            Either16::P(v) => Either16::P(v),
+            Either16::P(v) => Either16::C(v),
         };
 
         self.0 = owned;
+    }
+
+    #[napi(js_name = "isBigInt")]
+    pub fn is_big_int(&self) -> bool {
+        match self.0 {
+            Either16::F(_) => true,
+            _ => false,
+        }
     }
 }
 
@@ -399,6 +416,24 @@ impl DynamicValue {
             Either16::E(val) => Ok(val.clone() as u64),
             Either16::F(val) => val.try_to_u64(),
             Either16::A(val) => BigIntString::from(val).try_to_u64(),
+            Either16::L(val) => Ok(val.clone() as u64),
+            Either16::M(val) => Ok(val.clone() as u64),
+            Either16::N(val) => Ok(val.clone() as u64),
+            Either16::O(val) => Ok(val.clone() as u64),
+            Either16::P(val) => {
+                if val.fract() == 0.0
+                    && val.clone() >= 0.0
+                    && val.clone() <= u64::MAX as f64
+                    && val.is_finite()
+                {
+                    Ok(val.clone() as u64)
+                } else {
+                    Err(napi::Error::new(
+                        napi::Status::GenericFailure,
+                        "Cannot convert value to u64",
+                    ))
+                }
+            }
             _ => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot convert value to u64",

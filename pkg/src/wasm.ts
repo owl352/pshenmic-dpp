@@ -7,3 +7,4 @@ export { KeyType, Purpose, PlatformVersionWASM, NetworkWASM, SecurityLevel } fro
 export { IdentityWASM, IdentifierWASM, IdentityPublicKeyWASM } from './dpp/dpp.js'
 
 export * from './dpp/types.js'
+export * from './dpp/utils.js'

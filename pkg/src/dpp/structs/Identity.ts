@@ -3,6 +3,7 @@ import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
 import { IdentifierLike, PlatformVersionLike } from '../types.js'
 import { IdentityNAPI } from '../../../binaries/bindingsTypes.js'
 import {dppProvider} from "../provider.js";
+import {valueToDynamicValue} from "../utils.js";
 
 export class IdentityWASM {
   /** @private **/
@@ -13,9 +14,7 @@ export class IdentityWASM {
 
     const id = new IdentifierWASM(rawId)
 
-    const dynamicEnumValue = new dpp.DynamicValue(platformVersion)
-
-    this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, dynamicEnumValue)
+    this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, valueToDynamicValue(platformVersion))
   }
 
   set id (rawId: IdentifierLike) {
