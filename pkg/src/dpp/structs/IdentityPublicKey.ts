@@ -1,6 +1,6 @@
-import {KeyTypeLike, PurposeLike, SecurityLevelLike } from '../../types.js'
+import {KeyTypeLike, PurposeLike, SecurityLevelLike } from '../types.js'
 import { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
-import { KeyType, Purpose, SecurityLevel } from '../../enums.js'
+import { KeyType, Purpose, SecurityLevel } from '../enums.js'
 import {dppProvider} from "../provider.js";
 
 //TODO: ContractBounds

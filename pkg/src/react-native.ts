@@ -3,7 +3,7 @@ import { setDpp } from './dpp/dpp.js'
 
 setDpp(protocol)
 
-export * from './enums.js'
+export * from './dpp/enums.js'
 export * from './dpp/dpp.js'
 
-export * from './types.js'
+export * from './dpp/types.js'

@@ -3,7 +3,6 @@ import {InstantAssetLockProofWASM} from "./InstantAssetLockProof.js";
 import {ChainAssetLockProofWASM} from "./ChainLock.js";
 import {dppProvider} from "../../provider.js";
 import {OutPointWASM} from "./OutPoint.js";
-import {AssetLockProofType} from "../../../enums.js";
 import {IdentifierWASM} from "../Identifier.js";
 
 export class AssetLockProofWASM {

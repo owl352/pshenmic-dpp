@@ -1,6 +1,6 @@
 import { IdentifierWASM } from './Identifier.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
-import { IdentifierLike, PlatformVersionLike } from '../../types.js'
+import { IdentifierLike, PlatformVersionLike } from '../types.js'
 import { IdentityNAPI } from '../../../binaries/bindingsTypes.js'
 import {dppProvider} from "../provider.js";
 

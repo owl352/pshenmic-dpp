@@ -1,4 +1,4 @@
-import {DashPlatformProtocol} from "../types.js";
+import {DashPlatformProtocol} from "../dpp/types.js";
 
 class DppProvider {
   private static instance: DppProvider;

@@ -9,4 +9,4 @@ export {
   TokenEmergencyActionNAPI as TokenEmergencyAction,
   AssetLockProofTypeNAPI as AssetLockProofType,
   PoolingNAPI as Pooling
-} from '../binaries/bindingsTypes.js'
+} from '../../binaries/bindingsTypes.js'

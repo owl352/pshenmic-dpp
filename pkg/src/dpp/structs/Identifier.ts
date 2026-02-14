@@ -1,4 +1,4 @@
-import { IdentifierLike } from '../../types.js'
+import { IdentifierLike } from '../types.js'
 import { IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
 import {dppProvider} from "../provider.js";
 

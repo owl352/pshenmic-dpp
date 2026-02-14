@@ -1,4 +1,4 @@
-import {DashPlatformProtocol} from '../types.js'
+import {DashPlatformProtocol} from './types.js'
 import {dppProvider} from "./provider.js";
 
 export {IdentifierWASM} from './structs/Identifier.js'
