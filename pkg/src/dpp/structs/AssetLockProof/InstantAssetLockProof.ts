@@ -9,9 +9,7 @@ export class InstantAssetLockProofWASM {
   _rawLockProof: InstantAssetLockProofNAPI
 
   constructor(instantLock: Uint8Array, transaction: Uint8Array, outputIndex: number) {
-    const dpp = dppProvider.getDpp()
-
-    this._rawLockProof = new dpp.InstantAssetLockProofNAPI(instantLock, transaction, outputIndex)
+    this._rawLockProof = new dppProvider.dpp.InstantAssetLockProofNAPI(instantLock, transaction, outputIndex)
   }
 
   get outputIndex(): number {
@@ -59,7 +57,7 @@ export class InstantAssetLockProofWASM {
     transaction: Uint8Array,
     outputIndex: number
   }): InstantAssetLockProofWASM {
-    return InstantAssetLockProofWASM.createFromRawInstance(dppProvider.getDpp().InstantAssetLockProofNAPI.fromRawObject(obj))
+    return InstantAssetLockProofWASM.createFromRawInstance(dppProvider.dpp.InstantAssetLockProofNAPI.fromRawObject(obj))
   }
 
   static createFromRawInstance(rawInstance: InstantAssetLockProofNAPI): InstantAssetLockProofWASM {

@@ -10,15 +10,13 @@ export class AssetLockProofWASM {
   _rawAssetLockProof: AssetLockProofNAPI
 
   constructor(lockProof: InstantAssetLockProofWASM | ChainAssetLockProofWASM) {
-    const dpp = dppProvider.getDpp()
-
-    this._rawAssetLockProof = new dpp.AssetLockProofNAPI(lockProof._rawLockProof)
+    this._rawAssetLockProof = new dppProvider.dpp.AssetLockProofNAPI(lockProof._rawLockProof)
   }
 
   static createInstantAssetLockProof(instantLock: Uint8Array, transaction: Uint8Array, outputIndex: number): AssetLockProofWASM {
     return AssetLockProofWASM.createFromRawInstance(
       dppProvider
-        .getDpp()
+        .dpp
         .AssetLockProofNAPI
         .createInstantAssetLockProof(instantLock, transaction, outputIndex))
   }
@@ -26,7 +24,7 @@ export class AssetLockProofWASM {
   static createChainAssetLockProof(coreChainLockedHeight: number, outPoint: OutPointWASM): AssetLockProofWASM {
     return AssetLockProofWASM.createFromRawInstance(
       dppProvider
-        .getDpp()
+        .dpp
         .AssetLockProofNAPI
         .createChainAssetLockProof(coreChainLockedHeight, outPoint._rawOutPoint)
     )

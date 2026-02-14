@@ -9,7 +9,7 @@ export class IdentityWASM {
   _rawIdentity: IdentityNAPI
 
   constructor (rawId: IdentifierLike, platformVersion?: PlatformVersionLike) {
-    const dpp = dppProvider.getDpp()
+    const dpp = dppProvider.dpp
 
     const id = new IdentifierWASM(rawId)
 
@@ -63,19 +63,19 @@ export class IdentityWASM {
   }
 
   static fromHex (hex: string): IdentityWASM {
-    const rawInstance = dppProvider.getDpp().IdentityNAPI.fromHex(hex)
+    const rawInstance = dppProvider.dpp.IdentityNAPI.fromHex(hex)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBase64 (base64: string): IdentityWASM {
-    const rawInstance = dppProvider.getDpp().IdentityNAPI.fromBase64(base64)
+    const rawInstance = dppProvider.dpp.IdentityNAPI.fromBase64(base64)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBytes (bytes: Uint8Array): IdentityWASM {
-    const rawInstance = dppProvider.getDpp().IdentityNAPI.fromBytes(bytes)
+    const rawInstance = dppProvider.dpp.IdentityNAPI.fromBytes(bytes)
 
     return this.createFromRawInstance(rawInstance)
   }

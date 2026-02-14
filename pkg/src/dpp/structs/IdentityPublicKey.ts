@@ -9,7 +9,7 @@ export class IdentityPublicKeyWASM {
   _rawIdentityPublicKey: IdentityPublicKeyNAPI
 
   constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number) {
-    const dpp = dppProvider.getDpp()
+    const dpp = dppProvider.dpp
 
     if (purpose == null || securityLevel == null || keyType == null) {
       throw new Error('purpose, securityLevel, keyType must be specified')
@@ -39,7 +39,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set purpose (purpose: PurposeLike) {
-    const dpp = dppProvider.getDpp()
+    const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.purpose = new dpp.DynamicValue(purpose)
   }
 
@@ -56,7 +56,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set securityLevel (securityLevel: SecurityLevelLike) {
-    const dpp = dppProvider.getDpp()
+    const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.securityLevel = new dpp.DynamicValue(securityLevel)
   }
 
@@ -73,7 +73,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set keyType (keyType: KeyTypeLike) {
-    const dpp = dppProvider.getDpp()
+    const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.keyType = new dpp.DynamicValue(keyType)
   }
 
@@ -136,19 +136,19 @@ export class IdentityPublicKeyWASM {
   }
 
   static fromBytes (bytes: Uint8Array): IdentityPublicKeyWASM {
-    const rawInstance = dppProvider.getDpp().IdentityPublicKeyNAPI.fromBytes(bytes)
+    const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromBytes(bytes)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromHex (hex: string): IdentityPublicKeyWASM {
-    const rawInstance = dppProvider.getDpp().IdentityPublicKeyNAPI.fromHex(hex)
+    const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromHex(hex)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBase64 (base64: string): IdentityPublicKeyWASM {
-    const rawInstance = dppProvider.getDpp().IdentityPublicKeyNAPI.fromBase64(base64)
+    const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromBase64(base64)
 
     return this.createFromRawInstance(rawInstance)
   }

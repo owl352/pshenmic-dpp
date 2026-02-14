@@ -6,9 +6,7 @@ export class OutPointWASM {
   _rawOutPoint: OutPointNAPI
 
   constructor(txId: string, vout: number) {
-    const dpp = dppProvider.getDpp()
-
-    this._rawOutPoint = new dpp.OutPointNAPI(txId, vout)
+    this._rawOutPoint = new dppProvider.dpp.OutPointNAPI(txId, vout)
   }
 
   getVOUT(): number {
@@ -32,25 +30,19 @@ export class OutPointWASM {
   }
 
   static fromBytes(bytes: Uint8Array) {
-    const dpp = dppProvider.getDpp()
-
-    const instance = dpp.OutPointNAPI.fromBytes(bytes)
+    const instance = dppProvider.dpp.OutPointNAPI.fromBytes(bytes)
 
     return OutPointWASM.createFromRawInstance(instance)
   }
 
   static fromHex(bytes: string) {
-    const dpp = dppProvider.getDpp()
-
-    const instance = dpp.OutPointNAPI.fromHex(bytes)
+    const instance = dppProvider.dpp.OutPointNAPI.fromHex(bytes)
 
     return OutPointWASM.createFromRawInstance(instance)
   }
 
   static fromBase64(bytes: string) {
-    const dpp = dppProvider.getDpp()
-
-    const instance = dpp.OutPointNAPI.fromBase64(bytes)
+    const instance = dppProvider.dpp.OutPointNAPI.fromBase64(bytes)
 
     return OutPointWASM.createFromRawInstance(instance)
   }

@@ -7,7 +7,7 @@ export class IdentifierWASM {
   _rawIdentifier: IdentifierNAPI
 
   constructor (rawId: IdentifierLike | IdentifierWASM) {
-    const dpp = dppProvider.getDpp()
+    const dpp = dppProvider.dpp
 
     if (rawId instanceof IdentifierWASM) {
       return rawId
@@ -37,19 +37,19 @@ export class IdentifierWASM {
   }
 
   static fromBase58 (id: string): IdentifierWASM {
-    return this.createFromRawInstance(dppProvider.getDpp().IdentifierNAPI.fromBase58(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromBase58(id))
   }
 
   static fromBase64 (id: string): IdentifierWASM {
-    return this.createFromRawInstance(dppProvider.getDpp().IdentifierNAPI.fromBase64(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromBase64(id))
   }
 
   static fromHex (id: string): IdentifierWASM {
-    return this.createFromRawInstance(dppProvider.getDpp().IdentifierNAPI.fromHex(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromHex(id))
   }
 
   static fromBytes (id: Uint8Array): IdentifierWASM {
-    return this.createFromRawInstance(dppProvider.getDpp().IdentifierNAPI.fromBytes(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromBytes(id))
   }
 
   static createFromRawInstance (rawInstance: IdentifierNAPI): IdentifierWASM {

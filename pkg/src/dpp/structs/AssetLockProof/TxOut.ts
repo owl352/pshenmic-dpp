@@ -5,11 +5,9 @@ export class TxOutWASM {
   _rawTxOut: TxOutNAPI
 
   constructor(value: bigint, scriptPubKey: Uint8Array) {
-    const dpp = dppProvider.getDpp()
-
     const rsValue: BigIntString = value.toString();
 
-    this._rawTxOut = new dpp.TxOutNAPI(rsValue, scriptPubKey);
+    this._rawTxOut = new dppProvider.dpp.TxOutNAPI(rsValue, scriptPubKey);
   }
 
   get value(): bigint {

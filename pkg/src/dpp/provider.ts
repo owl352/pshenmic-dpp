@@ -6,18 +6,18 @@ class DppProvider {
 
   private constructor() {}
 
-  public static getInstance(): DppProvider {
+  static getInstance(): DppProvider {
     if (!DppProvider.instance) {
       DppProvider.instance = new DppProvider();
     }
     return DppProvider.instance;
   }
 
-  public setDpp(dpp: DashPlatformProtocol): void {
+  setDpp(dpp: DashPlatformProtocol): void {
     this._dpp = dpp;
   }
 
-  public getDpp(): DashPlatformProtocol {
+  get dpp(): DashPlatformProtocol {
     if (!this._dpp) {
       throw new Error('DashPlatformProtocol (dpp) has not been set. Call setDpp() before using SDK classes.');
     }
