@@ -1,6 +1,6 @@
 import {AssetLockProofNAPI} from "../../../../binaries/bindingsTypes.js";
 import {InstantAssetLockProofWASM} from "./InstantAssetLockProof.js";
-import {ChainAssetLockProofWASM} from "./ChainLock.js";
+import {ChainAssetLockProofWASM} from "./ChainAssetLockProof.js";
 import {dppProvider} from "../../provider.js";
 import {OutPointWASM} from "./OutPoint.js";
 import {IdentifierWASM} from "../Identifier.js";
