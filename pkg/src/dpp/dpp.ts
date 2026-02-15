@@ -24,3 +24,4 @@ export { GroupStateTransitionInfoWASM } from './structs/GroupStateTransitionInfo
 export { PlatformAddressWASM } from './structs/Address/PlatformAddress.js'
 export { AddressWitnessWASM } from './structs/Address/AddressWitness.js'
 export { IdentityCreateTransitionWASM } from './structs/IdentityTransitions/IdentityCreateTransition.js'
+export { IdentityTopUpTransitionWASM } from './structs/IdentityTransitions/IdentityTopUpTransition.js'
