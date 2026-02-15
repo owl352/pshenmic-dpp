@@ -1,22 +1,22 @@
-export {AssetLockProofWASM} from "./structs/AssetLockProof/AssetLockProof.js";
-export {ChainAssetLockProofWASM} from "./structs/AssetLockProof/ChainAssetLockProof.js";
-export {ConsensusErrorWASM} from "./structs/ConsensusError.js";
-export {ContractBoundsWASM} from "./structs/ContractBounds.js";
-export {InstantAssetLockProofWASM} from "./structs/AssetLockProof/InstantAssetLockProof.js";
-export {IdentifierWASM} from "./structs/Identifier.js";
-export {IdentityWASM} from "./structs/Identity.js";
-export {IdentityPublicKeyWASM} from "./structs/IdentityPublicKey.js";
-export {InstantLockWASM} from "./structs/InstantLock.js";
-export {OutPointWASM} from "./structs/AssetLockProof/OutPoint.js";
-export {TxOutWASM} from "./structs/AssetLockProof/TxOut.js";
-export {TransactionWASM} from './structs/AssetLockProof/Transaction.js'
-export {WitnessWASM} from './structs/AssetLockProof/Witness.js'
-export {TxInWASM} from './structs/AssetLockProof/TxIn.js'
-export {CoreScriptWASM} from './structs/CoreScript.js'
-export {PrivateKeyWASM} from './structs/PrivateKey.js'
-export {PublicKeyWASM} from './structs/PublicKey.js'
-export {IdentityPublicKeyInCreationWASM} from './structs/IdentityPublicKeyInCreation.js'
-export {PartialIdentityWASM} from './structs/PartialIdentity.js'
-export {StateTransitionWASM} from './structs/StateTransition.js'
-export {PrivateEncryptedNoteWASM} from './structs/EncryptedNote/PrivateEncryptedNote.js'
-export {SharedEncryptedNoteWASM} from './structs/EncryptedNote/SharedEncryptedNote.js'
+export { AssetLockProofWASM } from './structs/AssetLockProof/AssetLockProof.js'
+export { ChainAssetLockProofWASM } from './structs/AssetLockProof/ChainAssetLockProof.js'
+export { ConsensusErrorWASM } from './structs/ConsensusError.js'
+export { ContractBoundsWASM } from './structs/ContractBounds.js'
+export { InstantAssetLockProofWASM } from './structs/AssetLockProof/InstantAssetLockProof.js'
+export { IdentifierWASM } from './structs/Identifier.js'
+export { IdentityWASM } from './structs/Identity.js'
+export { IdentityPublicKeyWASM } from './structs/IdentityPublicKey.js'
+export { InstantLockWASM } from './structs/InstantLock.js'
+export { OutPointWASM } from './structs/AssetLockProof/OutPoint.js'
+export { TxOutWASM } from './structs/AssetLockProof/TxOut.js'
+export { TransactionWASM } from './structs/AssetLockProof/Transaction.js'
+export { WitnessWASM } from './structs/AssetLockProof/Witness.js'
+export { TxInWASM } from './structs/AssetLockProof/TxIn.js'
+export { CoreScriptWASM } from './structs/CoreScript.js'
+export { PrivateKeyWASM } from './structs/PrivateKey.js'
+export { PublicKeyWASM } from './structs/PublicKey.js'
+export { IdentityPublicKeyInCreationWASM } from './structs/IdentityPublicKeyInCreation.js'
+export { PartialIdentityWASM } from './structs/PartialIdentity.js'
+export { StateTransitionWASM } from './structs/StateTransition.js'
+export { PrivateEncryptedNoteWASM } from './structs/EncryptedNote/PrivateEncryptedNote.js'
+export { SharedEncryptedNoteWASM } from './structs/EncryptedNote/SharedEncryptedNote.js'

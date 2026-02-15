@@ -1,37 +1,37 @@
-import {ChainAssetLockProofNAPI} from "../../../../binaries/bindingsTypes.js";
-import {OutPointWASM} from "./OutPoint.js";
-import {dppProvider} from "../../provider.js";
-import {IdentifierWASM} from "../Identifier.js";
+import { ChainAssetLockProofNAPI } from '../../../../binaries/bindingsTypes.js'
+import { OutPointWASM } from './OutPoint.js'
+import { dppProvider } from '../../provider.js'
+import { IdentifierWASM } from '../Identifier.js'
 
 export class ChainAssetLockProofWASM {
   _rawLockProof: ChainAssetLockProofNAPI
 
-  constructor(coreChainLockedHeight: number, outPoint: OutPointWASM) {
+  constructor (coreChainLockedHeight: number, outPoint: OutPointWASM) {
     this._rawLockProof = new dppProvider.dpp.ChainAssetLockProofNAPI(coreChainLockedHeight, outPoint)
   }
 
-  set coreChainLockedHeight(height: number) {
+  set coreChainLockedHeight (height: number) {
     this._rawLockProof.coreChainLockedHeight = height
   }
 
-  set outPoint(outPoint: OutPointWASM) {
-    this._rawLockProof.outPoint = outPoint._rawOutPoint
-  }
-
-  get coreChainLockedHeight(): number {
+  get coreChainLockedHeight (): number {
     return this._rawLockProof.coreChainLockedHeight
   }
 
-  get outPoint(): OutPointWASM {
+  set outPoint (outPoint: OutPointWASM) {
+    this._rawLockProof.outPoint = outPoint._rawOutPoint
+  }
+
+  get outPoint (): OutPointWASM {
     return OutPointWASM.createFromRawInstance(this._rawLockProof.outPoint)
   }
 
-  createIdentityId(): IdentifierWASM {
+  createIdentityId (): IdentifierWASM {
     return IdentifierWASM.createFromRawInstance(this._rawLockProof.createIdentityId())
   }
 
-  static fromRawObject(obj: {
-    coreChainLockedHeight: number;
+  static fromRawObject (obj: {
+    coreChainLockedHeight: number
     outPoint: OutPointWASM | Uint8Array
   }): ChainAssetLockProofWASM {
     const outPoint = obj.outPoint instanceof Uint8Array ? obj.outPoint : obj.outPoint.bytes()
@@ -42,7 +42,7 @@ export class ChainAssetLockProofWASM {
     }))
   }
 
-  static createFromRawInstance(rawInstance: ChainAssetLockProofNAPI): ChainAssetLockProofWASM {
+  static createFromRawInstance (rawInstance: ChainAssetLockProofNAPI): ChainAssetLockProofWASM {
     const instance: ChainAssetLockProofWASM = Object.create(this.prototype)
     instance._rawLockProof = rawInstance
 

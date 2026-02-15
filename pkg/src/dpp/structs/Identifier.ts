@@ -1,6 +1,6 @@
 import { IdentifierLike } from '../types.js'
 import { IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
-import {dppProvider} from "../provider.js";
+import { dppProvider } from '../provider.js'
 
 export class IdentifierWASM {
   /** @private **/

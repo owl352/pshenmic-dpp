@@ -1,7 +1,7 @@
 import * as protocol from '../binaries/wasm.js'
-import {dppProvider} from "./dpp/provider.js";
+import { dppProvider } from './dpp/provider.js'
 
-dppProvider.setDpp(protocol);
+dppProvider.setDpp(protocol)
 
 export * from './dpp/enums.js'
 export * from './dpp/dpp.js'

@@ -1,40 +1,40 @@
-import {BigIntString, OutPointNAPI, TxOutNAPI} from "../../../../binaries/bindingsTypes.js";
-import {dppProvider} from "../../provider.js";
+import { BigIntString, TxOutNAPI } from '../../../../binaries/bindingsTypes.js'
+import { dppProvider } from '../../provider.js'
 
 export class TxOutWASM {
   _rawTxOut: TxOutNAPI
 
-  constructor(value: bigint, scriptPubKey: Uint8Array) {
-    const rsValue: BigIntString = value.toString();
+  constructor (value: bigint, scriptPubKey: Uint8Array) {
+    const rsValue: BigIntString = value.toString()
 
-    this._rawTxOut = new dppProvider.dpp.TxOutNAPI(rsValue, scriptPubKey);
+    this._rawTxOut = new dppProvider.dpp.TxOutNAPI(rsValue, scriptPubKey)
   }
 
-  get value(): bigint {
+  get value (): bigint {
     return BigInt(this._rawTxOut.value)
   }
 
-  get scriptPubKeyHex(): string {
-    return this._rawTxOut.scriptPubKeyHex
-  }
-
-  get scriptPubKeyBytes(): Uint8Array {
-    return this._rawTxOut.scriptPubKeyBytes
-  }
-
-  set value(value: bigint) {
+  set value (value: bigint) {
     this._rawTxOut.value = value.toString()
   }
 
-  set scriptPubKeyHex(script: string) {
+  get scriptPubKeyHex (): string {
+    return this._rawTxOut.scriptPubKeyHex
+  }
+
+  set scriptPubKeyHex (script: string) {
     this._rawTxOut.scriptPubKeyHex = script
   }
 
-  set scriptPubKeyBytes(script: Uint8Array) {
+  get scriptPubKeyBytes (): Uint8Array {
+    return this._rawTxOut.scriptPubKeyBytes
+  }
+
+  set scriptPubKeyBytes (script: Uint8Array) {
     this._rawTxOut.scriptPubKeyBytes = script
   }
 
-  getScriptPubKeyASM(): string {
+  getScriptPubKeyASM (): string {
     return this._rawTxOut.getScriptPubKeyASM()
   }
 

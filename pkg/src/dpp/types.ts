@@ -1,5 +1,5 @@
 import * as protocol from '../../binaries/bindingsTypes.js'
-import {IdentifierNAPI} from '../../binaries/bindingsTypes.js'
+import { IdentifierNAPI } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType,
   KeyType,
@@ -9,7 +9,7 @@ import {
   SecurityLevel,
   TokenDistributionType, TokenEmergencyAction
 } from './enums.js'
-import {IdentifierWASM} from "./structs/Identifier.js";
+import { IdentifierWASM } from './structs/Identifier.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM

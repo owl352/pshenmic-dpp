@@ -1,16 +1,16 @@
-import {KeyTypeLike, NetworkLike, PurposeLike, SecurityLevelLike} from '../types.js'
-import {IdentityPublicKeyNAPI} from '../../../binaries/bindingsTypes.js'
-import {KeyType, Purpose, SecurityLevel} from '../enums.js'
-import {dppProvider} from "../provider.js";
-import {ContractBoundsWASM} from "./ContractBounds.js";
-import {PrivateKeyWASM} from "./PrivateKey.js";
-import {valueToDynamicValue} from "../utils.js";
+import { KeyTypeLike, NetworkLike, PurposeLike, SecurityLevelLike } from '../types.js'
+import { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import { KeyType, Purpose, SecurityLevel } from '../enums.js'
+import { dppProvider } from '../provider.js'
+import { ContractBoundsWASM } from './ContractBounds.js'
+import { PrivateKeyWASM } from './PrivateKey.js'
+import { valueToDynamicValue } from '../utils.js'
 
 export class IdentityPublicKeyWASM {
   /** @private **/
   _rawIdentityPublicKey: IdentityPublicKeyNAPI
 
-  constructor(id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number, contractBounds?: ContractBoundsWASM) {
+  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number, contractBounds?: ContractBoundsWASM) {
     const dpp = dppProvider.dpp
 
     if (purpose == null || securityLevel == null || keyType == null) {
@@ -29,149 +29,149 @@ export class IdentityPublicKeyWASM {
     )
   }
 
-  get keyId(): number {
+  get keyId (): number {
     return this._rawIdentityPublicKey.keyId
   }
 
-  set keyId(keyId: number) {
+  set keyId (keyId: number) {
     this._rawIdentityPublicKey.keyId = keyId
   }
 
-  get purpose(): string {
+  get purpose (): string {
     return this._rawIdentityPublicKey.purpose
   }
 
-  set purpose(purpose: PurposeLike) {
+  set purpose (purpose: PurposeLike) {
     const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.purpose = new dpp.DynamicValue(purpose)
   }
 
-  get purposeNumber(): Purpose {
+  get purposeNumber (): Purpose {
     return this._rawIdentityPublicKey.purposeNumber
   }
 
-  set purposeNumber(purpose: Purpose) {
+  set purposeNumber (purpose: Purpose) {
     this._rawIdentityPublicKey.purposeNumber = purpose
   }
 
-  get securityLevel(): string {
+  get securityLevel (): string {
     return this._rawIdentityPublicKey.securityLevel
   }
 
-  get securityLevelNumber(): SecurityLevel {
-    return this._rawIdentityPublicKey.securityLevelNumber
-  }
-
-  get keyType(): string {
-    return this._rawIdentityPublicKey.keyType
-  }
-
-  set securityLevel(securityLevel: SecurityLevelLike) {
+  set securityLevel (securityLevel: SecurityLevelLike) {
     const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.securityLevel = new dpp.DynamicValue(securityLevel)
   }
 
-  get keyTypeNumber(): KeyType {
+  get securityLevelNumber (): SecurityLevel {
+    return this._rawIdentityPublicKey.securityLevelNumber
+  }
+
+  set securityLevelNumber (securityLevel: SecurityLevel) {
+    this._rawIdentityPublicKey.securityLevelNumber = securityLevel
+  }
+
+  get keyType (): string {
+    return this._rawIdentityPublicKey.keyType
+  }
+
+  set keyType (keyType: KeyTypeLike) {
+    const dpp = dppProvider.dpp
+    this._rawIdentityPublicKey.keyType = new dpp.DynamicValue(keyType)
+  }
+
+  get keyTypeNumber (): KeyType {
     return this._rawIdentityPublicKey.keyTypeNumber
   }
 
-  get readOnly(): boolean {
+  set keyTypeNumber (keyType: KeyType) {
+    this._rawIdentityPublicKey.keyTypeNumber = keyType
+  }
+
+  get readOnly (): boolean {
     return this._rawIdentityPublicKey.readOnly
   }
 
-  get data(): string {
+  set readOnly (readOnly: boolean) {
+    this._rawIdentityPublicKey.readOnly = readOnly
+  }
+
+  get data (): string {
     return this._rawIdentityPublicKey.data
   }
 
-  get disabledAt(): BigInt | undefined {
+  set data (binaryData: string) {
+    this._rawIdentityPublicKey.data = binaryData
+  }
+
+  get disabledAt (): bigint | undefined {
     const timestamp = this._rawIdentityPublicKey.disabledAt
 
     return (timestamp != null) ? BigInt(timestamp) : undefined
   }
 
-  get contractBounds(): ContractBoundsWASM | undefined {
-    if (this._rawIdentityPublicKey.contractBounds) {
+  set disabledAt (disabledAt: bigint | number) {
+    this._rawIdentityPublicKey.disabledAt = disabledAt.toString()
+  }
+
+  get contractBounds (): ContractBoundsWASM | undefined {
+    if (this._rawIdentityPublicKey.contractBounds != null) {
       return ContractBoundsWASM.createFromRawInstance(this._rawIdentityPublicKey.contractBounds)
     }
   }
 
-  set securityLevelNumber(securityLevel: SecurityLevel) {
-    this._rawIdentityPublicKey.securityLevelNumber = securityLevel
-  }
-
-  set keyType(keyType: KeyTypeLike) {
-    const dpp = dppProvider.dpp
-    this._rawIdentityPublicKey.keyType = new dpp.DynamicValue(keyType)
-  }
-
-  set keyTypeNumber(keyType: KeyType) {
-    this._rawIdentityPublicKey.keyTypeNumber = keyType
-  }
-
-  set readOnly(readOnly: boolean) {
-    this._rawIdentityPublicKey.readOnly = readOnly
-  }
-
-  set data(binaryData: string) {
-    this._rawIdentityPublicKey.data = binaryData
-  }
-
-  set disabledAt(disabledAt: bigint | number) {
-    this._rawIdentityPublicKey.disabledAt = disabledAt.toString()
-  }
-
-  set contractBounds(contractBounds: ContractBoundsWASM | undefined | null) {
+  set contractBounds (contractBounds: ContractBoundsWASM | undefined | null) {
     this._rawIdentityPublicKey.contractBounds = contractBounds?._rawContractBounds
   }
 
-  removeDisabledAt(): void {
+  removeDisabledAt (): void {
     this._rawIdentityPublicKey.removeDisabledAt()
   }
 
-  getPublicKeyHash(): string {
+  getPublicKeyHash (): string {
     return this._rawIdentityPublicKey.getPublicKeyHash()
   }
 
-  isMaster(): boolean {
+  isMaster (): boolean {
     return this._rawIdentityPublicKey.isMaster()
   }
 
-  bytes(): Uint8Array {
+  bytes (): Uint8Array {
     return this._rawIdentityPublicKey.bytes()
   }
 
-  hex(): string {
+  hex (): string {
     return this._rawIdentityPublicKey.hex()
   }
 
-  base64(): string {
+  base64 (): string {
     return this._rawIdentityPublicKey.base64()
   }
 
-  validatePrivateKey(privateKey: string | Uint8Array | PrivateKeyWASM, network: NetworkLike): boolean {
+  validatePrivateKey (privateKey: string | Uint8Array | PrivateKeyWASM, network: NetworkLike): boolean {
     const normalPrivateKey = privateKey instanceof PrivateKeyWASM ? privateKey._rawPrivateKey : valueToDynamicValue(privateKey)
     return this._rawIdentityPublicKey.validatePrivateKey(normalPrivateKey, valueToDynamicValue(network))
   }
 
-  static fromBytes(bytes: Uint8Array): IdentityPublicKeyWASM {
+  static fromBytes (bytes: Uint8Array): IdentityPublicKeyWASM {
     const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromBytes(bytes)
 
     return this.createFromRawInstance(rawInstance)
   }
 
-  static fromHex(hex: string): IdentityPublicKeyWASM {
+  static fromHex (hex: string): IdentityPublicKeyWASM {
     const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromHex(hex)
 
     return this.createFromRawInstance(rawInstance)
   }
 
-  static fromBase64(base64: string): IdentityPublicKeyWASM {
+  static fromBase64 (base64: string): IdentityPublicKeyWASM {
     const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromBase64(base64)
 
     return this.createFromRawInstance(rawInstance)
   }
 
-  static createFromRawInstance(rawInstance: IdentityPublicKeyNAPI): IdentityPublicKeyWASM {
+  static createFromRawInstance (rawInstance: IdentityPublicKeyNAPI): IdentityPublicKeyWASM {
     const instance: IdentityPublicKeyWASM = Object.create(this.prototype)
     instance._rawIdentityPublicKey = rawInstance
 

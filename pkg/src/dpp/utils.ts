@@ -1,10 +1,10 @@
-import {BigIntString, DynamicValue, IdentifierLikeNAPI} from "../../binaries/bindingsTypes.js";
-import {dppProvider} from "./provider.js";
-import {UINT32MAX} from "./constants.js";
-import {IdentifierLike} from "./types.js";
-import {IdentifierWASM} from "./structs/Identifier.js";
+import { BigIntString, DynamicValue, IdentifierLikeNAPI } from '../../binaries/bindingsTypes.js'
+import { dppProvider } from './provider.js'
+import { UINT32MAX } from './constants.js'
+import { IdentifierLike } from './types.js'
+import { IdentifierWASM } from './structs/Identifier.js'
 
-export function valueToDynamicValue(value: any): DynamicValue {
+export function valueToDynamicValue (value: any): DynamicValue {
   if (typeof value === 'bigint' || value > UINT32MAX) {
     return dppProvider.dpp.DynamicValue.fromBigIntString(BigInt(value.toString() as BigIntString).toString())
   } else if (value instanceof Uint8Array) {
@@ -21,13 +21,13 @@ export function valueToDynamicValue(value: any): DynamicValue {
 
     return new dppProvider.dpp.DynamicValue(objectWithDynamicValue)
   } else if (typeof value === 'function') {
-    throw new Error("Cannot parse value from function")
+    throw new Error('Cannot parse value from function')
   } else {
     return new dppProvider.dpp.DynamicValue(value)
   }
 }
 
-export function valueFromDynamicValue(dynamicValue: DynamicValue): any {
+export function valueFromDynamicValue (dynamicValue: DynamicValue): any {
   if (dynamicValue.value instanceof dppProvider.dpp.DynamicValue) {
     return valueToDynamicValue(dynamicValue.value)
   } else if (dynamicValue.isBigInt()) {
@@ -49,7 +49,7 @@ export function valueFromDynamicValue(dynamicValue: DynamicValue): any {
   }
 }
 
-export function prepareIdentifierValue(identifier: IdentifierLike): IdentifierLikeNAPI {
+export function prepareIdentifierValue (identifier: IdentifierLike): IdentifierLikeNAPI {
   if (identifier instanceof IdentifierWASM) {
     return identifier._rawIdentifier
   } else if (identifier instanceof dppProvider.dpp.IdentifierNAPI) {
