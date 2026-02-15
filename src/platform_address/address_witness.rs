@@ -22,7 +22,7 @@ impl From<AddressWitnessNAPI> for AddressWitness {
 #[napi]
 impl AddressWitnessNAPI {
     #[napi(js_name = "P2PKH")]
-    pub fn p2pkh(&self, signature: Uint8Array) -> AddressWitnessNAPI {
+    pub fn p2pkh(signature: Uint8Array) -> AddressWitnessNAPI {
         AddressWitnessNAPI(AddressWitness::P2pkh {
             signature: BinaryData(signature.to_vec()),
         })
@@ -30,7 +30,6 @@ impl AddressWitnessNAPI {
 
     #[napi(js_name = "P2SH")]
     pub fn p2sh(
-        &self,
         signatures: Vec<Uint8Array>,
         redeem_script: Uint8Array,
     ) -> AddressWitnessNAPI {

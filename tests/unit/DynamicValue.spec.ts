@@ -1,6 +1,14 @@
-import {PlatformVersionWASM, valueFromDynamicValue, valueToDynamicValue} from "../../pkg/src/wasm.js";
+import * as dpp from "../../pkg/src/wasm.js";
+import {valueFromDynamicValue, valueToDynamicValue} from "../../pkg/src/dpp/utils.js"
 
 describe('DynamicValue', () => {
+  beforeAll(()=>{
+    // in real scenarios we cannot call valueFromDynamicValue and valueToDynamicValue from outside of module
+    // but tests use these methods and require to import dpp before run,
+    // or we can set dpp manually via setDpp()
+    dpp
+  })
+
   describe('serialization / deserialization', function () {
     test('should allow to serialize and deserialize basic types', function () {
       const uint8ArrayValue = new Uint8Array([1, 2, 3, 4])

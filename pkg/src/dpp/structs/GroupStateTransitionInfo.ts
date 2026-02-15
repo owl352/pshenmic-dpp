@@ -5,6 +5,7 @@ import { prepareIdentifierValue } from '../utils.js'
 import { IdentifierWASM } from './Identifier.js'
 
 export class GroupStateTransitionInfoWASM {
+  /** @private **/
   _rawGroupStateTransitionInfo: GroupStateTransitionInfoNAPI
 
   constructor (groupContractPosition: number, actionId: IdentifierLike, actionIsProposer: boolean) {

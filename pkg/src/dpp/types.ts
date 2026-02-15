@@ -1,5 +1,5 @@
 import * as protocol from '../../binaries/bindingsTypes.js'
-import { IdentifierNAPI } from '../../binaries/bindingsTypes.js'
+import { AddressWitnessP2pkhNAPI, AddressWitnessP2shNAPI, IdentifierNAPI } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType,
   KeyType,
@@ -26,3 +26,6 @@ export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLock
 export type PoolingLike = Pooling | keyof typeof Pooling
 
 export type EnumLike = KeyTypeLike | NetworkLike | SecurityLevelLike | PlatformVersionLike | PurposeLike
+
+export type AddressWitnessP2PKH = AddressWitnessP2pkhNAPI
+export type AddressWitnessP2SH = AddressWitnessP2shNAPI
