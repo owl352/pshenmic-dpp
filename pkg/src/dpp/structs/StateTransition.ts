@@ -10,7 +10,8 @@ export class StateTransitionWASM {
   /** @private **/
   _rawStateTransition: StateTransitionNAPI
 
-  private constructor () {
+  private constructor (_rawStateTransition: StateTransitionNAPI) {
+    this._rawStateTransition = _rawStateTransition
   }
 
   get signature (): Uint8Array | undefined {
@@ -124,23 +125,18 @@ export class StateTransitionWASM {
   }
 
   static fromBytes (bytes: Uint8Array): StateTransitionWASM {
-    const st = new StateTransitionWASM()
-    st._rawStateTransition = dppProvider.dpp.StateTransitionNAPI.fromBytes(bytes)
-
-    return st
+    return new StateTransitionWASM(dppProvider.dpp.StateTransitionNAPI.fromBytes(bytes))
   }
 
   static fromHex (hex: string): StateTransitionWASM {
-    const st = new StateTransitionWASM()
-    st._rawStateTransition = dppProvider.dpp.StateTransitionNAPI.fromHex(hex)
-
-    return st
+    return new StateTransitionWASM(dppProvider.dpp.StateTransitionNAPI.fromHex(hex))
   }
 
   static fromBase64 (base64: string): StateTransitionWASM {
-    const st = new StateTransitionWASM()
-    st._rawStateTransition = dppProvider.dpp.StateTransitionNAPI.fromBase64(base64)
+    return new StateTransitionWASM(dppProvider.dpp.StateTransitionNAPI.fromBase64(base64))
+  }
 
-    return st
+  static createFromRawInstance (instance: StateTransitionNAPI): StateTransitionWASM {
+    return new StateTransitionWASM(instance)
   }
 }

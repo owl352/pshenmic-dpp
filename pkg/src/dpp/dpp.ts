@@ -23,3 +23,4 @@ export { SharedEncryptedNoteWASM } from './structs/EncryptedNote/SharedEncrypted
 export { GroupStateTransitionInfoWASM } from './structs/GroupStateTransitionInfo.js'
 export { PlatformAddressWASM } from './structs/Address/PlatformAddress.js'
 export { AddressWitnessWASM } from './structs/Address/AddressWitness.js'
+export { IdentityCreateTransitionWASM } from './structs/IdentityTransitions/IdentityCreateTransition.js'
