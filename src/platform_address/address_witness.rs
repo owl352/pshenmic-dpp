@@ -29,10 +29,7 @@ impl AddressWitnessNAPI {
     }
 
     #[napi(js_name = "P2SH")]
-    pub fn p2sh(
-        signatures: Vec<Uint8Array>,
-        redeem_script: Uint8Array,
-    ) -> AddressWitnessNAPI {
+    pub fn p2sh(signatures: Vec<Uint8Array>, redeem_script: Uint8Array) -> AddressWitnessNAPI {
         AddressWitnessNAPI(AddressWitness::P2sh {
             signatures: signatures
                 .iter()
