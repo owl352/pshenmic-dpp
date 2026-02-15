@@ -2,6 +2,7 @@ import { PrivateEncryptedNoteNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class PrivateEncryptedNoteWASM {
+  /** @private **/
   _rawEncryptedNote: PrivateEncryptedNoteNAPI
 
   constructor (rootEncryptionKeyIndex: number, derivationEncryptionKeyIndex: number, value: Uint8Array) {

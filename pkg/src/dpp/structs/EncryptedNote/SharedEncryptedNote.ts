@@ -2,6 +2,7 @@ import { SharedEncryptedNoteNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class SharedEncryptedNoteWASM {
+  /** @private **/
   _rawSharedNote: SharedEncryptedNoteNAPI
 
   constructor (senderKeyIndex: number, recipientKeyIndex: number, value: Uint8Array) {
