@@ -34,3 +34,6 @@ export { ResourceVoteChoiceWASM } from './structs/MasternodeVote/ResourceVoteCho
 export { VotePollWASM } from './structs/MasternodeVote/VotePoll.js'
 export { VoteWASM } from './structs/MasternodeVote/Vote.js'
 export { MasternodeVoteTransitionWASM } from './structs/MasternodeVote/MasternodeVoteTransition.js'
+export { AddressFundsFeeStrategyStepWASM } from './structs/AddressTransitions/entities/AddressFundsFeeStrategyStep.js'
+export { InputAddressWASM } from './structs/AddressTransitions/entities/InputAddress.js'
+export { OutputAddressWASM } from './structs/AddressTransitions/entities/OutputAddress.js'
