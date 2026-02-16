@@ -30,13 +30,6 @@ export class CoreScriptWASM {
     return this._rawCoreScript.ASMString()
   }
 
-  static createFromRawInstance (rawInstance: CoreScriptNAPI): CoreScriptWASM {
-    const instance: CoreScriptWASM = Object.create(this.prototype)
-    instance._rawCoreScript = rawInstance
-
-    return instance
-  }
-
   static fromBytes (bytes: Uint8Array): CoreScriptWASM {
     return CoreScriptWASM.createFromRawInstance(
       dppProvider.dpp.CoreScriptNAPI.fromBytes(bytes)
@@ -53,5 +46,12 @@ export class CoreScriptWASM {
     return CoreScriptWASM.createFromRawInstance(
       dppProvider.dpp.CoreScriptNAPI.newP2SH(scriptHash)
     )
+  }
+
+  static createFromRawInstance (rawInstance: CoreScriptNAPI): CoreScriptWASM {
+    const instance: CoreScriptWASM = Object.create(this.prototype)
+    instance._rawCoreScript = rawInstance
+
+    return instance
   }
 }

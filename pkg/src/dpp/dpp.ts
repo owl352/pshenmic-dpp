@@ -27,4 +27,10 @@ export { IdentityCreateTransitionWASM } from './structs/IdentityTransitions/Iden
 export { IdentityTopUpTransitionWASM } from './structs/IdentityTransitions/IdentityTopUpTransition.js'
 export { IdentityUpdateTransitionWASM } from './structs/IdentityTransitions/IdentityUpdateTransition.js'
 export { IdentityCreditTransferWASM } from './structs/IdentityTransitions/IdentityCreditTransfer.js'
-export { IdentityCreditWithdrawalTransitionWASM } from './structs/IdentityTransitions/IdentityCreditWithdrawalTransition.js'
+export {
+  IdentityCreditWithdrawalTransitionWASM
+} from './structs/IdentityTransitions/IdentityCreditWithdrawalTransition.js'
+export { ResourceVoteChoiceWASM } from './structs/MasternodeVote/ResourceVoteChoice.js'
+export { VotePollWASM } from './structs/MasternodeVote/VotePoll.js'
+export { VoteWASM } from './structs/MasternodeVote/Vote.js'
+export { MasternodeVoteTransitionWASM } from './structs/MasternodeVote/MasternodeVoteTransition.js'

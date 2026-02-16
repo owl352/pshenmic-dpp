@@ -4,8 +4,8 @@ pub mod vote_poll;
 
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::BinaryData;
-use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
-use dpp::platform_value::string_encoding::decode;
+use dpp::platform_value::string_encoding::Encoding::{self, Base64, Hex};
+use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
 use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
@@ -167,6 +167,22 @@ impl MasternodeVoteTransitionNAPI {
     #[napi(js_name = "bytes")]
     pub fn to_bytes(&self) -> Result<Uint8Array, napi::Error> {
         Ok(self.0.serialize_to_bytes().with_js_error()?.into())
+    }
+
+    #[napi(js_name = "hex")]
+    pub fn to_hex(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Hex,
+        ))
+    }
+
+    #[napi(js_name = "base64")]
+    pub fn to_base64(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Base64,
+        ))
     }
 
     #[napi(js_name = "fromBytes")]
