@@ -2,7 +2,7 @@ import * as protocol from '../../binaries/bindingsTypes.js'
 import {
   AddressWitnessP2pkhNAPI,
   AddressWitnessP2shNAPI,
-  IdentifierNAPI
+  IdentifierNAPI, TokenConfigurationLocalizationJsonNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType,
@@ -33,3 +33,4 @@ export type EnumLike = KeyTypeLike | NetworkLike | SecurityLevelLike | PlatformV
 
 export type AddressWitnessP2PKH = AddressWitnessP2pkhNAPI
 export type AddressWitnessP2SH = AddressWitnessP2shNAPI
+export type TokenConfigurationLocalizationJson = TokenConfigurationLocalizationJsonNAPI

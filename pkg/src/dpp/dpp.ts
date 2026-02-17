@@ -47,4 +47,10 @@ export { IdentityTopUpFromAddressesTransitionWASM } from './structs/AddressTrans
 export { ActionTakerWASM } from './structs/TokenConfiguration/ActionTaker.js'
 export { AuthorizedActionTakersWASM } from './structs/TokenConfiguration/AuthorizedActionTakers.js'
 export { GroupWASM } from './structs/TokenConfiguration/Group.js'
+// WW
 export { ChangeControlRulesWASM } from './structs/TokenConfiguration/ChangeControlRules.js'
+// ^^^
+export {TokenConfigurationLocalizationWASM} from './structs/TokenConfiguration/TokenConfigurationLocalization.js'
+export {TokenKeepsHistoryRulesWASM} from './structs/TokenConfiguration/TokenKeepsHistoryRules.js'
+export {TokenTradeModeWASM} from './structs/TokenConfiguration/TokenTradeMode.js'
+export {TokenDistributionRecipientWASM} from './structs/TokenConfiguration/TokenDistributionRecipient.js'
