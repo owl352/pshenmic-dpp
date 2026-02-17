@@ -43,3 +43,4 @@ export { AddressFundingFromAssetLockTransitionWASM } from './structs/AddressTran
 export { AddressFundsTransferTransitionWASM } from './structs/AddressTransitions/AddressFundsTransferTransition.js'
 export { IdentityCreateFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreateFromAddressesTransition.js'
 export { IdentityCreditTransferToAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreditTransferToAddressesTransition.js'
+export { IdentityTopUpFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityTopUpFromAddressesTransition.js'
