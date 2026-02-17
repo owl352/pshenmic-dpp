@@ -1,5 +1,7 @@
 use dpp::address_funds::PlatformAddress;
 use dpp::fee::Credits;
+use dpp::platform_value::string_encoding::{Encoding, decode, encode};
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::address_credit_withdrawal_transition::AddressCreditWithdrawalTransition;
 use dpp::state_transition::address_credit_withdrawal_transition::accessors::AddressCreditWithdrawalTransitionAccessorsV0;
 use dpp::state_transition::address_credit_withdrawal_transition::v0::AddressCreditWithdrawalTransitionV0;
@@ -7,6 +9,7 @@ use dpp::state_transition::{
     StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionLike,
     StateTransitionWitnessSigned,
 };
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFeeStrategyStepNAPI;
@@ -16,9 +19,9 @@ use crate::address_transitions::utils::js_inputs_to_inputs;
 use crate::core_script::CoreScriptNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::enums::pooling::PoolingNAPI;
-use crate::platform_address::PlatformAddressNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
+use crate::utils::WithJsError;
 
 #[derive(Clone)]
 #[napi(js_name = "AddressCreditWithdrawalTransitionNAPI")]
@@ -170,15 +173,12 @@ impl AddressCreditWithdrawalTransitionNAPI {
     }
 
     #[napi(setter, js_name = "output")]
-    pub fn set_output(
-        &mut self,
-        js_output: Option<(&PlatformAddressNAPI, BigIntString)>,
-    ) -> Result<(), napi::Error> {
+    pub fn set_output(&mut self, js_output: Option<&OutputAddressNAPI>) -> Result<(), napi::Error> {
         let output: Option<(PlatformAddress, Credits)> = js_output
-            .map(|(address, credits)| {
+            .map(|output| {
                 Ok::<(PlatformAddress, Credits), napi::Error>((
-                    address.clone().into(),
-                    credits.try_to_u64()?,
+                    output.address().clone().into(),
+                    output.credits().clone().try_to_u64()?,
                 ))
             })
             .transpose()?;
@@ -211,6 +211,61 @@ impl AddressCreditWithdrawalTransitionNAPI {
             .collect();
 
         self.0.set_witnesses(input_witnesses);
+    }
+
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        Ok(self.0.serialize_to_bytes().with_js_error()?.into())
+    }
+
+    #[napi(js_name = "hex")]
+    pub fn hex(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Hex,
+        ))
+    }
+
+    #[napi(js_name = "base64")]
+    pub fn base64(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Base64,
+        ))
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(data: Uint8Array) -> Result<Self, napi::Error> {
+        Ok(Self(
+            AddressCreditWithdrawalTransition::deserialize_from_bytes(data.to_vec().as_slice())
+                .with_js_error()?,
+        ))
+    }
+
+    #[napi(js_name = "fromHex")]
+    pub fn from_hex(data: String) -> Result<Self, napi::Error> {
+        Ok(Self(
+            AddressCreditWithdrawalTransition::deserialize_from_bytes(
+                decode(&data, Encoding::Hex)
+                    .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "Invalid hex string"))?
+                    .as_slice(),
+            )
+            .with_js_error()?,
+        ))
+    }
+
+    #[napi(js_name = "fromBase64")]
+    pub fn from_base64(data: String) -> Result<Self, napi::Error> {
+        Ok(Self(
+            AddressCreditWithdrawalTransition::deserialize_from_bytes(
+                decode(&data, Encoding::Base64)
+                    .map_err(|_| {
+                        napi::Error::new(napi::Status::InvalidArg, "Invalid Base64 string")
+                    })?
+                    .as_slice(),
+            )
+            .with_js_error()?,
+        ))
     }
 
     #[napi(js_name = "fromStateTransition")]

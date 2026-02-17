@@ -1,3 +1,5 @@
+use dpp::platform_value::string_encoding::{Encoding, decode, encode};
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::IdentityCreditTransferToAddressesTransition;
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::accessors::IdentityCreditTransferToAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::v0::IdentityCreditTransferToAddressesTransitionV0;
@@ -13,6 +15,7 @@ use crate::address_transitions::utils::js_outputs_to_outputs;
 use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
+use crate::utils::WithJsError;
 
 #[napi(js_name = "IdentityCreditTransferToAddressesTransitionNAPI")]
 pub struct IdentityCreditTransferToAddressesTransitionNAPI(
@@ -140,6 +143,63 @@ impl IdentityCreditTransferToAddressesTransitionNAPI {
     #[napi(setter, js_name = "signature")]
     pub fn set_signature(&mut self, signature: Uint8Array) {
         self.0.set_signature_bytes(signature.to_vec())
+    }
+
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        Ok(self.0.serialize_to_bytes().with_js_error()?.into())
+    }
+
+    #[napi(js_name = "hex")]
+    pub fn hex(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Hex,
+        ))
+    }
+
+    #[napi(js_name = "base64")]
+    pub fn base64(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Base64,
+        ))
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(data: Uint8Array) -> Result<Self, napi::Error> {
+        Ok(Self(
+            IdentityCreditTransferToAddressesTransition::deserialize_from_bytes(
+                data.to_vec().as_slice(),
+            )
+            .with_js_error()?,
+        ))
+    }
+
+    #[napi(js_name = "fromHex")]
+    pub fn from_hex(data: String) -> Result<Self, napi::Error> {
+        Ok(Self(
+            IdentityCreditTransferToAddressesTransition::deserialize_from_bytes(
+                decode(&data, Encoding::Hex)
+                    .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "Invalid hex string"))?
+                    .as_slice(),
+            )
+            .with_js_error()?,
+        ))
+    }
+
+    #[napi(js_name = "fromBase64")]
+    pub fn from_base64(data: String) -> Result<Self, napi::Error> {
+        Ok(Self(
+            IdentityCreditTransferToAddressesTransition::deserialize_from_bytes(
+                decode(&data, Encoding::Base64)
+                    .map_err(|_| {
+                        napi::Error::new(napi::Status::InvalidArg, "Invalid Base64 string")
+                    })?
+                    .as_slice(),
+            )
+            .with_js_error()?,
+        ))
     }
 
     #[napi(js_name = "fromStateTransition")]

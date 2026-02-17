@@ -37,3 +37,6 @@ export { MasternodeVoteTransitionWASM } from './structs/MasternodeVote/Masternod
 export { AddressFundsFeeStrategyStepWASM } from './structs/AddressTransitions/entities/AddressFundsFeeStrategyStep.js'
 export { InputAddressWASM } from './structs/AddressTransitions/entities/InputAddress.js'
 export { OutputAddressWASM } from './structs/AddressTransitions/entities/OutputAddress.js'
+export { OutputAddressNullableCreditsWASM } from './structs/AddressTransitions/entities/OutputAddressNullableCredits.js'
+export { AddressCreditWithdrawalTransitionWASM } from './structs/AddressTransitions/AddressCreditWithdrawalTransition.js'
+export { AddressFundingFromAssetLockTransitionWASM } from './structs/AddressTransitions/AddressFundingFromAssetLockTransition.js'
