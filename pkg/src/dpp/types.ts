@@ -2,8 +2,7 @@ import * as protocol from '../../binaries/bindingsTypes.js'
 import {
   AddressWitnessP2pkhNAPI,
   AddressWitnessP2shNAPI,
-  IdentifierNAPI,
-  OutputAddressNullableCreditsNAPI
+  IdentifierNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType,

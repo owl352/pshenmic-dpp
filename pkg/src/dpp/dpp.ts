@@ -40,3 +40,6 @@ export { OutputAddressWASM } from './structs/AddressTransitions/entities/OutputA
 export { OutputAddressNullableCreditsWASM } from './structs/AddressTransitions/entities/OutputAddressNullableCredits.js'
 export { AddressCreditWithdrawalTransitionWASM } from './structs/AddressTransitions/AddressCreditWithdrawalTransition.js'
 export { AddressFundingFromAssetLockTransitionWASM } from './structs/AddressTransitions/AddressFundingFromAssetLockTransition.js'
+export { AddressFundsTransferTransitionWASM } from './structs/AddressTransitions/AddressFundsTransferTransition.js'
+export { IdentityCreateFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreateFromAddressesTransition.js'
+export { IdentityCreditTransferToAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreditTransferToAddressesTransition.js'
