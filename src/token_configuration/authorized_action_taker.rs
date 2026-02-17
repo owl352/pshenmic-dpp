@@ -25,6 +25,7 @@ impl From<AuthorizedActionTakersNAPI> for AuthorizedActionTakers {
 
 #[napi]
 impl AuthorizedActionTakersNAPI {
+    #[napi(js_name = "NoOne")]
     pub fn no_one() -> Self {
         AuthorizedActionTakersNAPI(AuthorizedActionTakers::NoOne)
     }

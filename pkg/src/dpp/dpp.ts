@@ -44,3 +44,7 @@ export { AddressFundsTransferTransitionWASM } from './structs/AddressTransitions
 export { IdentityCreateFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreateFromAddressesTransition.js'
 export { IdentityCreditTransferToAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreditTransferToAddressesTransition.js'
 export { IdentityTopUpFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityTopUpFromAddressesTransition.js'
+export { ActionTakerWASM } from './structs/TokenConfiguration/ActionTaker.js'
+export { AuthorizedActionTakersWASM } from './structs/TokenConfiguration/AuthorizedActionTakers.js'
+export { GroupWASM } from './structs/TokenConfiguration/Group.js'
+export { ChangeControlRulesWASM } from './structs/TokenConfiguration/ChangeControlRules.js'
