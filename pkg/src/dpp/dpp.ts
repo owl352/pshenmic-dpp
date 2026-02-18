@@ -46,11 +46,16 @@ export { IdentityCreditTransferToAddressesTransitionWASM } from './structs/Addre
 export { IdentityTopUpFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityTopUpFromAddressesTransition.js'
 export { ActionTakerWASM } from './structs/TokenConfiguration/ActionTaker.js'
 export { AuthorizedActionTakersWASM } from './structs/TokenConfiguration/AuthorizedActionTakers.js'
-export { GroupWASM } from './structs/TokenConfiguration/Group.js'
-// WW
 export { ChangeControlRulesWASM } from './structs/TokenConfiguration/ChangeControlRules.js'
-// ^^^
-export { TokenConfigurationLocalizationWASM } from './structs/TokenConfiguration/TokenConfigurationLocalization.js'
-export { TokenKeepsHistoryRulesWASM } from './structs/TokenConfiguration/TokenKeepsHistoryRules.js'
-export { TokenTradeModeWASM } from './structs/TokenConfiguration/TokenTradeMode.js'
+export { TokenConfigurationConventionWASM } from './structs/TokenConfiguration/TokenConfigurationConvention.js'
+export { DistributionFunctionWASM } from './structs/TokenConfiguration/DistributionFunction.js'
 export { TokenDistributionRecipientWASM } from './structs/TokenConfiguration/TokenDistributionRecipient.js'
+// distr_rules
+export { GroupWASM } from './structs/TokenConfiguration/Group.js'
+export { TokenKeepsHistoryRulesWASM } from './structs/TokenConfiguration/TokenKeepsHistoryRules.js'
+export { TokenConfigurationLocalizationWASM } from './structs/TokenConfiguration/TokenConfigurationLocalization.js'
+// marketplace_rules
+// perpetual_distr
+// pre_programmed_distr
+// reward_distr
+export { TokenTradeModeWASM } from './structs/TokenConfiguration/TokenTradeMode.js'

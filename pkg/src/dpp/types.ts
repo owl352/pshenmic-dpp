@@ -2,6 +2,9 @@ import * as protocol from '../../binaries/bindingsTypes.js'
 import {
   AddressWitnessP2pkhNAPI,
   AddressWitnessP2shNAPI,
+  DistributionExponentialNAPI, DistributionFixedAmountNAPI, DistributionInvertedLogarithmicNAPI,
+  DistributionLinearNAPI,
+  DistributionLogarithmicNAPI, DistributionPolynomialNAPI, DistributionRandomNAPI, DistributionStepDecreasingAmountNAPI,
   IdentifierNAPI, TokenConfigurationLocalizationJsonNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
@@ -14,6 +17,7 @@ import {
   TokenDistributionType, TokenEmergencyAction
 } from './enums.js'
 import { IdentifierWASM } from './structs/Identifier.js'
+import { languageCodes } from './constants.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -33,4 +37,21 @@ export type EnumLike = KeyTypeLike | NetworkLike | SecurityLevelLike | PlatformV
 
 export type AddressWitnessP2PKH = AddressWitnessP2pkhNAPI
 export type AddressWitnessP2SH = AddressWitnessP2shNAPI
+
 export type TokenConfigurationLocalizationJson = TokenConfigurationLocalizationJsonNAPI
+
+export type DistributionFixedAmount = DistributionFixedAmountNAPI
+export type DistributionRandom = DistributionRandomNAPI
+export type DistributionStepDecreasingAmount = DistributionStepDecreasingAmountNAPI
+export interface DistributionStepwiseStep {
+  step: bigint
+  amount: bigint
+}
+export type DistributionStepwise = DistributionStepwiseStep[]
+export type DistributionLinear = DistributionLinearNAPI
+export type DistributionPolynomial = DistributionPolynomialNAPI
+export type DistributionExponential = DistributionExponentialNAPI
+export type DistributionLogarithmic = DistributionLogarithmicNAPI
+export type DistributionInvertedLogarithmic = DistributionInvertedLogarithmicNAPI
+
+export type ISO639_CODES = typeof languageCodes[number]

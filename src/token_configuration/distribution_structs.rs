@@ -25,6 +25,15 @@ pub struct DistributionStepDecreasingAmountNAPI {
     pub min_value: Option<BigIntString>,
 }
 
+#[napi(object, js_name = "DistributionStepwiseStepNAPI")]
+pub struct DistributionStepwiseStepNAPI {
+    pub step: BigIntString,
+    pub amount: BigIntString,
+}
+
+#[napi(js_name = "DistributionStepwiseNAPI")]
+pub type DistributionStepwiseNAPI = Vec<DistributionStepwiseStepNAPI>;
+
 #[napi(object, js_name = "DistributionLinearNAPI")]
 pub struct DistributionLinearNAPI {
     pub a: i64,

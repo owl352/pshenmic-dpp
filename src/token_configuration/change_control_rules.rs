@@ -5,7 +5,7 @@ use dpp::data_contract::group::Group;
 use napi_derive::napi;
 use std::collections::BTreeMap;
 
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64};
+use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI};
 use crate::enums::action_goal::ActionGoalNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::token_configuration::action_taker::ActionTakerNAPI;
