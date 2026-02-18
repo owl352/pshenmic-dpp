@@ -54,8 +54,8 @@ export { TokenDistributionRecipientWASM } from './structs/TokenConfiguration/Tok
 export { GroupWASM } from './structs/TokenConfiguration/Group.js'
 export { TokenKeepsHistoryRulesWASM } from './structs/TokenConfiguration/TokenKeepsHistoryRules.js'
 export { TokenConfigurationLocalizationWASM } from './structs/TokenConfiguration/TokenConfigurationLocalization.js'
-// marketplace_rules
-// perpetual_distr
-// pre_programmed_distr
-// reward_distr
+export { TokenMarketplaceRulesWASM } from './structs/TokenConfiguration/TokenMarketplaceRules.js'
+export { TokenPerpetualDistributionWASM } from './structs/TokenConfiguration/TokenPerpetualDistribution.js'
+export { TokenPreProgrammedDistributionWASM } from './structs/TokenConfiguration/TokenPreProgrammedDistribution.js'
+export { RewardDistributionTypeWASM } from './structs/TokenConfiguration/RewardDistributionType.js'
 export { TokenTradeModeWASM } from './structs/TokenConfiguration/TokenTradeMode.js'

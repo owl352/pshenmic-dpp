@@ -18,6 +18,7 @@ import {
 } from './enums.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { languageCodes } from './constants.js'
+import { DistributionFunctionWASM } from './structs/TokenConfiguration/DistributionFunction.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -53,5 +54,11 @@ export type DistributionPolynomial = DistributionPolynomialNAPI
 export type DistributionExponential = DistributionExponentialNAPI
 export type DistributionLogarithmic = DistributionLogarithmicNAPI
 export type DistributionInvertedLogarithmic = DistributionInvertedLogarithmicNAPI
+
+export interface RewardDistribution {
+  interval: bigint | number
+  function: DistributionFunctionWASM
+  distributionType: 'BlockBasedDistribution' | 'TimeBasedDistribution' | 'EpochBasedDistribution'
+}
 
 export type ISO639_CODES = typeof languageCodes[number]
