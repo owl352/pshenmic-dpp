@@ -70,3 +70,5 @@ export { TokenTradeModeWASM } from './structs/TokenConfiguration/TokenTradeMode.
 export { TokenConfigurationChangeItemWASM } from './structs/TokenConfiguration/TokenConfigurationChangeItem.js'
 export { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfiguration.js'
 export { DataContractWASM } from './structs/DataContract.js'
+export { DataContractCreateTransitionWASM } from './structs/DataContractTransitions/DataContractCreateTransition.js'
+export { DataContractUpdateTransitionWASM } from './structs/DataContractTransitions/DataContractUpdateTransition.js'
