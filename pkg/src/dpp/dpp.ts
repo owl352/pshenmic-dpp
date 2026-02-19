@@ -50,7 +50,7 @@ export { ChangeControlRulesWASM } from './structs/TokenConfiguration/ChangeContr
 export { TokenConfigurationConventionWASM } from './structs/TokenConfiguration/TokenConfigurationConvention.js'
 export { DistributionFunctionWASM } from './structs/TokenConfiguration/DistributionFunction.js'
 export { TokenDistributionRecipientWASM } from './structs/TokenConfiguration/TokenDistributionRecipient.js'
-// distr_rules
+export { TokenDistributionRulesWASM } from './structs/TokenConfiguration/TokenDistributionRules.js'
 export { GroupWASM } from './structs/TokenConfiguration/Group.js'
 export { TokenKeepsHistoryRulesWASM } from './structs/TokenConfiguration/TokenKeepsHistoryRules.js'
 export { TokenConfigurationLocalizationWASM } from './structs/TokenConfiguration/TokenConfigurationLocalization.js'
