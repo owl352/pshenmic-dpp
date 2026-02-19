@@ -19,6 +19,8 @@ import {
 import { IdentifierWASM } from './structs/Identifier.js'
 import { languageCodes } from './constants.js'
 import { DistributionFunctionWASM } from './structs/TokenConfiguration/DistributionFunction.js'
+import { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfiguration.js'
+import { GroupWASM } from './structs/TokenConfiguration/Group.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -62,3 +64,13 @@ export interface RewardDistribution {
 }
 
 export type ISO639_CODES = typeof languageCodes[number]
+
+export interface DataContractTokens {
+  position: number
+  tokenConfiguration: TokenConfigurationWASM
+}
+
+export interface DataContractGroups {
+  position: number
+  group: GroupWASM
+}

@@ -39,11 +39,19 @@ export { InputAddressWASM } from './structs/AddressTransitions/entities/InputAdd
 export { OutputAddressWASM } from './structs/AddressTransitions/entities/OutputAddress.js'
 export { OutputAddressNullableCreditsWASM } from './structs/AddressTransitions/entities/OutputAddressNullableCredits.js'
 export { AddressCreditWithdrawalTransitionWASM } from './structs/AddressTransitions/AddressCreditWithdrawalTransition.js'
-export { AddressFundingFromAssetLockTransitionWASM } from './structs/AddressTransitions/AddressFundingFromAssetLockTransition.js'
+export {
+  AddressFundingFromAssetLockTransitionWASM
+} from './structs/AddressTransitions/AddressFundingFromAssetLockTransition.js'
 export { AddressFundsTransferTransitionWASM } from './structs/AddressTransitions/AddressFundsTransferTransition.js'
-export { IdentityCreateFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreateFromAddressesTransition.js'
-export { IdentityCreditTransferToAddressesTransitionWASM } from './structs/AddressTransitions/IdentityCreditTransferToAddressesTransition.js'
-export { IdentityTopUpFromAddressesTransitionWASM } from './structs/AddressTransitions/IdentityTopUpFromAddressesTransition.js'
+export {
+  IdentityCreateFromAddressesTransitionWASM
+} from './structs/AddressTransitions/IdentityCreateFromAddressesTransition.js'
+export {
+  IdentityCreditTransferToAddressesTransitionWASM
+} from './structs/AddressTransitions/IdentityCreditTransferToAddressesTransition.js'
+export {
+  IdentityTopUpFromAddressesTransitionWASM
+} from './structs/AddressTransitions/IdentityTopUpFromAddressesTransition.js'
 export { ActionTakerWASM } from './structs/TokenConfiguration/ActionTaker.js'
 export { AuthorizedActionTakersWASM } from './structs/TokenConfiguration/AuthorizedActionTakers.js'
 export { ChangeControlRulesWASM } from './structs/TokenConfiguration/ChangeControlRules.js'
@@ -60,3 +68,5 @@ export { TokenPreProgrammedDistributionWASM } from './structs/TokenConfiguration
 export { RewardDistributionTypeWASM } from './structs/TokenConfiguration/RewardDistributionType.js'
 export { TokenTradeModeWASM } from './structs/TokenConfiguration/TokenTradeMode.js'
 export { TokenConfigurationChangeItemWASM } from './structs/TokenConfiguration/TokenConfigurationChangeItem.js'
+export { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfiguration.js'
+export { DataContractWASM } from './structs/DataContract.js'
