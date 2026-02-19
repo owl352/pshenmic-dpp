@@ -59,3 +59,4 @@ export { TokenPerpetualDistributionWASM } from './structs/TokenConfiguration/Tok
 export { TokenPreProgrammedDistributionWASM } from './structs/TokenConfiguration/TokenPreProgrammedDistribution.js'
 export { RewardDistributionTypeWASM } from './structs/TokenConfiguration/RewardDistributionType.js'
 export { TokenTradeModeWASM } from './structs/TokenConfiguration/TokenTradeMode.js'
+export { TokenConfigurationChangeItemWASM } from './structs/TokenConfiguration/TokenConfigurationChangeItem.js'
