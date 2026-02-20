@@ -8,7 +8,7 @@ import {
   IdentifierNAPI, TokenConfigurationLocalizationJsonNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
-  ActionGoal, AssetLockProofType,
+  ActionGoal, AssetLockProofType, GasFeesPaidBy,
   KeyType,
   NetworkWASM,
   PlatformVersionWASM, Pooling,
@@ -31,6 +31,7 @@ export type SecurityLevelLike = SecurityLevel | keyof typeof SecurityLevel
 export type PlatformVersionLike = PlatformVersionWASM | keyof typeof PlatformVersionWASM
 export type PurposeLike = Purpose | keyof typeof Purpose
 export type ActionGoalLike = ActionGoal | keyof typeof ActionGoal
+export type GasFeesPaidByLike = GasFeesPaidBy | keyof typeof GasFeesPaidBy
 export type TokenDistributionLike = TokenDistributionType | keyof typeof TokenDistributionType
 export type TokenEmergencyActionLike = TokenEmergencyAction | keyof typeof TokenEmergencyAction
 export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType

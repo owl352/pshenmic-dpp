@@ -8,5 +8,6 @@ export {
   TokenDistributionTypeNAPI as TokenDistributionType,
   TokenEmergencyActionNAPI as TokenEmergencyAction,
   AssetLockProofTypeNAPI as AssetLockProofType,
-  PoolingNAPI as Pooling
+  PoolingNAPI as Pooling,
+  GasFeesPaidByNAPI as GasFeesPaidBy
 } from '../../binaries/bindingsTypes.js'
