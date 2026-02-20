@@ -8,7 +8,7 @@ import { prepareIdentifierValue } from '../../../utils.js'
 
 export class TokenTransferTransitionWASM {
   /** @private **/
-  _rawTokenTransferTransition: TokenTransferTransitionNAPI
+  _rawTransition: TokenTransferTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
@@ -18,7 +18,7 @@ export class TokenTransferTransitionWASM {
     sharedEncryptedNote?: SharedEncryptedNoteWASM,
     privateEncryptedNote?: PrivateEncryptedNoteWASM
   ) {
-    this._rawTokenTransferTransition = new dppProvider.dpp.TokenTransferTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenTransferTransitionNAPI(
       base._rawTokenBaseTransition,
       prepareIdentifierValue(recipientId),
       amount.toString(),
@@ -30,32 +30,32 @@ export class TokenTransferTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenTransferTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenTransferTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get amount (): bigint {
-    return BigInt(this._rawTokenTransferTransition.amount)
+    return BigInt(this._rawTransition.amount)
   }
 
   set amount (value: bigint) {
-    this._rawTokenTransferTransition.amount = value.toString()
+    this._rawTransition.amount = value.toString()
   }
 
   get publicNote (): string | undefined {
-    return this._rawTokenTransferTransition.publicNote ?? undefined
+    return this._rawTransition.publicNote ?? undefined
   }
 
   set publicNote (value: string | undefined) {
-    this._rawTokenTransferTransition.publicNote = value
+    this._rawTransition.publicNote = value
   }
 
   get sharedEncryptedNote (): SharedEncryptedNoteWASM | undefined {
-    const note = this._rawTokenTransferTransition.sharedEncryptedNote
+    const note = this._rawTransition.sharedEncryptedNote
 
     if (note != null) {
       return SharedEncryptedNoteWASM.createFromRawInstance(note)
@@ -63,11 +63,11 @@ export class TokenTransferTransitionWASM {
   }
 
   set sharedEncryptedNote (value: SharedEncryptedNoteWASM | undefined) {
-    this._rawTokenTransferTransition.sharedEncryptedNote = value?._rawSharedNote
+    this._rawTransition.sharedEncryptedNote = value?._rawSharedNote
   }
 
   get privateEncryptedNote (): PrivateEncryptedNoteWASM | undefined {
-    const note = this._rawTokenTransferTransition.privateEncryptedNote
+    const note = this._rawTransition.privateEncryptedNote
 
     if (note != null) {
       return PrivateEncryptedNoteWASM.createFromRawInstance(note)
@@ -75,12 +75,12 @@ export class TokenTransferTransitionWASM {
   }
 
   set privateEncryptedNote (value: PrivateEncryptedNoteWASM | undefined) {
-    this._rawTokenTransferTransition.privateEncryptedNote = value?._rawEncryptedNote
+    this._rawTransition.privateEncryptedNote = value?._rawEncryptedNote
   }
 
   static createFromRawInstance (rawInstance: TokenTransferTransitionNAPI): TokenTransferTransitionWASM {
     const instance: TokenTransferTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenTransferTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

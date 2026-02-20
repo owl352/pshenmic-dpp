@@ -7,14 +7,14 @@ import { IdentifierWASM } from '../../Identifier.js'
 
 export class TokenFreezeTransitionWASM {
   /** @private **/
-  _rawTokenFreezeTransition: TokenFreezeTransitionNAPI
+  _rawTransition: TokenFreezeTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
     identityIdToFreeze: IdentifierLike,
     publicNote?: string
   ) {
-    this._rawTokenFreezeTransition = new dppProvider.dpp.TokenFreezeTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenFreezeTransitionNAPI(
       base._rawTokenBaseTransition,
       prepareIdentifierValue(identityIdToFreeze),
       publicNote
@@ -23,33 +23,33 @@ export class TokenFreezeTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenFreezeTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenFreezeTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get frozenIdentityId (): IdentifierWASM {
-    return IdentifierWASM.createFromRawInstance(this._rawTokenFreezeTransition.frozenIdentityId)
+    return IdentifierWASM.createFromRawInstance(this._rawTransition.frozenIdentityId)
   }
 
   set frozenIdentityId (value: IdentifierLike) {
-    this._rawTokenFreezeTransition.frozenIdentityId = prepareIdentifierValue(value)
+    this._rawTransition.frozenIdentityId = prepareIdentifierValue(value)
   }
 
   get publicNote (): string | undefined {
-    return this._rawTokenFreezeTransition.publicNote ?? undefined
+    return this._rawTransition.publicNote ?? undefined
   }
 
   set publicNote (value: string | undefined) {
-    this._rawTokenFreezeTransition.publicNote = value
+    this._rawTransition.publicNote = value
   }
 
   static createFromRawInstance (rawInstance: TokenFreezeTransitionNAPI): TokenFreezeTransitionWASM {
     const instance: TokenFreezeTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenFreezeTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

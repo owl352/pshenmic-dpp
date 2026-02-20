@@ -7,7 +7,7 @@ import { IdentifierWASM } from '../../Identifier.js'
 
 export class TokenMintTransitionWASM {
   /** @private **/
-  _rawTokenMintTransition: TokenMintTransitionNAPI
+  _rawTransition: TokenMintTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
@@ -15,7 +15,7 @@ export class TokenMintTransitionWASM {
     issueToIdentityId?: IdentifierLike,
     publicNote?: string
   ) {
-    this._rawTokenMintTransition = new dppProvider.dpp.TokenMintTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenMintTransitionNAPI(
       base._rawTokenBaseTransition,
       issueToIdentityId != null ? prepareIdentifierValue(issueToIdentityId) : undefined,
       amount.toString(),
@@ -25,16 +25,16 @@ export class TokenMintTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenMintTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenMintTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get issuedToIdentityId (): IdentifierWASM | undefined {
-    const id = this._rawTokenMintTransition.issuedToIdentityId
+    const id = this._rawTransition.issuedToIdentityId
 
     if (id != null) {
       return IdentifierWASM.createFromRawInstance(id)
@@ -42,28 +42,28 @@ export class TokenMintTransitionWASM {
   }
 
   set issuedToIdentityId (value: IdentifierLike | undefined) {
-    this._rawTokenMintTransition.issuedToIdentityId = value != null ? prepareIdentifierValue(value) : undefined
+    this._rawTransition.issuedToIdentityId = value != null ? prepareIdentifierValue(value) : undefined
   }
 
   get amount (): bigint {
-    return BigInt(this._rawTokenMintTransition.amount)
+    return BigInt(this._rawTransition.amount)
   }
 
   set amount (value: bigint) {
-    this._rawTokenMintTransition.amount = value.toString()
+    this._rawTransition.amount = value.toString()
   }
 
   get publicNote (): string | undefined {
-    return this._rawTokenMintTransition.publicNote ?? undefined
+    return this._rawTransition.publicNote ?? undefined
   }
 
   set publicNote (value: string | undefined) {
-    this._rawTokenMintTransition.publicNote = value
+    this._rawTransition.publicNote = value
   }
 
   static createFromRawInstance (rawInstance: TokenMintTransitionNAPI): TokenMintTransitionWASM {
     const instance: TokenMintTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenMintTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

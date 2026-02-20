@@ -6,14 +6,14 @@ import { valueToDynamicValue } from '../../../utils.js'
 
 export class TokenEmergencyActionTransitionWASM {
   /** @private **/
-  _rawTokenEmergencyActionTransition: TokenEmergencyActionTransitionNAPI
+  _rawTransition: TokenEmergencyActionTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
     emergencyAction: TokenEmergencyActionLike,
     publicNote?: string
   ) {
-    this._rawTokenEmergencyActionTransition = new dppProvider.dpp.TokenEmergencyActionTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenEmergencyActionTransitionNAPI(
       base._rawTokenBaseTransition,
       valueToDynamicValue(emergencyAction),
       publicNote
@@ -22,33 +22,33 @@ export class TokenEmergencyActionTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenEmergencyActionTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenEmergencyActionTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get emergencyAction (): string {
-    return this._rawTokenEmergencyActionTransition.emergencyAction
+    return this._rawTransition.emergencyAction
   }
 
   set emergencyAction (value: TokenEmergencyActionLike) {
-    this._rawTokenEmergencyActionTransition.emergencyAction = valueToDynamicValue(value)
+    this._rawTransition.emergencyAction = valueToDynamicValue(value)
   }
 
   get publicNote (): string | undefined {
-    return this._rawTokenEmergencyActionTransition.publicNote ?? undefined
+    return this._rawTransition.publicNote ?? undefined
   }
 
   set publicNote (value: string | undefined) {
-    this._rawTokenEmergencyActionTransition.publicNote = value
+    this._rawTransition.publicNote = value
   }
 
   static createFromRawInstance (rawInstance: TokenEmergencyActionTransitionNAPI): TokenEmergencyActionTransitionWASM {
     const instance: TokenEmergencyActionTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenEmergencyActionTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

@@ -4,14 +4,14 @@ import { dppProvider } from '../../../provider.js'
 
 export class TokenBurnTransitionWASM {
   /** @private **/
-  _rawTokenBurnTransition: TokenBurnTransitionNAPI
+  _rawTransition: TokenBurnTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
     burnAmount: bigint,
     publicNote?: string
   ) {
-    this._rawTokenBurnTransition = new dppProvider.dpp.TokenBurnTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenBurnTransitionNAPI(
       base._rawTokenBaseTransition,
       burnAmount.toString(),
       publicNote
@@ -20,33 +20,33 @@ export class TokenBurnTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenBurnTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenBurnTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get burnAmount (): bigint {
-    return BigInt(this._rawTokenBurnTransition.burnAmount)
+    return BigInt(this._rawTransition.burnAmount)
   }
 
   set burnAmount (value: bigint) {
-    this._rawTokenBurnTransition.burnAmount = value.toString()
+    this._rawTransition.burnAmount = value.toString()
   }
 
   get publicNote (): string | undefined {
-    return this._rawTokenBurnTransition.publicNote ?? undefined
+    return this._rawTransition.publicNote ?? undefined
   }
 
   set publicNote (value: string | undefined) {
-    this._rawTokenBurnTransition.publicNote = value
+    this._rawTransition.publicNote = value
   }
 
   static createFromRawInstance (rawInstance: TokenBurnTransitionNAPI): TokenBurnTransitionWASM {
     const instance: TokenBurnTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenBurnTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

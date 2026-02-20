@@ -5,14 +5,14 @@ import { dppProvider } from '../../../provider.js'
 
 export class TokenConfigUpdateTransitionWASM {
   /** @private **/
-  _rawTokenConfigUpdateTransition: TokenConfigUpdateTransitionNAPI
+  _rawTransition: TokenConfigUpdateTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
     updateTokenConfigurationItem: TokenConfigurationChangeItemWASM,
     publicNote?: string
   ) {
-    this._rawTokenConfigUpdateTransition = new dppProvider.dpp.TokenConfigUpdateTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenConfigUpdateTransitionNAPI(
       base._rawTokenBaseTransition,
       updateTokenConfigurationItem._rawTokenConfigurationChangeItem,
       publicNote
@@ -21,33 +21,33 @@ export class TokenConfigUpdateTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenConfigUpdateTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenConfigUpdateTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get publicNote (): string | undefined {
-    return this._rawTokenConfigUpdateTransition.publicNote ?? undefined
+    return this._rawTransition.publicNote ?? undefined
   }
 
   set publicNote (value: string | undefined) {
-    this._rawTokenConfigUpdateTransition.publicNote = value
+    this._rawTransition.publicNote = value
   }
 
   get updateTokenConfigurationItem (): TokenConfigurationChangeItemWASM {
-    return TokenConfigurationChangeItemWASM.createFromRawInstance(this._rawTokenConfigUpdateTransition.updateTokenConfigurationItem)
+    return TokenConfigurationChangeItemWASM.createFromRawInstance(this._rawTransition.updateTokenConfigurationItem)
   }
 
   set updateTokenConfigurationItem (value: TokenConfigurationChangeItemWASM) {
-    this._rawTokenConfigUpdateTransition.updateTokenConfigurationItem = value._rawTokenConfigurationChangeItem
+    this._rawTransition.updateTokenConfigurationItem = value._rawTokenConfigurationChangeItem
   }
 
   static createFromRawInstance (rawInstance: TokenConfigUpdateTransitionNAPI): TokenConfigUpdateTransitionWASM {
     const instance: TokenConfigUpdateTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenConfigUpdateTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

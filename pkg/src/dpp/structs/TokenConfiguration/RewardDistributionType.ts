@@ -1,8 +1,11 @@
-import { BlockBasedDistributionNAPI, RewardDistributionTypeNAPI } from '../../../../binaries/bindingsTypes.js'
+import {
+  BlockBasedDistributionNAPI,
+  RewardDistributionTypeNAPI,
+  TimeBasedDistributionNAPI
+} from '../../../../binaries/bindingsTypes.js'
 import { DistributionFunctionWASM } from './DistributionFunction.js'
 import { dppProvider } from '../../provider.js'
 import { RewardDistribution } from '../../types.js'
-import { TimeBasedDistributionNAPI } from '../../../../binaries/wasm.js'
 
 export class RewardDistributionTypeWASM {
   /** @private **/

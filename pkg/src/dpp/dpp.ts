@@ -96,3 +96,4 @@ export { TokenFreezeTransitionWASM } from './structs/Batch/TokenTransitions/Toke
 export { TokenMintTransitionWASM } from './structs/Batch/TokenTransitions/TokenMintTransition.js'
 export { TokenTransferTransitionWASM } from './structs/Batch/TokenTransitions/TokenTransferTransition.js'
 export { TokenUnFreezeTransitionWASM } from './structs/Batch/TokenTransitions/TokenUnFreezeTransition.js'
+export {TokenTransitionWASM} from './structs/Batch/TokenTransition.js'

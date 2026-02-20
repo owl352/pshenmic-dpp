@@ -4,14 +4,14 @@ import { dppProvider } from '../../../provider.js'
 
 export class TokenDirectPurchaseTransitionWASM {
   /** @private **/
-  _rawTokenDirectPurchaseTransition: TokenDirectPurchaseTransitionNAPI
+  _rawTransition: TokenDirectPurchaseTransitionNAPI
 
   constructor (
     base: TokenBaseTransitionWASM,
     tokenCount: bigint,
     totalAgreedPrice: bigint
   ) {
-    this._rawTokenDirectPurchaseTransition = new dppProvider.dpp.TokenDirectPurchaseTransitionNAPI(
+    this._rawTransition = new dppProvider.dpp.TokenDirectPurchaseTransitionNAPI(
       base._rawTokenBaseTransition,
       tokenCount.toString(),
       totalAgreedPrice.toString()
@@ -20,33 +20,33 @@ export class TokenDirectPurchaseTransitionWASM {
 
   get base (): TokenBaseTransitionWASM {
     return TokenBaseTransitionWASM.createFromRawInstance(
-      this._rawTokenDirectPurchaseTransition.base
+      this._rawTransition.base
     )
   }
 
   set base (value: TokenBaseTransitionWASM) {
-    this._rawTokenDirectPurchaseTransition.base = value._rawTokenBaseTransition
+    this._rawTransition.base = value._rawTokenBaseTransition
   }
 
   get tokenCount (): bigint {
-    return BigInt(this._rawTokenDirectPurchaseTransition.tokenCount)
+    return BigInt(this._rawTransition.tokenCount)
   }
 
   set tokenCount (value: bigint) {
-    this._rawTokenDirectPurchaseTransition.tokenCount = value.toString()
+    this._rawTransition.tokenCount = value.toString()
   }
 
   get totalAgreedPrice (): bigint {
-    return BigInt(this._rawTokenDirectPurchaseTransition.totalAgreedPrice)
+    return BigInt(this._rawTransition.totalAgreedPrice)
   }
 
   set totalAgreedPrice (value: bigint) {
-    this._rawTokenDirectPurchaseTransition.totalAgreedPrice = value.toString()
+    this._rawTransition.totalAgreedPrice = value.toString()
   }
 
   static createFromRawInstance (rawInstance: TokenDirectPurchaseTransitionNAPI): TokenDirectPurchaseTransitionWASM {
     const instance: TokenDirectPurchaseTransitionWASM = Object.create(this.prototype)
-    instance._rawTokenDirectPurchaseTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

@@ -5,7 +5,12 @@ import {
   DistributionExponentialNAPI, DistributionFixedAmountNAPI, DistributionInvertedLogarithmicNAPI,
   DistributionLinearNAPI,
   DistributionLogarithmicNAPI, DistributionPolynomialNAPI, DistributionRandomNAPI, DistributionStepDecreasingAmountNAPI,
-  IdentifierNAPI, TokenConfigurationLocalizationJsonNAPI
+  IdentifierNAPI, TokenBurnTransitionNAPI,
+  TokenClaimTransitionNAPI, TokenConfigUpdateTransitionNAPI, TokenConfigurationLocalizationJsonNAPI,
+  TokenDestroyFrozenFundsTransitionNAPI,
+  TokenDirectPurchaseTransitionNAPI, TokenEmergencyActionTransitionNAPI,
+  TokenFreezeTransitionNAPI, TokenMintTransitionNAPI, TokenSetPriceForDirectPurchaseTransitionNAPI,
+  TokenTransferTransitionNAPI, TokenUnFreezeTransitionNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType, GasFeesPaidBy,
@@ -27,6 +32,21 @@ import { DocumentPurchaseTransitionWASM } from './structs/Batch/DocumentTransiti
 import { DocumentReplaceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentReplaceTransition.js'
 import { DocumentTransferTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentTransferTransition.js'
 import { DocumentUpdatePriceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentUpdatePriceTransition.js'
+import {TokenConfigUpdateTransitionWASM} from "./structs/Batch/TokenTransitions/TokenConfigUpdateTransition.js";
+import {TokenDirectPurchaseTransitionWASM} from "./structs/Batch/TokenTransitions/TokenDirectPurchaseTransition.js";
+import {
+  TokenSetPriceForDirectPurchaseTransitionWASM
+} from "./structs/Batch/TokenTransitions/TokenSetPriceForDirectPurchaseTransition.js";
+import {TokenBurnTransitionWASM} from "./structs/Batch/TokenTransitions/TokenBurnTransition.js";
+import {TokenClaimTransitionWASM} from "./structs/Batch/TokenTransitions/TokenClaimTransition.js";
+import {TokenUnFreezeTransitionWASM} from "./structs/Batch/TokenTransitions/TokenUnFreezeTransition.js";
+import {TokenTransferTransitionWASM} from "./structs/Batch/TokenTransitions/TokenTransferTransition.js";
+import {TokenMintTransitionWASM} from "./structs/Batch/TokenTransitions/TokenMintTransition.js";
+import {TokenFreezeTransitionWASM} from "./structs/Batch/TokenTransitions/TokenFreezeTransition.js";
+import {TokenEmergencyActionTransitionWASM} from "./structs/Batch/TokenTransitions/TokenEmergencyActionTransition.js";
+import {
+  TokenDestroyFrozenFundsTransitionWASM
+} from "./structs/Batch/TokenTransitions/TokenDestroyFrozenFundsTransition.js";
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -83,3 +103,4 @@ export interface DataContractGroups {
 }
 
 export type DocumentTransitionLike = DocumentCreateTransitionWASM | DocumentDeleteTransitionWASM | DocumentPurchaseTransitionWASM | DocumentReplaceTransitionWASM | DocumentTransferTransitionWASM | DocumentUpdatePriceTransitionWASM
+export type TokenTransitionLike = TokenConfigUpdateTransitionWASM | TokenDirectPurchaseTransitionWASM | TokenSetPriceForDirectPurchaseTransitionWASM | TokenBurnTransitionWASM | TokenClaimTransitionWASM | TokenDestroyFrozenFundsTransitionWASM | TokenEmergencyActionTransitionWASM | TokenFreezeTransitionWASM | TokenMintTransitionWASM | TokenTransferTransitionWASM | TokenUnFreezeTransitionWASM
