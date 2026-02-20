@@ -3,6 +3,7 @@ import { DocumentWASM } from '../../Document.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
 import { dppProvider } from '../../../provider.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
+import { DocumentTransitionWASM } from '../DocumentTransition.js'
 
 export class DocumentPurchaseTransitionWASM {
   /** @private **/
@@ -46,9 +47,17 @@ export class DocumentPurchaseTransitionWASM {
     this._rawDocumentPurchaseTransition.revision = value.toString()
   }
 
-  // TODO:
-  // toDocumentTransition
-  // fromDocumentTransition
+  toDocumentTransition (): DocumentTransitionWASM {
+    return DocumentTransitionWASM.createFromRawInstance(
+      this._rawDocumentPurchaseTransition.toDocumentTransition()
+    )
+  }
+
+  static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentPurchaseTransitionWASM {
+    return DocumentPurchaseTransitionWASM.createFromRawInstance(
+      dppProvider.dpp.DocumentPurchaseTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+    )
+  }
 
   static createFromRawInstance (rawInstance: DocumentPurchaseTransitionNAPI): DocumentPurchaseTransitionWASM {
     const instance: DocumentPurchaseTransitionWASM = Object.create(this.prototype)

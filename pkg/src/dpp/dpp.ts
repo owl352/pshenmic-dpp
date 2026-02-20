@@ -82,3 +82,4 @@ export { DocumentPurchaseTransitionWASM } from './structs/Batch/DocumentTransiti
 export { DocumentReplaceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentReplaceTransition.js'
 export { DocumentTransferTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentTransferTransition.js'
 export { DocumentUpdatePriceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentUpdatePriceTransition.js'
+export { DocumentTransitionWASM } from './structs/Batch/DocumentTransition.js'

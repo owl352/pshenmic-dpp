@@ -1,7 +1,7 @@
 import { DocumentDeleteTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
-import { DocumentBaseTransitionWASM } from '../../../dpp.js'
+import { DocumentBaseTransitionWASM, DocumentTransitionWASM } from '../../../dpp.js'
 import { dppProvider } from '../../../provider.js'
 
 export class DocumentDeleteTransitionWASM {
@@ -28,9 +28,17 @@ export class DocumentDeleteTransitionWASM {
     this._rawDocumentDeleteTransition.base = value._rawDocumentBaseTransition
   }
 
-  // TODO:
-  // toDocumentTransition
-  // fromDocumentTransition
+  toDocumentTransition (): DocumentTransitionWASM {
+    return DocumentTransitionWASM.createFromRawInstance(
+      this._rawDocumentDeleteTransition.toDocumentTransition()
+    )
+  }
+
+  static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentDeleteTransitionWASM {
+    return DocumentDeleteTransitionWASM.createFromRawInstance(
+      dppProvider.dpp.DocumentDeleteTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+    )
+  }
 
   static createFromRawInstance (rawInstance: DocumentDeleteTransitionNAPI): DocumentDeleteTransitionWASM {
     const instance: DocumentDeleteTransitionWASM = Object.create(this.prototype)

@@ -5,6 +5,7 @@ import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
 import { dppProvider } from '../../../provider.js'
 import { valueFromDynamicValue, valueToDynamicValue } from '../../../utils.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
+import { DocumentTransitionWASM } from '../DocumentTransition.js'
 
 export class DocumentCreateTransitionWASM {
   /** @private **/
@@ -68,9 +69,17 @@ export class DocumentCreateTransitionWASM {
     this._rawDocumentCreateTransition.clearPrefundedVotingBalance()
   }
 
-  // TODO:
-  // toDocumentTransition() {}
-  // static fromDocumentTransition(){}
+  toDocumentTransition (): DocumentTransitionWASM {
+    return DocumentTransitionWASM.createFromRawInstance(
+      this._rawDocumentCreateTransition.toDocumentTransition()
+    )
+  }
+
+  static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentCreateTransitionWASM {
+    return DocumentCreateTransitionWASM.createFromRawInstance(
+      dppProvider.dpp.DocumentCreateTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+    )
+  }
 
   static createFromRawInstance (rawInstance: DocumentCreateTransitionNAPI): DocumentCreateTransitionWASM {
     const instance: DocumentCreateTransitionWASM = Object.create(this.prototype)

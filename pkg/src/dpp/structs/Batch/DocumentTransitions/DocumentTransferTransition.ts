@@ -6,6 +6,7 @@ import { dppProvider } from '../../../provider.js'
 import { prepareIdentifierValue } from '../../../utils.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
 import { IdentifierWASM } from '../../Identifier.js'
+import { DocumentTransitionWASM } from '../DocumentTransition.js'
 
 export class DocumentTransferTransitionWASM {
   /** @private **/
@@ -41,9 +42,17 @@ export class DocumentTransferTransitionWASM {
     this._rawDocumentTransferTransition.recipientId = prepareIdentifierValue(value)
   }
 
-  // TODO:
-  // toDocumentTransition
-  // fromDocumentTransition
+  toDocumentTransition (): DocumentTransitionWASM {
+    return DocumentTransitionWASM.createFromRawInstance(
+      this._rawDocumentTransferTransition.toDocumentTransition()
+    )
+  }
+
+  static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentTransferTransitionWASM {
+    return DocumentTransferTransitionWASM.createFromRawInstance(
+      dppProvider.dpp.DocumentTransferTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+    )
+  }
 
   static createFromRawInstance (rawInstance: DocumentTransferTransitionNAPI): DocumentTransferTransitionWASM {
     const instance: DocumentTransferTransitionWASM = Object.create(this.prototype)

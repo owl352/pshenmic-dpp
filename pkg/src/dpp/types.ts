@@ -21,6 +21,12 @@ import { languageCodes } from './constants.js'
 import { DistributionFunctionWASM } from './structs/TokenConfiguration/DistributionFunction.js'
 import { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfiguration.js'
 import { GroupWASM } from './structs/TokenConfiguration/Group.js'
+import { DocumentCreateTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentCreateTransition.js'
+import { DocumentDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentDeleteTransition.js'
+import { DocumentPurchaseTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentPurchaseTransition.js'
+import { DocumentReplaceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentReplaceTransition.js'
+import { DocumentTransferTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentTransferTransition.js'
+import { DocumentUpdatePriceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentUpdatePriceTransition.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -75,3 +81,5 @@ export interface DataContractGroups {
   position: number
   group: GroupWASM
 }
+
+export type DocumentTransitionLike = DocumentCreateTransitionWASM | DocumentDeleteTransitionWASM | DocumentPurchaseTransitionWASM | DocumentReplaceTransitionWASM | DocumentTransferTransitionWASM | DocumentUpdatePriceTransitionWASM
