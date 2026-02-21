@@ -14,7 +14,7 @@ import {
   PlatformVersionWASM, Pooling,
   Purpose,
   SecurityLevel,
-  TokenDistributionType, TokenEmergencyAction
+  TokenDistributionType, TokenEmergencyAction, VoteStateResultType
 } from './enums.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { languageCodes } from './constants.js'
@@ -42,6 +42,7 @@ import { TokenEmergencyActionTransitionWASM } from './structs/Batch/TokenTransit
 import {
   TokenDestroyFrozenFundsTransitionWASM
 } from './structs/Batch/TokenTransitions/TokenDestroyFrozenFundsTransition.js'
+import { DataContractWASM } from './structs/DataContract.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -57,6 +58,7 @@ export type TokenDistributionLike = TokenDistributionType | keyof typeof TokenDi
 export type TokenEmergencyActionLike = TokenEmergencyAction | keyof typeof TokenEmergencyAction
 export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType
 export type PoolingLike = Pooling | keyof typeof Pooling
+export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType
 
 export type EnumLike = KeyTypeLike | NetworkLike | SecurityLevelLike | PlatformVersionLike | PurposeLike
 
@@ -99,3 +101,80 @@ export interface DataContractGroups {
 
 export type DocumentTransitionLike = DocumentCreateTransitionWASM | DocumentDeleteTransitionWASM | DocumentPurchaseTransitionWASM | DocumentReplaceTransitionWASM | DocumentTransferTransitionWASM | DocumentUpdatePriceTransitionWASM
 export type TokenTransitionLike = TokenConfigUpdateTransitionWASM | TokenDirectPurchaseTransitionWASM | TokenSetPriceForDirectPurchaseTransitionWASM | TokenBurnTransitionWASM | TokenClaimTransitionWASM | TokenDestroyFrozenFundsTransitionWASM | TokenEmergencyActionTransitionWASM | TokenFreezeTransitionWASM | TokenMintTransitionWASM | TokenTransferTransitionWASM | TokenUnFreezeTransitionWASM
+
+export interface ExtendedEpochInfo {
+  index: number
+  firstBlockTime: bigint
+  firstBlockHeight: bigint
+  firstCoreBlockHeight: number
+  feeMultiplierPermille: bigint
+  protocolVersion: number
+}
+
+export interface VerifiedEpochsInfo {
+  rootHash: Uint8Array
+  epochsInfo: ExtendedEpochInfo[]
+}
+
+export interface VerifiedTotalCredits {
+  rootHash: Uint8Array
+  totalCredits: bigint
+}
+
+export interface StartAt {
+  startIdentifier: IdentifierLike
+  startIdentifierIncluded: boolean
+}
+
+export type Winner =
+  | undefined
+  | NoWinner
+  | LockedWinner
+  | WonByIdentityWinner
+
+export interface NoWinner {
+  type: 'NoWinner'
+  blockInfo: BlockInfo
+}
+
+export interface LockedWinner {
+  type: 'Locked'
+  blockInfo: BlockInfo
+}
+
+export interface WonByIdentityWinner {
+  type: 'WonByIdentity'
+  identityId: Uint8Array
+  blockInfo: BlockInfo
+}
+
+export interface BlockInfo {
+  height: number
+  coreHeight: number
+  timeMs: number
+  epoch: number
+}
+
+export interface ContenderWithSerializedDocument {
+  identityId: IdentifierWASM
+  serializedDocument?: Uint8Array
+  voteTally?: number
+}
+
+export interface ContestedDocumentVotePollQueryExecutionResult {
+  contenders: ContenderWithSerializedDocument[]
+  lockedVoteTally?: number
+  abstainingVoteTally?: number
+  winner: Winner
+  skipped: number
+}
+
+export interface VerifiedVoteState {
+  rootHash: Uint8Array
+  result: ContestedDocumentVotePollQueryExecutionResult
+}
+
+export interface VerifiedContract {
+  rootHash: Uint8Array
+  dataContract?: DataContractWASM
+}

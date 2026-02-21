@@ -99,3 +99,9 @@ export { TokenUnFreezeTransitionWASM } from './structs/Batch/TokenTransitions/To
 export { TokenTransitionWASM } from './structs/Batch/TokenTransition.js'
 export { BatchedTransitionWASM } from './structs/Batch/BatchedTransition.js'
 export { BatchTransitionWASM } from './structs/Batch/BatchTransition.js'
+
+export { verifySignatureDigest } from './verify/verifySignatureDigest.js'
+export { verifyEpochsInfoProof } from './verify/System/verifyEpochsInfoProof.js'
+export { verifyTotalCreditsProof } from './verify/System/verifyTotalCreditsProof.js'
+export { verifyVotePollVoteStateProof } from './verify/Contested/verifyVotePollVoteStateProof.js'
+export { verifyContractProof } from './verify/Contract/verifyContract.js'

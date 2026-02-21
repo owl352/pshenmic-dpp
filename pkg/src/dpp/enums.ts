@@ -9,5 +9,6 @@ export {
   TokenEmergencyActionNAPI as TokenEmergencyAction,
   AssetLockProofTypeNAPI as AssetLockProofType,
   PoolingNAPI as Pooling,
-  GasFeesPaidByNAPI as GasFeesPaidBy
+  GasFeesPaidByNAPI as GasFeesPaidBy,
+  VoteStateResultTypeNAPI as VoteStateResultType
 } from '../../binaries/bindingsTypes.js'
