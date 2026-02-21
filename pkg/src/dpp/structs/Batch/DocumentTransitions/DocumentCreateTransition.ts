@@ -77,7 +77,7 @@ export class DocumentCreateTransitionWASM {
 
   static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentCreateTransitionWASM {
     return DocumentCreateTransitionWASM.createFromRawInstance(
-      dppProvider.dpp.DocumentCreateTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+      dppProvider.dpp.DocumentCreateTransitionNAPI.fromDocumentTransition(transition._rawTransition)
     )
   }
 

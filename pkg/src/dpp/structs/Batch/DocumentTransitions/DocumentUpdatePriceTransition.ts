@@ -47,7 +47,7 @@ export class DocumentUpdatePriceTransitionWASM {
 
   static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentUpdatePriceTransitionWASM {
     return DocumentUpdatePriceTransitionWASM.createFromRawInstance(
-      dppProvider.dpp.DocumentUpdatePriceTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+      dppProvider.dpp.DocumentUpdatePriceTransitionNAPI.fromDocumentTransition(transition._rawTransition)
     )
   }
 

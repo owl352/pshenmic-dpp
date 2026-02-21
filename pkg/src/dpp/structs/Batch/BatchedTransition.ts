@@ -7,14 +7,14 @@ import { prepareIdentifierValue } from '../../utils.js'
 
 export class BatchedTransitionWASM {
   /** @private **/
-  _rawBatchedTransition: BatchedTransitionNAPI
+  _rawTransition: BatchedTransitionNAPI
 
   constructor (transition: TokenTransitionWASM | DocumentTransitionWASM) {
     let raw: BatchedTransitionNAPI
 
     if (transition instanceof DocumentTransitionWASM) {
       raw = new dppProvider.dpp.BatchedTransitionNAPI(
-        transition._rawDocumentTransition
+        transition._rawTransition
       )
     } else {
       raw = new dppProvider.dpp.BatchedTransitionNAPI(
@@ -22,19 +22,19 @@ export class BatchedTransitionWASM {
       )
     }
 
-    this._rawBatchedTransition = raw
+    this._rawTransition = raw
   }
 
   get dataContractId (): IdentifierWASM {
-    return IdentifierWASM.createFromRawInstance(this._rawBatchedTransition.dataContractId)
+    return IdentifierWASM.createFromRawInstance(this._rawTransition.dataContractId)
   }
 
   set dataContractId (value: IdentifierWASM) {
-    this._rawBatchedTransition.dataContractId = prepareIdentifierValue(value)
+    this._rawTransition.dataContractId = prepareIdentifierValue(value)
   }
 
   toTransition (): DocumentTransitionWASM | TokenTransitionWASM {
-    const raw = this._rawBatchedTransition.toTransition()
+    const raw = this._rawTransition.toTransition()
 
     if (raw instanceof DocumentTransitionNAPI) {
       return DocumentTransitionWASM.createFromRawInstance(raw)
@@ -45,7 +45,7 @@ export class BatchedTransitionWASM {
 
   static createFromRawInstance (rawInstance: BatchedTransitionNAPI): BatchedTransitionWASM {
     const instance: BatchedTransitionWASM = Object.create(this.prototype)
-    instance._rawBatchedTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

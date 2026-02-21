@@ -36,7 +36,7 @@ export class DocumentDeleteTransitionWASM {
 
   static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentDeleteTransitionWASM {
     return DocumentDeleteTransitionWASM.createFromRawInstance(
-      dppProvider.dpp.DocumentDeleteTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+      dppProvider.dpp.DocumentDeleteTransitionNAPI.fromDocumentTransition(transition._rawTransition)
     )
   }
 

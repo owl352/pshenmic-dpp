@@ -11,46 +11,46 @@ import { prepareIdentifierValue } from '../../utils.js'
 
 export class DocumentTransitionWASM {
   /** @private **/
-  _rawDocumentTransition: DocumentTransitionNAPI
+  _rawTransition: DocumentTransitionNAPI
 
   constructor (transition: DocumentTransitionLike) {
-    this._rawDocumentTransition = transition.toDocumentTransition()._rawDocumentTransition
+    this._rawTransition = transition.toDocumentTransition()._rawTransition
   }
 
   get actionType (): string {
-    return this._rawDocumentTransition.actionType
+    return this._rawTransition.actionType
   }
 
   get actionTypeNumber (): number {
-    return this._rawDocumentTransition.actionTypeNumber
+    return this._rawTransition.actionTypeNumber
   }
 
   get dataContractId (): IdentifierWASM {
-    return IdentifierWASM.createFromRawInstance(this._rawDocumentTransition.dataContractId)
+    return IdentifierWASM.createFromRawInstance(this._rawTransition.dataContractId)
   }
 
   set dataContractId (value: IdentifierLike) {
-    this._rawDocumentTransition.dataContractId = prepareIdentifierValue(value)
+    this._rawTransition.dataContractId = prepareIdentifierValue(value)
   }
 
   get id (): IdentifierWASM {
-    return IdentifierWASM.createFromRawInstance(this._rawDocumentTransition.id)
+    return IdentifierWASM.createFromRawInstance(this._rawTransition.id)
   }
 
   get documentTypeName (): string {
-    return this._rawDocumentTransition.documentTypeName
+    return this._rawTransition.documentTypeName
   }
 
   get identityContractNonce (): bigint {
-    return BigInt(this._rawDocumentTransition.identityContractNonce)
+    return BigInt(this._rawTransition.identityContractNonce)
   }
 
   set identityContractNonce (value: bigint) {
-    this._rawDocumentTransition.identityContractNonce = value.toString()
+    this._rawTransition.identityContractNonce = value.toString()
   }
 
   get revision (): bigint | undefined {
-    const rev = this._rawDocumentTransition.revision
+    const rev = this._rawTransition.revision
 
     if (rev != null) {
       return BigInt(rev)
@@ -58,40 +58,40 @@ export class DocumentTransitionWASM {
   }
 
   set revision (value: bigint) {
-    this._rawDocumentTransition.revision = value.toString()
+    this._rawTransition.revision = value.toString()
   }
 
   get entropy (): Uint8Array | undefined {
-    return this._rawDocumentTransition.entropy ?? undefined
+    return this._rawTransition.entropy ?? undefined
   }
 
   get createTransition (): DocumentCreateTransitionWASM {
-    return DocumentCreateTransitionWASM.createFromRawInstance(this._rawDocumentTransition.createTransition)
+    return DocumentCreateTransitionWASM.createFromRawInstance(this._rawTransition.createTransition)
   }
 
   get deleteTransition (): DocumentDeleteTransitionWASM {
-    return DocumentDeleteTransitionWASM.createFromRawInstance(this._rawDocumentTransition.deleteTransition)
+    return DocumentDeleteTransitionWASM.createFromRawInstance(this._rawTransition.deleteTransition)
   }
 
   get purchaseTransition (): DocumentPurchaseTransitionWASM {
-    return DocumentPurchaseTransitionWASM.createFromRawInstance(this._rawDocumentTransition.purchaseTransition)
+    return DocumentPurchaseTransitionWASM.createFromRawInstance(this._rawTransition.purchaseTransition)
   }
 
   get replaceTransition (): DocumentReplaceTransitionWASM {
-    return DocumentReplaceTransitionWASM.createFromRawInstance(this._rawDocumentTransition.replaceTransition)
+    return DocumentReplaceTransitionWASM.createFromRawInstance(this._rawTransition.replaceTransition)
   }
 
   get transferTransition (): DocumentTransferTransitionWASM {
-    return DocumentTransferTransitionWASM.createFromRawInstance(this._rawDocumentTransition.transferTransition)
+    return DocumentTransferTransitionWASM.createFromRawInstance(this._rawTransition.transferTransition)
   }
 
   get updatePriceTransition (): DocumentUpdatePriceTransitionWASM {
-    return DocumentUpdatePriceTransitionWASM.createFromRawInstance(this._rawDocumentTransition.updatePriceTransition)
+    return DocumentUpdatePriceTransitionWASM.createFromRawInstance(this._rawTransition.updatePriceTransition)
   }
 
   static createFromRawInstance (rawInstance: DocumentTransitionNAPI): DocumentTransitionWASM {
     const instance: DocumentTransitionWASM = Object.create(this.prototype)
-    instance._rawDocumentTransition = rawInstance
+    instance._rawTransition = rawInstance
 
     return instance
   }

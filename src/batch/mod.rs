@@ -55,7 +55,7 @@ impl BatchTransitionNAPI {
     pub fn from_v1_batched_transitions(
         js_batched_transitions: Vec<&BatchedTransitionNAPI>,
         owner_id: IdentifierLikeNAPI,
-        user_fee_increase: u16,
+        user_fee_increase: Option<u16>,
         signature_public_key_id: Option<u32>,
         signature: Option<Uint8Array>,
     ) -> Result<BatchTransitionNAPI, napi::Error> {
@@ -68,7 +68,7 @@ impl BatchTransitionNAPI {
             BatchTransitionV1 {
                 owner_id: IdentifierNAPI::try_from(owner_id)?.into(),
                 transitions,
-                user_fee_increase,
+                user_fee_increase: user_fee_increase.unwrap_or(0),
                 signature_public_key_id: signature_public_key_id.unwrap_or(0u32),
                 signature: BinaryData::from(
                     signature.map(|arr| arr.to_vec()).unwrap_or(Vec::new()),

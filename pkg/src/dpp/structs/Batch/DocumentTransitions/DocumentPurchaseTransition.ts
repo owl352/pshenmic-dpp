@@ -55,7 +55,7 @@ export class DocumentPurchaseTransitionWASM {
 
   static fromDocumentTransition (transition: DocumentTransitionWASM): DocumentPurchaseTransitionWASM {
     return DocumentPurchaseTransitionWASM.createFromRawInstance(
-      dppProvider.dpp.DocumentPurchaseTransitionNAPI.fromDocumentTransition(transition._rawDocumentTransition)
+      dppProvider.dpp.DocumentPurchaseTransitionNAPI.fromDocumentTransition(transition._rawTransition)
     )
   }
 
