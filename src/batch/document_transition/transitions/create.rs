@@ -51,7 +51,7 @@ impl DocumentCreateTransitionNAPI {
         Ok(DocumentCreateTransitionNAPI(rs_create_transition))
     }
 
-    #[napi(getter, js_name = "data", ts_return_type = "object")]
+    #[napi(getter, js_name = "data")]
     pub fn get_data(&self) -> Result<DynamicValue, napi::Error> {
         let rs_data = Value::Map(
             self.0

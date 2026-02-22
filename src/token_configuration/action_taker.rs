@@ -4,7 +4,7 @@ use napi::Either;
 use napi_derive::napi;
 use std::collections::BTreeSet;
 
-use crate::dynamic_value::DynamicValue;
+use crate::dynamic_value::IdentifierLikeNAPI;
 use crate::identifier::IdentifierNAPI;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -26,22 +26,23 @@ impl From<ActionTakerNAPI> for ActionTaker {
 #[napi]
 impl ActionTakerNAPI {
     #[napi(constructor)]
-    pub fn new(value: &DynamicValue) -> Result<ActionTakerNAPI, napi::Error> {
-        if value.is_array() {
-            let set_of_identifiers: Vec<Identifier> = value
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(|value| Ok(Identifier::from(IdentifierNAPI::try_from(value)?)))
-                .collect::<Result<Vec<Identifier>, napi::Error>>()?;
+    pub fn new(
+        value: Either<IdentifierLikeNAPI, Vec<IdentifierLikeNAPI>>,
+    ) -> Result<ActionTakerNAPI, napi::Error> {
+        match value {
+            Either::A(id) => Ok(ActionTakerNAPI(ActionTaker::SingleIdentity(
+                IdentifierNAPI::try_from(id)?.into(),
+            ))),
+            Either::B(ids) => {
+                let set_of_identifiers: Vec<Identifier> = ids
+                    .into_iter()
+                    .map(|id| IdentifierNAPI::try_from(id).map(|id| id.into()))
+                    .collect::<Result<Vec<Identifier>, napi::Error>>()?;
 
-            Ok(ActionTakerNAPI(ActionTaker::SpecifiedIdentities(
-                BTreeSet::from_iter(set_of_identifiers),
-            )))
-        } else {
-            Ok(ActionTakerNAPI(ActionTaker::SingleIdentity(
-                IdentifierNAPI::try_from(value)?.into(),
-            )))
+                Ok(ActionTakerNAPI(ActionTaker::SpecifiedIdentities(
+                    BTreeSet::from_iter(set_of_identifiers),
+                )))
+            }
         }
     }
 
@@ -67,7 +68,10 @@ impl ActionTakerNAPI {
     }
 
     #[napi(setter, js_name = "value")]
-    pub fn set_value(&mut self, value: &DynamicValue) -> Result<(), napi::Error> {
+    pub fn set_value(
+        &mut self,
+        value: Either<IdentifierLikeNAPI, Vec<IdentifierLikeNAPI>>,
+    ) -> Result<(), napi::Error> {
         self.0 = Self::new(value)?.0;
 
         Ok(())

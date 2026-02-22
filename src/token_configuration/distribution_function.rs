@@ -10,6 +10,7 @@ use crate::{
         DistributionExponentialNAPI, DistributionFixedAmountNAPI,
         DistributionInvertedLogarithmicNAPI, DistributionLinearNAPI, DistributionLogarithmicNAPI,
         DistributionPolynomialNAPI, DistributionRandomNAPI, DistributionStepDecreasingAmountNAPI,
+        DistributionStepwiseNAPI, DistributionStepwiseStepNAPI,
     },
 };
 
@@ -80,12 +81,12 @@ impl DistributionFunctionNAPI {
 
     #[napi(js_name = "Stepwise")]
     pub fn stepwise(
-        js_steps_with_amount: Vec<(BigIntString, BigIntString)>,
+        js_steps_with_amount: DistributionStepwiseNAPI,
     ) -> Result<DistributionFunctionNAPI, napi::Error> {
         let steps_with_amount: BTreeMap<u64, TokenAmount> = js_steps_with_amount
             .iter()
-            .map(|(js_interval, js_amount)| {
-                Ok::<(u64, u64), napi::Error>((js_interval.try_to_u64()?, js_amount.try_to_u64()?))
+            .map(|step| {
+                Ok::<(u64, u64), napi::Error>((step.step.try_to_u64()?, step.amount.try_to_u64()?))
             })
             .collect::<Result<BTreeMap<u64, TokenAmount>, napi::Error>>()?;
 
@@ -243,7 +244,7 @@ impl DistributionFunctionNAPI {
         DistributionFixedAmountNAPI,
         DistributionRandomNAPI,
         DistributionStepDecreasingAmountNAPI,
-        Vec<(BigIntString, BigIntString)>,
+        DistributionStepwiseNAPI,
         DistributionLinearNAPI,
         DistributionPolynomialNAPI,
         DistributionExponentialNAPI,
@@ -285,11 +286,9 @@ impl DistributionFunctionNAPI {
             DistributionFunction::Stepwise(steps) => Either9::D(
                 steps
                     .iter()
-                    .map(|(a, b)| {
-                        (
-                            BigIntString::from_u64(a.clone()),
-                            BigIntString::from_u64(b.clone()),
-                        )
+                    .map(|(a, b)| DistributionStepwiseStepNAPI {
+                        amount: BigIntString::from_u64(a.clone()),
+                        step: BigIntString::from_u64(b.clone()),
                     })
                     .collect(),
             ),

@@ -1,52 +1,46 @@
 import { IdentifierWASM } from './Identifier.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
-import { DashPlatformProtocol, IdentifierLike, PlatformVersionLike } from '../../types.js'
+import { IdentifierLike, PlatformVersionLike } from '../types.js'
 import { IdentityNAPI } from '../../../binaries/bindingsTypes.js'
-
-let dpp: DashPlatformProtocol
-
-export function setDpp (_dpp: DashPlatformProtocol): void {
-  dpp = _dpp
-}
+import { dppProvider } from '../provider.js'
+import { prepareIdentifierValue, valueToDynamicValue } from '../utils.js'
 
 export class IdentityWASM {
   /** @private **/
   _rawIdentity: IdentityNAPI
 
-  constructor (rawId: IdentifierLike | IdentifierWASM, platformVersion?: PlatformVersionLike) {
-    const id = new IdentifierWASM(rawId)
+  constructor (rawId: IdentifierLike, platformVersion?: PlatformVersionLike) {
+    const dpp = dppProvider.dpp
 
-    const dynamicEnumValue = new dpp.DynamicValue(platformVersion)
-
-    this._rawIdentity = new dpp.IdentityNAPI(id._rawIdentifier, dynamicEnumValue)
+    this._rawIdentity = new dpp.IdentityNAPI(prepareIdentifierValue(rawId), valueToDynamicValue(platformVersion))
   }
 
-  set id (rawId: IdentifierLike | IdentifierWASM) {
-    this._rawIdentity.id = new IdentifierWASM(rawId)
+  set id (rawId: IdentifierLike) {
+    this._rawIdentity.id = prepareIdentifierValue(rawId)
   }
 
   get id (): IdentifierWASM {
     return IdentifierWASM.createFromRawInstance(this._rawIdentity.id)
   }
 
-  set balance (balance: BigInt) {
+  set balance (balance: bigint) {
     this._rawIdentity.balance = balance.toString()
   }
 
-  get balance (): BigInt {
+  get balance (): bigint {
     return BigInt(this._rawIdentity.balance)
   }
 
-  set revision (revision: BigInt) {
+  set revision (revision: bigint) {
     this._rawIdentity.revision = revision.toString()
   }
 
-  get revision (): BigInt {
+  get revision (): bigint {
     return BigInt(this._rawIdentity.revision)
   }
 
   addPublicKey (publicKey: IdentityPublicKeyWASM): void {
-    this._rawIdentity.addPublicKey(publicKey.getRawInstance())
+    this._rawIdentity.addPublicKey(publicKey._rawIdentityPublicKey)
   }
 
   getPublicKeyById (keyId: number): IdentityPublicKeyWASM | undefined {
@@ -66,19 +60,19 @@ export class IdentityWASM {
   }
 
   static fromHex (hex: string): IdentityWASM {
-    const rawInstance = dpp.IdentityNAPI.fromHex(hex)
+    const rawInstance = dppProvider.dpp.IdentityNAPI.fromHex(hex)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBase64 (base64: string): IdentityWASM {
-    const rawInstance = dpp.IdentityNAPI.fromBase64(base64)
+    const rawInstance = dppProvider.dpp.IdentityNAPI.fromBase64(base64)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBytes (bytes: Uint8Array): IdentityWASM {
-    const rawInstance = dpp.IdentityNAPI.fromBytes(bytes)
+    const rawInstance = dppProvider.dpp.IdentityNAPI.fromBytes(bytes)
 
     return this.createFromRawInstance(rawInstance)
   }

@@ -195,7 +195,7 @@ impl DocumentNAPI {
         self.owner_id.clone()
     }
 
-    #[napi(getter, js_name = "properties", ts_return_type = "object")]
+    #[napi(getter, js_name = "properties")]
     pub fn get_properties(&self) -> Result<DynamicValue, napi::Error> {
         let platform_value: Vec<(Value, Value)> = self
             .properties

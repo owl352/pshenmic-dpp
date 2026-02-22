@@ -1,5 +1,7 @@
 use dpp::address_funds::PlatformAddress;
 use dpp::fee::Credits;
+use dpp::platform_value::string_encoding::{Encoding, decode, encode};
+use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::identity_create_from_addresses_transition::IdentityCreateFromAddressesTransition;
 use dpp::state_transition::identity_create_from_addresses_transition::accessors::IdentityCreateFromAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_create_from_addresses_transition::v0::IdentityCreateFromAddressesTransitionV0;
@@ -8,6 +10,7 @@ use dpp::state_transition::{
     StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionLike,
     StateTransitionWitnessSigned,
 };
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFeeStrategyStepNAPI;
@@ -18,6 +21,7 @@ use crate::dynamic_value::{BigIntString, TryToU64};
 use crate::identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
+use crate::utils::WithJsError;
 
 #[napi(js_name = "IdentityCreateFromAddressesTransitionNAPI")]
 pub struct IdentityCreateFromAddressesTransitionNAPI(IdentityCreateFromAddressesTransition);
@@ -195,6 +199,61 @@ impl IdentityCreateFromAddressesTransitionNAPI {
             .collect();
 
         self.0.set_witnesses(input_witnesses);
+    }
+
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        Ok(self.0.serialize_to_bytes().with_js_error()?.into())
+    }
+
+    #[napi(js_name = "hex")]
+    pub fn hex(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Hex,
+        ))
+    }
+
+    #[napi(js_name = "base64")]
+    pub fn base64(&self) -> Result<String, napi::Error> {
+        Ok(encode(
+            self.0.serialize_to_bytes().with_js_error()?.as_slice(),
+            Encoding::Base64,
+        ))
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(data: Uint8Array) -> Result<Self, napi::Error> {
+        Ok(Self(
+            IdentityCreateFromAddressesTransition::deserialize_from_bytes(data.to_vec().as_slice())
+                .with_js_error()?,
+        ))
+    }
+
+    #[napi(js_name = "fromHex")]
+    pub fn from_hex(data: String) -> Result<Self, napi::Error> {
+        Ok(Self(
+            IdentityCreateFromAddressesTransition::deserialize_from_bytes(
+                decode(&data, Encoding::Hex)
+                    .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "Invalid hex string"))?
+                    .as_slice(),
+            )
+            .with_js_error()?,
+        ))
+    }
+
+    #[napi(js_name = "fromBase64")]
+    pub fn from_base64(data: String) -> Result<Self, napi::Error> {
+        Ok(Self(
+            IdentityCreateFromAddressesTransition::deserialize_from_bytes(
+                decode(&data, Encoding::Base64)
+                    .map_err(|_| {
+                        napi::Error::new(napi::Status::InvalidArg, "Invalid Base64 string")
+                    })?
+                    .as_slice(),
+            )
+            .with_js_error()?,
+        ))
     }
 
     #[napi(js_name = "fromStateTransition")]

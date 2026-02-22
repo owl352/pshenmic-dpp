@@ -256,7 +256,7 @@ impl DataContractNAPI {
         ))
     }
 
-    #[napi(js_name = "toValue", ts_return_type = "object")]
+    #[napi(js_name = "toValue")]
     pub fn to_value(
         &self,
         js_platform_version: &DynamicValue,
@@ -328,7 +328,7 @@ impl DataContractNAPI {
         }
     }
 
-    #[napi(js_name = "getSchemas", ts_return_type = "object")]
+    #[napi(js_name = "getSchemas")]
     pub fn get_schemas(&self) -> Result<DynamicValue, napi::Error> {
         let schema = self.0.document_schemas();
 
@@ -356,7 +356,7 @@ impl DataContractNAPI {
         self.0.owner_id().into()
     }
 
-    #[napi(js_name = "getConfig", ts_return_type = "object")]
+    #[napi(js_name = "getConfig")]
     pub fn get_config(&self) -> Result<DynamicValue, napi::Error> {
         platform_value::to_value(self.0.config())
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
@@ -498,7 +498,7 @@ impl DataContractNAPI {
         self.0.set_keywords(keywords)
     }
 
-    #[napi(js_name = "toJson", ts_return_type = "object")]
+    #[napi(js_name = "toJson")]
     pub fn to_json(&self, js_platform_version: &DynamicValue) -> Result<DynamicValue, napi::Error> {
         let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),

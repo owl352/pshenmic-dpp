@@ -28,7 +28,7 @@ impl DataContractUpdateTransitionNAPI {
         identity_nonce: BigIntString,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractUpdateTransitionNAPI, napi::Error> {
-        let platform_version = match js_platform_version.is_undefined() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -111,7 +111,7 @@ impl DataContractUpdateTransitionNAPI {
         data_contract: &DataContractNAPI,
         js_platform_version: &DynamicValue,
     ) -> Result<(), napi::Error> {
-        let platform_version = match js_platform_version.is_undefined() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
@@ -139,7 +139,7 @@ impl DataContractUpdateTransitionNAPI {
         full_validation: Option<bool>,
         js_platform_version: &DynamicValue,
     ) -> Result<DataContractNAPI, napi::Error> {
-        let platform_version = match js_platform_version.is_undefined() {
+        let platform_version = match js_platform_version.is_undefined_or_null() {
             true => PlatformVersionNAPI::default(),
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };

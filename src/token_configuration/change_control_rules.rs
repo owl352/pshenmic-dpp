@@ -5,7 +5,7 @@ use dpp::data_contract::group::Group;
 use napi_derive::napi;
 use std::collections::BTreeMap;
 
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI, TryToU64};
+use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI};
 use crate::enums::action_goal::ActionGoalNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::token_configuration::action_taker::ActionTakerNAPI;
@@ -150,7 +150,7 @@ impl ChangeControlRulesNAPI {
         admin_action_takers: &AuthorizedActionTakersNAPI,
         js_contract_owner_id: IdentifierLikeNAPI,
         main_group: Option<u16>,
-        js_groups: Vec<(String, &GroupNAPI)>,
+        js_groups: Vec<(u16, &GroupNAPI)>,
         action_taker: &ActionTakerNAPI,
         js_goal: &DynamicValue,
     ) -> Result<bool, napi::Error> {
@@ -159,13 +159,12 @@ impl ChangeControlRulesNAPI {
 
         let groups: BTreeMap<GroupContractPosition, Group> = js_groups
             .into_iter()
-            .map(|(str_pos, js_group)| {
-                let pos = str_pos.try_to_u64()? as u16;
+            .map(|(pos, js_group)| {
                 let group: Group = js_group.clone().into();
 
-                Ok::<(u16, Group), napi::Error>((pos, group))
+                (pos, group)
             })
-            .collect::<Result<BTreeMap<GroupContractPosition, Group>, napi::Error>>()?;
+            .collect();
 
         Ok(self.0.can_change_admin_action_takers(
             &admin_action_takers.clone().into(),

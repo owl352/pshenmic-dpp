@@ -40,32 +40,6 @@ impl ContractBoundsNAPI {
         Ok(ContractBoundsNAPI(rs_contract_bounds))
     }
 
-    #[napi(js_name = "SingleContract")]
-    pub fn single_contract(
-        js_contract_id: IdentifierLikeNAPI,
-    ) -> Result<ContractBoundsNAPI, napi::Error> {
-        let contract_id: IdentifierNAPI = js_contract_id.try_into()?;
-
-        Ok(ContractBoundsNAPI(ContractBounds::SingleContract {
-            id: contract_id.try_into()?,
-        }))
-    }
-
-    #[napi(js_name = "SingleContractDocumentType")]
-    pub fn single_contract_document_type_name(
-        js_contract_id: IdentifierLikeNAPI,
-        document_type_name: String,
-    ) -> Result<ContractBoundsNAPI, napi::Error> {
-        let contract_id: IdentifierNAPI = js_contract_id.try_into()?;
-
-        Ok(ContractBoundsNAPI(
-            ContractBounds::SingleContractDocumentType {
-                id: contract_id.into(),
-                document_type_name,
-            },
-        ))
-    }
-
     #[napi(getter, js_name = "identifier")]
     pub fn id(&self) -> IdentifierNAPI {
         self.0.identifier().into()

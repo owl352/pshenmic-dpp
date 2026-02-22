@@ -1,7 +1,0 @@
-export {
-  KeyTypeNAPI as KeyType,
-  NetworkNAPI as NetworkWASM,
-  PlatformVersionNAPI as PlatformVersionWASM,
-  PurposeNAPI as Purpose,
-  SecurityLevelNAPI as SecurityLevel
-} from '../binaries/bindingsTypes.js'

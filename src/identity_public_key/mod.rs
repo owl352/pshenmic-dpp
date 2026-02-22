@@ -86,7 +86,7 @@ impl IdentityPublicKeyNAPI {
     ) -> Result<bool, napi::Error> {
         let network = NetworkNAPI::try_from(js_network)?;
 
-        let private_key = PrivateKeyNAPI::from_js_value(js_private_key, network.clone().into())?;
+        let private_key = PrivateKeyNAPI::from_js_value(js_private_key, js_network)?;
 
         let mut private_key_bytes = [0u8; 32];
         let len = private_key.get_bytes().len().min(32);
@@ -149,6 +149,11 @@ impl IdentityPublicKeyNAPI {
         self.0.disabled_at().map(|num| BigIntString::from_u64(num))
     }
 
+    #[napi(getter, js_name = "contractBounds")]
+    pub fn get_contract_bounds(&self) -> Option<ContractBoundsNAPI> {
+        self.0.contract_bounds().map(|bounds| bounds.clone().into())
+    }
+
     #[napi(setter, js_name = "keyId")]
     pub fn set_key_id(&mut self, key_id: u32) {
         self.0.set_id(key_id)
@@ -199,12 +204,12 @@ impl IdentityPublicKeyNAPI {
         Ok(())
     }
 
-    #[napi(setter, js_name = readOnly)]
+    #[napi(setter, js_name = "readOnly")]
     pub fn set_read_only(&mut self, read_only: bool) {
         self.0.set_read_only(read_only)
     }
 
-    #[napi(setter, js_name = data)]
+    #[napi(setter, js_name = "data")]
     pub fn set_data(&mut self, binary_data: String) -> Result<(), napi::Error> {
         let data = BinaryData::from_string(binary_data.as_str(), Encoding::Hex)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;
@@ -212,13 +217,27 @@ impl IdentityPublicKeyNAPI {
         Ok(self.0.set_data(data))
     }
 
-    #[napi(setter, js_name = disabledAt)]
+    #[napi(setter, js_name = "disabledAt")]
     pub fn set_disabled_at(&mut self, disabled_at: BigIntString) -> Result<(), napi::Error> {
         self.0.set_disabled_at(disabled_at.try_to_u64()?);
         Ok(())
     }
 
-    #[napi(js_name = removeDisabledAt)]
+    #[napi(setter, js_name = "contractBounds")]
+    pub fn set_contract_bounds(&mut self, contract_bounds: Option<&ContractBoundsNAPI>) {
+        self.0 = IdentityPublicKey::V0(IdentityPublicKeyV0 {
+            id: self.0.id(),
+            purpose: self.0.purpose(),
+            security_level: self.0.security_level(),
+            contract_bounds: contract_bounds.map(|bounds| bounds.clone().into()),
+            key_type: self.0.key_type(),
+            read_only: self.0.read_only(),
+            data: self.0.data().clone(),
+            disabled_at: self.0.disabled_at(),
+        })
+    }
+
+    #[napi(js_name = "removeDisabledAt")]
     pub fn remove_disabled_at(&mut self) {
         self.0.remove_disabled_at()
     }
@@ -240,12 +259,12 @@ impl IdentityPublicKeyNAPI {
         self.0.is_master()
     }
 
-    #[napi(js_name = bytes)]
+    #[napi(js_name = "bytes")]
     pub fn to_byes(&self) -> Result<Uint8Array, napi::Error> {
         Ok(self.0.serialize_to_bytes().with_js_error()?.into())
     }
 
-    #[napi(js_name = hex)]
+    #[napi(js_name = "hex")]
     pub fn to_hex(&self) -> Result<String, napi::Error> {
         Ok(encode(
             self.0.serialize_to_bytes().with_js_error()?.as_slice(),
@@ -253,7 +272,7 @@ impl IdentityPublicKeyNAPI {
         ))
     }
 
-    #[napi(js_name = base64)]
+    #[napi(js_name = "base64")]
     pub fn to_base64(&self) -> Result<String, napi::Error> {
         Ok(encode(
             self.0.serialize_to_bytes().with_js_error()?.as_slice(),
@@ -261,14 +280,14 @@ impl IdentityPublicKeyNAPI {
         ))
     }
 
-    #[napi(js_name = fromBytes)]
+    #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<IdentityPublicKeyNAPI, napi::Error> {
         Ok(IdentityPublicKeyNAPI(
             IdentityPublicKey::deserialize_from_bytes(bytes.to_vec().as_slice()).with_js_error()?,
         ))
     }
 
-    #[napi(js_name = fromHex)]
+    #[napi(js_name = "fromHex")]
     pub fn from_hex(hex: String) -> Result<IdentityPublicKeyNAPI, napi::Error> {
         let bytes = decode(&hex, Encoding::Hex)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;
@@ -279,7 +298,7 @@ impl IdentityPublicKeyNAPI {
         Ok(IdentityPublicKeyNAPI(public_key))
     }
 
-    #[napi(js_name = fromBase64)]
+    #[napi(js_name = "fromBase64")]
     pub fn from_base64(base64: String) -> Result<IdentityPublicKeyNAPI, napi::Error> {
         let bytes = decode(&base64, Encoding::Base64)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;

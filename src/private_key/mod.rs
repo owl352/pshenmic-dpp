@@ -36,7 +36,9 @@ impl PrivateKeyNAPI {
     }
 
     #[napi(js_name = "fromBytes")]
-    pub fn from_bytes(bytes: Uint8Array, js_network: NetworkNAPI) -> Result<Self, napi::Error> {
+    pub fn from_bytes(bytes: Uint8Array, js_network: &DynamicValue) -> Result<Self, napi::Error> {
+        let network = NetworkNAPI::try_from(js_network)?;
+
         let bytes_vec = bytes.to_vec();
 
         let fixed_bytes: [u8; 32] = bytes_vec.as_slice().try_into().map_err(|_| {
@@ -46,14 +48,14 @@ impl PrivateKeyNAPI {
             )
         })?;
 
-        let pk = PrivateKey::from_byte_array(&fixed_bytes, js_network.into())
+        let pk = PrivateKey::from_byte_array(&fixed_bytes, network.into())
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
         Ok(PrivateKeyNAPI(pk))
     }
 
     #[napi(js_name = "fromHex")]
-    pub fn from_hex(hex_key: String, js_network: NetworkNAPI) -> Result<Self, napi::Error> {
+    pub fn from_hex(hex_key: String, js_network: &DynamicValue) -> Result<Self, napi::Error> {
         let bytes = Vec::from_hex(hex_key.as_str())
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
@@ -134,7 +136,7 @@ impl PrivateKeyNAPI {
 
     pub fn from_js_value(
         value: Either<&DynamicValue, &PrivateKeyNAPI>,
-        js_network: NetworkNAPI,
+        js_network: &DynamicValue,
     ) -> Result<Self, napi::Error> {
         match value {
             Either::A(value) => {

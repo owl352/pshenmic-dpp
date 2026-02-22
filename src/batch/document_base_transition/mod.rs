@@ -108,4 +108,9 @@ impl DocumentBaseTransitionNAPI {
         self.0
             .set_token_payment_info(token_payment_info.clone().into())
     }
+
+    #[napi(js_name = "clearTokenPaymentInfo")]
+    pub fn clear_token_payment_info(&mut self) {
+        self.0.clear_token_payment_info();
+    }
 }

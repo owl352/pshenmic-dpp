@@ -1,18 +1,18 @@
-import { DashPlatformProtocol, KeyTypeLike, PurposeLike, SecurityLevelLike } from '../../types.js'
+import { KeyTypeLike, NetworkLike, PurposeLike, SecurityLevelLike } from '../types.js'
 import { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
-import { KeyType, Purpose, SecurityLevel } from '../../enums.js'
-
-let dpp: DashPlatformProtocol
-
-export function setDpp (_dpp: DashPlatformProtocol): void {
-  dpp = _dpp
-}
+import { KeyType, Purpose, SecurityLevel } from '../enums.js'
+import { dppProvider } from '../provider.js'
+import { ContractBoundsWASM } from './ContractBounds.js'
+import { PrivateKeyWASM } from './PrivateKey.js'
+import { valueToDynamicValue } from '../utils.js'
 
 export class IdentityPublicKeyWASM {
   /** @private **/
   _rawIdentityPublicKey: IdentityPublicKeyNAPI
 
-  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number) {
+  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number, contractBounds?: ContractBoundsWASM) {
+    const dpp = dppProvider.dpp
+
     if (purpose == null || securityLevel == null || keyType == null) {
       throw new Error('purpose, securityLevel, keyType must be specified')
     }
@@ -24,7 +24,8 @@ export class IdentityPublicKeyWASM {
       new dpp.DynamicValue(keyType),
       readOnly,
       binaryData,
-      disabledAt != null ? disabledAt.toString() : undefined
+      disabledAt?.toString(),
+      contractBounds?._rawContractBounds
     )
   }
 
@@ -41,6 +42,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set purpose (purpose: PurposeLike) {
+    const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.purpose = new dpp.DynamicValue(purpose)
   }
 
@@ -57,6 +59,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set securityLevel (securityLevel: SecurityLevelLike) {
+    const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.securityLevel = new dpp.DynamicValue(securityLevel)
   }
 
@@ -73,6 +76,7 @@ export class IdentityPublicKeyWASM {
   }
 
   set keyType (keyType: KeyTypeLike) {
+    const dpp = dppProvider.dpp
     this._rawIdentityPublicKey.keyType = new dpp.DynamicValue(keyType)
   }
 
@@ -100,7 +104,7 @@ export class IdentityPublicKeyWASM {
     this._rawIdentityPublicKey.data = binaryData
   }
 
-  get disabledAt (): BigInt | undefined {
+  get disabledAt (): bigint | undefined {
     const timestamp = this._rawIdentityPublicKey.disabledAt
 
     return (timestamp != null) ? BigInt(timestamp) : undefined
@@ -108,6 +112,16 @@ export class IdentityPublicKeyWASM {
 
   set disabledAt (disabledAt: bigint | number) {
     this._rawIdentityPublicKey.disabledAt = disabledAt.toString()
+  }
+
+  get contractBounds (): ContractBoundsWASM | undefined {
+    if (this._rawIdentityPublicKey.contractBounds != null) {
+      return ContractBoundsWASM.createFromRawInstance(this._rawIdentityPublicKey.contractBounds)
+    }
+  }
+
+  set contractBounds (contractBounds: ContractBoundsWASM | undefined | null) {
+    this._rawIdentityPublicKey.contractBounds = contractBounds?._rawContractBounds
   }
 
   removeDisabledAt (): void {
@@ -134,20 +148,25 @@ export class IdentityPublicKeyWASM {
     return this._rawIdentityPublicKey.base64()
   }
 
+  validatePrivateKey (privateKey: string | Uint8Array | PrivateKeyWASM, network: NetworkLike): boolean {
+    const normalPrivateKey = privateKey instanceof PrivateKeyWASM ? privateKey._rawPrivateKey : valueToDynamicValue(privateKey)
+    return this._rawIdentityPublicKey.validatePrivateKey(normalPrivateKey, valueToDynamicValue(network))
+  }
+
   static fromBytes (bytes: Uint8Array): IdentityPublicKeyWASM {
-    const rawInstance = dpp.IdentityPublicKeyNAPI.fromBytes(bytes)
+    const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromBytes(bytes)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromHex (hex: string): IdentityPublicKeyWASM {
-    const rawInstance = dpp.IdentityPublicKeyNAPI.fromHex(hex)
+    const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromHex(hex)
 
     return this.createFromRawInstance(rawInstance)
   }
 
   static fromBase64 (base64: string): IdentityPublicKeyWASM {
-    const rawInstance = dpp.IdentityPublicKeyNAPI.fromBase64(base64)
+    const rawInstance = dppProvider.dpp.IdentityPublicKeyNAPI.fromBase64(base64)
 
     return this.createFromRawInstance(rawInstance)
   }
@@ -157,9 +176,5 @@ export class IdentityPublicKeyWASM {
     instance._rawIdentityPublicKey = rawInstance
 
     return instance
-  }
-
-  getRawInstance (): IdentityPublicKeyNAPI {
-    return this._rawIdentityPublicKey
   }
 }

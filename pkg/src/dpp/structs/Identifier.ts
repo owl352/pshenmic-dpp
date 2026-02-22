@@ -1,17 +1,14 @@
-import { DashPlatformProtocol, IdentifierLike } from '../../types.js'
+import { IdentifierLike } from '../types.js'
 import { IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
-
-let dpp: DashPlatformProtocol
-
-export function setDpp (_dpp: DashPlatformProtocol): void {
-  dpp = _dpp
-}
+import { dppProvider } from '../provider.js'
 
 export class IdentifierWASM {
   /** @private **/
   _rawIdentifier: IdentifierNAPI
 
   constructor (rawId: IdentifierLike | IdentifierWASM) {
+    const dpp = dppProvider.dpp
+
     if (rawId instanceof IdentifierWASM) {
       return rawId
     } else if (rawId instanceof Uint8Array || typeof rawId === 'string') {
@@ -40,19 +37,19 @@ export class IdentifierWASM {
   }
 
   static fromBase58 (id: string): IdentifierWASM {
-    return this.createFromRawInstance(dpp.IdentifierNAPI.fromBase58(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromBase58(id))
   }
 
   static fromBase64 (id: string): IdentifierWASM {
-    return this.createFromRawInstance(dpp.IdentifierNAPI.fromBase64(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromBase64(id))
   }
 
   static fromHex (id: string): IdentifierWASM {
-    return this.createFromRawInstance(dpp.IdentifierNAPI.fromHex(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromHex(id))
   }
 
   static fromBytes (id: Uint8Array): IdentifierWASM {
-    return this.createFromRawInstance(dpp.IdentifierNAPI.fromBytes(id))
+    return this.createFromRawInstance(dppProvider.dpp.IdentifierNAPI.fromBytes(id))
   }
 
   static createFromRawInstance (rawInstance: IdentifierNAPI): IdentifierWASM {
