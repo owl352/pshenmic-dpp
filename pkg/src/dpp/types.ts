@@ -1,20 +1,35 @@
 import * as protocol from '../../binaries/bindingsTypes.js'
 import {
   AddressWitnessP2pkhNAPI,
-  AddressWitnessP2shNAPI, DataContractNAPI,
-  DistributionExponentialNAPI, DistributionFixedAmountNAPI, DistributionInvertedLogarithmicNAPI,
+  AddressWitnessP2shNAPI,
+  DataContractNAPI,
   DistributionLinearNAPI,
-  DistributionLogarithmicNAPI, DistributionPolynomialNAPI, DistributionRandomNAPI, DistributionStepDecreasingAmountNAPI,
+  DistributionExponentialNAPI,
+  DistributionFixedAmountNAPI,
+  DistributionInvertedLogarithmicNAPI,
+  DistributionLogarithmicNAPI,
+  DistributionPolynomialNAPI,
+  DistributionRandomNAPI,
+  DistributionStepDecreasingAmountNAPI,
   DocumentNAPI,
-  IdentifierNAPI, IdentityNAPI,
-  PartialIdentityNAPI, TokenConfigurationLocalizationJsonNAPI, TokenStatusNAPI, VerifiedAddressInfosNAPI,
-  VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI,
+  IdentifierNAPI,
+  IdentityNAPI,
+  PartialIdentityNAPI,
+  TokenConfigurationLocalizationJsonNAPI,
+  TokenStatusNAPI,
+  VerifiedAddressInfosNAPI,
+  VerifiedBalanceTransferNAPI,
+  VerifiedDocumentNAPI,
   VerifiedIdentityBalanceNAPI,
   VerifiedIdentityFullWithAddressInfosNAPI,
-  VerifiedIdentityTokenInfoNAPI, VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
+  VerifiedIdentityTokenInfoNAPI,
+  VerifiedIdentityWithAddressInfosNAPI,
+  VerifiedTokenGroupActionWithDocumentNAPI,
   VerifiedTokenGroupActionWithTokenBalanceNAPI,
   VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
-  VerifiedTokenGroupActionWithTokenPricingScheduleNAPI, VerifiedTokenPricingScheduleNAPI, VoteNAPI
+  VerifiedTokenGroupActionWithTokenPricingScheduleNAPI,
+  VerifiedTokenPricingScheduleNAPI,
+  VoteNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType, GasFeesPaidBy,
@@ -407,4 +422,44 @@ export interface VerifiedIdentityKeysByIdentifier {
 export interface VerifiedIdentityNonce {
   rootHash: Uint8Array
   nonce?: bigint
+}
+
+export interface IdentityTokenBalance {
+  balance: bigint
+  id: IdentifierWASM
+}
+
+export interface VerifiedTokenBalancesForIdentities {
+  rootHash: Uint8Array
+  balances: IdentityTokenBalance[]
+}
+
+export interface TokenContractInfo {
+  contractId: IdentifierWASM
+  tokenContractPosition: number
+}
+
+export interface VerifiedTokenContractInfo {
+  rootHash: Uint8Array
+  contractInfo?: TokenContractInfo
+}
+
+export interface VerifiedTokenDirectPurchasePrices {
+  rootHash: Uint8Array
+  prices: VerifiedTokenPricingSchedule[]
+}
+
+export interface TotalSingleTokenBalance {
+  tokenSupply: bigint
+  aggregatedTokenAccountBalances: bigint
+}
+
+export interface VerifiedTokenTotalSupply {
+  rootHash: Uint8Array
+  totalBalance: TotalSingleTokenBalance
+}
+
+export interface VerifiedTokensBalancesForIdentity {
+  rootHash: Uint8Array
+  balances: IdentityTokenBalance[]
 }
