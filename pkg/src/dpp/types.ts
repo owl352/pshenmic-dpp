@@ -1,11 +1,19 @@
 import * as protocol from '../../binaries/bindingsTypes.js'
 import {
   AddressWitnessP2pkhNAPI,
-  AddressWitnessP2shNAPI,
+  AddressWitnessP2shNAPI, DataContractNAPI,
   DistributionExponentialNAPI, DistributionFixedAmountNAPI, DistributionInvertedLogarithmicNAPI,
   DistributionLinearNAPI,
   DistributionLogarithmicNAPI, DistributionPolynomialNAPI, DistributionRandomNAPI, DistributionStepDecreasingAmountNAPI,
-  IdentifierNAPI, TokenConfigurationLocalizationJsonNAPI
+  DocumentNAPI,
+  IdentifierNAPI, IdentityNAPI,
+  PartialIdentityNAPI, TokenConfigurationLocalizationJsonNAPI, TokenStatusNAPI, VerifiedAddressInfosNAPI,
+  VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityBalanceNAPI,
+  VerifiedIdentityFullWithAddressInfosNAPI,
+  VerifiedIdentityTokenInfoNAPI, VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
+  VerifiedTokenGroupActionWithTokenBalanceNAPI,
+  VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
+  VerifiedTokenGroupActionWithTokenPricingScheduleNAPI, VerifiedTokenPricingScheduleNAPI, VoteNAPI
 } from '../../binaries/bindingsTypes.js'
 import {
   ActionGoal, AssetLockProofType, GasFeesPaidBy,
@@ -43,6 +51,12 @@ import {
   TokenDestroyFrozenFundsTransitionWASM
 } from './structs/Batch/TokenTransitions/TokenDestroyFrozenFundsTransition.js'
 import { DataContractWASM } from './structs/DataContract.js'
+import { IdentityWASM } from './structs/Identity.js'
+import { PartialIdentityWASM } from './structs/PartialIdentity.js'
+import { DocumentWASM } from './structs/Document.js'
+import { VoteWASM } from './structs/MasternodeVote/Vote.js'
+import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.js'
+import { PlatformAddressWASM } from './structs/Address/PlatformAddress.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
@@ -70,10 +84,12 @@ export type TokenConfigurationLocalizationJson = TokenConfigurationLocalizationJ
 export type DistributionFixedAmount = DistributionFixedAmountNAPI
 export type DistributionRandom = DistributionRandomNAPI
 export type DistributionStepDecreasingAmount = DistributionStepDecreasingAmountNAPI
+
 export interface DistributionStepwiseStep {
   step: bigint
   amount: bigint
 }
+
 export type DistributionStepwise = DistributionStepwiseStep[]
 export type DistributionLinear = DistributionLinearNAPI
 export type DistributionPolynomial = DistributionPolynomialNAPI
@@ -99,8 +115,25 @@ export interface DataContractGroups {
   group: GroupWASM
 }
 
-export type DocumentTransitionLike = DocumentCreateTransitionWASM | DocumentDeleteTransitionWASM | DocumentPurchaseTransitionWASM | DocumentReplaceTransitionWASM | DocumentTransferTransitionWASM | DocumentUpdatePriceTransitionWASM
-export type TokenTransitionLike = TokenConfigUpdateTransitionWASM | TokenDirectPurchaseTransitionWASM | TokenSetPriceForDirectPurchaseTransitionWASM | TokenBurnTransitionWASM | TokenClaimTransitionWASM | TokenDestroyFrozenFundsTransitionWASM | TokenEmergencyActionTransitionWASM | TokenFreezeTransitionWASM | TokenMintTransitionWASM | TokenTransferTransitionWASM | TokenUnFreezeTransitionWASM
+export type DocumentTransitionLike =
+  DocumentCreateTransitionWASM
+  | DocumentDeleteTransitionWASM
+  | DocumentPurchaseTransitionWASM
+  | DocumentReplaceTransitionWASM
+  | DocumentTransferTransitionWASM
+  | DocumentUpdatePriceTransitionWASM
+export type TokenTransitionLike =
+  TokenConfigUpdateTransitionWASM
+  | TokenDirectPurchaseTransitionWASM
+  | TokenSetPriceForDirectPurchaseTransitionWASM
+  | TokenBurnTransitionWASM
+  | TokenClaimTransitionWASM
+  | TokenDestroyFrozenFundsTransitionWASM
+  | TokenEmergencyActionTransitionWASM
+  | TokenFreezeTransitionWASM
+  | TokenMintTransitionWASM
+  | TokenTransferTransitionWASM
+  | TokenUnFreezeTransitionWASM
 
 export interface ExtendedEpochInfo {
   index: number
@@ -132,27 +165,29 @@ export type Winner =
   | LockedWinner
   | WonByIdentityWinner
 
+export type WinnerType = 'NoWinner' | 'Locked' | 'WonByIdentity'
+
 export interface NoWinner {
-  type: 'NoWinner'
+  type: WinnerType
   blockInfo: BlockInfo
 }
 
 export interface LockedWinner {
-  type: 'Locked'
+  type: WinnerType
   blockInfo: BlockInfo
 }
 
 export interface WonByIdentityWinner {
-  type: 'WonByIdentity'
+  type: WinnerType
   identityId: Uint8Array
   blockInfo: BlockInfo
 }
 
 export interface BlockInfo {
-  height: number
+  height: bigint
   coreHeight: number
-  timeMs: number
-  epoch: number
+  timeMs: bigint
+  epoch?: number
 }
 
 export interface ContenderWithSerializedDocument {
@@ -165,7 +200,7 @@ export interface ContestedDocumentVotePollQueryExecutionResult {
   contenders: ContenderWithSerializedDocument[]
   lockedVoteTally?: number
   abstainingVoteTally?: number
-  winner: Winner
+  winner?: Winner
   skipped: number
 }
 
@@ -177,4 +212,124 @@ export interface VerifiedVoteState {
 export interface VerifiedContract {
   rootHash: Uint8Array
   dataContract?: DataContractWASM
+}
+
+export interface IdentityTokenInfo {
+  frozen: boolean
+}
+
+export interface TokenStatus {
+  paused: boolean
+}
+
+export interface VerifiedIdentityBalance {
+  balance: bigint
+  id: IdentifierWASM
+}
+
+export interface VerifiedIdentityTokenInfo {
+  id: IdentifierWASM
+  identityTokenInfo: IdentityTokenInfo
+}
+
+export interface VerifiedTokenPricingSchedule {
+  id: IdentifierWASM
+  pricingSchedule?: TokenPricingScheduleWASM
+}
+
+export interface VerifiedBalanceTransfer {
+  sender: PartialIdentityWASM
+  recipient: PartialIdentityWASM
+}
+
+export interface VerifiedDocument {
+  id: IdentifierWASM
+  document?: DocumentWASM
+}
+
+export interface VerifiedTokenGroupActionWithDocument {
+  groupSumPower: number
+  document?: DocumentWASM
+}
+
+export interface VerifiedTokenGroupActionWithTokenBalance {
+  groupSumPower: number
+  groupActionStatus: string
+  amount?: bigint
+}
+
+export interface VerifiedTokenGroupActionWithTokenIdentityInfo {
+  groupSumPower: number
+  groupActionStatus: string
+  identityTokenInfo?: IdentityTokenInfo
+}
+
+export interface VerifiedTokenGroupActionWithTokenPricingSchedule {
+  groupSumPower: number
+  groupActionStatus: string
+  pricingSchedule?: TokenPricingScheduleWASM
+}
+
+export interface VerifiedAddressInfo {
+  nonce?: number
+  address: PlatformAddressWASM
+  credits?: bigint
+}
+
+export interface VerifiedIdentityFullWithAddressInfos {
+  identity: IdentityWASM
+  infos: VerifiedAddressInfo[]
+}
+
+export interface VerifiedIdentityWithAddressInfos {
+  identity: PartialIdentityWASM
+  infos: VerifiedAddressInfo[]
+}
+
+export type VerifiedStateTransitionResultVariants = DataContractWASM
+| IdentityWASM
+| IdentifierWASM
+| VerifiedIdentityBalance
+| VerifiedIdentityTokenInfo
+| VerifiedTokenPricingSchedule
+| TokenStatus
+| VerifiedIdentityBalance[]
+| PartialIdentityWASM
+| VerifiedBalanceTransfer
+| VerifiedDocument[]
+| DocumentWASM
+| VerifiedTokenGroupActionWithDocument
+| VerifiedTokenGroupActionWithTokenBalance
+| VerifiedTokenGroupActionWithTokenIdentityInfo
+| VerifiedTokenGroupActionWithTokenPricingSchedule
+| VoteWASM
+| VerifiedAddressInfo[]
+| VerifiedIdentityFullWithAddressInfos
+| VerifiedIdentityWithAddressInfos
+
+export type VerifiedStateTransitionResultVariantsRAW =
+  DataContractNAPI
+  | IdentityNAPI
+  | IdentifierNAPI
+  | VerifiedIdentityBalanceNAPI
+  | VerifiedIdentityTokenInfoNAPI
+  | VerifiedTokenPricingScheduleNAPI
+  | TokenStatusNAPI
+  | VerifiedIdentityBalanceNAPI[]
+  | PartialIdentityNAPI
+  | VerifiedBalanceTransferNAPI
+  | VerifiedDocumentNAPI[]
+  | DocumentNAPI
+  | VerifiedTokenGroupActionWithDocumentNAPI
+  | VerifiedTokenGroupActionWithTokenBalanceNAPI
+  | VerifiedTokenGroupActionWithTokenIdentityInfoNAPI
+  | VerifiedTokenGroupActionWithTokenPricingScheduleNAPI
+  | VoteNAPI
+  | VerifiedAddressInfosNAPI[]
+  | VerifiedIdentityFullWithAddressInfosNAPI
+  | VerifiedIdentityWithAddressInfosNAPI
+
+export interface VerifiedStateTransitionResult {
+  rootHash: Uint8Array
+  result: VerifiedStateTransitionResultVariants
 }

@@ -3,7 +3,7 @@ import {
   PlatformVersionLike,
   StartAt,
   VerifiedVoteState,
-  VoteStateResultTypeLike
+  VoteStateResultTypeLike, Winner, WinnerType
 } from '../../types.js'
 import { DataContractWASM } from '../../structs/DataContract.js'
 import { valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
@@ -36,13 +36,20 @@ export function verifyVotePollVoteStateProof (
 
   const winner = valueFromDynamicValue(result.result.winner)
 
-  const outWinner = winner == null
-    ? undefined
-    : {
-        type: winner.type,
-        identityId: winner.identityId,
-        blockInfo: winner.blockInfo
+  const winnerBlockInfo = winner?.blockInfo
+
+  const outWinner: Winner = winner != null
+    ? {
+        type: winner.type as WinnerType,
+        identityId: winner.identityId as Uint8Array,
+        blockInfo: {
+          height: BigInt(winnerBlockInfo.height),
+          coreHeight: winnerBlockInfo.coreHeight as number,
+          timeMs: BigInt(winnerBlockInfo.timeMs),
+          epoch: winnerBlockInfo.epoch != null ? winnerBlockInfo?.epoch as number : undefined
+        }
       }
+    : undefined
 
   return {
     rootHash: result.rootHash,
