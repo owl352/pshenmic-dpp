@@ -1,15 +1,15 @@
-import {dppProvider} from "../../provider.js";
-import {IdentifierLike, PlatformVersionLike, VerifiedDocuments, WhereClause} from "../../types.js";
-import {DocumentWASM} from "../../structs/Document.js";
-import {DataContractWASM} from "../../structs/DataContract.js";
-import {prepareIdentifierValue, valueToDynamicValue} from "../../utils.js";
+import { dppProvider } from '../../provider.js'
+import { IdentifierLike, PlatformVersionLike, VerifiedDocuments, WhereClause } from '../../types.js'
+import { DocumentWASM } from '../../structs/Document.js'
+import { DataContractWASM } from '../../structs/DataContract.js'
+import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 
-export function verifyDocumentsProof(
+export function verifyDocumentsProof (
   proof: Uint8Array,
   contract: DataContractWASM,
   documentTypeName: string,
   whereClauses: WhereClause[],
-  orderBy: Array<Array<string>>,
+  orderBy: string[][],
   limit: number | undefined | null,
   startAt: IdentifierLike | undefined | null,
   startAtIncluded: boolean,
@@ -23,7 +23,7 @@ export function verifyDocumentsProof(
     valueToDynamicValue(whereClauses),
     orderBy,
     limit,
-    startAt!=null?prepareIdentifierValue(startAt):undefined,
+    startAt != null ? prepareIdentifierValue(startAt) : undefined,
     startAtIncluded,
     blockTimeMs?.toString(),
     valueToDynamicValue(platformVersion)

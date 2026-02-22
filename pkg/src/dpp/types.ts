@@ -8,7 +8,8 @@ import {
   DocumentNAPI,
   IdentifierNAPI, IdentityNAPI,
   PartialIdentityNAPI, TokenConfigurationLocalizationJsonNAPI, TokenStatusNAPI, VerifiedAddressInfosNAPI,
-  VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityBalanceNAPI,
+  VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI,
+  VerifiedIdentityBalanceNAPI,
   VerifiedIdentityFullWithAddressInfosNAPI,
   VerifiedIdentityTokenInfoNAPI, VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
   VerifiedTokenGroupActionWithTokenBalanceNAPI,
@@ -332,4 +333,78 @@ export type VerifiedStateTransitionResultVariantsRAW =
 export interface VerifiedStateTransitionResult {
   rootHash: Uint8Array
   result: VerifiedStateTransitionResultVariants
+}
+
+export type WhereOperator =
+  | '='
+  | '=='
+  | '>'
+  | '>='
+  | '<'
+  | '<='
+  | 'Between'
+  | 'between'
+  | 'BetweenExcludeBounds'
+  | 'betweenExcludeBounds'
+  | 'betweenexcludebounds'
+  | 'between_exclude_bounds'
+  | 'BetweenExcludeLeft'
+  | 'betweenExcludeLeft'
+  | 'betweenexcludeleft'
+  | 'between_exclude_left'
+  | 'BetweenExcludeRight'
+  | 'betweenExcludeRight'
+  | 'betweenexcluderight'
+  | 'between_exclude_right'
+  | 'In'
+  | 'in'
+  | 'StartsWith'
+  | 'startsWith'
+  | 'startswith'
+  | 'starts_with'
+
+export type WhereClause = [
+  field: string,
+  operator: WhereOperator,
+  value: unknown
+]
+
+export interface VerifiedDocuments {
+  rootHash: Uint8Array
+  documents: DocumentWASM[]
+}
+
+export interface VerifiedIdentifierByNonUniquePublicKeyHash {
+  rootHash: Uint8Array
+  identifier?: IdentifierWASM
+}
+
+export interface VerifiedIdentityBalanceRootHash {
+  rootHash: Uint8Array
+  balance?: bigint
+}
+
+export interface VerifiedIdentityByIdentifier {
+  rootHash: Uint8Array
+  identity?: IdentityWASM
+}
+
+export interface VerifiedIdentityByUniqueKeyHash {
+  rootHash: Uint8Array
+  identity?: IdentityWASM
+}
+
+export interface VerifiedIdentityContractNonce {
+  rootHash: Uint8Array
+  contractNonce?: bigint
+}
+
+export interface VerifiedIdentityKeysByIdentifier {
+  rootHash: Uint8Array
+  identity?: PartialIdentityWASM
+}
+
+export interface VerifiedIdentityNonce {
+  rootHash: Uint8Array
+  nonce?: bigint
 }

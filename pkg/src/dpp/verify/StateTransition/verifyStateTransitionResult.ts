@@ -7,7 +7,7 @@ import {
 import { StateTransitionWASM } from '../../structs/StateTransition.js'
 import { DataContractWASM } from '../../structs/DataContract.js'
 import { valueToDynamicValue } from '../../utils.js'
-import { convertResult } from '../Contested/utils.js'
+import { convertResult } from './utils.js'
 
 export function verifyStateTransitionResult (
   proof: Uint8Array,

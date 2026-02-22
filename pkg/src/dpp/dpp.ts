@@ -87,10 +87,14 @@ export { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.j
 export { TokenBaseTransitionWASM } from './structs/Batch/TokenBaseTransition.js'
 export { TokenConfigUpdateTransitionWASM } from './structs/Batch/TokenTransitions/TokenConfigUpdateTransition.js'
 export { TokenDirectPurchaseTransitionWASM } from './structs/Batch/TokenTransitions/TokenDirectPurchaseTransition.js'
-export { TokenSetPriceForDirectPurchaseTransitionWASM } from './structs/Batch/TokenTransitions/TokenSetPriceForDirectPurchaseTransition.js'
+export {
+  TokenSetPriceForDirectPurchaseTransitionWASM
+} from './structs/Batch/TokenTransitions/TokenSetPriceForDirectPurchaseTransition.js'
 export { TokenBurnTransitionWASM } from './structs/Batch/TokenTransitions/TokenBurnTransition.js'
 export { TokenClaimTransitionWASM } from './structs/Batch/TokenTransitions/TokenClaimTransition.js'
-export { TokenDestroyFrozenFundsTransitionWASM } from './structs/Batch/TokenTransitions/TokenDestroyFrozenFundsTransition.js'
+export {
+  TokenDestroyFrozenFundsTransitionWASM
+} from './structs/Batch/TokenTransitions/TokenDestroyFrozenFundsTransition.js'
 export { TokenEmergencyActionTransitionWASM } from './structs/Batch/TokenTransitions/TokenEmergencyActionTransition.js'
 export { TokenFreezeTransitionWASM } from './structs/Batch/TokenTransitions/TokenFreezeTransition.js'
 export { TokenMintTransitionWASM } from './structs/Batch/TokenTransitions/TokenMintTransition.js'
@@ -106,3 +110,11 @@ export { verifyTotalCreditsProof } from './verify/System/verifyTotalCreditsProof
 export { verifyVotePollVoteStateProof } from './verify/Contested/verifyVotePollVoteStateProof.js'
 export { verifyContractProof } from './verify/Contract/verifyContract.js'
 export { verifyStateTransitionResult } from './verify/StateTransition/verifyStateTransitionResult.js'
+export { verifyDocumentsProof } from './verify/Document/verifyDocumentsProof.js'
+export { verifyIdentifierByNonUniquePublicKeyHashProof } from './verify/Identity/verifyIdentifierByNonUniquePublicKeyHashProof.js'
+export { verifyIdentityBalanceProof } from './verify/Identity/verifyIdentityBalanceProof.js'
+export { verifyIdentityByIdentifierProof } from './verify/Identity/verifyIdentityByIdentifierProof.js'
+export { verifyIdentityByUniqueKeyHashProof } from './verify/Identity/verifyIdentityByUniqueKeyHashProof.js'
+export { verifyIdentityContractNonceProof } from './verify/Identity/verifyIdentityContractNonceProof.js'
+export { verifyIdentityKeysByIdentifierProof } from './verify/Identity/verifyIdentityKeysByIdentifierProof.js'
+export { verifyIdentityNonceProof } from './verify/Identity/verifyIdentityNonceProof.js'
