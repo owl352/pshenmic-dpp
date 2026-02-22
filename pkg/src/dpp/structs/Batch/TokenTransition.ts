@@ -1,8 +1,4 @@
 import {
-  TokenBurnTransitionNAPI,
-  TokenClaimTransitionNAPI, TokenConfigUpdateTransitionNAPI, TokenDestroyFrozenFundsTransitionNAPI,
-  TokenDirectPurchaseTransitionNAPI, TokenEmergencyActionTransitionNAPI, TokenFreezeTransitionNAPI,
-  TokenMintTransitionNAPI, TokenSetPriceForDirectPurchaseTransitionNAPI, TokenTransferTransitionNAPI,
   TokenTransitionNAPI
 } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike, TokenTransitionLike } from '../../types.js'
@@ -60,25 +56,25 @@ export class TokenTransitionWASM {
   getTransition (): TokenTransitionLike {
     const transition = this._rawTokenTransition.getTransition()
 
-    if (transition instanceof TokenBurnTransitionNAPI) {
+    if (transition instanceof dppProvider.dpp.TokenBurnTransitionNAPI) {
       return TokenBurnTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenClaimTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenClaimTransitionNAPI) {
       return TokenClaimTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenConfigUpdateTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenConfigUpdateTransitionNAPI) {
       return TokenConfigUpdateTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenDestroyFrozenFundsTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenDestroyFrozenFundsTransitionNAPI) {
       return TokenDestroyFrozenFundsTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenDirectPurchaseTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenDirectPurchaseTransitionNAPI) {
       return TokenDirectPurchaseTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenEmergencyActionTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenEmergencyActionTransitionNAPI) {
       return TokenEmergencyActionTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenFreezeTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenFreezeTransitionNAPI) {
       return TokenFreezeTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenMintTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenMintTransitionNAPI) {
       return TokenMintTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenSetPriceForDirectPurchaseTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenSetPriceForDirectPurchaseTransitionNAPI) {
       return TokenSetPriceForDirectPurchaseTransitionWASM.createFromRawInstance(transition)
-    } else if (transition instanceof TokenTransferTransitionNAPI) {
+    } else if (transition instanceof dppProvider.dpp.TokenTransferTransitionNAPI) {
       return TokenTransferTransitionWASM.createFromRawInstance(transition)
     } else {
       return TokenUnFreezeTransitionWASM.createFromRawInstance(transition)

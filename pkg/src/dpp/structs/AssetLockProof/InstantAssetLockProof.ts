@@ -1,5 +1,5 @@
 import { dppProvider } from '../../provider.js'
-import { InstantAssetLockProofNAPI, OutPointNAPI, TxOutNAPI } from '../../../../binaries/bindingsTypes.js'
+import { InstantAssetLockProofNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TxOutWASM } from './TxOut.js'
 import { OutPointWASM } from './OutPoint.js'
 import { InstantLockWASM } from '../InstantLock.js'
@@ -31,13 +31,13 @@ export class InstantAssetLockProofWASM {
   getOutput (): TxOutWASM | null {
     const out = this._rawLockProof.getOutput()
 
-    return out instanceof TxOutNAPI ? TxOutWASM.createFromRawInstance(out) : out
+    return out instanceof dppProvider.dpp.TxOutNAPI ? TxOutWASM.createFromRawInstance(out) : out
   }
 
   getOutPoint (): OutPointWASM | null {
     const out = this._rawLockProof.getOutPoint()
 
-    return out instanceof OutPointNAPI ? OutPointWASM.createFromRawInstance(out) : out
+    return out instanceof dppProvider.dpp.OutPointNAPI ? OutPointWASM.createFromRawInstance(out) : out
   }
 
   getTransaction (): Uint8Array {

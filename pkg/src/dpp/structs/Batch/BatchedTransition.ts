@@ -1,4 +1,4 @@
-import { BatchedTransitionNAPI, DocumentTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import { BatchedTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TokenTransitionWASM } from './TokenTransition.js'
 import { DocumentTransitionWASM } from './DocumentTransition.js'
 import { dppProvider } from '../../provider.js'
@@ -36,7 +36,7 @@ export class BatchedTransitionWASM {
   toTransition (): DocumentTransitionWASM | TokenTransitionWASM {
     const raw = this._rawTransition.toTransition()
 
-    if (raw instanceof DocumentTransitionNAPI) {
+    if (raw instanceof dppProvider.dpp.DocumentTransitionNAPI) {
       return DocumentTransitionWASM.createFromRawInstance(raw)
     } else {
       return TokenTransitionWASM.createFromRawInstance(raw)

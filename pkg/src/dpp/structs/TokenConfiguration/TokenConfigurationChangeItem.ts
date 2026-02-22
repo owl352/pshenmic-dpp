@@ -1,7 +1,5 @@
 import {
-  AuthorizedActionTakersNAPI, IdentifierNAPI,
-  TokenConfigurationChangeItemNAPI,
-  TokenConfigurationConventionNAPI, TokenPerpetualDistributionNAPI, TokenTradeModeNAPI
+  TokenConfigurationChangeItemNAPI
 } from '../../../../binaries/bindingsTypes.js'
 import { TokenConfigurationConventionWASM } from './TokenConfigurationConvention.js'
 import { AuthorizedActionTakersWASM } from './AuthorizedActionTakers.js'
@@ -27,15 +25,15 @@ export class TokenConfigurationChangeItemWASM {
   getItem (): string | TokenConfigurationConventionWASM | AuthorizedActionTakersWASM | bigint | TokenPerpetualDistributionWASM | IdentifierWASM | boolean | TokenTradeModeWASM | number | undefined | null {
     const item = this._rawTokenConfigurationChangeItem.getItem()
 
-    if (item instanceof TokenConfigurationConventionNAPI) {
+    if (item instanceof dppProvider.dpp.TokenConfigurationConventionNAPI) {
       return TokenConfigurationConventionWASM.createFromRawInstance(item)
-    } else if (item instanceof AuthorizedActionTakersNAPI) {
+    } else if (item instanceof dppProvider.dpp.AuthorizedActionTakersNAPI) {
       return AuthorizedActionTakersWASM.createFromRawInstance(item)
-    } else if (item instanceof TokenPerpetualDistributionNAPI) {
+    } else if (item instanceof dppProvider.dpp.TokenPerpetualDistributionNAPI) {
       return TokenPerpetualDistributionWASM.createFromRawInstance(item)
-    } else if (item instanceof TokenTradeModeNAPI) {
+    } else if (item instanceof dppProvider.dpp.TokenTradeModeNAPI) {
       return TokenTradeModeWASM.createFromRawInstance(item)
-    } else if (item instanceof IdentifierNAPI) {
+    } else if (item instanceof dppProvider.dpp.IdentifierNAPI) {
       return IdentifierWASM.createFromRawInstance(item)
     } else if (typeof item === 'string' && this._rawTokenConfigurationChangeItem.getItemName() === 'MaxSupply') {
       return BigInt(item)

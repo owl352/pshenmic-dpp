@@ -6,7 +6,7 @@ export class ConsensusErrorWASM {
   _rawConsensusError: ConsensusErrorNAPI
 
   private constructor (rawData: Uint8Array | ConsensusErrorWASM | ConsensusErrorNAPI) {
-    if (rawData instanceof ConsensusErrorNAPI) {
+    if (rawData instanceof dppProvider.dpp.ConsensusErrorNAPI) {
       this._rawConsensusError = rawData
     } else if (rawData instanceof ConsensusErrorWASM) {
       this._rawConsensusError = rawData._rawConsensusError

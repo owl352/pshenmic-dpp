@@ -1,7 +1,5 @@
 import {
-  BlockBasedDistributionNAPI,
-  RewardDistributionTypeNAPI,
-  TimeBasedDistributionNAPI
+  RewardDistributionTypeNAPI
 } from '../../../../binaries/bindingsTypes.js'
 import { DistributionFunctionWASM } from './DistributionFunction.js'
 import { dppProvider } from '../../provider.js'
@@ -21,9 +19,9 @@ export class RewardDistributionTypeWASM {
     const interval = typeof dist.interval === 'number' ? dist.interval : BigInt(dist.interval)
     let distributionType: 'BlockBasedDistribution' | 'TimeBasedDistribution' | 'EpochBasedDistribution'
 
-    if (dist instanceof BlockBasedDistributionNAPI) {
+    if (dist instanceof dppProvider.dpp.BlockBasedDistributionNAPI) {
       distributionType = 'BlockBasedDistribution'
-    } else if (dist instanceof TimeBasedDistributionNAPI) {
+    } else if (dist instanceof dppProvider.dpp.TimeBasedDistributionNAPI) {
       distributionType = 'TimeBasedDistribution'
     } else {
       distributionType = 'EpochBasedDistribution'
