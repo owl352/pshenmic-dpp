@@ -1,4 +1,5 @@
 ## NOTE: v2.0.0-dev under active development and until the first stable release, it may not correspond to previous versions in terms of functionality.
+## At this moment supported platforms: WebAssembly, aarch64-apple-ios-sim, aarch64-linux-android
 ___
 # PSHENMIC-DPP
 
@@ -16,84 +17,92 @@ ___
 ## Current features
 
 **At this moment available structs:**
-- ~~`DocumentWASM`~~
-- ~~`BatchWASM`~~
-- ~~`DocumentsBaseTransitionWASM`~~
-- ~~`TokenBaseTransitionWASM`~~
-- ~~`TokenPricingScheduleWASM`~~
-- ~~`TokenTransitionWASM`~~
-- ~~`BatchedTransitionWASM`~~
-- ~~`TokenConfigurationChangeItemWASM`~~
-- ~~`TokenConfigurationWASM`~~
-- ~~`ActionTakerWASM`~~
-- ~~`AuthorizedActionTakersWASM`~~
-- ~~`ChangeControlRulesWASM`~~
-- ~~`TokenConfigurationConventionWASM`~~
-- ~~`DistributionFunctionWASM`~~
-- ~~`TokenDistributionRecipientWASM`~~
-- ~~`TokenDistributionRulesWASM`~~
-- ~~distribution structs:~~
-  - ~~`DistributionFixedAmountWASM`~~
-  - ~~`DistributionRandomWASM`~~
-  - ~~`DistributionStepDecreasingAmountWASM`~~
-  - ~~`DistributionLinearWASM`~~
-  - ~~`DistributionPolynomialWASM`~~
-  - ~~`DistributionExponentialWASM`~~
-  - ~~`DistributionLogarithmicWASM`~~
-  - ~~`DistributionInvertedLogarithmicWASM`~~
-- ~~`GroupWASM`~~
-- ~~`TokenKeepsHistoryRulesWASM`~~
-- ~~`TokenConfigurationLocalizationWASM`~~
-- ~~`TokenMarketplaceRulesWASM`~~
-- ~~`TokenPerpetualDistributionWASM`~~
-- ~~`TokenPreProgrammedDistributionWASM`~~
-- ~~`RewardDistributionTypeWASM`~~
-- ~~`TokenTradeModeWASM`~~
-- ~~`GroupStateTransitionInfoWASM`~~
-- ~~`DocumentsTransitionWASM`~~
-- ~~`PrefundedVotingBalanceWASM`~~
-- ~~`PrivateEncryptedNoteWASM`~~
-- ~~`SharedEncryptedNoteWASM`~~
-- ~~DocumentsTransitions:~~
-  - ~~`DocuemntCreateTransitionWASM`~~
-  - ~~`DocuemntDeleteTransitionWASM`~~
-  - ~~`DocuemntPurchaseTransitionWASM`~~
-  - ~~`DocuemntReplaceTransitionWASM`~~
-  - ~~`DocumentTransferTransitionWASM`~~
-  - ~~`DocumentUpdatePriceTransitionWASM`~~
-- ~~Tokens Transitions:~~
-  - ~~`TokenConfigUpdateTransitionWASM`~~
-  - ~~`TokenDirectPurchaseTransitionWASM`~~
-  - ~~`TokenSetPriceForDirectPurchaseTransitionWASM`~~
-  - ~~`TokenBurnTransitionWASM`~~
-  - ~~`TokenClaimTransitionWASM`~~
-  - ~~`TokenDestroyFrozenFundsTransitionWASM`~~
-  - ~~`TokenEmergencyActionTransitionWASM`~~
-  - ~~`TokenFreezeTransitionWASM`~~
-  - ~~`TokenMintTransitionWASM`~~
-  - ~~`TokenTransferTransitionWASM`~~
-  - ~~`TokenUnFreezeTransitionWASM`~~
+- `DocumentWASM`
+- `BatchWASM`
+- `DocumentsBaseTransitionWASM`
+- `TokenBaseTransitionWASM`
+- `TokenPricingScheduleWASM`
+- `TokenTransitionWASM`
+- `BatchedTransitionWASM`
+- `TokenConfigurationChangeItemWASM`
+- `TokenConfigurationWASM`
+- `ActionTakerWASM`
+- `AuthorizedActionTakersWASM`
+- `ChangeControlRulesWASM`
+- `TokenConfigurationConventionWASM`
+- `DistributionFunctionWASM`
+- `TokenDistributionRecipientWASM`
+- `TokenDistributionRulesWASM`
+- distribution structs:
+  - `DistributionFixedAmountWASM`
+  - `DistributionRandomWASM`
+  - `DistributionStepDecreasingAmountWASM`
+  - `DistributionLinearWASM`
+  - `DistributionPolynomialWASM`
+  - `DistributionExponentialWASM`
+  - `DistributionLogarithmicWASM`
+  - `DistributionInvertedLogarithmicWASM`
+- `GroupWASM`
+- `TokenKeepsHistoryRulesWASM`
+- `TokenConfigurationLocalizationWASM`
+- `TokenMarketplaceRulesWASM`
+- `TokenPerpetualDistributionWASM`
+- `TokenPreProgrammedDistributionWASM`
+- `RewardDistributionTypeWASM`
+- `TokenTradeModeWASM`
+- `GroupStateTransitionInfoWASM`
+- `DocumentsTransitionWASM`
+- `PrefundedVotingBalanceWASM`
+- `PrivateEncryptedNoteWASM`
+- `SharedEncryptedNoteWASM`
+- DocumentsTransitions:
+  - `DocuemntCreateTransitionWASM`
+  - `DocuemntDeleteTransitionWASM`
+  - `DocuemntPurchaseTransitionWASM`
+  - `DocuemntReplaceTransitionWASM`
+  - `DocumentTransferTransitionWASM`
+  - `DocumentUpdatePriceTransitionWASM`
+- Tokens Transitions:
+  - `TokenConfigUpdateTransitionWASM`
+  - `TokenDirectPurchaseTransitionWASM`
+  - `TokenSetPriceForDirectPurchaseTransitionWASM`
+  - `TokenBurnTransitionWASM`
+  - `TokenClaimTransitionWASM`
+  - `TokenDestroyFrozenFundsTransitionWASM`
+  - `TokenEmergencyActionTransitionWASM`
+  - `TokenFreezeTransitionWASM`
+  - `TokenMintTransitionWASM`
+  - `TokenTransferTransitionWASM`
+  - `TokenUnFreezeTransitionWASM`
 - `IdentityPublicKeyWASM`
-- ~~IdentityTransitions:~~
-  - ~~`IdentityCreateTransitionWASM`~~
-  - ~~`IdentityCreditWithdrawalTransitionWASM`~~
-  - ~~`IdentityCreditTransferTransitionWASM`~~
-  - ~~`IdentityTopUpTransitionWASM`~~
-  - ~~`IdentityUpdateTransitionWASM`~~
-- ~~`IdentityPublicKeyInCreationWASM`~~
-- ~~`AssetLockProofWASM`~~
-- ~~`OutPointWASM`~~
-- ~~`TxOutWASM`~~
-- ~~`CoreScriptWASM`~~
-- ~~`PrivateKeyWASM`~~
+- Identity Transitions:
+  - `IdentityCreateTransitionWASM`
+  - `IdentityCreditWithdrawalTransitionWASM`
+  - `IdentityCreditTransferTransitionWASM`
+  - `IdentityTopUpTransitionWASM`
+  - `IdentityUpdateTransitionWASM`
+- Address Transitions:
+  - `AddressCreditWithdrawalTransitionWASM`
+  - `AddressFundingFromAssetLockTransitionWASM`
+  - `AddressFundsTransferTransitionWASM`
+  - `IdentityCreateFromAddressesTransitionWASM`
+  - `IdentityCreditTransferToAddressesTransitionWASM`
+  - `IdentityTopUpFromAddressesTransitionWASM`
+- `PlatformAddressWASM`
+- `IdentityPublicKeyInCreationWASM`
+- `AssetLockProofWASM`
+- `OutPointWASM`
+- `TxOutWASM`
+- `CoreScriptWASM`
+- `PrivateKeyWASM`
 - `IdentityWASM`
 - `IdentifierWASM`
-- ~~`StateTransitionWASM`~~
-- ~~`DataContractWASM`~~
-- ~~`ContractBoundsWASM`~~
-- ~~`MasternodeVoteTransitionWASM`~~
-- ~~`VotePollWASM`~~
-- ~~`VoteWASM`~~
-- ~~`ResourceVoteChoiceWASM`~~
+- `StateTransitionWASM`
+- `DataContractWASM`
+- `ContractBoundsWASM`
+- `MasternodeVoteTransitionWASM`
+- `VotePollWASM`
+- `VoteWASM`
+- `ResourceVoteChoiceWASM`
 - `Enums`
 
