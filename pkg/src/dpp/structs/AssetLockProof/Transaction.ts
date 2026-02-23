@@ -1,4 +1,4 @@
-import { TransactionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TransactionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TxInWASM } from './TxIn.js'
 import { TxOutWASM } from './TxOut.js'
 import { dppProvider } from '../../provider.js'

@@ -1,4 +1,4 @@
-import { TokenMarketplaceRulesNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenMarketplaceRulesNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TokenTradeModeWASM } from './TokenTradeMode.js'
 import { ChangeControlRulesWASM } from './ChangeControlRules.js'
 import { dppProvider } from '../../provider.js'

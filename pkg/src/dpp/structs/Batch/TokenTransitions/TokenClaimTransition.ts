@@ -1,4 +1,4 @@
-import { TokenClaimTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenClaimTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { TokenDistributionLike } from '../../../types.js'
 import { dppProvider } from '../../../provider.js'

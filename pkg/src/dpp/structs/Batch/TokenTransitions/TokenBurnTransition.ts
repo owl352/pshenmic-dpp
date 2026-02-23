@@ -1,4 +1,4 @@
-import { TokenBurnTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenBurnTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { dppProvider } from '../../../provider.js'
 

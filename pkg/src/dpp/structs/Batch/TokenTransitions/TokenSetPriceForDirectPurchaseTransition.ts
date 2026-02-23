@@ -1,4 +1,4 @@
-import { TokenSetPriceForDirectPurchaseTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenSetPriceForDirectPurchaseTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { TokenPricingScheduleWASM } from '../TokenPricingSchedule.js'
 import { dppProvider } from '../../../provider.js'

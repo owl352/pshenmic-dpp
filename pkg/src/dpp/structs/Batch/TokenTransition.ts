@@ -1,4 +1,4 @@
-import {
+import type {
   TokenTransitionNAPI
 } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike, TokenTransitionLike } from '../../types.js'
@@ -49,7 +49,7 @@ export class TokenTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawTokenTransition.contractId)
   }
 
-  set contractId (value: IdentifierWASM) {
+  set contractId (value: IdentifierLike) {
     this._rawTokenTransition.contractId = prepareIdentifierValue(value)
   }
 

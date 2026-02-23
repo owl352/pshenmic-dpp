@@ -1,4 +1,4 @@
-import { IdentityCreateFromAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreateFromAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'

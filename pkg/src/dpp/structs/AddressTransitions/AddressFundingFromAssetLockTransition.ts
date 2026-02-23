@@ -1,4 +1,4 @@
-import { AddressFundingFromAssetLockTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AddressFundingFromAssetLockTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'

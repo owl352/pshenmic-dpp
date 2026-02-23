@@ -1,4 +1,4 @@
-import {
+import type {
   IdentifierLikeNAPI,
   TokenPreProgrammedDistributionNAPI
 } from '../../../../binaries/bindingsTypes.js'

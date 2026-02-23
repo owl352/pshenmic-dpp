@@ -1,4 +1,4 @@
-import { VotePollNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { VotePollNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue, valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'

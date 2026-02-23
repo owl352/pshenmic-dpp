@@ -1,4 +1,4 @@
-import { TokenDistributionRulesNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenDistributionRulesNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TokenPerpetualDistributionWASM } from './TokenPerpetualDistribution.js'
 import { ChangeControlRulesWASM } from './ChangeControlRules.js'
 import { TokenPreProgrammedDistributionWASM } from './TokenPreProgrammedDistribution.js'

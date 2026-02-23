@@ -1,4 +1,4 @@
-import { DocumentTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { DocumentTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { DocumentCreateTransitionWASM } from './DocumentTransitions/DocumentCreateTransition.js'
 import { DocumentReplaceTransitionWASM } from './DocumentTransitions/DocumentReplaceTransition.js'
 import { DocumentDeleteTransitionWASM } from './DocumentTransitions/DocumentDeleteTransition.js'

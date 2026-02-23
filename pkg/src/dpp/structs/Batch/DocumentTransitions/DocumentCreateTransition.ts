@@ -1,4 +1,4 @@
-import { DocumentCreateTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { DocumentCreateTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { PrefundedVotingBalanceWASM } from '../PrefundedVotingBalance.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'

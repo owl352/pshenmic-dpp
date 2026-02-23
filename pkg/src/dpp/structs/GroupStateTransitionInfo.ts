@@ -1,4 +1,4 @@
-import { GroupStateTransitionInfoNAPI } from '../../../binaries/bindingsTypes.js'
+import type { GroupStateTransitionInfoNAPI } from '../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../provider.js'
 import { IdentifierLike } from '../types.js'
 import { prepareIdentifierValue } from '../utils.js'

@@ -1,4 +1,4 @@
-import {
+import type {
   TokenConfigurationChangeItemNAPI
 } from '../../../../binaries/bindingsTypes.js'
 import { TokenConfigurationConventionWASM } from './TokenConfigurationConvention.js'

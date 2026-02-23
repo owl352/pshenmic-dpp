@@ -1,4 +1,4 @@
-import { WitnessNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { WitnessNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class WitnessWASM {

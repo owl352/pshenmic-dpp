@@ -1,11 +1,17 @@
 import {
-  VerifiedAddressInfo,
+  IdentityTokenBalance,
+  TokenStatus,
+  VerifiedAddressInfo, VerifiedBalanceTransfer,
   VerifiedDocument,
-  VerifiedIdentityBalance,
-  VerifiedStateTransitionResultVariants, VerifiedStateTransitionResultVariantsRAW
+  VerifiedIdentityBalance, VerifiedIdentityFullWithAddressInfos, VerifiedIdentityTokenInfo,
+  VerifiedIdentityWithAddressInfos,
+  VerifiedStateTransitionResultVariants, VerifiedStateTransitionResultVariantsRAW,
+  VerifiedTokenGroupActionWithDocument, VerifiedTokenGroupActionWithTokenBalance,
+  VerifiedTokenGroupActionWithTokenIdentityInfo,
+  VerifiedTokenGroupActionWithTokenPricingSchedule, VerifiedTokenPricingSchedule
 } from '../../types.js'
 import { DataContractWASM } from '../../structs/DataContract.js'
-import {
+import type {
   IdentityTokenBalanceNAPI, TokenStatusNAPI,
   VerifiedAddressInfosNAPI, VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityFullWithAddressInfosNAPI,
   VerifiedIdentityTokenInfoNAPI, VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
@@ -33,58 +39,58 @@ const converters: () => Map<Function, Converter> = (): Map<Function, Converter> 
     [dppProvider.dpp.DocumentNAPI, v => DocumentWASM.createFromRawInstance(v)],
     [dppProvider.dpp.VoteNAPI, v => VoteWASM.createFromRawInstance(v)],
 
-    [dppProvider.dpp.IdentityTokenBalanceNAPI, v => ({
+    [dppProvider.dpp.IdentityTokenBalanceNAPI, (v): IdentityTokenBalance => ({
       id: IdentifierWASM.createFromRawInstance(v.id),
       balance: BigInt(v.balance)
     })],
 
-    [dppProvider.dpp.VerifiedIdentityTokenInfoNAPI, (v: VerifiedIdentityTokenInfoNAPI) => ({
-      id: IdentifierWASM.createFromRawInstance(v.id),
+    [dppProvider.dpp.VerifiedIdentityTokenInfoNAPI, (v: VerifiedIdentityTokenInfoNAPI): VerifiedIdentityTokenInfo => ({
+      tokenId: IdentifierWASM.createFromRawInstance(v.id),
       identityTokenInfo: {
         frozen: v.identityTokenInfo.frozen
       }
     })],
 
-    [dppProvider.dpp.VerifiedTokenPricingScheduleNAPI, (v: VerifiedTokenPricingScheduleNAPI) => ({
-      id: IdentifierWASM.createFromRawInstance(v.id),
+    [dppProvider.dpp.VerifiedTokenPricingScheduleNAPI, (v: VerifiedTokenPricingScheduleNAPI): VerifiedTokenPricingSchedule => ({
+      tokenId: IdentifierWASM.createFromRawInstance(v.id),
       pricingSchedule: v.pricingSchedule != null
         ? TokenPricingScheduleWASM.createFromRawInstance(v.pricingSchedule)
         : undefined
     })],
 
-    [dppProvider.dpp.TokenStatusNAPI, (v: TokenStatusNAPI) => ({
+    [dppProvider.dpp.TokenStatusNAPI, (v: TokenStatusNAPI): TokenStatus => ({
       paused: v.paused
     })],
 
-    [dppProvider.dpp.VerifiedBalanceTransferNAPI, (v: VerifiedBalanceTransferNAPI) => ({
+    [dppProvider.dpp.VerifiedBalanceTransferNAPI, (v: VerifiedBalanceTransferNAPI): VerifiedBalanceTransfer => ({
       sender: PartialIdentityWASM.createFromRawInstance(v.sender),
       recipient: PartialIdentityWASM.createFromRawInstance(v.recipient)
     })],
 
-    [dppProvider.dpp.VerifiedTokenGroupActionWithDocumentNAPI, (v: VerifiedTokenGroupActionWithDocumentNAPI) => ({
+    [dppProvider.dpp.VerifiedTokenGroupActionWithDocumentNAPI, (v: VerifiedTokenGroupActionWithDocumentNAPI): VerifiedTokenGroupActionWithDocument => ({
       groupSumPower: v.groupSumPower,
       document: v.document != null ? DocumentWASM.createFromRawInstance(v.document) : undefined
     })],
 
-    [dppProvider.dpp.VerifiedTokenGroupActionWithTokenBalanceNAPI, (v: VerifiedTokenGroupActionWithTokenBalanceNAPI) => ({
+    [dppProvider.dpp.VerifiedTokenGroupActionWithTokenBalanceNAPI, (v: VerifiedTokenGroupActionWithTokenBalanceNAPI): VerifiedTokenGroupActionWithTokenBalance => ({
       groupSumPower: v.groupSumPower,
       groupActionStatus: v.groupActionStatus,
       amount: v.amount != null ? BigInt(v.amount) : undefined
     })],
 
-    [dppProvider.dpp.VerifiedTokenGroupActionWithTokenIdentityInfoNAPI, (v: VerifiedTokenGroupActionWithTokenIdentityInfoNAPI) => ({
+    [dppProvider.dpp.VerifiedTokenGroupActionWithTokenIdentityInfoNAPI, (v: VerifiedTokenGroupActionWithTokenIdentityInfoNAPI): VerifiedTokenGroupActionWithTokenIdentityInfo => ({
       groupSumPower: v.groupSumPower,
       groupActionStatus: v.groupActionStatus,
       identityTokenInfo: v.identityTokenInfo != null ? { frozen: v.identityTokenInfo.frozen } : undefined
     })],
 
-    [dppProvider.dpp.VerifiedTokenGroupActionWithTokenPricingScheduleNAPI, (v: VerifiedTokenGroupActionWithTokenPricingScheduleNAPI) => ({
+    [dppProvider.dpp.VerifiedTokenGroupActionWithTokenPricingScheduleNAPI, (v: VerifiedTokenGroupActionWithTokenPricingScheduleNAPI): VerifiedTokenGroupActionWithTokenPricingSchedule => ({
       groupSumPower: v.groupSumPower,
       groupActionStatus: v.groupActionStatus,
       pricingSchedule: v.pricingSchedule != null ? TokenPricingScheduleWASM.createFromRawInstance(v.pricingSchedule) : undefined
     })],
 
-    [dppProvider.dpp.VerifiedIdentityFullWithAddressInfosNAPI, (v: VerifiedIdentityFullWithAddressInfosNAPI) => ({
+    [dppProvider.dpp.VerifiedIdentityFullWithAddressInfosNAPI, (v: VerifiedIdentityFullWithAddressInfosNAPI): VerifiedIdentityFullWithAddressInfos => ({
       identity: IdentityWASM.createFromRawInstance(v.identity),
       infos: v.infos.map(info => ({
         nonce: info.nonce,
@@ -93,7 +99,7 @@ const converters: () => Map<Function, Converter> = (): Map<Function, Converter> 
       }))
     })],
 
-    [dppProvider.dpp.VerifiedIdentityWithAddressInfosNAPI, (v: VerifiedIdentityWithAddressInfosNAPI) => ({
+    [dppProvider.dpp.VerifiedIdentityWithAddressInfosNAPI, (v: VerifiedIdentityWithAddressInfosNAPI): VerifiedIdentityWithAddressInfos => ({
       identity: PartialIdentityWASM.createFromRawInstance(v.identity),
       infos: v.infos.map(info => ({
         nonce: info.nonce,

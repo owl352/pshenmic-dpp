@@ -1,4 +1,4 @@
-import { TokenPaymentInfoNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenPaymentInfoNAPI } from '../../../../binaries/bindingsTypes.js'
 import { GasFeesPaidByLike, IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
@@ -9,8 +9,8 @@ export class TokenPaymentInfoWASM {
   _rawTokenPaymentInfo: TokenPaymentInfoNAPI
 
   constructor (
+    paymentTokenContractId: IdentifierLike | undefined | null,
     tokenContractPosition: number,
-    paymentTokenContractId?: IdentifierLike,
     minimumTokenCost?: bigint,
     maximumTokenCost?: bigint,
     gasFeesPaidBy?: GasFeesPaidByLike

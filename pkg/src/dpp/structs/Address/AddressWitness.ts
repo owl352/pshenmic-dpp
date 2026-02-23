@@ -1,4 +1,4 @@
-import { AddressWitnessNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AddressWitnessNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { AddressWitnessP2PKH, AddressWitnessP2SH } from '../../types.js'
 

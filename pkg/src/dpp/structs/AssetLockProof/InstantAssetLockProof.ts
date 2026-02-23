@@ -1,5 +1,5 @@
 import { dppProvider } from '../../provider.js'
-import { InstantAssetLockProofNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { InstantAssetLockProofNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TxOutWASM } from './TxOut.js'
 import { OutPointWASM } from './OutPoint.js'
 import { InstantLockWASM } from '../InstantLock.js'

@@ -1,4 +1,4 @@
-import { TokenConfigurationNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenConfigurationNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TokenConfigurationConventionWASM } from './TokenConfigurationConvention.js'
 import { ChangeControlRulesWASM } from './ChangeControlRules.js'
 import { TokenKeepsHistoryRulesWASM } from './TokenKeepsHistoryRules.js'

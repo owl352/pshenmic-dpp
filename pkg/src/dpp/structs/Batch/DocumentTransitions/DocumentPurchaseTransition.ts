@@ -1,4 +1,4 @@
-import { DocumentPurchaseTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { DocumentPurchaseTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
 import { dppProvider } from '../../../provider.js'

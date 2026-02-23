@@ -1,4 +1,4 @@
-import { TokenConfigurationLocalizationNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenConfigurationLocalizationNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { TokenConfigurationLocalizationJson } from '../../types.js'
 

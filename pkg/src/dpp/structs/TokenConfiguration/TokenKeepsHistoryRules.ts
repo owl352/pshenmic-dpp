@@ -1,4 +1,4 @@
-import { TokenKeepsHistoryRulesNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenKeepsHistoryRulesNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class TokenKeepsHistoryRulesWASM {

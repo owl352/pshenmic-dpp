@@ -1,4 +1,4 @@
-import { AddressCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AddressCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
 import { PoolingLike } from '../../types.js'

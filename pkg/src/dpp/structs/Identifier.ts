@@ -1,5 +1,5 @@
 import { IdentifierLike } from '../types.js'
-import { IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
+import type { IdentifierNAPI } from '../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../provider.js'
 
 export class IdentifierWASM {

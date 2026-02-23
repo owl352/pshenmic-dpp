@@ -1,4 +1,4 @@
-import { IdentityTopUpTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityTopUpTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
@@ -30,8 +30,8 @@ export class IdentityTopUpTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawIdentityTopUpTransition.identityIdentifier)
   }
 
-  set identityIdentifier (id: IdentifierWASM) {
-    this._rawIdentityTopUpTransition.identityIdentifier = id._rawIdentifier
+  set identityIdentifier (id: IdentifierLike) {
+    this._rawIdentityTopUpTransition.identityIdentifier = prepareIdentifierValue(id)
   }
 
   get assetLockProof (): AssetLockProofWASM {

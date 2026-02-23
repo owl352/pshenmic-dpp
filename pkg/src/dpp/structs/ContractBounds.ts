@@ -1,4 +1,4 @@
-import { ContractBoundsNAPI } from '../../../binaries/bindingsTypes.js'
+import type { ContractBoundsNAPI } from '../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../types.js'
 import { dppProvider } from '../provider.js'
 import { prepareIdentifierValue } from '../utils.js'

@@ -1,4 +1,4 @@
-import { MasternodeVoteTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { MasternodeVoteTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { VoteWASM } from './Vote.js'
 import { dppProvider } from '../../provider.js'

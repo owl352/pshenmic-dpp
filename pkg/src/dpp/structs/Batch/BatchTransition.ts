@@ -1,4 +1,4 @@
-import { BatchTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { BatchTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { BatchedTransitionWASM } from './BatchedTransition.js'

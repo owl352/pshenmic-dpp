@@ -1,4 +1,4 @@
-import {
+import type {
   TokenConfigurationConventionNAPI,
   TokenConfigurationLocalizationNAPI
 } from '../../../../binaries/bindingsTypes.js'

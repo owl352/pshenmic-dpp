@@ -1,4 +1,4 @@
-import { TokenTransferTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenTransferTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { IdentifierLike } from '../../../types.js'
 import { SharedEncryptedNoteWASM } from '../../EncryptedNote/SharedEncryptedNote.js'

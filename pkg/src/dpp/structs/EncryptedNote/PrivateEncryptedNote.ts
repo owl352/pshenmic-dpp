@@ -1,4 +1,4 @@
-import { PrivateEncryptedNoteNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PrivateEncryptedNoteNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class PrivateEncryptedNoteWASM {

@@ -1,4 +1,4 @@
-import { TokenPerpetualDistributionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenPerpetualDistributionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { RewardDistributionTypeWASM } from './RewardDistributionType.js'
 import { TokenDistributionRecipientWASM } from './TokenDistributionRecipient.js'
 import { dppProvider } from '../../provider.js'

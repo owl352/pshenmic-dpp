@@ -1,4 +1,4 @@
-import { TokenTradeModeNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenTradeModeNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class TokenTradeModeWASM {

@@ -1,4 +1,4 @@
-import { AddressFundsFeeStrategyStepNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { AddressFundsFeeStrategyStepNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../../provider.js'
 
 export class AddressFundsFeeStrategyStepWASM {

@@ -1,4 +1,4 @@
-import { IdentityCreditTransferToAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreditTransferToAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { OutputAddressWASM } from './entities/OutputAddress.js'
 import { dppProvider } from '../../provider.js'

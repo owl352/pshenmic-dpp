@@ -1,4 +1,4 @@
-import { IdentityPublicKeyInCreationNAPI } from '../../../binaries/bindingsTypes.js'
+import type { IdentityPublicKeyInCreationNAPI } from '../../../binaries/bindingsTypes.js'
 import { KeyTypeLike, NetworkLike, PurposeLike, SecurityLevelLike } from '../types.js'
 import { ContractBoundsWASM } from './ContractBounds.js'
 import { dppProvider } from '../provider.js'

@@ -1,4 +1,4 @@
-import { ResourceVoteChoiceNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { ResourceVoteChoiceNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue } from '../../utils.js'

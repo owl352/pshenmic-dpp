@@ -1,4 +1,4 @@
-import { PrivateKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import type { PrivateKeyNAPI } from '../../../binaries/bindingsTypes.js'
 import { NetworkLike } from '../types.js'
 import { dppProvider } from '../provider.js'
 import { valueToDynamicValue } from '../utils.js'

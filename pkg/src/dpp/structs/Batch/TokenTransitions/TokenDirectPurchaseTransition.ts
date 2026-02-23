@@ -1,4 +1,4 @@
-import { TokenDirectPurchaseTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenDirectPurchaseTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { dppProvider } from '../../../provider.js'
 

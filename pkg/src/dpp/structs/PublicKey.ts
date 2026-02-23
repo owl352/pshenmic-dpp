@@ -1,4 +1,4 @@
-import { PublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import type { PublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../provider.js'
 
 export class PublicKeyWASM {
