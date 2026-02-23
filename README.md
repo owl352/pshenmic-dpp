@@ -1,5 +1,5 @@
 ## NOTE: v2.0.0-dev under active development and until the first stable release, it may not correspond to previous versions in terms of functionality.
-## At this moment supported platforms: WebAssembly, aarch64-apple-ios-sim, aarch64-linux-android
+## At this moment supported platforms: WebAssembly, aarch64-apple-ios-sim, x86_64-linux-android
 ___
 # PSHENMIC-DPP
 
