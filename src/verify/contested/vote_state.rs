@@ -86,13 +86,13 @@ pub fn verify_vote_state_proof(
         .collect::<Result<Vec<Value>, napi::Error>>()?;
 
     let result_type = match VoteStateResultTypeNAPI::try_from(js_result_type)? {
-        VoteStateResultTypeNAPI::Documents => {
+        VoteStateResultTypeNAPI::DOCUMENTS => {
             ContestedDocumentVotePollDriveQueryResultType::Documents
         }
-        VoteStateResultTypeNAPI::VoteTally => {
+        VoteStateResultTypeNAPI::VOTE_TALLY => {
             ContestedDocumentVotePollDriveQueryResultType::VoteTally
         }
-        VoteStateResultTypeNAPI::DocumentsAndVoteTally => {
+        VoteStateResultTypeNAPI::DOCUMENTS_AND_VOTE_TALLY => {
             ContestedDocumentVotePollDriveQueryResultType::DocumentsAndVoteTally
         }
     };

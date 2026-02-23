@@ -8,17 +8,19 @@ use crate::dynamic_value::DynamicValue;
 #[derive(Default, Clone)]
 pub enum VoteStateResultTypeNAPI {
     #[default]
-    Documents = 0,
-    VoteTally = 1,
-    DocumentsAndVoteTally = 2,
+    DOCUMENTS = 0,
+    VOTE_TALLY = 1,
+    DOCUMENTS_AND_VOTE_TALLY = 2,
 }
 
 impl From<VoteStateResultTypeNAPI> for String {
     fn from(level: VoteStateResultTypeNAPI) -> String {
         match level {
-            VoteStateResultTypeNAPI::Documents => String::from("Documents"),
-            VoteStateResultTypeNAPI::VoteTally => String::from("VoteTally"),
-            VoteStateResultTypeNAPI::DocumentsAndVoteTally => String::from("DocumentsAndVoteTally"),
+            VoteStateResultTypeNAPI::DOCUMENTS => String::from("Documents"),
+            VoteStateResultTypeNAPI::VOTE_TALLY => String::from("VoteTally"),
+            VoteStateResultTypeNAPI::DOCUMENTS_AND_VOTE_TALLY => {
+                String::from("DocumentsAndVoteTally")
+            }
         }
     }
 }
@@ -28,9 +30,9 @@ impl TryFrom<u64> for VoteStateResultTypeNAPI {
 
     fn try_from(value: u64) -> Result<Self, Self::Error> {
         match value {
-            0 => Ok(VoteStateResultTypeNAPI::Documents),
-            1 => Ok(VoteStateResultTypeNAPI::VoteTally),
-            2 => Ok(VoteStateResultTypeNAPI::DocumentsAndVoteTally),
+            0 => Ok(VoteStateResultTypeNAPI::DOCUMENTS),
+            1 => Ok(VoteStateResultTypeNAPI::VOTE_TALLY),
+            2 => Ok(VoteStateResultTypeNAPI::DOCUMENTS_AND_VOTE_TALLY),
             _ => Err(napi::Error::new(
                 Status::InvalidArg,
                 "Invalid vote state result type value",
@@ -44,9 +46,9 @@ impl TryFrom<String> for VoteStateResultTypeNAPI {
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         match value.to_lowercase().as_str() {
-            "documents" => Ok(VoteStateResultTypeNAPI::Documents),
-            "votetally" => Ok(VoteStateResultTypeNAPI::VoteTally),
-            "documentsandvotetally" => Ok(VoteStateResultTypeNAPI::DocumentsAndVoteTally),
+            "documents" => Ok(VoteStateResultTypeNAPI::DOCUMENTS),
+            "votetally" => Ok(VoteStateResultTypeNAPI::VOTE_TALLY),
+            "documentsandvotetally" => Ok(VoteStateResultTypeNAPI::DOCUMENTS_AND_VOTE_TALLY),
             _ => Err(napi::Error::new(
                 Status::InvalidArg,
                 "Invalid vote state result type value",
