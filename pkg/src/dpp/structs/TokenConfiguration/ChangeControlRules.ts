@@ -1,4 +1,4 @@
-import { ChangeControlRulesNAPI, GroupNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { ChangeControlRulesNAPI, GroupNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { AuthorizedActionTakersWASM } from './AuthorizedActionTakers.js'
 import { ActionGoalLike, IdentifierLike } from '../../types.js'

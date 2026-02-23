@@ -42,7 +42,7 @@ pub fn verify_vote_state_proof(
     contract: &DataContractNAPI,
     document_type_name: String,
     index_name: String,
-    js_index_values: &DynamicValue,
+    js_index_values: Vec<Uint8Array>,
     js_result_type: &DynamicValue,
     allow_include_locked_and_abstaining_vote_tally: bool,
     count: Option<u16>,
@@ -50,22 +50,38 @@ pub fn verify_vote_state_proof(
     js_platform_version: &DynamicValue,
 ) -> Result<VerifiedVoteStateNAPI, napi::Error> {
     let index_values: Vec<Value> = js_index_values
-        .as_array()
-        .ok_or(napi::Error::new(
-            napi::Status::InvalidArg,
-            "index_values must be a array",
-        ))?
-        .clone()
         .iter()
-        .map(|value| {
-            if !value.is_string() {
+        .map(|js_index_value| {
+            let js_index_value_bytes = js_index_value.to_vec();
+
+            let value_type = match js_index_value_bytes.get(0) {
+                Some(value_type) => Ok(value_type),
+                None => Err(napi::Error::new(
+                    napi::Status::InvalidArg,
+                    "cannot get first index value",
+                )),
+            }?;
+            let _value_len = match js_index_value_bytes.get(0) {
+                Some(value_len) => Ok(value_len),
+                None => Err(napi::Error::new(
+                    napi::Status::InvalidArg,
+                    "cannot get second index value",
+                )),
+            };
+
+            if *value_type != 0x12 {
                 return Err(napi::Error::new(
                     napi::Status::InvalidArg,
-                    "index_values must be a string",
+                    "can be used only string type (0x12)",
                 ));
             }
 
-            Ok::<Value, napi::Error>(value.clone().try_into()?)
+            let (_, value_bytes) = js_index_value_bytes.split_at(2);
+
+            let value = core::str::from_utf8(value_bytes)
+                .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+            Ok(Value::Text(value.to_string()))
         })
         .collect::<Result<Vec<Value>, napi::Error>>()?;
 

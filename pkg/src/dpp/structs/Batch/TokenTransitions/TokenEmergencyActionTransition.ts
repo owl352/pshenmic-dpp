@@ -1,4 +1,4 @@
-import { TokenEmergencyActionTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenEmergencyActionTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { dppProvider } from '../../../provider.js'
 import { TokenEmergencyActionLike } from '../../../types.js'

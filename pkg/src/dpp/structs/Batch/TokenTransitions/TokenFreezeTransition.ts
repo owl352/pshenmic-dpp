@@ -1,4 +1,4 @@
-import { TokenFreezeTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenFreezeTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { IdentifierLike } from '../../../types.js'
 import { dppProvider } from '../../../provider.js'

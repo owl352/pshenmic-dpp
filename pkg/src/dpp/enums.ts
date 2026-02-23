@@ -6,9 +6,9 @@ export {
   SecurityLevelNAPI as SecurityLevel,
   ActionGoalNAPI as ActionGoal,
   TokenDistributionTypeNAPI as TokenDistributionType,
-  TokenEmergencyActionNAPI as TokenEmergencyAction,
+  TokenEmergencyActionNAPI as TokenEmergencyActionWASM,
   AssetLockProofTypeNAPI as AssetLockProofType,
-  PoolingNAPI as Pooling,
-  GasFeesPaidByNAPI as GasFeesPaidBy,
+  PoolingNAPI as PoolingWASM,
+  GasFeesPaidByNAPI as GasFeesPaidByWASM,
   VoteStateResultTypeNAPI as VoteStateResultType
 } from '../../binaries/bindingsTypes.js'

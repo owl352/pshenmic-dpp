@@ -1,4 +1,4 @@
-import { DynamicValue, GroupNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { DynamicValue, GroupNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 import { IdentifierLike } from '../../types.js'

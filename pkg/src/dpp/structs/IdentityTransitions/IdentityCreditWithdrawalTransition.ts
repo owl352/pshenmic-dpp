@@ -1,4 +1,4 @@
-import { IdentityCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike, PoolingLike } from '../../types.js'
 import { CoreScriptWASM } from '../CoreScript.js'
@@ -55,7 +55,7 @@ export class IdentityCreditWithdrawalTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawIdentityCreditWithdrawalTransition.identityId)
   }
 
-  set identityId (value: IdentifierWASM) {
+  set identityId (value: IdentifierLike) {
     this._rawIdentityCreditWithdrawalTransition.identityId = prepareIdentifierValue(value)
   }
 

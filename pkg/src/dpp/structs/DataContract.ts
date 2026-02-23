@@ -1,4 +1,4 @@
-import { DataContractNAPI, TokenConfigurationNAPI } from '../../../binaries/bindingsTypes.js'
+import type { DataContractNAPI, TokenConfigurationNAPI } from '../../../binaries/bindingsTypes.js'
 import { DataContractGroups, DataContractTokens, IdentifierLike, PlatformVersionLike } from '../types.js'
 import { dppProvider } from '../provider.js'
 import { prepareIdentifierValue, valueFromDynamicValue, valueToDynamicValue } from '../utils.js'
@@ -59,8 +59,8 @@ export class DataContractWASM {
     return IdentifierWASM.createFromRawInstance(this._rawDataContract.id)
   }
 
-  set id (value: IdentifierWASM) {
-    this._rawDataContract.id = value._rawIdentifier
+  set id (value: IdentifierLike) {
+    this._rawDataContract.id = prepareIdentifierValue(value)
   }
 
   get tokens (): DataContractTokens[] {
@@ -118,6 +118,10 @@ export class DataContractWASM {
 
   getConfig (): object {
     return valueFromDynamicValue(this._rawDataContract.getConfig())
+  }
+
+  setConfig (value: object, platformVersion?: PlatformVersionLike): void {
+    this._rawDataContract.setConfig(valueToDynamicValue(value), valueToDynamicValue(platformVersion))
   }
 
   bytes (platformVersion: PlatformVersionLike): Uint8Array {

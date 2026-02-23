@@ -1,4 +1,4 @@
-import { ActionTakerNAPI, IdentifierLikeNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { ActionTakerNAPI, IdentifierLikeNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { prepareIdentifierValue } from '../../utils.js'
 import { dppProvider } from '../../provider.js'
@@ -36,7 +36,7 @@ export class ActionTakerWASM {
     }
   }
 
-  set value (value: IdentifierWASM | IdentifierWASM[]) {
+  set value (value: IdentifierLike | IdentifierLike[]) {
     let normalValue: IdentifierLikeNAPI | IdentifierLikeNAPI[]
 
     if (Array.isArray(value)) {

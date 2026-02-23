@@ -1,4 +1,4 @@
-import { IdentityUpdateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityUpdateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { dppProvider } from '../../provider.js'
@@ -48,8 +48,8 @@ export class IdentityUpdateTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawIdentityUpdateTransition.identityIdentifier)
   }
 
-  set identityIdentifier (value: IdentifierWASM) {
-    this._rawIdentityUpdateTransition.identityIdentifier = value._rawIdentifier
+  set identityIdentifier (value: IdentifierLike) {
+    this._rawIdentityUpdateTransition.identityIdentifier = prepareIdentifierValue(value)
   }
 
   get publicKeyIdsToDisable (): number[] {

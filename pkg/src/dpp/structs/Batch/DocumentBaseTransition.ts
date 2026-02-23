@@ -1,4 +1,4 @@
-import { DocumentBaseTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { DocumentBaseTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { TokenPaymentInfoWASM } from './TokenPaymentInfo.js'
 import { dppProvider } from '../../provider.js'
@@ -29,8 +29,8 @@ export class DocumentBaseTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawDocumentBaseTransition.id)
   }
 
-  set id (id: IdentifierWASM) {
-    this._rawDocumentBaseTransition.id = id._rawIdentifier
+  set id (id: IdentifierLike) {
+    this._rawDocumentBaseTransition.id = prepareIdentifierValue(id)
   }
 
   get identityContractNonce (): bigint {
@@ -45,8 +45,8 @@ export class DocumentBaseTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawDocumentBaseTransition.dataContractId)
   }
 
-  set dataContractId (id: IdentifierWASM) {
-    this._rawDocumentBaseTransition.dataContractId = id._rawIdentifier
+  set dataContractId (id: IdentifierLike) {
+    this._rawDocumentBaseTransition.dataContractId = prepareIdentifierValue(id)
   }
 
   get documentTypeName (): string {

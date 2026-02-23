@@ -126,6 +126,21 @@ impl DynamicValue {
         Self(Either16::F(value))
     }
 
+    #[napi(js_name = "fromInt")]
+    pub fn from_int(value: i64) -> Self {
+        Self(Either16::O(value))
+    }
+
+    #[napi(js_name = "fromUInt")]
+    pub fn from_unsigned_int(value: u32) -> Self {
+        Self(Either16::E(value))
+    }
+
+    #[napi(js_name = "fromFloat")]
+    pub fn from_float(value: f64) -> Self {
+        Self(Either16::P(value))
+    }
+
     #[napi(getter, js_name = "value")]
     pub fn value(
         &self,
@@ -266,8 +281,58 @@ impl TryFrom<Value> for DynamicValue {
             ))),
             Value::Map(val) => Ok(DynamicValue(Either16::H(
                 val.into_iter()
-                    .map(|(k, v)| {
-                        Ok::<(String, DynamicValue), napi::Error>((k.to_string(), v.try_into()?))
+                    .map(|(k, v)| match k {
+                        Value::Text(string) => {
+                            Ok::<(String, DynamicValue), napi::Error>((string, v.try_into()?))
+                        }
+                        Value::I128(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::I64(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::I32(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::I16(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::I8(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::U128(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::U64(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::U32(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::U16(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::U8(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        Value::Float(num) => Ok::<(String, DynamicValue), napi::Error>((
+                            num.to_string(),
+                            v.try_into()?,
+                        )),
+                        _ => Err(napi::Error::new(
+                            napi::Status::InvalidArg,
+                            "Unimplemented type of object key",
+                        )),
                     })
                     .collect::<Result<BTreeMap<String, DynamicValue>, napi::Error>>()?,
             ))),

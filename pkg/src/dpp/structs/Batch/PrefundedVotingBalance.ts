@@ -1,4 +1,4 @@
-import { PrefundedVotingBalanceNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PrefundedVotingBalanceNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class PrefundedVotingBalanceWASM {

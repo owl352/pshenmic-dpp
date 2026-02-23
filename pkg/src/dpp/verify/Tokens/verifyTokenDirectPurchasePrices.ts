@@ -20,7 +20,7 @@ export function verifyTokenDirectPurchasePrices (
   return {
     rootHash: result.rootHash,
     prices: result.prices.map(price => ({
-      id: IdentifierWASM.createFromRawInstance(price.id),
+      tokenId: IdentifierWASM.createFromRawInstance(price.id),
       pricingSchedule: price.pricingSchedule != null ? TokenPricingScheduleWASM.createFromRawInstance(price.pricingSchedule) : undefined
     }))
   }

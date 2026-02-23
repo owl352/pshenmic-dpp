@@ -1,4 +1,4 @@
-import { BigIntString, DynamicValue, IdentifierLikeNAPI } from '../../binaries/bindingsTypes.js'
+import type { BigIntString, DynamicValue, IdentifierLikeNAPI } from '../../binaries/bindingsTypes.js'
 import { dppProvider } from './provider.js'
 import { UINT32MAX } from './constants.js'
 import { IdentifierLike } from './types.js'
@@ -24,6 +24,17 @@ export function valueToDynamicValue (value: any): DynamicValue {
     return new dppProvider.dpp.DynamicValue(objectWithDynamicValue)
   } else if (typeof value === 'function') {
     throw new Error('Cannot parse value from function')
+  } if (typeof value === 'number') {
+    // we cannot strongly pass uint or float without js layer check
+    if (Number.isInteger(value)) {
+      if (value > 4294967295 || value < 0) {
+        return dppProvider.dpp.DynamicValue.fromInt(value)
+      } else {
+        return dppProvider.dpp.DynamicValue.fromUInt(value)
+      }
+    } else {
+      return dppProvider.dpp.DynamicValue.fromFloat(value)
+    }
   } else {
     return new dppProvider.dpp.DynamicValue(value)
   }

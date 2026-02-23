@@ -1,9 +1,10 @@
-import { BatchedTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { BatchedTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { TokenTransitionWASM } from './TokenTransition.js'
 import { DocumentTransitionWASM } from './DocumentTransition.js'
 import { dppProvider } from '../../provider.js'
 import { IdentifierWASM } from '../Identifier.js'
 import { prepareIdentifierValue } from '../../utils.js'
+import { IdentifierLike } from '../../types.js'
 
 export class BatchedTransitionWASM {
   /** @private **/
@@ -29,7 +30,7 @@ export class BatchedTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawTransition.dataContractId)
   }
 
-  set dataContractId (value: IdentifierWASM) {
+  set dataContractId (value: IdentifierLike) {
     this._rawTransition.dataContractId = prepareIdentifierValue(value)
   }
 

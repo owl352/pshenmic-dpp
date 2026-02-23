@@ -1,4 +1,4 @@
-import { IdentityCreditTransferNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreditTransferNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue } from '../../utils.js'

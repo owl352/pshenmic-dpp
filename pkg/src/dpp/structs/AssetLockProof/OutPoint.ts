@@ -1,4 +1,4 @@
-import { OutPointNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { OutPointNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class OutPointWASM {

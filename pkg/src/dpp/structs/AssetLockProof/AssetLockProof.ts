@@ -1,4 +1,4 @@
-import { AssetLockProofNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AssetLockProofNAPI } from '../../../../binaries/bindingsTypes.js'
 import { InstantAssetLockProofWASM } from './InstantAssetLockProof.js'
 import { ChainAssetLockProofWASM } from './ChainAssetLockProof.js'
 import { dppProvider } from '../../provider.js'
@@ -55,7 +55,7 @@ export class AssetLockProofWASM {
   }
 
   static fromHex (value: string): AssetLockProofWASM {
-    return AssetLockProofWASM.createFromRawInstance(AssetLockProofNAPI.fromHex(value))
+    return AssetLockProofWASM.createFromRawInstance(dppProvider.dpp.AssetLockProofNAPI.fromHex(value))
   }
 
   static createFromRawInstance (rawInstance: AssetLockProofNAPI): AssetLockProofWASM {

@@ -1,5 +1,5 @@
 import { KeyTypeLike, NetworkLike, PurposeLike, SecurityLevelLike } from '../types.js'
-import { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
+import type { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js'
 import { KeyType, Purpose, SecurityLevel } from '../enums.js'
 import { dppProvider } from '../provider.js'
 import { ContractBoundsWASM } from './ContractBounds.js'

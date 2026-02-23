@@ -1,4 +1,4 @@
-import { StateTransitionNAPI } from '../../../binaries/bindingsTypes.js'
+import type { StateTransitionNAPI } from '../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../provider.js'
 import { PrivateKeyWASM } from './PrivateKey.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'

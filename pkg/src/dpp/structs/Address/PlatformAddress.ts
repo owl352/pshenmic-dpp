@@ -1,4 +1,4 @@
-import { PlatformAddressNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformAddressNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { NetworkLike } from '../../types.js'
 import { valueToDynamicValue } from '../../utils.js'

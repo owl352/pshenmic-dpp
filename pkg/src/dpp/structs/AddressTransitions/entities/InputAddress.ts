@@ -1,4 +1,4 @@
-import { InputAddressNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { InputAddressNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { PlatformAddressWASM } from '../../Address/PlatformAddress.js'
 import { dppProvider } from '../../../provider.js'
 

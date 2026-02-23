@@ -1,44 +1,12 @@
-import * as protocol from '../../binaries/bindingsTypes.js'
+import type * as protocol from '../../binaries/bindingsTypes.js'
 import {
-  AddressWitnessP2pkhNAPI,
-  AddressWitnessP2shNAPI,
-  DataContractNAPI,
-  DistributionLinearNAPI,
-  DistributionExponentialNAPI,
-  DistributionFixedAmountNAPI,
-  DistributionInvertedLogarithmicNAPI,
-  DistributionLogarithmicNAPI,
-  DistributionPolynomialNAPI,
-  DistributionRandomNAPI,
-  DistributionStepDecreasingAmountNAPI,
-  DocumentNAPI,
-  IdentifierNAPI,
-  IdentityNAPI,
-  PartialIdentityNAPI,
-  TokenConfigurationLocalizationJsonNAPI,
-  TokenStatusNAPI,
-  VerifiedAddressInfosNAPI,
-  VerifiedBalanceTransferNAPI,
-  VerifiedDocumentNAPI,
-  VerifiedIdentityBalanceNAPI,
-  VerifiedIdentityFullWithAddressInfosNAPI,
-  VerifiedIdentityTokenInfoNAPI,
-  VerifiedIdentityWithAddressInfosNAPI,
-  VerifiedTokenGroupActionWithDocumentNAPI,
-  VerifiedTokenGroupActionWithTokenBalanceNAPI,
-  VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
-  VerifiedTokenGroupActionWithTokenPricingScheduleNAPI,
-  VerifiedTokenPricingScheduleNAPI,
-  VoteNAPI
-} from '../../binaries/bindingsTypes.js'
-import {
-  ActionGoal, AssetLockProofType, GasFeesPaidBy,
+  ActionGoal, AssetLockProofType, GasFeesPaidByWASM,
   KeyType,
   NetworkWASM,
-  PlatformVersionWASM, Pooling,
+  PlatformVersionWASM, PoolingWASM,
   Purpose,
   SecurityLevel,
-  TokenDistributionType, TokenEmergencyAction, VoteStateResultType
+  TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType
 } from './enums.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { languageCodes } from './constants.js'
@@ -75,31 +43,31 @@ import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.j
 import { PlatformAddressWASM } from './structs/Address/PlatformAddress.js'
 
 export type DashPlatformProtocol = typeof protocol
-export type IdentifierLike = string | Uint8Array | IdentifierNAPI | IdentifierWASM
+export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM
 
-export type KeyTypeLike = KeyType | keyof typeof KeyType
-export type NetworkLike = NetworkWASM | keyof typeof NetworkWASM
-export type SecurityLevelLike = SecurityLevel | keyof typeof SecurityLevel
-export type PlatformVersionLike = PlatformVersionWASM | keyof typeof PlatformVersionWASM
-export type PurposeLike = Purpose | keyof typeof Purpose
-export type ActionGoalLike = ActionGoal | keyof typeof ActionGoal
-export type GasFeesPaidByLike = GasFeesPaidBy | keyof typeof GasFeesPaidBy
-export type TokenDistributionLike = TokenDistributionType | keyof typeof TokenDistributionType
-export type TokenEmergencyActionLike = TokenEmergencyAction | keyof typeof TokenEmergencyAction
-export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType
-export type PoolingLike = Pooling | keyof typeof Pooling
-export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType
+export type KeyTypeLike = KeyType | keyof typeof KeyType | Lowercase<keyof typeof KeyType>
+export type NetworkLike = NetworkWASM | keyof typeof NetworkWASM | Lowercase<keyof typeof NetworkWASM>
+export type SecurityLevelLike = SecurityLevel | keyof typeof SecurityLevel | Lowercase<keyof typeof SecurityLevel>
+export type PlatformVersionLike = PlatformVersionWASM | Lowercase<keyof typeof PlatformVersionWASM>
+export type PurposeLike = Purpose | keyof typeof Purpose | Lowercase<keyof typeof Purpose>
+export type ActionGoalLike = ActionGoal | keyof typeof ActionGoal | Lowercase<keyof typeof ActionGoal>
+export type GasFeesPaidByLike = GasFeesPaidByWASM | keyof typeof GasFeesPaidByWASM | Lowercase<keyof typeof GasFeesPaidByWASM>
+export type TokenDistributionLike = TokenDistributionType | keyof typeof TokenDistributionType | Lowercase<keyof typeof TokenDistributionType>
+export type TokenEmergencyActionLike = TokenEmergencyActionWASM | keyof typeof TokenEmergencyActionWASM | Lowercase<keyof typeof TokenEmergencyActionWASM>
+export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType | Lowercase<keyof typeof AssetLockProofType>
+export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>
+export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>
 
 export type EnumLike = KeyTypeLike | NetworkLike | SecurityLevelLike | PlatformVersionLike | PurposeLike
 
-export type AddressWitnessP2PKH = AddressWitnessP2pkhNAPI
-export type AddressWitnessP2SH = AddressWitnessP2shNAPI
+export type AddressWitnessP2PKH = protocol.AddressWitnessP2pkhNAPI
+export type AddressWitnessP2SH = protocol.AddressWitnessP2shNAPI
 
-export type TokenConfigurationLocalizationJson = TokenConfigurationLocalizationJsonNAPI
+export type TokenConfigurationLocalizationJson = protocol.TokenConfigurationLocalizationJsonNAPI
 
-export type DistributionFixedAmount = DistributionFixedAmountNAPI
-export type DistributionRandom = DistributionRandomNAPI
-export type DistributionStepDecreasingAmount = DistributionStepDecreasingAmountNAPI
+export type DistributionFixedAmount = protocol.DistributionFixedAmountNAPI
+export type DistributionRandom = protocol.DistributionRandomNAPI
+export type DistributionStepDecreasingAmount = protocol.DistributionStepDecreasingAmountNAPI
 
 export interface DistributionStepwiseStep {
   step: bigint
@@ -107,11 +75,11 @@ export interface DistributionStepwiseStep {
 }
 
 export type DistributionStepwise = DistributionStepwiseStep[]
-export type DistributionLinear = DistributionLinearNAPI
-export type DistributionPolynomial = DistributionPolynomialNAPI
-export type DistributionExponential = DistributionExponentialNAPI
-export type DistributionLogarithmic = DistributionLogarithmicNAPI
-export type DistributionInvertedLogarithmic = DistributionInvertedLogarithmicNAPI
+export type DistributionLinear = protocol.DistributionLinearNAPI
+export type DistributionPolynomial = protocol.DistributionPolynomialNAPI
+export type DistributionExponential = protocol.DistributionExponentialNAPI
+export type DistributionLogarithmic = protocol.DistributionLogarithmicNAPI
+export type DistributionInvertedLogarithmic = protocol.DistributionInvertedLogarithmicNAPI
 
 export interface RewardDistribution {
   interval: bigint | number
@@ -244,12 +212,12 @@ export interface VerifiedIdentityBalance {
 }
 
 export interface VerifiedIdentityTokenInfo {
-  id: IdentifierWASM
+  tokenId: IdentifierWASM
   identityTokenInfo: IdentityTokenInfo
 }
 
 export interface VerifiedTokenPricingSchedule {
-  id: IdentifierWASM
+  tokenId: IdentifierWASM
   pricingSchedule?: TokenPricingScheduleWASM
 }
 
@@ -324,26 +292,26 @@ export type VerifiedStateTransitionResultVariants = DataContractWASM
 | VerifiedIdentityWithAddressInfos
 
 export type VerifiedStateTransitionResultVariantsRAW =
-  DataContractNAPI
-  | IdentityNAPI
-  | IdentifierNAPI
-  | VerifiedIdentityBalanceNAPI
-  | VerifiedIdentityTokenInfoNAPI
-  | VerifiedTokenPricingScheduleNAPI
-  | TokenStatusNAPI
-  | VerifiedIdentityBalanceNAPI[]
-  | PartialIdentityNAPI
-  | VerifiedBalanceTransferNAPI
-  | VerifiedDocumentNAPI[]
-  | DocumentNAPI
-  | VerifiedTokenGroupActionWithDocumentNAPI
-  | VerifiedTokenGroupActionWithTokenBalanceNAPI
-  | VerifiedTokenGroupActionWithTokenIdentityInfoNAPI
-  | VerifiedTokenGroupActionWithTokenPricingScheduleNAPI
-  | VoteNAPI
-  | VerifiedAddressInfosNAPI[]
-  | VerifiedIdentityFullWithAddressInfosNAPI
-  | VerifiedIdentityWithAddressInfosNAPI
+  protocol.DataContractNAPI
+  | protocol.IdentityNAPI
+  | protocol.IdentifierNAPI
+  | protocol.VerifiedIdentityBalanceNAPI
+  | protocol.VerifiedIdentityTokenInfoNAPI
+  | protocol.VerifiedTokenPricingScheduleNAPI
+  | protocol.TokenStatusNAPI
+  | protocol.VerifiedIdentityBalanceNAPI[]
+  | protocol.PartialIdentityNAPI
+  | protocol.VerifiedBalanceTransferNAPI
+  | protocol.VerifiedDocumentNAPI[]
+  | protocol.DocumentNAPI
+  | protocol.VerifiedTokenGroupActionWithDocumentNAPI
+  | protocol.VerifiedTokenGroupActionWithTokenBalanceNAPI
+  | protocol.VerifiedTokenGroupActionWithTokenIdentityInfoNAPI
+  | protocol.VerifiedTokenGroupActionWithTokenPricingScheduleNAPI
+  | protocol.VoteNAPI
+  | protocol.VerifiedAddressInfosNAPI[]
+  | protocol.VerifiedIdentityFullWithAddressInfosNAPI
+  | protocol.VerifiedIdentityWithAddressInfosNAPI
 
 export interface VerifiedStateTransitionResult {
   rootHash: Uint8Array

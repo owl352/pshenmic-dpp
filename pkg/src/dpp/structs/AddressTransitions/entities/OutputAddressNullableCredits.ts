@@ -1,4 +1,4 @@
-import {
+import type {
   OutputAddressNullableCreditsNAPI
 } from '../../../../../binaries/bindingsTypes.js'
 import { PlatformAddressWASM } from '../../Address/PlatformAddress.js'

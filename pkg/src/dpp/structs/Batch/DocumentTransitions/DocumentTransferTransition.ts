@@ -1,4 +1,4 @@
-import { DocumentTransferTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { DocumentTransferTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { IdentifierLike } from '../../../types.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'

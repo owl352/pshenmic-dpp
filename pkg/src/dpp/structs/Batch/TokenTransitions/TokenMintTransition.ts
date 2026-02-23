@@ -1,4 +1,4 @@
-import { TokenMintTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
+import type { TokenMintTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { TokenBaseTransitionWASM } from '../TokenBaseTransition.js'
 import { IdentifierLike } from '../../../types.js'
 import { dppProvider } from '../../../provider.js'
@@ -11,8 +11,8 @@ export class TokenMintTransitionWASM {
 
   constructor (
     base: TokenBaseTransitionWASM,
+    issueToIdentityId: IdentifierLike | undefined,
     amount: bigint,
-    issueToIdentityId?: IdentifierLike,
     publicNote?: string
   ) {
     this._rawTransition = new dppProvider.dpp.TokenMintTransitionNAPI(

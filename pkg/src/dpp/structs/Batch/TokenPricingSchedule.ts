@@ -1,4 +1,4 @@
-import { TokenPricingScheduleNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenPricingScheduleNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
 

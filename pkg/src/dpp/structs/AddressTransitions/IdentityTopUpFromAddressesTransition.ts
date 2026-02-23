@@ -1,4 +1,4 @@
-import { IdentityTopUpFromAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityTopUpFromAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike } from '../../types.js'
 import { InputAddressWASM } from './entities/InputAddress.js'

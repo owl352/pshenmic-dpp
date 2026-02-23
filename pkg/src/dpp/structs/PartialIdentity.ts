@@ -1,4 +1,4 @@
-import { IdentityPublicKeyNAPI, PartialIdentityNAPI } from '../../../binaries/bindingsTypes.js'
+import type { IdentityPublicKeyNAPI, PartialIdentityNAPI } from '../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../types.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
 import { dppProvider } from '../provider.js'

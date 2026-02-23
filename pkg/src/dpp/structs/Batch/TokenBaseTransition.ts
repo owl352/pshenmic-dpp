@@ -1,4 +1,4 @@
-import { TokenBaseTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TokenBaseTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { GroupStateTransitionInfoWASM } from '../GroupStateTransitionInfo.js'
 import { dppProvider } from '../../provider.js'

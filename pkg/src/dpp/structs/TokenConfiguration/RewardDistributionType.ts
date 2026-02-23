@@ -1,4 +1,4 @@
-import {
+import type {
   RewardDistributionTypeNAPI
 } from '../../../../binaries/bindingsTypes.js'
 import { DistributionFunctionWASM } from './DistributionFunction.js'

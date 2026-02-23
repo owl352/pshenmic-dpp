@@ -1,4 +1,4 @@
-import { VoteNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { VoteNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { VotePollWASM } from './VotePoll.js'
 import { ResourceVoteChoiceWASM } from './ResourceVoteChoice.js'

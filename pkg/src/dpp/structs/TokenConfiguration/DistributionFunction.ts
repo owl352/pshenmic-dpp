@@ -1,4 +1,4 @@
-import { DistributionFunctionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { DistributionFunctionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import {
   DistributionExponential,

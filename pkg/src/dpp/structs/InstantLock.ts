@@ -1,4 +1,4 @@
-import { InstantLockNAPI } from '../../../binaries/bindingsTypes.js'
+import type { InstantLockNAPI } from '../../../binaries/bindingsTypes.js'
 import { OutPointWASM } from './AssetLockProof/OutPoint.js'
 import { dppProvider } from '../provider.js'
 

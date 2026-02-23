@@ -1,4 +1,4 @@
-import { DocumentNAPI } from '../../../binaries/bindingsTypes.js'
+import type { DocumentNAPI } from '../../../binaries/bindingsTypes.js'
 import { IdentifierLike, PlatformVersionLike } from '../types.js'
 import { dppProvider } from '../provider.js'
 import { prepareIdentifierValue, valueFromDynamicValue, valueToDynamicValue } from '../utils.js'
@@ -33,8 +33,8 @@ export class DocumentWASM {
     return IdentifierWASM.createFromRawInstance(this._rawDocument.id)
   }
 
-  set id (id: IdentifierWASM) {
-    this._rawDocument.id = id._rawIdentifier
+  set id (id: IdentifierLike) {
+    this._rawDocument.id = prepareIdentifierValue(id)
   }
 
   get entropy (): Uint8Array | undefined {
@@ -257,7 +257,7 @@ export class DocumentWASM {
   }
 
   static createFromRawInstance (rawInstance: DocumentNAPI): DocumentWASM {
-    const instance: DocumentWASM = Object.create(this.prototype)
+    const instance: DocumentWASM = Object.create(DocumentWASM.prototype)
     instance._rawDocument = rawInstance
 
     return instance

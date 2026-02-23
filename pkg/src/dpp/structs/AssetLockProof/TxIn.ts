@@ -1,4 +1,4 @@
-import { TxInNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { TxInNAPI } from '../../../../binaries/bindingsTypes.js'
 import { OutPointWASM } from './OutPoint.js'
 import { WitnessWASM } from './Witness.js'
 import { dppProvider } from '../../provider.js'

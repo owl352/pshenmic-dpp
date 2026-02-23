@@ -1,4 +1,4 @@
-import { DataContractUpdateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { DataContractUpdateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { DataContractWASM } from '../DataContract.js'
 import { PlatformVersionLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'

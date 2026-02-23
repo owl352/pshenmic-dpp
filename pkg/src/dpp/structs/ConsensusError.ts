@@ -1,4 +1,4 @@
-import { ConsensusErrorNAPI } from '../../../binaries/bindingsTypes.js'
+import type { ConsensusErrorNAPI } from '../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../provider.js'
 
 export class ConsensusErrorWASM {
@@ -19,7 +19,7 @@ export class ConsensusErrorWASM {
     return new ConsensusErrorWASM(dppProvider.dpp.ConsensusErrorNAPI.deserialize(error))
   }
 
-  message (): string {
+  get message (): string {
     return this._rawConsensusError.message
   }
 }

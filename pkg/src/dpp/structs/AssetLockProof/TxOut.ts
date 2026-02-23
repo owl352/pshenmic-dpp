@@ -1,4 +1,4 @@
-import { BigIntString, TxOutNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { BigIntString, TxOutNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 
 export class TxOutWASM {
