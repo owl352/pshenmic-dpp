@@ -50,7 +50,7 @@ export class InstantLockWASM {
   }
 
   static createFromRawInstance (rawInstance: InstantLockNAPI): InstantLockWASM {
-    const instance: InstantLockWASM = Object.create(this.prototype)
+    const instance: InstantLockWASM = Object.create(InstantLockWASM.prototype)
     instance._rawInstantLock = rawInstance
 
     return instance

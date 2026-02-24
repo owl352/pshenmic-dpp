@@ -31,7 +31,7 @@ export class TokenPerpetualDistributionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenPerpetualDistributionNAPI): TokenPerpetualDistributionWASM {
-    const instance: TokenPerpetualDistributionWASM = Object.create(this.prototype)
+    const instance: TokenPerpetualDistributionWASM = Object.create(TokenPerpetualDistributionWASM.prototype)
     instance._rawTokenPerpetualDistribution = rawInstance
 
     return instance

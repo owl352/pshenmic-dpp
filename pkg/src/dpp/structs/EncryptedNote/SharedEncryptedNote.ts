@@ -34,7 +34,7 @@ export class SharedEncryptedNoteWASM {
   }
 
   static createFromRawInstance (rawInstance: SharedEncryptedNoteNAPI): SharedEncryptedNoteWASM {
-    const instance: SharedEncryptedNoteWASM = Object.create(this.prototype)
+    const instance: SharedEncryptedNoteWASM = Object.create(SharedEncryptedNoteWASM.prototype)
     instance._rawSharedNote = rawInstance
 
     return instance

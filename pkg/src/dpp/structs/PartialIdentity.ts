@@ -95,7 +95,7 @@ export class PartialIdentityWASM {
   }
 
   static createFromRawInstance (rawInstance: PartialIdentityNAPI): PartialIdentityWASM {
-    const instance: PartialIdentityWASM = Object.create(this.prototype)
+    const instance: PartialIdentityWASM = Object.create(PartialIdentityWASM.prototype)
     instance._rawPartialIdentity = rawInstance
 
     return instance

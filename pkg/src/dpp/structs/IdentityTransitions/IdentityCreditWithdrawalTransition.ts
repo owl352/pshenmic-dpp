@@ -170,7 +170,7 @@ export class IdentityCreditWithdrawalTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: IdentityCreditWithdrawalTransitionNAPI): IdentityCreditWithdrawalTransitionWASM {
-    const instance: IdentityCreditWithdrawalTransitionWASM = Object.create(this.prototype)
+    const instance: IdentityCreditWithdrawalTransitionWASM = Object.create(IdentityCreditWithdrawalTransitionWASM.prototype)
     instance._rawIdentityCreditWithdrawalTransition = rawInstance
 
     return instance

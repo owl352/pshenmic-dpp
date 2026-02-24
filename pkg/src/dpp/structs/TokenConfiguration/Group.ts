@@ -59,7 +59,7 @@ export class GroupWASM {
   }
 
   static createFromRawInstance (rawInstance: GroupNAPI): GroupWASM {
-    const instance: GroupWASM = Object.create(this.prototype)
+    const instance: GroupWASM = Object.create(GroupWASM.prototype)
     instance._rawGroup = rawInstance
 
     return instance

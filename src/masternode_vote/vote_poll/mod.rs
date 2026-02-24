@@ -1,4 +1,6 @@
+use dpp::bincode;
 use dpp::platform_value::Value;
+use dpp::platform_value::string_encoding::encode;
 use dpp::voting::vote_polls::VotePoll;
 use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
 use napi_derive::napi;
@@ -83,16 +85,32 @@ impl VotePollNAPI {
     }
 
     #[napi(getter, js_name = "indexValues")]
-    pub fn index_values(&self) -> Result<Vec<DynamicValue>, napi::Error> {
+    pub fn index_values(&self) -> Result<Vec<String>, napi::Error> {
+        let config = bincode::config::standard()
+            .with_big_endian()
+            .with_no_limit();
+
         match self.0.clone() {
             VotePoll::ContestedDocumentResourceVotePoll(poll) => {
-                let encoded: Vec<DynamicValue> = poll
+                let encoded: Vec<Vec<u8>> = poll
                     .index_values
                     .iter()
-                    .map(|value| DynamicValue::try_from(value.clone()))
-                    .collect::<Result<Vec<DynamicValue>, napi::Error>>()?;
+                    .map(|value| {
+                        bincode::encode_to_vec(value, config).map_err(|err| {
+                            napi::Error::new(napi::Status::GenericFailure, err.to_string())
+                        })
+                    })
+                    .collect::<Result<Vec<Vec<u8>>, napi::Error>>()?;
 
-                Ok(encoded)
+                Ok(encoded
+                    .iter()
+                    .map(|bytes| {
+                        encode(
+                            bytes.as_slice(),
+                            dpp::platform_value::string_encoding::Encoding::Base64,
+                        )
+                    })
+                    .collect())
             }
         }
     }

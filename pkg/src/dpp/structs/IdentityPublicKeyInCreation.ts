@@ -104,7 +104,7 @@ export class IdentityPublicKeyInCreationWASM {
   }
 
   static createFromRawInstance (rawInstance: IdentityPublicKeyInCreationNAPI): IdentityPublicKeyInCreationWASM {
-    const instance: IdentityPublicKeyInCreationWASM = Object.create(this.prototype)
+    const instance: IdentityPublicKeyInCreationWASM = Object.create(IdentityPublicKeyInCreationWASM.prototype)
     instance._rawKeyInCreation = rawInstance
 
     return instance

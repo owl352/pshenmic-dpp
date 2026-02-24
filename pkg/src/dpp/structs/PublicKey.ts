@@ -42,7 +42,7 @@ export class PublicKeyWASM {
   }
 
   static createFromRawInstance (rawInstance: PublicKeyNAPI): PublicKeyWASM {
-    const instance: PublicKeyWASM = Object.create(this.prototype)
+    const instance: PublicKeyWASM = Object.create(PublicKeyWASM.prototype)
     instance._rawPublicKey = rawInstance
 
     return instance

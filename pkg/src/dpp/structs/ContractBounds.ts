@@ -45,7 +45,7 @@ export class ContractBoundsWASM {
   }
 
   static createFromRawInstance (rawInstance: ContractBoundsNAPI): ContractBoundsWASM {
-    const instance: ContractBoundsWASM = Object.create(this.prototype)
+    const instance: ContractBoundsWASM = Object.create(ContractBoundsWASM.prototype)
     instance._rawContractBounds = rawInstance
 
     return instance

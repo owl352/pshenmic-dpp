@@ -55,7 +55,7 @@ export class DocumentTransferTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: DocumentTransferTransitionNAPI): DocumentTransferTransitionWASM {
-    const instance: DocumentTransferTransitionWASM = Object.create(this.prototype)
+    const instance: DocumentTransferTransitionWASM = Object.create(DocumentTransferTransitionWASM.prototype)
     instance._rawDocumentTransferTransition = rawInstance
 
     return instance

@@ -82,7 +82,7 @@ export class DocumentCreateTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: DocumentCreateTransitionNAPI): DocumentCreateTransitionWASM {
-    const instance: DocumentCreateTransitionWASM = Object.create(this.prototype)
+    const instance: DocumentCreateTransitionWASM = Object.create(DocumentCreateTransitionWASM.prototype)
     instance._rawDocumentCreateTransition = rawInstance
 
     return instance

@@ -45,7 +45,7 @@ export class TokenBurnTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenBurnTransitionNAPI): TokenBurnTransitionWASM {
-    const instance: TokenBurnTransitionWASM = Object.create(this.prototype)
+    const instance: TokenBurnTransitionWASM = Object.create(TokenBurnTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

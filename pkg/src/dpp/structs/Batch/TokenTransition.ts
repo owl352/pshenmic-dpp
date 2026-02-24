@@ -97,8 +97,12 @@ export class TokenTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawTokenTransition.getHistoricalDocumentId(prepareIdentifierValue(ownerId)))
   }
 
+  idDocumentTransition(): boolean {
+    return false
+  }
+
   static createFromRawInstance (rawInstance: TokenTransitionNAPI): TokenTransitionWASM {
-    const instance: TokenTransitionWASM = Object.create(this.prototype)
+    const instance: TokenTransitionWASM = Object.create(TokenTransitionWASM.prototype)
     instance._rawTokenTransition = rawInstance
 
     return instance

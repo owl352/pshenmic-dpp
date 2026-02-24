@@ -47,7 +47,7 @@ export class TokenPricingScheduleWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenPricingScheduleNAPI): TokenPricingScheduleWASM {
-    const instance: TokenPricingScheduleWASM = Object.create(this.prototype)
+    const instance: TokenPricingScheduleWASM = Object.create(TokenPricingScheduleWASM.prototype)
     instance._rawTokenPricingSchedule = rawInstance
 
     return instance

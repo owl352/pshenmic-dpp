@@ -91,7 +91,7 @@ export class ChangeControlRulesWASM {
   }
 
   static createFromRawInstance (rawInstance: ChangeControlRulesNAPI): ChangeControlRulesWASM {
-    const instance: ChangeControlRulesWASM = Object.create(this.prototype)
+    const instance: ChangeControlRulesWASM = Object.create(ChangeControlRulesWASM.prototype)
     instance._rawChangeControlRules = rawInstance
 
     return instance

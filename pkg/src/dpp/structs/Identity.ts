@@ -90,7 +90,7 @@ export class IdentityWASM {
   }
 
   static createFromRawInstance (rawInstance: IdentityNAPI): IdentityWASM {
-    const instance: IdentityWASM = Object.create(this.prototype)
+    const instance: IdentityWASM = Object.create(IdentityWASM.prototype)
     instance._rawIdentity = rawInstance
 
     return instance

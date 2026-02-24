@@ -34,7 +34,7 @@ export class PrivateEncryptedNoteWASM {
   }
 
   static createFromRawInstance (rawInstance: PrivateEncryptedNoteNAPI): PrivateEncryptedNoteWASM {
-    const instance: PrivateEncryptedNoteWASM = Object.create(this.prototype)
+    const instance: PrivateEncryptedNoteWASM = Object.create(PrivateEncryptedNoteWASM.prototype)
     instance._rawEncryptedNote = rawInstance
 
     return instance

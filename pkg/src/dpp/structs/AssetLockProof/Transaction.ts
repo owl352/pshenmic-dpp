@@ -63,7 +63,7 @@ export class TransactionWASM {
   }
 
   static createFromRawInstance (rawInstance: TransactionNAPI): TransactionWASM {
-    const instance: TransactionWASM = Object.create(this.prototype)
+    const instance: TransactionWASM = Object.create(TransactionWASM.prototype)
     instance._rawTransaction = rawInstance
 
     return instance

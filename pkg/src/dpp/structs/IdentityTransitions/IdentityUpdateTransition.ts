@@ -147,7 +147,7 @@ export class IdentityUpdateTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: IdentityUpdateTransitionNAPI): IdentityUpdateTransitionWASM {
-    const instance: IdentityUpdateTransitionWASM = Object.create(this.prototype)
+    const instance: IdentityUpdateTransitionWASM = Object.create(IdentityUpdateTransitionWASM.prototype)
     instance._rawIdentityUpdateTransition = rawInstance
 
     return instance

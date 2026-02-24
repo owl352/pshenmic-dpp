@@ -37,7 +37,7 @@ export class GroupStateTransitionInfoWASM {
   }
 
   static createFromRawInstance (rawInstance: GroupStateTransitionInfoNAPI): GroupStateTransitionInfoWASM {
-    const instance: GroupStateTransitionInfoWASM = Object.create(this.prototype)
+    const instance: GroupStateTransitionInfoWASM = Object.create(GroupStateTransitionInfoWASM.prototype)
     instance._rawGroupStateTransitionInfo = rawInstance
 
     return instance

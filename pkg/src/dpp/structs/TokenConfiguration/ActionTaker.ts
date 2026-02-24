@@ -49,7 +49,7 @@ export class ActionTakerWASM {
   }
 
   static createFromRawInstance (rawInstance: ActionTakerNAPI): ActionTakerWASM {
-    const instance: ActionTakerWASM = Object.create(this.prototype)
+    const instance: ActionTakerWASM = Object.create(ActionTakerWASM.prototype)
     instance._rawActionTaker = rawInstance
 
     return instance

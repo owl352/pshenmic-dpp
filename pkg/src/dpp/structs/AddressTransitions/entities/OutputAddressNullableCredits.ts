@@ -33,7 +33,7 @@ export class OutputAddressNullableCreditsWASM {
   }
 
   static createFromRawInstance (rawInstance: OutputAddressNullableCreditsNAPI): OutputAddressNullableCreditsWASM {
-    const instance: OutputAddressNullableCreditsWASM = Object.create(this.prototype)
+    const instance: OutputAddressNullableCreditsWASM = Object.create(OutputAddressNullableCreditsWASM.prototype)
     instance._rawOutputAddressNullableCredits = rawInstance
 
     return instance

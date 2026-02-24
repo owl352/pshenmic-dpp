@@ -59,7 +59,7 @@ export class AssetLockProofWASM {
   }
 
   static createFromRawInstance (rawInstance: AssetLockProofNAPI): AssetLockProofWASM {
-    const instance: AssetLockProofWASM = Object.create(this.prototype)
+    const instance: AssetLockProofWASM = Object.create(AssetLockProofWASM.prototype)
     instance._rawAssetLockProof = rawInstance
 
     return instance

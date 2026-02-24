@@ -77,7 +77,7 @@ export class TokenPaymentInfoWASM {
   }
 
   static crateFromRawInstance (rawInstance: TokenPaymentInfoNAPI): TokenPaymentInfoWASM {
-    const instance: TokenPaymentInfoWASM = Object.create(this.prototype)
+    const instance: TokenPaymentInfoWASM = Object.create(TokenPaymentInfoWASM.prototype)
     instance._rawTokenPaymentInfo = rawInstance
 
     return instance

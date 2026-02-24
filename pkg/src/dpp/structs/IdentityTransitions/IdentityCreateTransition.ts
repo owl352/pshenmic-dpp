@@ -101,7 +101,7 @@ export class IdentityCreateTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: IdentityCreateTransitionNAPI): IdentityCreateTransitionWASM {
-    const instance: IdentityCreateTransitionWASM = Object.create(this.prototype)
+    const instance: IdentityCreateTransitionWASM = Object.create(IdentityCreateTransitionWASM.prototype)
     instance._rawIdentityCreateTransition = rawInstance
 
     return instance

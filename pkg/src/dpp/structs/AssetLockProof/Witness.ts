@@ -26,7 +26,7 @@ export class WitnessWASM {
   }
 
   static createFromRawInstance (rawInstance: WitnessNAPI): WitnessWASM {
-    const instance: WitnessWASM = Object.create(this.prototype)
+    const instance: WitnessWASM = Object.create(WitnessWASM.prototype)
     instance._rawWitness = rawInstance
 
     return instance
