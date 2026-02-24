@@ -89,7 +89,7 @@ export class DocumentTransitionWASM {
     return DocumentUpdatePriceTransitionWASM.createFromRawInstance(this._rawTransition.updatePriceTransition)
   }
 
-  idDocumentTransition(): boolean {
+  idDocumentTransition (): boolean {
     return true
   }
 

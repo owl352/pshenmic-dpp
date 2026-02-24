@@ -97,7 +97,7 @@ export class TokenTransitionWASM {
     return IdentifierWASM.createFromRawInstance(this._rawTokenTransition.getHistoricalDocumentId(prepareIdentifierValue(ownerId)))
   }
 
-  idDocumentTransition(): boolean {
+  idDocumentTransition (): boolean {
     return false
   }
 

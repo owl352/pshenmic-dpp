@@ -1,7 +1,7 @@
 import type { VotePollNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
-import { prepareIdentifierValue, valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
+import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 import { IdentifierWASM } from '../Identifier.js'
 
 export class VotePollWASM {

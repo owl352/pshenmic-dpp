@@ -5,7 +5,7 @@ import { SharedEncryptedNoteWASM } from '../../EncryptedNote/SharedEncryptedNote
 import { PrivateEncryptedNoteWASM } from '../../EncryptedNote/PrivateEncryptedNote.js'
 import { dppProvider } from '../../../provider.js'
 import { prepareIdentifierValue } from '../../../utils.js'
-import {IdentifierWASM} from "../../Identifier.js";
+import { IdentifierWASM } from '../../Identifier.js'
 
 export class TokenTransferTransitionWASM {
   /** @private **/
@@ -29,7 +29,7 @@ export class TokenTransferTransitionWASM {
     )
   }
 
-  get recipientId(): IdentifierWASM {
+  get recipientId (): IdentifierWASM {
     return IdentifierWASM.createFromRawInstance(this._rawTransition.recipientId)
   }
 
