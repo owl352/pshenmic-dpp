@@ -65,7 +65,7 @@ export class TokenKeepsHistoryRulesWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenKeepsHistoryRulesNAPI): TokenKeepsHistoryRulesWASM {
-    const instance: TokenKeepsHistoryRulesWASM = Object.create(this.prototype)
+    const instance: TokenKeepsHistoryRulesWASM = Object.create(TokenKeepsHistoryRulesWASM.prototype)
     instance._rawTokenKeepsHistoryRules = rawInstance
 
     return instance

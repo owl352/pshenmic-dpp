@@ -45,7 +45,7 @@ export class TokenDirectPurchaseTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenDirectPurchaseTransitionNAPI): TokenDirectPurchaseTransitionWASM {
-    const instance: TokenDirectPurchaseTransitionWASM = Object.create(this.prototype)
+    const instance: TokenDirectPurchaseTransitionWASM = Object.create(TokenDirectPurchaseTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

@@ -18,7 +18,7 @@ export class PrefundedVotingBalanceWASM {
   }
 
   static createFromRawInstance (rawInstance: PrefundedVotingBalanceNAPI): PrefundedVotingBalanceWASM {
-    const instance: PrefundedVotingBalanceWASM = Object.create(this.prototype)
+    const instance: PrefundedVotingBalanceWASM = Object.create(PrefundedVotingBalanceWASM.prototype)
     instance._rawPrefundedVotingBalance = rawInstance
 
     return instance

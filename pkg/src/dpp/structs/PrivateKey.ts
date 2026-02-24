@@ -57,7 +57,7 @@ export class PrivateKeyWASM {
   }
 
   static createFromRawInstance (rawInstance: PrivateKeyNAPI): PrivateKeyWASM {
-    const instance: PrivateKeyWASM = Object.create(this.prototype)
+    const instance: PrivateKeyWASM = Object.create(PrivateKeyWASM.prototype)
     instance._rawPrivateKey = rawInstance
 
     return instance

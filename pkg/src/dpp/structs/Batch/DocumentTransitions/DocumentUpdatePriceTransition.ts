@@ -52,7 +52,7 @@ export class DocumentUpdatePriceTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: DocumentUpdatePriceTransitionNAPI): DocumentUpdatePriceTransitionWASM {
-    const instance: DocumentUpdatePriceTransitionWASM = Object.create(this.prototype)
+    const instance: DocumentUpdatePriceTransitionWASM = Object.create(DocumentUpdatePriceTransitionWASM.prototype)
     instance._rawDocumentUpdatePriceTransition = rawInstance
 
     return instance

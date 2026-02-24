@@ -36,7 +36,7 @@ export class PlatformAddressWASM {
   }
 
   static createFromRawInstance (rawInstance: PlatformAddressNAPI): PlatformAddressWASM {
-    const instance: PlatformAddressWASM = Object.create(this.prototype)
+    const instance: PlatformAddressWASM = Object.create(PlatformAddressWASM.prototype)
     instance._rawPlatformAddress = rawInstance
 
     return instance

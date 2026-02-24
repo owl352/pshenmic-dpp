@@ -46,7 +46,7 @@ export class TokenConfigUpdateTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenConfigUpdateTransitionNAPI): TokenConfigUpdateTransitionWASM {
-    const instance: TokenConfigUpdateTransitionWASM = Object.create(this.prototype)
+    const instance: TokenConfigUpdateTransitionWASM = Object.create(TokenConfigUpdateTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

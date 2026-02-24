@@ -190,7 +190,7 @@ export class BatchTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: BatchTransitionNAPI): BatchTransitionWASM {
-    const instance: BatchTransitionWASM = Object.create(this.prototype)
+    const instance: BatchTransitionWASM = Object.create(BatchTransitionWASM.prototype)
     instance._rawBatchTransition = rawInstance
 
     return instance

@@ -110,7 +110,7 @@ export class TokenDistributionRulesWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenDistributionRulesNAPI): TokenDistributionRulesWASM {
-    const instance: TokenDistributionRulesWASM = Object.create(this.prototype)
+    const instance: TokenDistributionRulesWASM = Object.create(TokenDistributionRulesWASM.prototype)
     instance._rawTokenDistributionRules = rawInstance
 
     return instance

@@ -43,7 +43,7 @@ export class TokenConfigurationLocalizationWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenConfigurationLocalizationNAPI): TokenConfigurationLocalizationWASM {
-    const instance: TokenConfigurationLocalizationWASM = Object.create(this.prototype)
+    const instance: TokenConfigurationLocalizationWASM = Object.create(TokenConfigurationLocalizationWASM.prototype)
     instance._rawTokenConfigurationLocalization = rawInstance
 
     return instance

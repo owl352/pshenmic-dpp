@@ -48,7 +48,7 @@ export class OutPointWASM {
   }
 
   static createFromRawInstance (rawInstance: OutPointNAPI): OutPointWASM {
-    const instance: OutPointWASM = Object.create(this.prototype)
+    const instance: OutPointWASM = Object.create(OutPointWASM.prototype)
     instance._rawOutPoint = rawInstance
 
     return instance

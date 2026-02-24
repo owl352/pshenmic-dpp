@@ -1,7 +1,7 @@
 import type { VotePollNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
-import { prepareIdentifierValue, valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
+import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 import { IdentifierWASM } from '../Identifier.js'
 
 export class VotePollWASM {
@@ -41,8 +41,8 @@ export class VotePollWASM {
     this._rawVotePollWASM.indexName = value
   }
 
-  get indexValues (): any {
-    return valueFromDynamicValue(new dppProvider.dpp.DynamicValue(this._rawVotePollWASM.indexValues))
+  get indexValues (): string[] {
+    return this._rawVotePollWASM.indexValues
   }
 
   set indexValues (values: string[]) {
@@ -54,7 +54,7 @@ export class VotePollWASM {
   }
 
   static createFromRawInstance (rawInstance: VotePollNAPI): VotePollWASM {
-    const instance: VotePollWASM = Object.create(this.prototype)
+    const instance: VotePollWASM = Object.create(VotePollWASM.prototype)
     instance._rawVotePollWASM = rawInstance
 
     return instance

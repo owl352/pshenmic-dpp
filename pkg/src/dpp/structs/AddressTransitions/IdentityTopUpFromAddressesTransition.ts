@@ -117,7 +117,7 @@ export class IdentityTopUpFromAddressesTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: IdentityTopUpFromAddressesTransitionNAPI): IdentityTopUpFromAddressesTransitionWASM {
-    const instance: IdentityTopUpFromAddressesTransitionWASM = Object.create(this.prototype)
+    const instance: IdentityTopUpFromAddressesTransitionWASM = Object.create(IdentityTopUpFromAddressesTransitionWASM.prototype)
     instance._rawIdentityTopUpFromAddressesTransition = rawInstance
 
     return instance

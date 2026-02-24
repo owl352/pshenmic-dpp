@@ -35,7 +35,7 @@ export class InputAddressWASM {
   }
 
   static createFromRawInstance (rawInstance: InputAddressNAPI): InputAddressWASM {
-    const instance: InputAddressWASM = Object.create(this.prototype)
+    const instance: InputAddressWASM = Object.create(InputAddressWASM.prototype)
     instance._rawInputAddress = rawInstance
 
     return instance

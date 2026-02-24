@@ -39,7 +39,7 @@ export class TxOutWASM {
   }
 
   static createFromRawInstance (rawInstance: TxOutNAPI): TxOutWASM {
-    const instance: TxOutWASM = Object.create(this.prototype)
+    const instance: TxOutWASM = Object.create(TxOutWASM.prototype)
     instance._rawTxOut = rawInstance
 
     return instance

@@ -235,6 +235,29 @@ impl DynamicValue {
             _ => false,
         }
     }
+
+    #[napi(js_name = "getType")]
+    pub fn get_rs_type(&self) -> String {
+        match self.0 {
+            Either16::A(_) => "String",
+            Either16::B(_) => "Vec<u8>",
+            Either16::C(_) => "u8",
+            Either16::D(_) => "u16",
+            Either16::E(_) => "u32",
+            Either16::F(_) => "BigIntString",
+            Either16::G(_) => "bool",
+            Either16::H(_) => "BTreeMap",
+            Either16::I(_) => "Vec",
+            Either16::J(_) => "Null",
+            Either16::K(_) => "Undefined",
+            Either16::L(_) => "i8",
+            Either16::M(_) => "i16",
+            Either16::N(_) => "i32",
+            Either16::O(_) => "i64",
+            Either16::P(_) => "f64",
+        }
+        .to_string()
+    }
 }
 
 impl TryFrom<Value> for DynamicValue {
@@ -242,15 +265,34 @@ impl TryFrom<Value> for DynamicValue {
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            Value::U128(num) => Ok(DynamicValue(Either16::F(BigIntString::from(
-                num.to_string(),
-            )))),
-            Value::I128(num) => Ok(DynamicValue(Either16::F(BigIntString::from(
-                num.to_string(),
-            )))),
-            Value::U64(num) => Ok(DynamicValue(Either16::F(BigIntString::from(
-                num.to_string(),
-            )))),
+            Value::U128(num) => {
+                if let Ok(small_num) = u32::try_from(num) {
+                    Ok(DynamicValue(Either16::E(small_num)))
+                } else {
+                    Ok(DynamicValue(Either16::F(BigIntString::from(
+                        num.to_string(),
+                    ))))
+                }
+            }
+            Value::I128(num) => {
+                if let Ok(small_num) = i32::try_from(num) {
+                    Ok(DynamicValue(Either16::N(small_num)))
+                } else {
+                    Ok(DynamicValue(Either16::F(BigIntString::from(
+                        num.to_string(),
+                    ))))
+                }
+            }
+            Value::U64(num) => {
+                // Если число помещается в u32, отдаем как u32
+                if let Ok(small_num) = u32::try_from(num) {
+                    Ok(DynamicValue(Either16::E(small_num)))
+                } else {
+                    Ok(DynamicValue(Either16::F(BigIntString::from(
+                        num.to_string(),
+                    ))))
+                }
+            }
             Value::I64(num) => Ok(DynamicValue(Either16::O(num))),
             Value::U32(num) => Ok(DynamicValue(Either16::E(num))),
             Value::I32(num) => Ok(DynamicValue(Either16::N(num))),

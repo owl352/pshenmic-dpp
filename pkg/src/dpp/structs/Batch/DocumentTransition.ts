@@ -89,8 +89,12 @@ export class DocumentTransitionWASM {
     return DocumentUpdatePriceTransitionWASM.createFromRawInstance(this._rawTransition.updatePriceTransition)
   }
 
+  idDocumentTransition (): boolean {
+    return true
+  }
+
   static createFromRawInstance (rawInstance: DocumentTransitionNAPI): DocumentTransitionWASM {
-    const instance: DocumentTransitionWASM = Object.create(this.prototype)
+    const instance: DocumentTransitionWASM = Object.create(DocumentTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

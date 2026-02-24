@@ -109,8 +109,8 @@ export class AddressFundsTransferTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: AddressFundsTransferTransitionNAPI): AddressFundsTransferTransitionWASM {
-    const instance = Object.create(this.prototype)
-    instance._rawAddressFundingFromAssetLockTransitionNAPI = rawInstance
+    const instance = Object.create(AddressFundsTransferTransitionWASM.prototype)
+    instance._rawAddressFundsTransferTransition = rawInstance
 
     return instance
   }

@@ -217,7 +217,7 @@ export class TokenConfigurationWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenConfigurationNAPI): TokenConfigurationWASM {
-    const instance: TokenConfigurationWASM = Object.create(this.prototype)
+    const instance: TokenConfigurationWASM = Object.create(TokenConfigurationWASM.prototype)
     instance._rawTokenConfiguration = rawInstance
 
     return instance

@@ -31,7 +31,7 @@ export class TokenMarketplaceRulesWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenMarketplaceRulesNAPI): TokenMarketplaceRulesWASM {
-    const instance: TokenMarketplaceRulesWASM = Object.create(this.prototype)
+    const instance: TokenMarketplaceRulesWASM = Object.create(TokenMarketplaceRulesWASM.prototype)
     instance._rawTokenMarketplaceRules = rawInstance
 
     return instance

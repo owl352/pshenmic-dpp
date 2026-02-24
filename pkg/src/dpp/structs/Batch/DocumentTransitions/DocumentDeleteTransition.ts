@@ -41,7 +41,7 @@ export class DocumentDeleteTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: DocumentDeleteTransitionNAPI): DocumentDeleteTransitionWASM {
-    const instance: DocumentDeleteTransitionWASM = Object.create(this.prototype)
+    const instance: DocumentDeleteTransitionWASM = Object.create(DocumentDeleteTransitionWASM.prototype)
     instance._rawDocumentDeleteTransition = rawInstance
 
     return instance

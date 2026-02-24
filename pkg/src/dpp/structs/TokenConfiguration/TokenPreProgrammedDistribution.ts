@@ -52,7 +52,7 @@ export class TokenPreProgrammedDistributionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenPreProgrammedDistributionNAPI): TokenPreProgrammedDistributionWASM {
-    const instance: TokenPreProgrammedDistributionWASM = Object.create(this.prototype)
+    const instance: TokenPreProgrammedDistributionWASM = Object.create(TokenPreProgrammedDistributionWASM.prototype)
     instance._rawTokenPreProgrammedDistribution = rawInstance
 
     return instance

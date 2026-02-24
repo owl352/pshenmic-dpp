@@ -49,7 +49,7 @@ export class CoreScriptWASM {
   }
 
   static createFromRawInstance (rawInstance: CoreScriptNAPI): CoreScriptWASM {
-    const instance: CoreScriptWASM = Object.create(this.prototype)
+    const instance: CoreScriptWASM = Object.create(CoreScriptWASM.prototype)
     instance._rawCoreScript = rawInstance
 
     return instance

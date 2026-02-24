@@ -48,7 +48,7 @@ export class TokenDestroyFrozenFundsTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenDestroyFrozenFundsTransitionNAPI): TokenDestroyFrozenFundsTransitionWASM {
-    const instance: TokenDestroyFrozenFundsTransitionWASM = Object.create(this.prototype)
+    const instance: TokenDestroyFrozenFundsTransitionWASM = Object.create(TokenDestroyFrozenFundsTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

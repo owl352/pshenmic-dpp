@@ -48,7 +48,7 @@ export class TokenFreezeTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenFreezeTransitionNAPI): TokenFreezeTransitionWASM {
-    const instance: TokenFreezeTransitionWASM = Object.create(this.prototype)
+    const instance: TokenFreezeTransitionWASM = Object.create(TokenFreezeTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

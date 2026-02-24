@@ -63,6 +63,14 @@ export class DataContractWASM {
     this._rawDataContract.id = prepareIdentifierValue(value)
   }
 
+  get ownerId (): IdentifierWASM {
+    return IdentifierWASM.createFromRawInstance(this._rawDataContract.ownerId)
+  }
+
+  set ownerId (value: IdentifierLike) {
+    this._rawDataContract.ownerId = prepareIdentifierValue(value)
+  }
+
   get tokens (): DataContractTokens[] {
     const tokens = this._rawDataContract.tokens
 
@@ -175,7 +183,7 @@ export class DataContractWASM {
   }
 
   static createFromRawInstance (rawInstance: DataContractNAPI): DataContractWASM {
-    const instance: DataContractWASM = Object.create(this.prototype)
+    const instance: DataContractWASM = Object.create(DataContractWASM.prototype)
     instance._rawDataContract = rawInstance
 
     return instance

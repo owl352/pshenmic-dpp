@@ -86,7 +86,7 @@ export class DataContractUpdateTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: DataContractUpdateTransitionNAPI): DataContractUpdateTransitionWASM {
-    const instance: DataContractUpdateTransitionWASM = Object.create(this.prototype)
+    const instance: DataContractUpdateTransitionWASM = Object.create(DataContractUpdateTransitionWASM.prototype)
     instance._rawDataContractUpdateTransition = rawInstance
 
     return instance

@@ -60,7 +60,7 @@ export class DocumentPurchaseTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: DocumentPurchaseTransitionNAPI): DocumentPurchaseTransitionWASM {
-    const instance: DocumentPurchaseTransitionWASM = Object.create(this.prototype)
+    const instance: DocumentPurchaseTransitionWASM = Object.create(DocumentPurchaseTransitionWASM.prototype)
     instance._rawDocumentPurchaseTransition = rawInstance
 
     return instance

@@ -28,7 +28,7 @@ export class VoteWASM {
   }
 
   static createFromRawInstance (rawInstance: VoteNAPI): VoteWASM {
-    const instance: VoteWASM = Object.create(this.prototype)
+    const instance: VoteWASM = Object.create(VoteWASM.prototype)
     instance._rawVote = rawInstance
 
     return instance

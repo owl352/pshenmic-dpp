@@ -135,7 +135,7 @@ export class MasternodeVoteTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: MasternodeVoteTransitionNAPI): MasternodeVoteTransitionWASM {
-    const instance: MasternodeVoteTransitionWASM = Object.create(this.prototype)
+    const instance: MasternodeVoteTransitionWASM = Object.create(MasternodeVoteTransitionWASM.prototype)
     instance._rawMasternodeVoteTransition = rawInstance
 
     return instance

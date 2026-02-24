@@ -43,7 +43,7 @@ export class ChainAssetLockProofWASM {
   }
 
   static createFromRawInstance (rawInstance: ChainAssetLockProofNAPI): ChainAssetLockProofWASM {
-    const instance: ChainAssetLockProofWASM = Object.create(this.prototype)
+    const instance: ChainAssetLockProofWASM = Object.create(ChainAssetLockProofWASM.prototype)
     instance._rawLockProof = rawInstance
 
     return instance

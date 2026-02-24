@@ -47,7 +47,7 @@ export class TokenEmergencyActionTransitionWASM {
   }
 
   static createFromRawInstance (rawInstance: TokenEmergencyActionTransitionNAPI): TokenEmergencyActionTransitionWASM {
-    const instance: TokenEmergencyActionTransitionWASM = Object.create(this.prototype)
+    const instance: TokenEmergencyActionTransitionWASM = Object.create(TokenEmergencyActionTransitionWASM.prototype)
     instance._rawTransition = rawInstance
 
     return instance

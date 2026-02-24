@@ -83,4 +83,31 @@ describe('DynamicValue', () => {
       expect(valueFromDynamicValue(extendedArrayDynamicValue)).toStrictEqual(extendedArrayValue)
     })
   })
+
+  describe('number values in object', function () {
+    const mock = {
+      uint: 1999,
+      int: -293,
+      float: 2222.11231,
+      smallBigInt: BigInt(2),
+      bigBigInt: BigInt(2000000000000),
+      stringUint: '11',
+      stringInt: '-11',
+      stringFloat: '11.2',
+    }
+
+    const dynValue = valueToDynamicValue(mock)
+
+    const result = valueFromDynamicValue(dynValue)
+
+    expect(valueFromDynamicValue(dynValue)).toStrictEqual(mock)
+    expect(dynValue.value.uint.getType()).toStrictEqual('u32')
+    expect(dynValue.value.int.getType()).toStrictEqual('i64')
+    expect(dynValue.value.float.getType()).toStrictEqual('f64')
+    expect(dynValue.value.smallBigInt.getType()).toStrictEqual('BigIntString')
+    expect(dynValue.value.bigBigInt.getType()).toStrictEqual('BigIntString')
+    expect(dynValue.value.stringUint.getType()).toStrictEqual('String')
+    expect(dynValue.value.stringInt.getType()).toStrictEqual('String')
+    expect(dynValue.value.stringFloat.getType()).toStrictEqual('String')
+  })
 })
