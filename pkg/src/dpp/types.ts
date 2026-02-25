@@ -397,9 +397,14 @@ export interface IdentityTokenBalance {
   id: IdentifierWASM
 }
 
+export interface IdentityTokenBalanceOptional {
+  balance?: bigint
+  id: IdentifierWASM
+}
+
 export interface VerifiedTokenBalancesForIdentities {
   rootHash: Uint8Array
-  balances: IdentityTokenBalance[]
+  balances: IdentityTokenBalanceOptional[]
 }
 
 export interface TokenContractInfo {
@@ -429,5 +434,5 @@ export interface VerifiedTokenTotalSupply {
 
 export interface VerifiedTokensBalancesForIdentity {
   rootHash: Uint8Array
-  balances: IdentityTokenBalance[]
+  balances: IdentityTokenBalanceOptional[]
 }

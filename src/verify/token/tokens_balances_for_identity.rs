@@ -7,19 +7,19 @@ use crate::{
     dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64},
     enums::platform_version::PlatformVersionNAPI,
     identifier::IdentifierNAPI,
-    verify::state_transition::entities::VerifiedIdentityBalanceNAPI,
+    verify::token::token_balances_for_identities::IdentityTokenBalanceOptionalNAPI,
 };
 
 #[napi(js_name = "VerifiedTokensBalancesForIdentityNAPI")]
 pub struct VerifiedTokensBalancesForIdentityNAPI {
     pub root_hash: Uint8Array,
-    balances: Vec<VerifiedIdentityBalanceNAPI>,
+    balances: Vec<IdentityTokenBalanceOptionalNAPI>,
 }
 
 #[napi]
 impl VerifiedTokensBalancesForIdentityNAPI {
     #[napi(getter, js_name = "balances")]
-    pub fn balances(&self) -> Vec<VerifiedIdentityBalanceNAPI> {
+    pub fn balances(&self) -> Vec<IdentityTokenBalanceOptionalNAPI> {
         self.balances.clone()
     }
 }
@@ -50,15 +50,12 @@ pub fn verify_tokens_balances_for_identity(
         )
         .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))?;
 
-    let mut js_balances: Vec<VerifiedIdentityBalanceNAPI> = Vec::new();
+    let mut js_balances: Vec<IdentityTokenBalanceOptionalNAPI> = Vec::new();
 
     for (id, balance) in balances_vec.iter() {
-        js_balances.push(VerifiedIdentityBalanceNAPI {
+        js_balances.push(IdentityTokenBalanceOptionalNAPI {
             id: IdentifierNAPI::from(id.clone()),
-            balance: balance
-                .clone()
-                .map(BigIntString::from_u64)
-                .unwrap_or("-1".to_string()),
+            balance: balance.clone().map(BigIntString::from_u64),
         });
     }
 

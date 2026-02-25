@@ -37,6 +37,12 @@ export class IdentityPublicKeyInCreationWASM {
     return this._rawKeyInCreation.getHash()
   }
 
+  getContractBounds (): ContractBoundsWASM | undefined {
+    if (this._rawKeyInCreation.contractBounds != null) {
+      return ContractBoundsWASM.createFromRawInstance(this._rawKeyInCreation.contractBounds)
+    }
+  }
+
   get contractBounds (): ContractBoundsWASM | undefined {
     if (this._rawKeyInCreation.contractBounds != null) {
       return ContractBoundsWASM.createFromRawInstance(this._rawKeyInCreation.contractBounds)

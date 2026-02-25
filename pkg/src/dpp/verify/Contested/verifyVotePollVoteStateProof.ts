@@ -28,7 +28,7 @@ export function verifyVotePollVoteStateProof (
     indexName,
     indexValues,
     valueToDynamicValue(resultType),
-    allowIncludeLockedAndAbstainingVoteTally,
+    allowIncludeLockedAndAbstainingVoteTally ?? true,
     count,
     valueToDynamicValue(startAt),
     valueToDynamicValue(platformVersion)
