@@ -21,7 +21,7 @@ export function verifyTokenBalancesForIdentitiesProof (
   return {
     rootHash: result.rootHash,
     balances: result.balances.map(balance => ({
-      balance: BigInt(balance.balance),
+      balance: balance.balance !== '-1' ? BigInt(balance.balance) : undefined,
       id: IdentifierWASM.createFromRawInstance(balance.id)
     }))
   }

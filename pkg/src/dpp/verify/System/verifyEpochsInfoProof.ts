@@ -15,7 +15,7 @@ export function verifyEpochsInfoProof (
     currentEpoch,
     startEpoch,
     count,
-    ascending,
+    ascending ?? false,
     valueToDynamicValue(platformVersion)
   )
 

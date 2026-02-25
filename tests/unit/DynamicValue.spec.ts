@@ -94,6 +94,7 @@ describe('DynamicValue', () => {
       stringUint: '11',
       stringInt: '-11',
       stringFloat: '11.2',
+      bigStringNumber: '11111111111111111111111111111111'
     }
 
     const dynValue = valueToDynamicValue(mock)

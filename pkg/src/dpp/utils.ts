@@ -5,7 +5,7 @@ import { IdentifierLike } from './types.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 
 export function valueToDynamicValue (value: any): DynamicValue {
-  if (typeof value === 'bigint' || value > UINT32MAX) {
+  if (typeof value === 'bigint' || (value > UINT32MAX && typeof value !== 'string')) {
     return dppProvider.dpp.DynamicValue.fromBigIntString(BigInt(value.toString() as BigIntString).toString())
   } else if (value instanceof IdentifierWASM || value instanceof dppProvider.dpp.IdentifierNAPI) {
     return new dppProvider.dpp.DynamicValue(value.bytes())

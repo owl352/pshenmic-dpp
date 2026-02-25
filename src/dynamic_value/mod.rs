@@ -27,7 +27,10 @@ impl TryToU64 for BigIntString {
         self.parse().map_err(|_| {
             napi::Error::new(
                 Status::Unknown,
-                "Cannot convert String from Uint64String to u64".to_string(),
+                format!(
+                    "Cannot convert String from Uint64String to u64 ({:?})",
+                    self.clone()
+                ),
             )
         })
     }

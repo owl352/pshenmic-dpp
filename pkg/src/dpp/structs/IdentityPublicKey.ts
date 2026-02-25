@@ -124,6 +124,12 @@ export class IdentityPublicKeyWASM {
     this._rawIdentityPublicKey.contractBounds = contractBounds?._rawContractBounds
   }
 
+  getContractBounds (): ContractBoundsWASM | undefined {
+    if (this._rawIdentityPublicKey.contractBounds != null) {
+      return ContractBoundsWASM.createFromRawInstance(this._rawIdentityPublicKey.contractBounds)
+    }
+  }
+
   removeDisabledAt (): void {
     this._rawIdentityPublicKey.removeDisabledAt()
   }
