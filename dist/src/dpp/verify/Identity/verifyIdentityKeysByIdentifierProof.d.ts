@@ -1,0 +1,2 @@
+import { IdentifierLike, PlatformVersionLike, VerifiedIdentityKeysByIdentifier } from '../../types.js';
+export declare function verifyIdentityKeysByIdentifierProof(proof: Uint8Array, identityId: IdentifierLike, specificKeyIds: number[] | undefined | null, withRevision: boolean, withBalance: boolean, isProofSubset: boolean, limit: number | undefined | null, offset: number | undefined | null, platformVersion: PlatformVersionLike): VerifiedIdentityKeysByIdentifier;

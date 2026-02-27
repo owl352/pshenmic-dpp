@@ -1,0 +1,40 @@
+import type { IdentityUpdateTransitionNAPI } from '../../../../binaries/bindingsTypes.js';
+import { IdentifierLike } from '../../types.js';
+import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js';
+import { IdentifierWASM } from '../Identifier.js';
+import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js';
+import { StateTransitionWASM } from '../StateTransition.js';
+export declare class IdentityUpdateTransitionWASM {
+    /** @private **/
+    _rawIdentityUpdateTransition: IdentityUpdateTransitionNAPI;
+    constructor(identityId: IdentifierLike, revision: bigint, nonce: bigint, addPublicKeys: IdentityPublicKeyInCreationWASM[], disablePublicKeys: number[], userFeeIncrease?: number);
+    get revision(): bigint;
+    set revision(value: bigint);
+    get nonce(): bigint;
+    set nonce(value: bigint);
+    get identityIdentifier(): IdentifierWASM;
+    set identityIdentifier(value: IdentifierLike);
+    get publicKeyIdsToDisable(): number[];
+    set publicKeyIdsToDisable(value: number[]);
+    get publicKeyIdsToAdd(): IdentityPublicKeyInCreationWASM[];
+    set publicKeyIdsToAdd(value: IdentityPublicKeyInCreationWASM[]);
+    get userFeeIncrease(): number;
+    set userFeeIncrease(value: number);
+    get signature(): Uint8Array;
+    set signature(value: Uint8Array);
+    get signaturePublicKeyId(): number;
+    set signaturePublicKeyId(value: number);
+    getSignableBytes(): Uint8Array;
+    getPurposeRequirement(): string[];
+    getModifiedDataIds(): IdentifierWASM[];
+    getOptionalAssetLockProof(): AssetLockProofWASM | undefined;
+    bytes(): Uint8Array;
+    hex(): string;
+    base64(): string;
+    toStateTransition(): StateTransitionWASM;
+    static fromBytes(bytes: Uint8Array): IdentityUpdateTransitionWASM;
+    static fromHex(hex: string): IdentityUpdateTransitionWASM;
+    static fromBase64(base64: string): IdentityUpdateTransitionWASM;
+    static fromStateTransition(stateTransition: StateTransitionWASM): IdentityUpdateTransitionWASM;
+    static createFromRawInstance(rawInstance: IdentityUpdateTransitionNAPI): IdentityUpdateTransitionWASM;
+}

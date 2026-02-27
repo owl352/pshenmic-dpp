@@ -1,0 +1,47 @@
+import type { TokenConfigurationChangeItemNAPI } from '../../../../binaries/bindingsTypes.js';
+import { TokenConfigurationConventionWASM } from './TokenConfigurationConvention.js';
+import { AuthorizedActionTakersWASM } from './AuthorizedActionTakers.js';
+import { TokenPerpetualDistributionWASM } from './TokenPerpetualDistribution.js';
+import { IdentifierWASM } from '../Identifier.js';
+import { TokenTradeModeWASM } from './TokenTradeMode.js';
+import { IdentifierLike } from '../../types.js';
+export declare class TokenConfigurationChangeItemWASM {
+    /** @private **/
+    _rawTokenConfigurationChangeItem: TokenConfigurationChangeItemNAPI;
+    private constructor();
+    getItemName(): string;
+    getItem(): string | TokenConfigurationConventionWASM | AuthorizedActionTakersWASM | bigint | TokenPerpetualDistributionWASM | IdentifierWASM | boolean | TokenTradeModeWASM | number | undefined | null;
+    static ConventionsItem(convention: TokenConfigurationConventionWASM): TokenConfigurationChangeItemWASM;
+    static ConventionsAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static ConventionsControlGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static FreezeItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static FreezeAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static DestroyFrozenFundsItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static DestroyFrozenFundsAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static EmergencyActionItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static EmergencyActionAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MainControlGroupItem(groupContractPosition?: number): TokenConfigurationChangeItemWASM;
+    static ManualBurningItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static ManualBurningAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static ManualMintingItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static ManualMintingAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MarketplaceTradeModeItem(tradeMode: TokenTradeModeWASM): TokenConfigurationChangeItemWASM;
+    static MarketplaceTradeModeControlGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MarketplaceTradeModeAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MaxSupplyItem(supply?: bigint): TokenConfigurationChangeItemWASM;
+    static MaxSupplyControlGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MaxSupplyAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MintingAllowChoosingDestinationItem(flag: boolean): TokenConfigurationChangeItemWASM;
+    static MintingAllowChoosingDestinationControlGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static MintingAllowChoosingDestinationAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static NewTokensDestinationIdentityItem(identityId?: IdentifierLike): TokenConfigurationChangeItemWASM;
+    static NewTokensDestinationIdentityControlGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static NewTokensDestinationIdentityAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static noChangeItem(): TokenConfigurationChangeItemWASM;
+    static PerpetualDistributionConfigurationItem(distribution?: TokenPerpetualDistributionWASM): TokenConfigurationChangeItemWASM;
+    static PerpetualDistributionControlGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static PerpetualDistributionAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static UnfreezeItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static UnfreezeAdminGroupItem(actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM;
+    static createFromRawInstance(rawInstance: TokenConfigurationChangeItemNAPI): TokenConfigurationChangeItemWASM;
+}

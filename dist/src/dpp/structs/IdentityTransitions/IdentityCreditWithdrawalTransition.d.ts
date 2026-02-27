@@ -1,0 +1,42 @@
+import type { IdentityCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js';
+import { IdentifierLike, PoolingLike } from '../../types.js';
+import { CoreScriptWASM } from '../CoreScript.js';
+import { IdentifierWASM } from '../Identifier.js';
+import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js';
+import { StateTransitionWASM } from '../StateTransition.js';
+export declare class IdentityCreditWithdrawalTransitionWASM {
+    /** @private **/
+    _rawIdentityCreditWithdrawalTransition: IdentityCreditWithdrawalTransitionNAPI;
+    constructor(identityId: IdentifierLike, amount: bigint, coreFeePerByte: number, pooling: PoolingLike, nonce: bigint, outputScript?: CoreScriptWASM, userFeeIncrease?: number);
+    get outputScript(): CoreScriptWASM | undefined;
+    set outputScript(script: CoreScriptWASM | undefined);
+    get pooling(): string;
+    set pooling(value: PoolingLike);
+    get identityId(): IdentifierWASM;
+    set identityId(value: IdentifierLike);
+    get userFeeIncrease(): number;
+    set userFeeIncrease(value: number);
+    get nonce(): bigint;
+    set nonce(value: bigint);
+    get amount(): bigint;
+    set amount(value: bigint);
+    get coreFeePerByte(): number;
+    set coreFeePerByte(value: number);
+    get signature(): Uint8Array;
+    set signature(value: Uint8Array);
+    get signaturePublicKeyId(): number;
+    set signaturePublicKeyId(value: number);
+    getSignableBytes(): Uint8Array;
+    getPurposeRequirement(): string[];
+    getModifiedDataIds(): IdentifierWASM[];
+    getOptionalAssetLockProof(): AssetLockProofWASM | undefined;
+    bytes(): Uint8Array;
+    hex(): string;
+    base64(): string;
+    toStateTransition(): StateTransitionWASM;
+    static fromBytes(bytes: Uint8Array): IdentityCreditWithdrawalTransitionWASM;
+    static fromHex(hex: string): IdentityCreditWithdrawalTransitionWASM;
+    static fromBase64(base64: string): IdentityCreditWithdrawalTransitionWASM;
+    static fromStateTransition(stateTransition: StateTransitionWASM): IdentityCreditWithdrawalTransitionWASM;
+    static createFromRawInstance(rawInstance: IdentityCreditWithdrawalTransitionNAPI): IdentityCreditWithdrawalTransitionWASM;
+}

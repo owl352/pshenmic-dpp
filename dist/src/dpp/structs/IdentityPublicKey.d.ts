@@ -1,0 +1,44 @@
+import { KeyTypeLike, NetworkLike, PurposeLike, SecurityLevelLike } from '../types.js';
+import type { IdentityPublicKeyNAPI } from '../../../binaries/bindingsTypes.js';
+import { KeyType, Purpose, SecurityLevel } from '../enums.js';
+import { ContractBoundsWASM } from './ContractBounds.js';
+import { PrivateKeyWASM } from './PrivateKey.js';
+export declare class IdentityPublicKeyWASM {
+    /** @private **/
+    _rawIdentityPublicKey: IdentityPublicKeyNAPI;
+    constructor(id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number, contractBounds?: ContractBoundsWASM);
+    get keyId(): number;
+    set keyId(keyId: number);
+    get purpose(): string;
+    set purpose(purpose: PurposeLike);
+    get purposeNumber(): Purpose;
+    set purposeNumber(purpose: Purpose);
+    get securityLevel(): string;
+    set securityLevel(securityLevel: SecurityLevelLike);
+    get securityLevelNumber(): SecurityLevel;
+    set securityLevelNumber(securityLevel: SecurityLevel);
+    get keyType(): string;
+    set keyType(keyType: KeyTypeLike);
+    get keyTypeNumber(): KeyType;
+    set keyTypeNumber(keyType: KeyType);
+    get readOnly(): boolean;
+    set readOnly(readOnly: boolean);
+    get data(): string;
+    set data(binaryData: string);
+    get disabledAt(): bigint | undefined;
+    set disabledAt(disabledAt: bigint | number);
+    get contractBounds(): ContractBoundsWASM | undefined;
+    set contractBounds(contractBounds: ContractBoundsWASM | undefined | null);
+    getContractBounds(): ContractBoundsWASM | undefined;
+    removeDisabledAt(): void;
+    getPublicKeyHash(): string;
+    isMaster(): boolean;
+    bytes(): Uint8Array;
+    hex(): string;
+    base64(): string;
+    validatePrivateKey(privateKey: string | Uint8Array | PrivateKeyWASM, network: NetworkLike): boolean;
+    static fromBytes(bytes: Uint8Array): IdentityPublicKeyWASM;
+    static fromHex(hex: string): IdentityPublicKeyWASM;
+    static fromBase64(base64: string): IdentityPublicKeyWASM;
+    static createFromRawInstance(rawInstance: IdentityPublicKeyNAPI): IdentityPublicKeyWASM;
+}
