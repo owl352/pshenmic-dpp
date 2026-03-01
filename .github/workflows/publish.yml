@@ -76,6 +76,7 @@ jobs:
             TAG=$(echo "$VERSION" | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+-([a-zA-Z0-9]+).*/\1/')
             yarn publish --tag "$TAG" --non-interactive
           else
+            echo "LATEST=true" >> $GITHUB_ENV
             yarn publish --tag latest --non-interactive
           fi
         env:
