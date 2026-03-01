@@ -25,8 +25,8 @@ export class DocumentCreateTransitionWASM {
     )
   }
 
-  get data (): object {
-    return valueFromDynamicValue(this._rawDocumentCreateTransition.data)
+  get data (): any {
+    return valueFromDynamicValue(this._rawDocumentCreateTransition.data, true)
   }
 
   set data (value: object) {
