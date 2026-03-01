@@ -61,8 +61,8 @@ export class DocumentWASM {
     this._rawDocument.ownerId = prepareIdentifierValue(value)
   }
 
-  get properties (): object {
-    return valueFromDynamicValue(this._rawDocument.properties)
+  get properties (): any {
+    return valueFromDynamicValue(this._rawDocument.properties, true)
   }
 
   set properties (value: object) {

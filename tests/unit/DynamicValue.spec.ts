@@ -111,4 +111,16 @@ describe('DynamicValue', () => {
     expect(dynValue.value.stringInt.getType()).toStrictEqual('String')
     expect(dynValue.value.stringFloat.getType()).toStrictEqual('String')
   })
+
+  describe('should decode document from state transition in jsonLike', function () {
+    const stateTransition = dpp.StateTransitionWASM.fromBase64('AgHv88sfWzscuW2Ob/0v5d+EgqmWG7ZIvlQG7mHWBH7z9gEAAAAB7JH7W+JkM0Vne2U1zlWYVeQNzRPTpdiWRfsgfwNS2UoCCGJsb2dQb3N0KBdMgeznVQ1smUXVFNPfE2PC379wpWVH8cdu2ilzeI0Ah/i2xfrKCm5ACQAbEQkSc+GRUkdLor4Eu7Vzf6oRc9UHBmJsb2dJZAogdhC4nVm3ufPCgdfoOKXtnhqwg7O3axyTS9WB3EFvNBYPY29tbWVudHNFbmFibGVkEwEHY29udGVudAr7AUh4nM2TTWrDMBCFrxK0jkCyJMvqLnRV6A1KFhpplJgotrEVaAi+e8clpdBuvCnNcn7ezPvQ6O3G2siemKgNSGETT8ZarhUm7hpX8yStEpVCk6xlW1auA1L34Ed/GP1wpNQw9sPEnm6s4Ht57nM/UkPE5C+5UBl8OB3G/tLF37VFscvtoTtjV6iSMRU2b1nou/KZIXf3jUvrXUHRrosbv8ltKRk30JbNl2LLpnLNuPiZ5z1NOrY5jtjRqP28vbM656zTleagJHCNXnIQiUIpgozGg2/0N2s4Yji9tlN5KXj+A97FJG1AcpZ8nnANv1wHGo22ASrFXQDJde0SBzDIdQBVRQEoDDw2aLUONPkKtfF0s9bR9bqGkJW3PNYCg/FOgIqPDarWgQrRxKapBXdCJ3pR7TjUVnJrpAo6yhSc/4dv+tPu/gNBt2qtC3B1Ymxpc2hlZEF0Av0AAAGcptJlIwRzbHVnEhV0aGlzLWlzLW15LWZpcnN0LXBvc3QIc3VidGl0bGUSD1dpdGggYSBzdWJ0aXRsZQV0aXRsZRIVVGhpcyBpcyBteSBmaXJzdCBwb3N0AAABQR+H40MbUEmFXQbTPcwy9vMD8EiTwDzMpW3YIkfSIDvHij5ZIAVvqm0ZJScJzKV7EnRUi/f1tZ/wFJfd1+LDtpps')
+
+    const batch = dpp.BatchTransitionWASM.fromStateTransition(stateTransition)
+
+    const transition = batch.transitions[0].toTransition() as dpp.DocumentTransitionWASM
+
+    const publishedAt = transition.createTransition.data.publishedAt
+
+    expect(typeof publishedAt).toEqual('number')
+  })
 })

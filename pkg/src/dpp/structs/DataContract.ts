@@ -120,11 +120,11 @@ export class DataContractWASM {
     this._rawDataContract.keywords = value
   }
 
-  getSchemas (): object {
-    return valueFromDynamicValue(this._rawDataContract.getSchemas())
+  getSchemas (): any {
+    return valueFromDynamicValue(this._rawDataContract.getSchemas(), true)
   }
 
-  getConfig (): object {
+  getConfig (): any {
     return valueFromDynamicValue(this._rawDataContract.getConfig())
   }
 
@@ -144,11 +144,11 @@ export class DataContractWASM {
     return this._rawDataContract.base64(valueToDynamicValue(platformVersion))
   }
 
-  toJSON (platformVersion: PlatformVersionLike): object {
+  toJSON (platformVersion: PlatformVersionLike): any {
     return this._rawDataContract.toJson(valueToDynamicValue(platformVersion))
   }
 
-  toValue (platformVersion: PlatformVersionLike): object {
+  toValue (platformVersion: PlatformVersionLike): any {
     return valueFromDynamicValue(this._rawDataContract.toValue(valueToDynamicValue(platformVersion))) as object
   }
 

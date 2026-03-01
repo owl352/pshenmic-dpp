@@ -22,8 +22,8 @@ export class DocumentReplaceTransitionWASM {
     )
   }
 
-  get data (): object {
-    return valueFromDynamicValue(this._rawDocumentReplaceTransition.data)
+  get data (): any {
+    return valueFromDynamicValue(this._rawDocumentReplaceTransition.data, true)
   }
 
   set data (value: object) {

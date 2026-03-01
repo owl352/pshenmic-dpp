@@ -40,20 +40,25 @@ export function valueToDynamicValue (value: any): DynamicValue {
   }
 }
 
-export function valueFromDynamicValue (dynamicValue: DynamicValue): any {
+export function valueFromDynamicValue (dynamicValue: DynamicValue, jsonLike: boolean = false): any {
   if (dynamicValue.value instanceof dppProvider.dpp.DynamicValue) {
-    return valueToDynamicValue(dynamicValue.value)
+    return valueFromDynamicValue(dynamicValue.value, jsonLike)
   } else if (dynamicValue.isBigInt()) {
-    return BigInt(dynamicValue.value)
+    const num = BigInt(dynamicValue.value)
+    if (jsonLike && num < BigInt(Number.MAX_SAFE_INTEGER) && num > BigInt(Number.MIN_SAFE_INTEGER)) {
+      return Number(dynamicValue.value)
+    } else {
+      return num
+    }
   } else if (Array.isArray(dynamicValue.value)) {
-    return dynamicValue.value.map(valueFromDynamicValue)
+    return dynamicValue.value.map(v => valueFromDynamicValue(v, jsonLike))
   } else if (typeof dynamicValue.value === 'object' && !(dynamicValue.value instanceof Uint8Array) && dynamicValue.value !== null) {
     const obj: { [key: string]: any } = {}
 
     const keys: string[] = Object.keys(dynamicValue.value)
 
     for (const key of keys) {
-      obj[key] = valueFromDynamicValue(dynamicValue.value[key])
+      obj[key] = valueFromDynamicValue(dynamicValue.value[key], jsonLike)
     }
 
     return obj
