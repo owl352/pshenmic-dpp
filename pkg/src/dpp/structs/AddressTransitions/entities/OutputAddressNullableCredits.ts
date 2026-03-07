@@ -1,23 +1,25 @@
 import type {
   OutputAddressNullableCreditsNAPI
 } from '../../../../../binaries/bindingsTypes.js'
-import { PlatformAddressWASM } from '../../Address/PlatformAddress.js'
+import { PlatformAddressWASM } from '../../PlatformAddress/PlatformAddress.js'
 import { dppProvider } from '../../../provider.js'
+import { PlatformAddressLike } from '../../../types.js'
+import { preparePlatformAddressValue } from '../../../utils.js'
 
 export class OutputAddressNullableCreditsWASM {
   /** @private **/
   _rawOutputAddressNullableCredits: OutputAddressNullableCreditsNAPI
 
-  constructor (address: PlatformAddressWASM, credits?: bigint) {
-    this._rawOutputAddressNullableCredits = new dppProvider.dpp.OutputAddressNullableCreditsNAPI(address._rawPlatformAddress, credits?.toString())
+  constructor (address: PlatformAddressLike, credits?: bigint) {
+    this._rawOutputAddressNullableCredits = new dppProvider.dpp.OutputAddressNullableCreditsNAPI(preparePlatformAddressValue(address), credits?.toString())
   }
 
   get address (): PlatformAddressWASM {
     return PlatformAddressWASM.createFromRawInstance(this._rawOutputAddressNullableCredits.address)
   }
 
-  set address (address: PlatformAddressWASM) {
-    this._rawOutputAddressNullableCredits.address = address._rawPlatformAddress
+  set address (address: PlatformAddressLike) {
+    this._rawOutputAddressNullableCredits.address = preparePlatformAddressValue(address)
   }
 
   get credits (): BigInt | undefined {

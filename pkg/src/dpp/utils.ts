@@ -1,8 +1,14 @@
-import type { BigIntString, DynamicValue, IdentifierLikeNAPI } from '../../binaries/bindingsTypes.js'
+import type {
+  BigIntString,
+  DynamicValue,
+  IdentifierLikeNAPI,
+  PlatformAddressLikeNAPI
+} from '../../binaries/bindingsTypes.js'
 import { dppProvider } from './provider.js'
 import { UINT32MAX } from './constants.js'
-import { IdentifierLike } from './types.js'
+import { IdentifierLike, PlatformAddressLike } from './types.js'
 import { IdentifierWASM } from './structs/Identifier.js'
+import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
 export function valueToDynamicValue (value: any): DynamicValue {
   if (typeof value === 'bigint' || (value > UINT32MAX && typeof value !== 'string')) {
@@ -74,5 +80,15 @@ export function prepareIdentifierValue (identifier: IdentifierLike): IdentifierL
     return identifier
   } else {
     return new dppProvider.dpp.DynamicValue(identifier)
+  }
+}
+
+export function preparePlatformAddressValue (address: PlatformAddressLike): PlatformAddressLikeNAPI {
+  if (address instanceof PlatformAddressWASM) {
+    return address._rawPlatformAddress
+  } else if (address instanceof dppProvider.dpp.PlatformAddressNAPI) {
+    return address
+  } else {
+    return new dppProvider.dpp.DynamicValue(address)
   }
 }

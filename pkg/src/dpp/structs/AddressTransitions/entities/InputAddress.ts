@@ -1,21 +1,23 @@
 import type { InputAddressNAPI } from '../../../../../binaries/bindingsTypes.js'
-import { PlatformAddressWASM } from '../../Address/PlatformAddress.js'
+import { PlatformAddressWASM } from '../../PlatformAddress/PlatformAddress.js'
 import { dppProvider } from '../../../provider.js'
+import { PlatformAddressLike } from '../../../types.js'
+import { preparePlatformAddressValue } from '../../../utils.js'
 
 export class InputAddressWASM {
   /** @private **/
   _rawInputAddress: InputAddressNAPI
 
-  constructor (address: PlatformAddressWASM, nonce: number, credits: bigint) {
-    this._rawInputAddress = new dppProvider.dpp.InputAddressNAPI(address._rawPlatformAddress, nonce, credits.toString())
+  constructor (address: PlatformAddressLike, nonce: number, credits: bigint) {
+    this._rawInputAddress = new dppProvider.dpp.InputAddressNAPI(preparePlatformAddressValue(address), nonce, credits.toString())
   }
 
   get address (): PlatformAddressWASM {
     return PlatformAddressWASM.createFromRawInstance(this._rawInputAddress.address)
   }
 
-  set address (value: PlatformAddressWASM) {
-    this._rawInputAddress.address = value._rawPlatformAddress
+  set address (value: PlatformAddressLike) {
+    this._rawInputAddress.address = preparePlatformAddressValue(value)
   }
 
   get nonce (): number {

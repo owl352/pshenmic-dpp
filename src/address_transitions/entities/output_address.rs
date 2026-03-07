@@ -1,6 +1,9 @@
 use napi_derive::napi;
 
-use crate::{dynamic_value::BigIntString, platform_address::PlatformAddressNAPI};
+use crate::{
+    dynamic_value::{BigIntString, PlatformAddressLikeNAPI},
+    platform_address::PlatformAddressNAPI,
+};
 
 #[derive(Clone)]
 #[napi(js_name = "OutputAddressNAPI")]
@@ -12,11 +15,14 @@ pub struct OutputAddressNAPI {
 #[napi]
 impl OutputAddressNAPI {
     #[napi(constructor)]
-    pub fn new(address: &PlatformAddressNAPI, credits: BigIntString) -> Self {
-        OutputAddressNAPI {
-            address: address.clone(),
+    pub fn new(
+        address: PlatformAddressLikeNAPI,
+        credits: BigIntString,
+    ) -> Result<Self, napi::Error> {
+        Ok(OutputAddressNAPI {
+            address: PlatformAddressNAPI::try_from(address)?,
             credits,
-        }
+        })
     }
 
     #[napi(getter, js_name = "address")]
@@ -30,8 +36,9 @@ impl OutputAddressNAPI {
     }
 
     #[napi(setter, js_name = "address")]
-    pub fn set_address(&mut self, address: &PlatformAddressNAPI) {
-        self.address = address.clone()
+    pub fn set_address(&mut self, address: PlatformAddressLikeNAPI) -> Result<(), napi::Error> {
+        self.address = PlatformAddressNAPI::try_from(address)?;
+        Ok(())
     }
 
     #[napi(setter, js_name = "credits")]
@@ -50,11 +57,14 @@ pub struct OutputAddressNullableCreditsNAPI {
 #[napi]
 impl OutputAddressNullableCreditsNAPI {
     #[napi(constructor)]
-    pub fn new(address: &PlatformAddressNAPI, credits: Option<BigIntString>) -> Self {
-        OutputAddressNullableCreditsNAPI {
-            address: address.clone(),
+    pub fn new(
+        address: PlatformAddressLikeNAPI,
+        credits: Option<BigIntString>,
+    ) -> Result<Self, napi::Error> {
+        Ok(OutputAddressNullableCreditsNAPI {
+            address: PlatformAddressNAPI::try_from(address)?,
             credits,
-        }
+        })
     }
 
     #[napi(getter, js_name = "address")]
@@ -68,8 +78,9 @@ impl OutputAddressNullableCreditsNAPI {
     }
 
     #[napi(setter, js_name = "address")]
-    pub fn set_address(&mut self, address: &PlatformAddressNAPI) {
-        self.address = address.clone()
+    pub fn set_address(&mut self, address: PlatformAddressLikeNAPI) -> Result<(), napi::Error> {
+        self.address = PlatformAddressNAPI::try_from(address)?;
+        Ok(())
     }
 
     #[napi(setter, js_name = "credits")]

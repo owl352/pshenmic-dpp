@@ -2,7 +2,7 @@ import type { IdentityCreateFromAddressesTransitionNAPI } from '../../../../bina
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
-import { AddressWitnessWASM } from '../Address/AddressWitness.js'
+import { AddressWitnessWASM } from '../PlatformAddress/AddressWitness.js'
 import { OutputAddressWASM } from './entities/OutputAddress.js'
 import { dppProvider } from '../../provider.js'
 import { StateTransitionWASM } from '../StateTransition.js'

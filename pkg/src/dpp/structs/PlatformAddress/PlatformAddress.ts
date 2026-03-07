@@ -1,14 +1,14 @@
 import type { PlatformAddressNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
-import { NetworkLike } from '../../types.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { NetworkLike, PlatformAddressLike } from '../../types.js'
+import { preparePlatformAddressValue, valueToDynamicValue } from '../../utils.js'
 
 export class PlatformAddressWASM {
   /** @private **/
   _rawPlatformAddress: PlatformAddressNAPI
 
-  constructor (address: Uint8Array) {
-    this._rawPlatformAddress = new dppProvider.dpp.PlatformAddressNAPI(address)
+  constructor (address: PlatformAddressLike) {
+    this._rawPlatformAddress = new dppProvider.dpp.PlatformAddressNAPI(preparePlatformAddressValue(address))
   }
 
   bytes (): Uint8Array {
@@ -33,6 +33,18 @@ export class PlatformAddressWASM {
 
   hash (): Uint8Array {
     return this._rawPlatformAddress.hash()
+  }
+
+  static fromBech32m (bech32m: string): PlatformAddressWASM {
+    return PlatformAddressWASM.createFromRawInstance(
+      dppProvider.dpp.PlatformAddressNAPI.fromBech32m(bech32m)
+    )
+  }
+
+  static fromBytes (bytes: Uint8Array): PlatformAddressWASM {
+    return PlatformAddressWASM.createFromRawInstance(
+      dppProvider.dpp.PlatformAddressNAPI.fromBytes(bytes)
+    )
   }
 
   static createFromRawInstance (rawInstance: PlatformAddressNAPI): PlatformAddressWASM {
