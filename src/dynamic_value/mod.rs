@@ -7,10 +7,13 @@ use napi::{
 };
 use napi_derive::napi;
 
-use crate::identifier::IdentifierNAPI;
+use crate::{identifier::IdentifierNAPI, platform_address::PlatformAddressNAPI};
 
 #[napi(js_name = "IdentifierLikeNAPI")]
 pub type IdentifierLikeNAPI<'a> = Either<&'a IdentifierNAPI, &'a DynamicValue>;
+
+#[napi(js_name = "PlatformAddressLikeNAPI")]
+pub type PlatformAddressLikeNAPI<'a> = Either<&'a PlatformAddressNAPI, &'a DynamicValue>;
 
 pub trait TryToU64 {
     fn try_to_u64(&self) -> Result<u64, napi::Error>;
