@@ -1,7 +1,7 @@
 import {
   IdentityTokenBalance,
   TokenStatus,
-  VerifiedAddressInfo, VerifiedBalanceTransfer,
+  VerifiedPlatformAddressInfo, VerifiedBalanceTransfer,
   VerifiedDocument,
   VerifiedIdentityBalance, VerifiedIdentityFullWithAddressInfos, VerifiedIdentityTokenInfo,
   VerifiedIdentityWithAddressInfos,
@@ -25,7 +25,7 @@ import { TokenPricingScheduleWASM } from '../../structs/Batch/TokenPricingSchedu
 import { PartialIdentityWASM } from '../../structs/PartialIdentity.js'
 import { VoteWASM } from '../../structs/MasternodeVote/Vote.js'
 import { DocumentWASM } from '../../structs/Document.js'
-import { PlatformAddressWASM } from '../../structs/Address/PlatformAddress.js'
+import { PlatformAddressWASM } from '../../structs/PlatformAddress/PlatformAddress.js'
 import { dppProvider } from '../../provider.js'
 
 type Converter = (value: any) => VerifiedStateTransitionResultVariants
@@ -95,7 +95,7 @@ const converters: () => Map<Function, Converter> = (): Map<Function, Converter> 
       infos: v.infos.map(info => ({
         nonce: info.nonce,
         address: PlatformAddressWASM.createFromRawInstance(info.address),
-        credits: info.credits != null ? BigInt(info.credits) : undefined
+        balance: info.credits != null ? BigInt(info.credits) : undefined
       }))
     })],
 
@@ -104,13 +104,13 @@ const converters: () => Map<Function, Converter> = (): Map<Function, Converter> 
       infos: v.infos.map(info => ({
         nonce: info.nonce,
         address: PlatformAddressWASM.createFromRawInstance(info.address),
-        credits: info.credits != null ? BigInt(info.credits) : undefined
+        balance: info.credits != null ? BigInt(info.credits) : undefined
       }))
     })]
   ])
 }
 
-function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI[] | VerifiedAddressInfosNAPI[]): VerifiedIdentityBalance[] | VerifiedDocument[] | VerifiedAddressInfo[] {
+function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI[] | VerifiedAddressInfosNAPI[]): VerifiedIdentityBalance[] | VerifiedDocument[] | VerifiedPlatformAddressInfo[] {
   const [first] = result
   if (first == null) return []
 
@@ -134,7 +134,7 @@ function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI
     return (result as VerifiedAddressInfosNAPI[]).map(item => ({
       nonce: item.nonce,
       address: PlatformAddressWASM.createFromRawInstance(item.address),
-      credits: item.credits != null ? BigInt(item.credits) : undefined
+      balance: item.credits != null ? BigInt(item.credits) : undefined
     }))
   }
 

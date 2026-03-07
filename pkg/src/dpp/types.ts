@@ -40,10 +40,11 @@ import { PartialIdentityWASM } from './structs/PartialIdentity.js'
 import { DocumentWASM } from './structs/Document.js'
 import { VoteWASM } from './structs/MasternodeVote/Vote.js'
 import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.js'
-import { PlatformAddressWASM } from './structs/Address/PlatformAddress.js'
+import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
 export type DashPlatformProtocol = typeof protocol
 export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM
+export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM
 
 export type KeyTypeLike = KeyType | keyof typeof KeyType | Lowercase<keyof typeof KeyType>
 export type NetworkLike = NetworkWASM | keyof typeof NetworkWASM | Lowercase<keyof typeof NetworkWASM>
@@ -57,8 +58,6 @@ export type TokenEmergencyActionLike = TokenEmergencyActionWASM | keyof typeof T
 export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType | Lowercase<keyof typeof AssetLockProofType>
 export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>
 export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>
-
-export type EnumLike = KeyTypeLike | NetworkLike | SecurityLevelLike | PlatformVersionLike | PurposeLike
 
 export type AddressWitnessP2PKH = protocol.AddressWitnessP2pkhNAPI
 export type AddressWitnessP2SH = protocol.AddressWitnessP2shNAPI
@@ -254,20 +253,20 @@ export interface VerifiedTokenGroupActionWithTokenPricingSchedule {
   pricingSchedule?: TokenPricingScheduleWASM
 }
 
-export interface VerifiedAddressInfo {
+export interface VerifiedPlatformAddressInfo {
+  address?: PlatformAddressWASM
   nonce?: number
-  address: PlatformAddressWASM
-  credits?: bigint
+  balance?: bigint
 }
 
 export interface VerifiedIdentityFullWithAddressInfos {
   identity: IdentityWASM
-  infos: VerifiedAddressInfo[]
+  infos: VerifiedPlatformAddressInfo[]
 }
 
 export interface VerifiedIdentityWithAddressInfos {
   identity: PartialIdentityWASM
-  infos: VerifiedAddressInfo[]
+  infos: VerifiedPlatformAddressInfo[]
 }
 
 export type VerifiedStateTransitionResultVariants = DataContractWASM
@@ -287,7 +286,7 @@ export type VerifiedStateTransitionResultVariants = DataContractWASM
 | VerifiedTokenGroupActionWithTokenIdentityInfo
 | VerifiedTokenGroupActionWithTokenPricingSchedule
 | VoteWASM
-| VerifiedAddressInfo[]
+| VerifiedPlatformAddressInfo[]
 | VerifiedIdentityFullWithAddressInfos
 | VerifiedIdentityWithAddressInfos
 
@@ -436,3 +435,5 @@ export interface VerifiedTokensBalancesForIdentity {
   rootHash: Uint8Array
   balances: IdentityTokenBalanceOptional[]
 }
+
+export type VerifiedPlatformAddressInfoWithRootHash = VerifiedPlatformAddressInfo & { rootHash: Uint8Array }

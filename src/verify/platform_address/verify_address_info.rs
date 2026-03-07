@@ -11,7 +11,7 @@ use crate::{
 #[napi(js_name = "VerifiedAddressInfoNAPI")]
 pub struct VerifiedAddressInfoNAPI {
     pub root_hash: Uint8Array,
-    pub(crate) address: PlatformAddressNAPI,
+    pub(crate) address: Option<PlatformAddressNAPI>,
     pub nonce: Option<u32>,
     pub balance: Option<BigIntString>,
 }
@@ -19,7 +19,7 @@ pub struct VerifiedAddressInfoNAPI {
 #[napi]
 impl VerifiedAddressInfoNAPI {
     #[napi(getter, js_name = "address")]
-    pub fn address(&self) -> PlatformAddressNAPI {
+    pub fn address(&self) -> Option<PlatformAddressNAPI> {
         self.address.clone()
     }
 }
@@ -42,9 +42,14 @@ pub fn verify_address_info(
     )
     .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))?;
 
+    let address = match info {
+        Some(_) => Some(platform_address),
+        None => None,
+    };
+
     Ok(VerifiedAddressInfoNAPI {
         root_hash: root_hash.into(),
-        address: platform_address,
+        address,
         nonce: info.map(|i| i.0),
         balance: info.map(|i| BigIntString::from_u64(i.1)),
     })

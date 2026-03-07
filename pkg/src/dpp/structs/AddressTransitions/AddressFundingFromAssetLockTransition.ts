@@ -2,7 +2,7 @@ import type { AddressFundingFromAssetLockTransitionNAPI } from '../../../../bina
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
-import { AddressWitnessWASM } from '../Address/AddressWitness.js'
+import { AddressWitnessWASM } from '../PlatformAddress/AddressWitness.js'
 import { OutputAddressNullableCreditsWASM } from './entities/OutputAddressNullableCredits.js'
 import { dppProvider } from '../../provider.js'
 import { StateTransitionWASM } from '../StateTransition.js'

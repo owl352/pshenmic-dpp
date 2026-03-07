@@ -40,7 +40,7 @@ impl TryFrom<Either<&PlatformAddressNAPI, &DynamicValue>> for PlatformAddressNAP
                 } else {
                     Err(napi::Error::new(
                         napi::Status::InvalidArg,
-                        "Invalid Platform Address value ",
+                        "Invalid Platform Address value. Must be bech32m string or bytes.",
                     ))
                 }
             }
