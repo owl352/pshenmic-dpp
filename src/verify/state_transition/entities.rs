@@ -150,7 +150,7 @@ impl VerifiedStateTransitionResultNAPI {
             VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
             VerifiedTokenGroupActionWithTokenPricingScheduleNAPI,
             VoteNAPI,
-            Vec<VerifiedAddressInfosNAPI>,
+            Vec<PlatformAddressInfoNAPI>,
             VerifiedIdentityFullWithAddressInfosNAPI,
             VerifiedIdentityWithAddressInfosNAPI,
         >,
@@ -349,15 +349,15 @@ impl VerifiedTokenGroupActionWithTokenPricingScheduleNAPI {
 }
 
 #[derive(Clone)]
-#[napi(js_name = "VerifiedAddressInfosNAPI")]
-pub struct VerifiedAddressInfosNAPI {
+#[napi(js_name = "PlatformAddressInfoNAPI")]
+pub struct PlatformAddressInfoNAPI {
     pub(crate) address: PlatformAddressNAPI,
     pub nonce: Option<u32>,
-    pub(crate) credits: Option<BigIntString>,
+    pub(crate) balance: Option<BigIntString>,
 }
 
 #[napi]
-impl VerifiedAddressInfosNAPI {
+impl PlatformAddressInfoNAPI {
     #[napi(getter, js_name = "address")]
     pub fn address(&self) -> PlatformAddressNAPI {
         self.address.clone()
@@ -365,14 +365,14 @@ impl VerifiedAddressInfosNAPI {
 
     #[napi(getter, js_name = "credits")]
     pub fn credits(&self) -> Option<BigIntString> {
-        self.credits.clone()
+        self.balance.clone()
     }
 }
 
 #[napi(js_name = "VerifiedIdentityFullWithAddressInfosNAPI")]
 pub struct VerifiedIdentityFullWithAddressInfosNAPI {
     pub(crate) identity: IdentityNAPI,
-    pub(crate) infos: Vec<VerifiedAddressInfosNAPI>,
+    pub(crate) infos: Vec<PlatformAddressInfoNAPI>,
 }
 
 #[napi]
@@ -383,7 +383,7 @@ impl VerifiedIdentityFullWithAddressInfosNAPI {
     }
 
     #[napi(getter, js_name = "infos")]
-    pub fn infos(&self) -> Vec<VerifiedAddressInfosNAPI> {
+    pub fn infos(&self) -> Vec<PlatformAddressInfoNAPI> {
         self.infos.clone()
     }
 }
@@ -391,7 +391,7 @@ impl VerifiedIdentityFullWithAddressInfosNAPI {
 #[napi(js_name = "VerifiedIdentityWithAddressInfosNAPI")]
 pub struct VerifiedIdentityWithAddressInfosNAPI {
     pub(crate) identity: PartialIdentityNAPI,
-    pub(crate) infos: Vec<VerifiedAddressInfosNAPI>,
+    pub(crate) infos: Vec<PlatformAddressInfoNAPI>,
 }
 
 #[napi]
@@ -402,7 +402,7 @@ impl VerifiedIdentityWithAddressInfosNAPI {
     }
 
     #[napi(getter, js_name = "infos")]
-    pub fn infos(&self) -> Vec<VerifiedAddressInfosNAPI> {
+    pub fn infos(&self) -> Vec<PlatformAddressInfoNAPI> {
         self.infos.clone()
     }
 }

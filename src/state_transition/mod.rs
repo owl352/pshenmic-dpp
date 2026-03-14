@@ -475,6 +475,11 @@ impl StateTransitionNAPI {
         self.0.set_user_fee_increase(user_fee_increase)
     }
 
+    #[napi(js_name = "getSignableBytes")]
+    pub fn get_signable_bytes(&self) -> Result<Uint8Array, napi::Error> {
+        self.0.signable_bytes().with_js_error().map(Into::into)
+    }
+
     #[napi(js_name = "setOwnerId")]
     pub fn set_owner_id(&mut self, js_owner_id: IdentifierLikeNAPI) -> Result<(), napi::Error> {
         let owner_id = IdentifierNAPI::try_from(js_owner_id)?;

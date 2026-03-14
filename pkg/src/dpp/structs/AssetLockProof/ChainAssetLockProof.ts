@@ -7,7 +7,7 @@ export class ChainAssetLockProofWASM {
   _rawLockProof: ChainAssetLockProofNAPI
 
   constructor (coreChainLockedHeight: number, outPoint: OutPointWASM) {
-    this._rawLockProof = new dppProvider.dpp.ChainAssetLockProofNAPI(coreChainLockedHeight, outPoint)
+    this._rawLockProof = new dppProvider.dpp.ChainAssetLockProofNAPI(coreChainLockedHeight, outPoint._rawOutPoint)
   }
 
   set coreChainLockedHeight (height: number) {

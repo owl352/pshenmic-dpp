@@ -8,7 +8,7 @@ use crate::{
     masternode_vote::vote::VoteNAPI,
     partial_identity::PartialIdentityNAPI,
     verify::state_transition::entities::{
-        IdentityTokenInfoNAPI, TokenStatusNAPI, VerifiedAddressInfosNAPI,
+        IdentityTokenInfoNAPI, PlatformAddressInfoNAPI, TokenStatusNAPI,
         VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityBalanceNAPI,
         VerifiedIdentityFullWithAddressInfosNAPI, VerifiedIdentityTokenInfoNAPI,
         VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
@@ -41,7 +41,7 @@ pub fn state_transition_proof_result_to_js(
         VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
         VerifiedTokenGroupActionWithTokenPricingScheduleNAPI,
         VoteNAPI,
-        Vec<VerifiedAddressInfosNAPI>,
+        Vec<PlatformAddressInfoNAPI>,
         VerifiedIdentityFullWithAddressInfosNAPI,
         VerifiedIdentityWithAddressInfosNAPI,
     >,
@@ -158,13 +158,13 @@ pub fn state_transition_proof_result_to_js(
             Ok(Either20::Q(vote.clone().into()))
         }
         StateTransitionProofResult::VerifiedAddressInfos(infos) => {
-            let mut infos_arr: Vec<VerifiedAddressInfosNAPI> = Vec::new();
+            let mut infos_arr: Vec<PlatformAddressInfoNAPI> = Vec::new();
 
             for (address, amounts) in infos.iter() {
-                infos_arr.push(VerifiedAddressInfosNAPI {
+                infos_arr.push(PlatformAddressInfoNAPI {
                     address: address.clone().into(),
                     nonce: amounts.clone().map(|(nonce, _)| nonce),
-                    credits: amounts
+                    balance: amounts
                         .clone()
                         .map(|(_, credits)| BigIntString::from_u64(credits)),
                 });
@@ -173,13 +173,13 @@ pub fn state_transition_proof_result_to_js(
             Ok(Either20::R(infos_arr))
         }
         StateTransitionProofResult::VerifiedIdentityFullWithAddressInfos(identity, infos) => {
-            let mut infos_arr: Vec<VerifiedAddressInfosNAPI> = Vec::new();
+            let mut infos_arr: Vec<PlatformAddressInfoNAPI> = Vec::new();
 
             for (address, amounts) in infos.iter() {
-                infos_arr.push(VerifiedAddressInfosNAPI {
+                infos_arr.push(PlatformAddressInfoNAPI {
                     address: address.clone().into(),
                     nonce: amounts.clone().map(|(nonce, _)| nonce),
-                    credits: amounts
+                    balance: amounts
                         .clone()
                         .map(|(_, credits)| BigIntString::from_u64(credits)),
                 });
@@ -191,13 +191,13 @@ pub fn state_transition_proof_result_to_js(
             }))
         }
         StateTransitionProofResult::VerifiedIdentityWithAddressInfos(identity, infos) => {
-            let mut infos_arr: Vec<VerifiedAddressInfosNAPI> = Vec::new();
+            let mut infos_arr: Vec<PlatformAddressInfoNAPI> = Vec::new();
 
             for (address, amounts) in infos.iter() {
-                infos_arr.push(VerifiedAddressInfosNAPI {
+                infos_arr.push(PlatformAddressInfoNAPI {
                     address: address.clone().into(),
                     nonce: amounts.clone().map(|(nonce, _)| nonce),
-                    credits: amounts
+                    balance: amounts
                         .clone()
                         .map(|(_, credits)| BigIntString::from_u64(credits)),
                 });
