@@ -111,9 +111,7 @@ export { verifyVotePollVoteStateProof } from './verify/Contested/verifyVotePollV
 export { verifyContractProof } from './verify/Contract/verifyContract.js'
 export { verifyStateTransitionResult } from './verify/StateTransition/verifyStateTransitionResult.js'
 export { verifyDocumentsProof } from './verify/Document/verifyDocumentsProof.js'
-export {
-  verifyIdentifierByNonUniquePublicKeyHashProof
-} from './verify/Identity/verifyIdentifierByNonUniquePublicKeyHashProof.js'
+export { verifyIdentifierByNonUniquePublicKeyHashProof } from './verify/Identity/verifyIdentifierByNonUniquePublicKeyHashProof.js'
 export { verifyIdentityBalanceProof } from './verify/Identity/verifyIdentityBalanceProof.js'
 export { verifyIdentityByIdentifierProof } from './verify/Identity/verifyIdentityByIdentifierProof.js'
 export { verifyIdentityByUniqueKeyHashProof } from './verify/Identity/verifyIdentityByUniqueKeyHashProof.js'
@@ -126,3 +124,4 @@ export { verifyTokenDirectPurchasePrices } from './verify/Tokens/verifyTokenDire
 export { verifyTokenTotalSupplyProof } from './verify/Tokens/verifyTokenTotalSupplyProof.js'
 export { verifyTokensBalancesForIdentityProof } from './verify/Tokens/verifyTokensBalancesForIdentityProof.js'
 export { verifyPlatformAddressInfo } from './verify/PlatformAddress/verifyPlatformAddressInfo.js'
+export { verifyPlatformAddressesInfos } from './verify/PlatformAddress/verifyPlatformAddressesInfos.js'

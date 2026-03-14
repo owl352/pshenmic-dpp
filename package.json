@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "2.0.0-dev.8",
+  "version": "2.0.0-dev.9",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
@@ -52,8 +52,8 @@
     "ts-standard": "^12.0.2"
   },
   "dependencies": {
-    "@emnapi/core": "^1.7.0",
-    "@emnapi/runtime": "^1.7.0",
+    "@emnapi/core": "1.8.1",
+    "@emnapi/runtime": "1.8.1",
     "@tybys/wasm-util": "^0.10.1",
     "fflate": "^0.8.2"
   }
