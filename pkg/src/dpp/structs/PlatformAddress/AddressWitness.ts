@@ -10,13 +10,13 @@ export class AddressWitnessWASM {
     this._rawWitness = witness
   }
 
-  P2PKH (signature: Uint8Array): AddressWitnessWASM {
+  static P2PKH (signature: Uint8Array): AddressWitnessWASM {
     return AddressWitnessWASM.createFromRawInstance(
       dppProvider.dpp.AddressWitnessNAPI.P2PKH(signature)
     )
   }
 
-  P2SH (signatures: Uint8Array[], redeemScript: Uint8Array): AddressWitnessWASM {
+  static P2SH (signatures: Uint8Array[], redeemScript: Uint8Array): AddressWitnessWASM {
     return AddressWitnessWASM.createFromRawInstance(
       dppProvider.dpp.AddressWitnessNAPI.P2SH(signatures, redeemScript)
     )

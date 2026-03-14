@@ -13,7 +13,7 @@ import {
 import { DataContractWASM } from '../../structs/DataContract.js'
 import type {
   IdentityTokenBalanceNAPI, TokenStatusNAPI,
-  VerifiedAddressInfosNAPI, VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityFullWithAddressInfosNAPI,
+  PlatformAddressInfoNAPI, VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityFullWithAddressInfosNAPI,
   VerifiedIdentityTokenInfoNAPI, VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
   VerifiedTokenGroupActionWithTokenBalanceNAPI,
   VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
@@ -110,7 +110,7 @@ const converters: () => Map<Function, Converter> = (): Map<Function, Converter> 
   ])
 }
 
-function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI[] | VerifiedAddressInfosNAPI[]): VerifiedIdentityBalance[] | VerifiedDocument[] | VerifiedPlatformAddressInfo[] {
+function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI[] | PlatformAddressInfoNAPI[]): VerifiedIdentityBalance[] | VerifiedDocument[] | VerifiedPlatformAddressInfo[] {
   const [first] = result
   if (first == null) return []
 
@@ -130,8 +130,8 @@ function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI
     }))
   }
 
-  if (first instanceof dppProvider.dpp.VerifiedAddressInfosNAPI) {
-    return (result as VerifiedAddressInfosNAPI[]).map(item => ({
+  if (first instanceof dppProvider.dpp.PlatformAddressInfoNAPI) {
+    return (result as PlatformAddressInfoNAPI[]).map(item => ({
       nonce: item.nonce,
       address: PlatformAddressWASM.createFromRawInstance(item.address),
       balance: item.credits != null ? BigInt(item.credits) : undefined

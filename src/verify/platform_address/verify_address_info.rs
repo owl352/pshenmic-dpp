@@ -8,8 +8,8 @@ use crate::{
     platform_address::PlatformAddressNAPI,
 };
 
-#[napi(js_name = "VerifiedAddressInfoNAPI")]
-pub struct VerifiedAddressInfoNAPI {
+#[napi(js_name = "VerifiedPlatformAddressInfoNAPI")]
+pub struct VerifiedPlatformAddressInfoNAPI {
     pub root_hash: Uint8Array,
     pub(crate) address: Option<PlatformAddressNAPI>,
     pub nonce: Option<u32>,
@@ -17,7 +17,7 @@ pub struct VerifiedAddressInfoNAPI {
 }
 
 #[napi]
-impl VerifiedAddressInfoNAPI {
+impl VerifiedPlatformAddressInfoNAPI {
     #[napi(getter, js_name = "address")]
     pub fn address(&self) -> Option<PlatformAddressNAPI> {
         self.address.clone()
@@ -30,7 +30,7 @@ pub fn verify_address_info(
     js_platform_address: PlatformAddressLikeNAPI,
     verify_subset_of_proof: bool,
     js_platform_version: &DynamicValue,
-) -> Result<VerifiedAddressInfoNAPI, napi::Error> {
+) -> Result<VerifiedPlatformAddressInfoNAPI, napi::Error> {
     let platform_address = PlatformAddressNAPI::try_from(js_platform_address)?;
     let platform_version = PlatformVersionNAPI::try_from(js_platform_version)?;
 
@@ -47,7 +47,7 @@ pub fn verify_address_info(
         None => None,
     };
 
-    Ok(VerifiedAddressInfoNAPI {
+    Ok(VerifiedPlatformAddressInfoNAPI {
         root_hash: root_hash.into(),
         address,
         nonce: info.map(|i| i.0),

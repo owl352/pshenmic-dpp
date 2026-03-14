@@ -308,7 +308,7 @@ export type VerifiedStateTransitionResultVariantsRAW =
   | protocol.VerifiedTokenGroupActionWithTokenIdentityInfoNAPI
   | protocol.VerifiedTokenGroupActionWithTokenPricingScheduleNAPI
   | protocol.VoteNAPI
-  | protocol.VerifiedAddressInfosNAPI[]
+  | protocol.PlatformAddressInfoNAPI[]
   | protocol.VerifiedIdentityFullWithAddressInfosNAPI
   | protocol.VerifiedIdentityWithAddressInfosNAPI
 
@@ -437,3 +437,7 @@ export interface VerifiedTokensBalancesForIdentity {
 }
 
 export type VerifiedPlatformAddressInfoWithRootHash = VerifiedPlatformAddressInfo & { rootHash: Uint8Array }
+export interface VerifiedPlatformAddressesInfosWithRootHash {
+  rootHash: Uint8Array
+  infos: VerifiedPlatformAddressInfo[]
+}
