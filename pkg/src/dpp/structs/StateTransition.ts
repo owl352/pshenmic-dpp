@@ -112,7 +112,7 @@ export class StateTransitionWASM {
     this._rawStateTransition.setIdentityNonce(nonce.toString())
   }
 
-  getSignableBytes(): Uint8Array {
+  getSignableBytes (): Uint8Array {
     return this._rawStateTransition.getSignableBytes()
   }
 

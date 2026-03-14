@@ -437,7 +437,7 @@ export interface VerifiedTokensBalancesForIdentity {
 }
 
 export type VerifiedPlatformAddressInfoWithRootHash = VerifiedPlatformAddressInfo & { rootHash: Uint8Array }
-export type VerifiedPlatformAddressesInfosWithRootHash = {
+export interface VerifiedPlatformAddressesInfosWithRootHash {
   rootHash: Uint8Array
   infos: VerifiedPlatformAddressInfo[]
 }

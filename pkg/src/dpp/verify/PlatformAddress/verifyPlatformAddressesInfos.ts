@@ -1,12 +1,12 @@
 import {
   PlatformAddressLike,
-  PlatformVersionLike, VerifiedPlatformAddressesInfosWithRootHash,
+  PlatformVersionLike, VerifiedPlatformAddressesInfosWithRootHash
 } from '../../types.js'
-import {dppProvider} from '../../provider.js'
-import {preparePlatformAddressValue, valueToDynamicValue} from '../../utils.js'
-import {PlatformAddressWASM} from '../../structs/PlatformAddress/PlatformAddress.js'
+import { dppProvider } from '../../provider.js'
+import { preparePlatformAddressValue, valueToDynamicValue } from '../../utils.js'
+import { PlatformAddressWASM } from '../../structs/PlatformAddress/PlatformAddress.js'
 
-export function verifyPlatformAddressesInfos(
+export function verifyPlatformAddressesInfos (
   proof: Uint8Array,
   platformAddresses: PlatformAddressLike[],
   verifySubsetOfProof: boolean,
@@ -21,7 +21,7 @@ export function verifyPlatformAddressesInfos(
 
   return {
     rootHash: result.rootHash,
-    infos: result.infos.map(({nonce, credits, address}) => ({
+    infos: result.infos.map(({ nonce, credits, address }) => ({
       nonce,
       balance: credits != null ? BigInt(credits) : undefined,
       address: PlatformAddressWASM.createFromRawInstance(address)
