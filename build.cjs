@@ -67,12 +67,12 @@ async function main() {
     try {
       console.log(`Building for target: ${target}...`);
 
-      const existingRUSTFLAGS = process.env.RUSTFLAGS || "";
+      // const existingRUSTFLAGS = process.env.RUSTFLAGS || "";
       await execTask(
         `cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
         { env: {
             ...process.env,
-            RUSTFLAGS: `${existingRUSTFLAGS} --crate-type=cdylib`.trim()
+            // RUSTFLAGS: `${existingRUSTFLAGS} --crate-type=cdylib`.trim()
           }}
       );
 
