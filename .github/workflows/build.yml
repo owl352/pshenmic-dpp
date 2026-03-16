@@ -36,6 +36,9 @@ jobs:
         with:
           components: rustfmt
 
+      - name: Install cargo-zigbuild
+        run: cargo install cargo-zigbuild
+
       - name: Add Rust targets
         run: |
           rustup target add wasm32-wasip1-threads
@@ -90,6 +93,9 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
+
+      - name: Install cargo-zigbuild
+        run: cargo install cargo-zigbuild
 
       - name: Add Rust targets
         run: rustup target add ${{ matrix.native-target }}
