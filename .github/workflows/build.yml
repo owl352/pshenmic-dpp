@@ -76,7 +76,9 @@ jobs:
           components: rustfmt
 
       - name: Install cargo-zigbuild
-        run: cargo install cargo-zigbuild
+        run: |
+          rustup component add rust-src
+          cargo install cargo-zigbuild
 
       - name: Install LLVM for WebAssembly (macOS)
         if: runner.os == 'macOS'
