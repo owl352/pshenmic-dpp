@@ -31,6 +31,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Install Zig
+        run: |
+          wget https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz
+          tar -xf zig-linux-x86_64-0.13.0.tar.xz
+          sudo mv zig-linux-x86_64-0.13.0/zig /usr/local/bin/zig
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -88,6 +94,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Install Zig on macOS
+        run: |
+          brew install zig
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
