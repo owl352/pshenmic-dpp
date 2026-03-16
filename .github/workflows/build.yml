@@ -98,7 +98,7 @@ jobs:
 
       - name: Install iOS Rust target (macOS only)
         if: runner.os == 'macOS'
-        run: rustup target add aarch64-apple-ios-sim || true
+        run: rustup target add aarch64-apple-ios-sim aarch64-apple-darwin || true
 
       - name: Install project dependencies & Wasm tools
         run: |
