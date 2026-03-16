@@ -110,11 +110,7 @@ jobs:
       - name: Build JS bundle
         run: yarn build:full
         env:
-          # Прокидываем таргет в переменные окружения, чтобы сборочные скрипты знали, под что собирать
           CARGO_BUILD_TARGET: ${{ matrix.settings.target }}
 
       - name: Run tests
-        # Игнорируем ошибки тестов для ARM64 на Windows, так как GitHub пока не даёт
-        # ARM-раннеры для Windows в бесплатном пуле (тесты могут упасть из-за архитектуры).
-        continue-on-error: ${{ matrix.settings.target == 'aarch64-pc-windows-msvc' }}
         run: yarn test

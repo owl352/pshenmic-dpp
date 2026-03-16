@@ -19,23 +19,21 @@ const binariesOutputDir =
 const templatesOutputDir =
   process.env.JS_OUTPUT_DIR ?? path.join(__dirname, "pkg");
 
-const nativeTargets = [
-  // macOS
-  "x86_64-apple-darwin",
-  "aarch64-apple-darwin",
+const specificTarget = process.env.CARGO_BUILD_TARGET;
 
-  // Linux glibc (Ubuntu, Debian, etc)
-  "x86_64-unknown-linux-gnu",
-  "aarch64-unknown-linux-gnu",
-
-  // Alpine
-  "x86_64-unknown-linux-musl",
-  "aarch64-unknown-linux-musl",
-
-  // Windows
-  "x86_64-pc-windows-msvc",
-  "aarch64-pc-windows-msvc"
-];
+const nativeTargets = specificTarget
+  ? [specificTarget] // Если таргет передан, собираем только его
+  : [
+    // Твой дефолтный список для локальной разработки (когда запускаешь просто node build.cjs)
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl",
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc"
+  ];
 
 const emnapi = path.join(
   require.resolve("emnapi"),
