@@ -48,7 +48,7 @@ jobs:
       - name: Add Rust targets
         run: |
           rustup target add wasm32-wasip1-threads
-          rustup target add aarch64-linux-android x86_64-linux-android
+          rustup target add aarch64-linux-android x86_64-linux-android aarch64-apple-ios-sim 
 
       - name: Install dependencies
         run: |
@@ -56,22 +56,6 @@ jobs:
           sudo apt-get install -y gcc-multilib musl-tools pkg-config libssl-dev
           yarn
           cargo install wasm-bindgen-cli@0.2.105 wasm-opt
-
-      - name: Build WASM once
-        run: |
-          cargo build --target wasm32-wasip1-threads --release
-          npm run ferric:build -- --configuration release --output pkg/binaries
-          ./scripts/wasm-opt.sh
-
-      - name: Build Native for ${{ matrix.native-target }}
-        run: |
-          echo "Building for ${{ matrix.native-target }}"
-          cargo zigbuild --target ${{ matrix.native-target }} --release
-          BIN_NAME=$(basename $(pwd) | tr '-' '_')
-          EXT="so"
-          if [[ "${{ matrix.native-target }}" == *"windows"* ]]; then EXT="dll"; fi
-          mkdir -p pkg/binaries/native/${{ matrix.native-target }}
-          cp target/${{ matrix.native-target }}/release/lib${BIN_NAME}.${EXT} pkg/binaries/native/${{ matrix.native-target }}/${BIN_NAME}.node
 
       - name: Build JS bundle
         run: yarn build:full
@@ -108,20 +92,12 @@ jobs:
         run: cargo install cargo-zigbuild
 
       - name: Add Rust targets
-        run: rustup target add ${{ matrix.native-target }}
+        run: rustup target add ${{ matrix.native-target }} wasm32-wasip1-threads
 
       - name: Install dependencies
         run: |
           yarn
           cargo install wasm-bindgen-cli@0.2.105 wasm-opt
-
-      - name: Build Native for ${{ matrix.native-target }}
-        run: |
-          cargo zigbuild --target ${{ matrix.native-target }} --release
-          BIN_NAME=$(basename $(pwd) | tr '-' '_')
-          EXT="dylib"
-          mkdir -p pkg/binaries/native/${{ matrix.native-target }}
-          cp target/${{ matrix.native-target }}/release/lib${BIN_NAME}.${EXT} pkg/binaries/native/${{ matrix.native-target }}/${BIN_NAME}.node
 
       - name: Build JS bundle
         run: yarn build:full
