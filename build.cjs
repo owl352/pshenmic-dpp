@@ -68,7 +68,7 @@ async function main() {
       console.log(`Building for target: ${target}...`);
 
       await execTask(
-        `OPENSSL_VENDORED=1 CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=zigcc cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
+        `cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
         { env: {
             ...process.env,
           }}

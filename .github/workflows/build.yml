@@ -7,29 +7,18 @@ on:
     branches: [ "master", "v1.1.0-dev", "v1.1.0", "v2.0.0-dev" ]
 
 jobs:
-  build-and-test:
-    name: ${{ matrix.settings.target }} (Node ${{ matrix.node-version }})
-    runs-on: ${{ matrix.settings.os }}
+  build:
+    name: Build ${{ matrix.settings.target }} (Node ${{ matrix.node-version }})
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
         node-version: [22.x, 24.x]
         settings:
-          # --- Linux ---
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
+            os: ubuntu-latest # This 'os' is for artifact naming/logic, actual runner is macos-latest
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
-#          - target: aarch64-unknown-linux-gnu
-#            os: ubuntu-latest
-#          - target: aarch64-unknown-linux-musl
-#            os: ubuntu-latest
-#          # --- Windows ---
-#          - target: x86_64-pc-windows-msvc
-#            os: windows-latest
-#          - target: aarch64-pc-windows-msvc
-#            os: windows-latest
-#          # --- macOS ---
           - target: aarch64-apple-darwin
             os: macos-latest
 
@@ -42,12 +31,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Настраиваем эмулятор QEMU для запуска ARM64 тестов на x86 Ubuntu
-      - name: Setup QEMU
-        if: runner.os == 'Linux' && contains(matrix.settings.target, 'aarch64')
-        uses: docker/setup-qemu-action@v3
-
-      # Правильная установка Zig (решает проблему с `zig cc`)
       - name: Install Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
@@ -66,6 +49,91 @@ jobs:
         run: |
           sdkmanager --install "ndk;27.1.12297006"
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-linux-android x86_64-linux-android, aarch64-apple-ios-sim aarch64-apple-darwin x86_64-apple-darwin
+          components: rustfmt
+
+      - name: Install cargo-zigbuild
+        run: |
+          rustup component add rust-src
+          cargo install cargo-zigbuild
+
+      - name: Install LLVM for WebAssembly (macOS)
+        run: |
+          brew install llvm
+          echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+
+      - name: Install project dependencies & Wasm tools
+        run: |
+          yarn install
+          cargo install wasm-bindgen-cli@0.2.105 wasm-opt
+
+      - name: Build JS bundle
+        run: yarn build:full
+        env:
+          CARGO_BUILD_TARGET: ${{ matrix.settings.target }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact-${{ matrix.settings.target }}-${{ matrix.node-version }}
+          path: |
+            ./dist
+
+  test:
+    name: Test ${{ matrix.settings.target }} (Node ${{ matrix.node-version }})
+    needs: build
+    runs-on: ${{ matrix.settings.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22.x, 24.x]
+        settings:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact-${{ matrix.settings.target }}-${{ matrix.node-version }}
+          path: .
+
+      - name: Setup QEMU
+        if: runner.os == 'Linux' && contains(matrix.settings.target, 'aarch64')
+        uses: docker/setup-qemu-action@v3
+
+      - name: Install Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.13.0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: |
+          sdkmanager --install "ndk;27.1.12297006"
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -106,12 +174,6 @@ jobs:
         run: |
           yarn install
           cargo install wasm-bindgen-cli@0.2.105 wasm-opt
-
-      - name: Build JS bundle
-        run: yarn build:full
-        env:
-          CARGO_BUILD_TARGET: ${{ matrix.settings.target }}
-          OPENSSL_DIR: /usr
 
       - name: Run tests
         run: yarn test
