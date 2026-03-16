@@ -13,62 +13,63 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x, 24.x]
+        native-target: [
+          x86_64-apple-darwin,
+          aarch64-apple-darwin,
+          x86_64-unknown-linux-gnu,
+          aarch64-unknown-linux-gnu,
+          x86_64-unknown-linux-musl,
+          aarch64-unknown-linux-musl,
+          x86_64-pc-windows-msvc,
+          aarch64-pc-windows-msvc
+        ]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Setup Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        components: rustfmt
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
 
-    - name: Add rustup WASM target
-      run: |
-        rustup target add wasm32-wasip1-threads
+      - name: Add rustup targets
+        run: |
+          rustup target add wasm32-wasip1-threads
+          rustup target add aarch64-apple-ios-sim aarch64-linux-android x86_64-linux-android
 
-    - name: GCC Multilib
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-multilib --fix-missing
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib musl-tools pkg-config libssl-dev
+          yarn
+          cargo install wasm-bindgen-cli@0.2.105 wasm-opt
 
-    - name: Add rustup mobile targets
-      run: |
-        rustup target add aarch64-apple-ios-sim aarch64-linux-android x86_64-linux-android
+      - name: Build WASM once
+        run: |
+          cargo build --target wasm32-wasip1-threads --release
+          npm run ferric:build -- --configuration release --output pkg/binaries
+          ./scripts/wasm-opt.sh
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Build Native for ${{ matrix.native-target }}
+        run: |
+          echo "Building for ${{ matrix.native-target }}"
+          cargo zigbuild --target ${{ matrix.native-target }} --release
+          BIN_NAME=$(basename $(pwd) | tr '-' '_')
+          EXT="so"
+          if [[ "${{ matrix.native-target }}" == *"windows"* ]]; then EXT="dll"; fi
+          if [[ "${{ matrix.native-target }}" == *"darwin"* ]]; then EXT="dylib"; fi
+          mkdir -p pkg/binaries/native/${{ matrix.native-target }}
+          cp target/${{ matrix.native-target }}/release/lib${BIN_NAME}.${EXT} pkg/binaries/native/${{ matrix.native-target }}/${BIN_NAME}.node
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      - name: Build JS bundle
+        run: |
+          yarn build:full
 
-    - name: Install NDK
-      run: |
-        sdkmanager --install "ndk;27.1.12297006"
-
-    - name: Check Rust code linting rules
-      run: |
-        cargo fmt --check
-
-    - name: Install Rust dependencies for WASM
-      run: |
-        cargo install wasm-bindgen-cli@0.2.105 wasm-opt
-
-    - name: Install dependencies
-      run: |
-        yarn
-
-    - name: Build JS bundle
-      run: |
-        yarn build:full
-
-    - name: Run tests
-      run: |
-        yarn test
+      - name: Run tests
+        run: |
+          yarn test
