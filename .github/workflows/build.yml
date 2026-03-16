@@ -16,24 +16,22 @@ jobs:
         node-version: [22.x, 24.x]
         settings:
           # --- Linux ---
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-          - target: x86_64-unknown-linux-musl
-            os: ubuntu-latest
-          - target: aarch64-unknown-linux-gnu
-            os: ubuntu-latest
-          - target: aarch64-unknown-linux-musl
-            os: ubuntu-latest
-          # --- Windows ---
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-          - target: aarch64-pc-windows-msvc
-            os: windows-latest
-          # --- macOS ---
-          - target: x86_64-apple-darwin
-            os: macos-13 # macOS 13 использует Intel процессоры
+#          - target: x86_64-unknown-linux-gnu
+#            os: ubuntu-latest
+#          - target: x86_64-unknown-linux-musl
+#            os: ubuntu-latest
+#          - target: aarch64-unknown-linux-gnu
+#            os: ubuntu-latest
+#          - target: aarch64-unknown-linux-musl
+#            os: ubuntu-latest
+#          # --- Windows ---
+#          - target: x86_64-pc-windows-msvc
+#            os: windows-latest
+#          - target: aarch64-pc-windows-msvc
+#            os: windows-latest
+#          # --- macOS ---
           - target: aarch64-apple-darwin
-            os: macos-14 # macOS 14+ использует Apple Silicon (M1/M2)
+            os: macos-latest
 
     steps:
       - name: Checkout repository
