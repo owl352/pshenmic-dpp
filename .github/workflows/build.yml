@@ -78,6 +78,12 @@ jobs:
       - name: Install cargo-zigbuild
         run: cargo install cargo-zigbuild
 
+      - name: Install LLVM for WebAssembly (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install llvm
+          echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
