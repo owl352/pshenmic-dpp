@@ -111,6 +111,7 @@ jobs:
         run: yarn build:full
         env:
           CARGO_BUILD_TARGET: ${{ matrix.settings.target }}
+          OPENSSL_DIR: /usr
 
       - name: Run tests
         run: yarn test
