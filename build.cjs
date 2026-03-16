@@ -68,7 +68,7 @@ async function main() {
       console.log(`Building for target: ${target}...`);
 
       await execTask(
-        `cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
+        `OPENSSL_VENDORED=1 cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
         { env: {
             ...process.env,
           }}
