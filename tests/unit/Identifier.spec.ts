@@ -1,4 +1,4 @@
-import { IdentifierWASM } from "../../dist/src/wasm.js";
+import { IdentifierWASM } from "pshenmic-dpp";
 
 let identifierBytes: Uint8Array;
 

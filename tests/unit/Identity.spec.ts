@@ -1,4 +1,4 @@
-import {IdentifierWASM, IdentityWASM, PlatformVersionWASM, IdentityPublicKeyWASM} from '../../dist/src/wasm.js'
+import {IdentifierWASM, IdentityWASM, PlatformVersionWASM, IdentityPublicKeyWASM} from 'pshenmic-dpp'
 
 let identifierBytes: Uint8Array
 let identifier: IdentifierWASM
