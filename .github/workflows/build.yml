@@ -7,15 +7,14 @@ on:
     branches: [ "master", "v1.1.0-dev", "v1.1.0", "v2.0.0-dev" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
 
+  # === WASM, Linux/Windows ===
+  build-native:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22.x, 24.x]
         native-target: [
-          x86_64-apple-darwin,
-          aarch64-apple-darwin,
           x86_64-unknown-linux-gnu,
           aarch64-unknown-linux-gnu,
           x86_64-unknown-linux-musl,
@@ -32,15 +31,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup Rust toolchain
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
 
-      - name: Add rustup targets
+      - name: Add Rust targets
         run: |
           rustup target add wasm32-wasip1-threads
-          rustup target add aarch64-apple-ios-sim aarch64-linux-android x86_64-linux-android
+          rustup target add aarch64-linux-android x86_64-linux-android
 
       - name: Install dependencies
         run: |
@@ -62,14 +61,54 @@ jobs:
           BIN_NAME=$(basename $(pwd) | tr '-' '_')
           EXT="so"
           if [[ "${{ matrix.native-target }}" == *"windows"* ]]; then EXT="dll"; fi
-          if [[ "${{ matrix.native-target }}" == *"darwin"* ]]; then EXT="dylib"; fi
           mkdir -p pkg/binaries/native/${{ matrix.native-target }}
           cp target/${{ matrix.native-target }}/release/lib${BIN_NAME}.${EXT} pkg/binaries/native/${{ matrix.native-target }}/${BIN_NAME}.node
 
       - name: Build JS bundle
-        run: |
-          yarn build:full
+        run: yarn build:full
 
       - name: Run tests
+        run: yarn test
+
+  # === Apple targets ===
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+        native-target: [x86_64-apple-darwin, aarch64-apple-darwin]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Add Rust targets
+        run: rustup target add ${{ matrix.native-target }}
+
+      - name: Install dependencies
         run: |
-          yarn test
+          yarn
+          cargo install wasm-bindgen-cli@0.2.105 wasm-opt
+
+      - name: Build Native for ${{ matrix.native-target }}
+        run: |
+          cargo zigbuild --target ${{ matrix.native-target }} --release
+          BIN_NAME=$(basename $(pwd) | tr '-' '_')
+          EXT="dylib"
+          mkdir -p pkg/binaries/native/${{ matrix.native-target }}
+          cp target/${{ matrix.native-target }}/release/lib${BIN_NAME}.${EXT} pkg/binaries/native/${{ matrix.native-target }}/${BIN_NAME}.node
+
+      - name: Build JS bundle
+        run: yarn build:full
+
+      - name: Run tests
+        run: yarn test
