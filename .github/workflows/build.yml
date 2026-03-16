@@ -55,6 +55,20 @@ jobs:
         with:
           version: 0.13.0
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: |
+          sdkmanager --install "ndk;27.1.12297006"
+
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
