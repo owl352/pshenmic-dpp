@@ -87,8 +87,9 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
+          sudo apt-get updateecho "OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu" >> $GITHUB_ENV
           sudo apt-get install -y gcc-multilib musl-tools pkg-config libssl-dev
+          echo "OPENSSL_INCLUDE_DIR=/usr/include/x86_64-linux-gnu" >> $GITHUB_ENV
 
       - name: Install Mobile Rust targets (Linux & macOS)
         if: runner.os == 'Linux' || runner.os == 'macOS'
