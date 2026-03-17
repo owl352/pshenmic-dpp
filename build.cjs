@@ -153,6 +153,11 @@ async function main() {
     path.join(binariesOutputDir, "native.js"),
     { encoding: "utf8" },
   );
+  const nodeInitScript = fs.readFileSync(
+    path.join(binariesOutputDir, "node.js"),
+    { encoding: "utf8" },
+  );
+
 
   fs.writeFileSync(
     path.join(binariesOutputDir, "wasm.js"),
@@ -165,6 +170,14 @@ async function main() {
   fs.writeFileSync(
     path.join(binariesOutputDir, "native.js"),
     nativeInitScript.replace(
+      "/* exports here */",
+      `export const { ${exports.join(", ")} } =`,
+    ),
+  );
+
+  fs.writeFileSync(
+    path.join(binariesOutputDir, "node.js"),
+    nodeInitScript.replace(
       "/* exports here */",
       `export const { ${exports.join(", ")} } =`,
     ),
