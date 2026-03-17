@@ -30,8 +30,8 @@ const nativeTargets = specificTarget
     "aarch64-unknown-linux-gnu",
     "x86_64-unknown-linux-musl",
     "aarch64-unknown-linux-musl",
-    "x86_64-pc-windows-msvc",
-    "aarch64-pc-windows-msvc"
+    // "x86_64-pc-windows-msvc",
+    // "aarch64-pc-windows-msvc"
   ];
 
 const emnapi = path.join(
@@ -62,50 +62,52 @@ async function main() {
   );
 
   console.log("--- Building Native Binaries via zigbuild ---");
-  for (const target of nativeTargets) {
-    try {
-      console.log(`Building for target: ${target}...`);
 
-      await execTask(
-        `cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
-        { env: {
-            ...process.env,
-          }}
-      );
+  await Promise.all(
+    nativeTargets.map(async (target) => {
+      try {
+        console.log(`Building for target: ${target}...`);
 
-      let extension
+        await execTask(
+          `cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
+          { env: { ...process.env } }
+        );
 
-      if (target.includes("apple-darwin")) {
-        extension = "dylib";
-      } else if (target.includes("windows")) {
-        extension = "dll";
-      } else {
-        extension = "so";
+        let extension;
+
+        if (target.includes("apple-darwin")) {
+          extension = "dylib";
+        } else if (target.includes("windows")) {
+          extension = "dll";
+        } else {
+          extension = "so";
+        }
+
+        const nativeBinPath = path.join(
+          __dirname, "target", target, buildProfile, `lib${binName}.${extension}`
+        );
+
+        const nativeOutputDir = path.join(binariesOutputDir, "native", target);
+        if (!fs.existsSync(nativeOutputDir)) {
+          fs.mkdirSync(nativeOutputDir, { recursive: true });
+        }
+
+        const destPath = path.join(nativeOutputDir, `${binName}.node`);
+        fs.copyFileSync(nativeBinPath, destPath);
+        console.log(`Successfully built: ${target}`);
+
+      } catch (err) {
+        console.error(`FAILED to build for target ${target}:`, err.message);
       }
-
-      const nativeBinPath = path.join(
-        __dirname, "target", target, buildProfile, `lib${binName}.${extension}`
-      );
-
-      const nativeOutputDir = path.join(binariesOutputDir, "native", target);
-      if (!fs.existsSync(nativeOutputDir)) {
-        fs.mkdirSync(nativeOutputDir, { recursive: true });
-      }
-
-      const destPath = path.join(nativeOutputDir, `${binName}.node`);
-      fs.copyFileSync(nativeBinPath, destPath);
-      console.log(`Successfully built: ${target}`);
-
-    } catch (err) {
-      console.error(`FAILED to build for target ${target}:`, err.message);
-    }
-  }
+    })
+  );
 
   console.log("--- Post-build processing ---");
 
   await execTask(
     `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`,
   );
+
 
   console.log("Running wasm-opt");
   await execTask(wasmOptScript, {
