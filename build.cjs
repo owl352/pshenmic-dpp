@@ -22,9 +22,8 @@ const templatesOutputDir =
 const specificTarget = process.env.CARGO_BUILD_TARGET;
 
 const nativeTargets = specificTarget
-  ? [specificTarget] // Если таргет передан, собираем только его
+  ? specificTarget.split(',').map(t => t.trim())
   : [
-    // Твой дефолтный список для локальной разработки (когда запускаешь просто node build.cjs)
     "x86_64-apple-darwin",
     "aarch64-apple-darwin",
     "x86_64-unknown-linux-gnu",
