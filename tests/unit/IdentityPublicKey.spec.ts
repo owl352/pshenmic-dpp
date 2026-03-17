@@ -1,4 +1,4 @@
-import {IdentityPublicKeyWASM, Purpose, SecurityLevel, KeyType} from '../../dist/src/wasm.js'
+import {IdentityPublicKeyWASM, Purpose, SecurityLevel, KeyType} from 'pshenmic-dpp'
 
 let keyId: number
 let purpose: Purpose

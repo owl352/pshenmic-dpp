@@ -1,5 +1,5 @@
-import * as dpp from "../../pkg/src/wasm.js";
-import {valueFromDynamicValue, valueToDynamicValue} from "../../pkg/src/dpp/utils.js"
+import * as dpp from "pshenmic-dpp";
+import {valueFromDynamicValue, valueToDynamicValue} from "pshenmic-dpp/wasm/utils"
 
 describe('DynamicValue', () => {
   beforeAll(()=>{

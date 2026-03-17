@@ -1,4 +1,4 @@
-name: Build
+name: Build & Test
 
 on:
   push:
@@ -8,67 +8,115 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    name: Build ${{ matrix.settings.target }} (Node ${{ matrix.node-version }})
+    runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version: [24.x]
+        settings:
+          - target: aarch64-apple-darwin
+            os: macos-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Setup Rust toolchain
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        components: rustfmt
+      - name: Install Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.13.0
 
-    - name: Add rustup WASM target
-      run: |
-        rustup target add wasm32-wasip1-threads
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: GCC Multilib
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-multilib --fix-missing
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-    - name: Add rustup mobile targets
-      run: |
-        rustup target add aarch64-apple-ios-sim aarch64-linux-android x86_64-linux-android
+      - name: Install NDK
+        run: |
+          sdkmanager --install "ndk;27.1.12297006"
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-linux-android, x86_64-linux-android, aarch64-apple-ios-sim, aarch64-apple-darwin, x86_64-apple-darwin
+          components: rustfmt, rust-src
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      - name: Cache Rust dependencies
+        uses: swatinem/rust-cache@v2
 
-    - name: Install NDK
-      run: |
-        sdkmanager --install "ndk;27.1.12297006"
+      - name: Install pre-built Rust tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-zigbuild, wasm-bindgen-cli@0.2.105, wasm-opt
 
-    - name: Check Rust code linting rules
-      run: |
-        cargo fmt --check
+      - name: Install LLVM for WebAssembly (macOS)
+        run: |
+          brew install llvm
+          echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
 
-    - name: Install Rust dependencies for WASM
-      run: |
-        cargo install wasm-bindgen-cli@0.2.105 wasm-opt
+      - name: Install project dependencies & Wasm tools
+        run: |
+          yarn install --immutable
 
-    - name: Install dependencies
-      run: |
-        yarn
+      - name: Build JS bundle
+        run: yarn build:full
+        env:
+          RUSTFLAGS: '-C target-feature=-crt-static'
+          NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin
 
-    - name: Build JS bundle
-      run: |
-        yarn build:full
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact-dist
+          retention-days: 1
+          path: ./dist
 
-    - name: Run tests
-      run: |
-        yarn test
+  test:
+    name: Test ${{ matrix.settings.target }} (Node ${{ matrix.node-version }})
+    needs: build
+    runs-on: ${{ matrix.settings.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22.x, 24.x]
+        settings:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup QEMU
+        if: runner.os == 'Linux' && contains(matrix.settings.target, 'aarch64')
+        uses: docker/setup-qemu-action@v3
+
+      - name: Install project dependencies
+        run: |
+          yarn install
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact-dist
+          path: ./dist
+
+      - name: Run tests
+        run: yarn test

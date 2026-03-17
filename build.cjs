@@ -10,14 +10,29 @@ const {
 const { name: moduleName } = require("./package.json");
 const typingsForCodegen = 'export * from "./bindingsTypes.ts"';
 
-// release/debug
 const buildProfile = process.env.PROFILE ?? "release";
+const isRelease = buildProfile === "release";
 const wasmOptScript =
   process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, "scripts/wasm-opt.sh");
 const binariesOutputDir =
   process.env.BIN_OUTPUT_DIR ?? path.join(__dirname, "pkg", "binaries");
 const templatesOutputDir =
   process.env.JS_OUTPUT_DIR ?? path.join(__dirname, "pkg");
+
+const specificTarget = process.env.NATIVE_BUILD_TARGET;
+
+const nativeTargets = specificTarget
+  ? specificTarget.split(',').map(t => t.trim())
+  : [
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl",
+    // "x86_64-pc-windows-msvc",
+    // "aarch64-pc-windows-msvc"
+  ];
 
 const emnapi = path.join(
   require.resolve("emnapi"),
@@ -32,63 +47,93 @@ const {
   package: { name: rustCrateName },
 } = toml.parse(fileContent);
 
-const binName = rustCrateName.replace("-", "_");
-
-const targetWasmFile = path.join(
-  __dirname,
-  "target",
-  "wasm32-wasip1-threads",
-  buildProfile,
-  `${binName}.wasm`,
-);
-
+const binName = rustCrateName.replace(/-/g, "_");
 const execTask = promisify(exec);
 
 async function main() {
-  console.log("Building wasm32-wasip1-threads");
-  console.log("EMNAPI link:", emnapi);
-  await execTask(
-    `cargo build --target wasm32-wasip1-threads --${buildProfile}`,
-    {
-      env: {
-        ...process.env,
-        EMNAPI_LINK_DIR: emnapi,
-        // doesn't need when we use only binary
-        // NAPI_TYPE_DEF_TMP_FOLDER:
-      },
-    },
+  console.log("--- Building WASM (wasm32-wasip1-threads) ---");
+  const targetWasmFile = path.join(
+    __dirname, "target", "wasm32-wasip1-threads", buildProfile, `${binName}.wasm`
   );
 
-  console.log("Building node-api by ferric");
+  await execTask(
+    `cargo build --target wasm32-wasip1-threads ${isRelease ? "--release" : ""}`,
+    { env: { ...process.env, EMNAPI_LINK_DIR: emnapi } }
+  );
+
+  console.log("--- Building Native Binaries via zigbuild ---");
+
+  if (nativeTargets.length > 0) {
+    const targetFlags = nativeTargets.map(t => `--target ${t}`).join(" ");
+    console.log(`Building for targets: ${nativeTargets.join(", ")}...`);
+
+    try {
+      await execTask(
+        `cargo zigbuild ${targetFlags} ${isRelease ? "--release" : ""}`,
+        { env: { ...process.env } }
+      );
+
+      nativeTargets.forEach((target) => {
+        let extension;
+
+        if (target.includes("apple-darwin")) {
+          extension = "dylib";
+        } else if (target.includes("windows")) {
+          extension = "dll";
+        } else {
+          extension = "so";
+        }
+
+        const nativeBinPath = path.join(
+          __dirname, "target", target, buildProfile, `lib${binName}.${extension}`
+        );
+
+        const nativeOutputDir = path.join(binariesOutputDir, "native", target);
+
+        if (fs.existsSync(nativeBinPath)) {
+          if (!fs.existsSync(nativeOutputDir)) {
+            fs.mkdirSync(nativeOutputDir, { recursive: true });
+          }
+
+          const destPath = path.join(nativeOutputDir, `${binName}.node`);
+
+          fs.copyFileSync(nativeBinPath, destPath);
+          console.log(`Successfully built and copied: ${target}`);
+        } else {
+          console.error(`FAILED: File not found for ${target}: ${nativeBinPath}`);
+        }
+      });
+
+    } catch (err) {
+      console.error(`FAILED to build native targets:`, err.message);
+    }
+  }
+
+  console.log("--- Post-build processing ---");
+
+  console.log("Running ferric-cli");
   await execTask(
     `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`,
   );
 
   console.log("Running wasm-opt");
   await execTask(wasmOptScript, {
-    env: {
-      ...process.env,
-      OUTPUT_FILE: targetWasmFile.toString(),
-    },
+    env: { ...process.env, OUTPUT_FILE: targetWasmFile.toString() },
   });
 
-  console.log("Generate WASM output directory");
   const wasmOutputDir = path.join(binariesOutputDir, "wasm");
-
   if (!fs.existsSync(wasmOutputDir)) {
-    fs.mkdirSync(wasmOutputDir);
+    fs.mkdirSync(wasmOutputDir, { recursive: true });
   }
 
-  console.log("Generate zipped js base122 WASM output");
   await convertBinary(targetWasmFile, path.join(wasmOutputDir, "wasmBytes.ts"));
 
   console.log("Copying templates");
   fs.cpSync("./templates", templatesOutputDir, { recursive: true });
 
-  console.log("Patch exports to ESM for node-api");
-  const typesPath = path.join(binariesOutputDir, `${binName}.d.ts`);
-
-  const exports = getStructsForEsmExport(typesPath.toString());
+  console.log("Patching exports and typings...");
+  const wasmTypesPath = path.join(binariesOutputDir, `${binName}.d.ts`);
+  const exports = getStructsForEsmExport(wasmTypesPath.toString());
 
   fs.writeFileSync(
     path.join(binariesOutputDir, `${binName}.js`),
@@ -100,11 +145,19 @@ async function main() {
     "utf8",
   );
 
-  console.log("Adding ESM export for WASM");
   const wasmInitScript = fs.readFileSync(
     path.join(binariesOutputDir, "wasm.js"),
     { encoding: "utf8" },
   );
+  const nativeInitScript = fs.readFileSync(
+    path.join(binariesOutputDir, "native.js"),
+    { encoding: "utf8" },
+  );
+  const nodeInitScript = fs.readFileSync(
+    path.join(binariesOutputDir, "node.js"),
+    { encoding: "utf8" },
+  );
+
 
   fs.writeFileSync(
     path.join(binariesOutputDir, "wasm.js"),
@@ -114,22 +167,32 @@ async function main() {
     ),
   );
 
-  console.log("Patch typings");
-  const types = fs.readFileSync(typesPath, { encoding: "utf8" });
+  fs.writeFileSync(
+    path.join(binariesOutputDir, "native.js"),
+    nativeInitScript.replace(
+      "/* exports here */",
+      `export const { ${exports.join(", ")} } =`,
+    ),
+  );
 
+  fs.writeFileSync(
+    path.join(binariesOutputDir, "node.js"),
+    nodeInitScript.replace(
+      "/* exports here */",
+      `export const { ${exports.join(", ")} } =`,
+    ),
+  );
+
+  const types = fs.readFileSync(wasmTypesPath, { encoding: "utf8" });
   fs.writeFileSync(
     path.join(binariesOutputDir, "bindingsTypes.ts"),
     types.replace(/declare const/g, "const"),
   );
 
-  fs.writeFileSync(
-    path.join(binariesOutputDir, "wasm.d.ts"),
-    typingsForCodegen,
-  );
-  fs.writeFileSync(
-    path.join(binariesOutputDir, `${binName}.d.ts`),
-    typingsForCodegen,
-  );
+  fs.writeFileSync(path.join(binariesOutputDir, "native.d.ts"), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
 
   console.log("Done");
 }

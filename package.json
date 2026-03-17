@@ -11,21 +11,32 @@
   },
   "scripts": {
     "build:bin": "node build.cjs",
-    "build:ts": "tsc && cp -R pkg/**/*.*.node dist/binaries/",
+    "build:ts": "tsc && cp -R pkg/**/*.*.node dist/binaries/ && cp -R pkg/binaries/native dist/binaries/",
     "build:full": "npm run build:bin && npm run build:ts",
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "docs": "typedoc",
     "lint:rust": "cargo fmt",
     "lint:src": "ts-standard --fix ./pkg/src",
     "lint:tests": "ts-standard --fix ./pkg/src",
-    "lint": "npm run lint:rust && npm run lint:src && npm run lint:tests"
+    "lint": "npm run lint:rust && npm run lint:src && npm run lint:tests",
+    "prepack": "npm pkg delete devDependencies"
   },
   "files": [
     "dist/",
     "tests/"
   ],
+  "exports": {
+    ".": {
+      "default": "./dist/src/wasm.js",
+      "react-native": "./dist/src/react-native.js",
+      "node": "./dist/src/native.js"
+    },
+    "./wasm": "./dist/src/wasm.js",
+    "./wasm/utils": "./dist/src/dpp/utils.js",
+    "./native": "./dist/src/native.js"
+  },
   "author": "owl352",
   "license": "ISC",
   "description": "",
@@ -46,10 +57,10 @@
     "path": "^0.12.7",
     "toml": "^3.0.0",
     "ts-morph": "^26.0.0",
+    "ts-standard": "^12.0.2",
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
-    "typescript": "^5.8.3",
-    "ts-standard": "^12.0.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@emnapi/core": "1.9.0",
