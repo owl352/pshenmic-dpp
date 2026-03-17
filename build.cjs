@@ -190,6 +190,7 @@ async function main() {
   );
 
   fs.writeFileSync(path.join(binariesOutputDir, "native.d.ts"), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
 
