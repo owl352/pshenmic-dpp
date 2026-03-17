@@ -66,6 +66,7 @@ jobs:
           yarn install
           cargo install wasm-bindgen-cli@0.2.105 wasm-opt
 
+
       - name: Build JS bundle
         run: yarn build:full
         env:
