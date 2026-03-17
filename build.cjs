@@ -19,7 +19,7 @@ const binariesOutputDir =
 const templatesOutputDir =
   process.env.JS_OUTPUT_DIR ?? path.join(__dirname, "pkg");
 
-const specificTarget = process.env.CARGO_BUILD_TARGET;
+const specificTarget = process.env.NATIVE_BUILD_TARGET;
 
 const nativeTargets = specificTarget
   ? specificTarget.split(',').map(t => t.trim())
