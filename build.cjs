@@ -63,16 +63,17 @@ async function main() {
 
   console.log("--- Building Native Binaries via zigbuild ---");
 
-  await Promise.all(
-    nativeTargets.map(async (target) => {
-      try {
-        console.log(`Building for target: ${target}...`);
+  if (nativeTargets.length > 0) {
+    const targetFlags = nativeTargets.map(t => `--target ${t}`).join(" ");
+    console.log(`Building for targets: ${nativeTargets.join(", ")}...`);
 
-        await execTask(
-          `cargo zigbuild --target ${target} ${isRelease ? "--release" : ""}`,
-          { env: { ...process.env } }
-        );
+    try {
+      await execTask(
+        `cargo zigbuild ${targetFlags} ${isRelease ? "--release" : ""}`,
+        { env: { ...process.env } }
+      );
 
+      nativeTargets.forEach((target) => {
         let extension;
 
         if (target.includes("apple-darwin")) {
@@ -88,26 +89,32 @@ async function main() {
         );
 
         const nativeOutputDir = path.join(binariesOutputDir, "native", target);
-        if (!fs.existsSync(nativeOutputDir)) {
-          fs.mkdirSync(nativeOutputDir, { recursive: true });
+
+        if (fs.existsSync(nativeBinPath)) {
+          if (!fs.existsSync(nativeOutputDir)) {
+            fs.mkdirSync(nativeOutputDir, { recursive: true });
+          }
+
+          const destPath = path.join(nativeOutputDir, `${binName}.node`);
+
+          fs.copyFileSync(nativeBinPath, destPath);
+          console.log(`Successfully built and copied: ${target}`);
+        } else {
+          console.error(`FAILED: File not found for ${target}: ${nativeBinPath}`);
         }
+      });
 
-        const destPath = path.join(nativeOutputDir, `${binName}.node`);
-        fs.copyFileSync(nativeBinPath, destPath);
-        console.log(`Successfully built: ${target}`);
-
-      } catch (err) {
-        console.error(`FAILED to build for target ${target}:`, err.message);
-      }
-    })
-  );
+    } catch (err) {
+      console.error(`FAILED to build native targets:`, err.message);
+    }
+  }
 
   console.log("--- Post-build processing ---");
 
+  console.log("Running ferric-cli");
   await execTask(
     `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`,
   );
-
 
   console.log("Running wasm-opt");
   await execTask(wasmOptScript, {
@@ -146,7 +153,6 @@ async function main() {
     path.join(binariesOutputDir, "native.js"),
     { encoding: "utf8" },
   );
-
 
   fs.writeFileSync(
     path.join(binariesOutputDir, "wasm.js"),
