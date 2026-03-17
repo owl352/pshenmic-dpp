@@ -69,7 +69,7 @@ jobs:
       - name: Build JS bundle
         run: yarn build:full
         env:
-          RUSTFLAGS: ${{ contains(matrix.settings.target, 'musl') && '-C target-feature=+crt-static -C link-self-contained=no' || '' }}
+          RUSTFLAGS: ${{ contains(matrix.settings.target, 'musl') && '-C target-feature=-crt-static' || '' }}
           NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin
 
       - name: Upload build artifact
