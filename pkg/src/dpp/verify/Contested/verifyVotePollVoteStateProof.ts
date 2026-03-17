@@ -16,7 +16,7 @@ export function verifyVotePollVoteStateProof (
   indexName: string,
   indexValues: Uint8Array[],
   resultType: VoteStateResultTypeLike,
-  allowIncludeLockedAndAbstainingVoteTally: boolean,
+  allowIncludeLockedAndAbstainingVoteTally: boolean | undefined,
   count: number | undefined,
   startAt: StartAt | undefined,
   platformVersion: PlatformVersionLike
@@ -28,7 +28,7 @@ export function verifyVotePollVoteStateProof (
     indexName,
     indexValues,
     valueToDynamicValue(resultType),
-    allowIncludeLockedAndAbstainingVoteTally ?? true,
+    allowIncludeLockedAndAbstainingVoteTally ?? false,
     count,
     valueToDynamicValue(startAt),
     valueToDynamicValue(platformVersion)
