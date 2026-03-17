@@ -44,6 +44,8 @@ function getBinaryPath() {
     return null
   }
 
+  console.log(`running on native dpp (${target})`)
+
   return path.join('native', target, 'pshenmic_dpp.node')
 }
 
