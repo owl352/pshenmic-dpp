@@ -155,7 +155,7 @@ async function main() {
     path.join(binariesOutputDir, "wasm.js"),
     wasmInitScript.replace(
       "/* exports here */",
-      `export { ${exports.join(", ")} }`,
+      `export const { ${exports.join(", ")} }`,
     ),
   );
 
@@ -166,6 +166,7 @@ async function main() {
   );
 
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, "wasmCreation.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
 

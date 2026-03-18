@@ -1,1 +1,3 @@
-/* exports here */ from "./wasmCreation.cjs"
+import protocol from "./wasmCreation.cjs"
+
+/* exports here */ = protocol;
