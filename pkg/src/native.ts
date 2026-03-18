@@ -1,4 +1,4 @@
-import * as protocol from '../binaries/native.js'
+import protocol from '../binaries/node.js'
 import { dppProvider } from './dpp/provider.js'
 
 dppProvider.setDpp(protocol)

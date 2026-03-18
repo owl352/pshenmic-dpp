@@ -15,7 +15,7 @@
     "build:full": "npm run build:bin && npm run build:ts",
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "jest",
     "docs": "typedoc",
     "lint:rust": "cargo fmt",
     "lint:src": "ts-standard --fix ./pkg/src",

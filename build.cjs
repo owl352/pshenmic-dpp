@@ -149,37 +149,13 @@ async function main() {
     path.join(binariesOutputDir, "wasm.js"),
     { encoding: "utf8" },
   );
-  const nativeInitScript = fs.readFileSync(
-    path.join(binariesOutputDir, "native.js"),
-    { encoding: "utf8" },
-  );
-  const nodeInitScript = fs.readFileSync(
-    path.join(binariesOutputDir, "node.js"),
-    { encoding: "utf8" },
-  );
 
 
   fs.writeFileSync(
     path.join(binariesOutputDir, "wasm.js"),
     wasmInitScript.replace(
       "/* exports here */",
-      `export const { ${exports.join(", ")} } =`,
-    ),
-  );
-
-  fs.writeFileSync(
-    path.join(binariesOutputDir, "native.js"),
-    nativeInitScript.replace(
-      "/* exports here */",
-      `export const { ${exports.join(", ")} } =`,
-    ),
-  );
-
-  fs.writeFileSync(
-    path.join(binariesOutputDir, "node.js"),
-    nodeInitScript.replace(
-      "/* exports here */",
-      `export const { ${exports.join(", ")} } =`,
+      `export { ${exports.join(", ")} }`,
     ),
   );
 
@@ -190,9 +166,9 @@ async function main() {
   );
 
   fs.writeFileSync(path.join(binariesOutputDir, "native.d.ts"), typingsForCodegen);
-  fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), `import * as protocol from "./bindingsTypes.ts"\nexport default protocol`);
 
   console.log("Done");
 }
