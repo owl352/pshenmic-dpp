@@ -165,10 +165,9 @@ async function main() {
     types.replace(/declare const/g, "const"),
   );
 
-  fs.writeFileSync(path.join(binariesOutputDir, "native.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
+  fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
-  fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), `import * as protocol from "./bindingsTypes.ts"\nexport default protocol`);
 
   console.log("Done");
 }

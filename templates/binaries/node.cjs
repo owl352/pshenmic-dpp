@@ -1,5 +1,5 @@
 const path = require('node:path');
-const { createRequire } = require('node:module');
+
 function isMusl() {
   if (process.platform !== 'linux')
     return false;
