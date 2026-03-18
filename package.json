@@ -29,9 +29,9 @@
   ],
   "exports": {
     ".": {
+      "node": "./dist/src/native.js",
       "default": "./dist/src/wasm.js",
-      "react-native": "./dist/src/react-native.js",
-      "node": "./dist/src/native.js"
+      "react-native": "./dist/src/react-native.js"
     },
     "./wasm": "./dist/src/wasm.js",
     "./wasm/utils": "./dist/src/dpp/utils.js",
