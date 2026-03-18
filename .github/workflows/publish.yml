@@ -136,9 +136,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Build JS DOC
-        run: |
-          yarn docs
+#      - name: Build JS DOC
+#        run: |
+#          yarn docs
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -159,12 +159,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Setup Pages
-        if: env.LATEST == 'true'
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        if: env.LATEST == 'true'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './auto-docs'
+#      - name: Setup Pages
+#        if: env.LATEST == 'true'
+#        uses: actions/configure-pages@v5
+#
+#      - name: Upload artifact
+#        if: env.LATEST == 'true'
+#        uses: actions/upload-pages-artifact@v3
+#        with:
+#          path: './auto-docs'
