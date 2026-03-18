@@ -25,7 +25,7 @@ export async function convertBinary(inputFile, outputFile) {
       const encodedData = Buffer.from(encode(compressedChunks)).toString(
         "utf-8",
       );
-      const outputContent = `const bytes: string = "${encodedData}"\nexport {bytes}`;
+      const outputContent = `const bytes = "${encodedData}"\nmodule.exports = {bytes}`;
 
       fs.writeFileSync(outputFile, outputContent);
 

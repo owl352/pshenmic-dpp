@@ -1,7 +1,7 @@
 const { WASI } = require('@tybys/wasm-util');
 const { getDefaultContext } = require('@emnapi/runtime');
 const { instantiateNapiModuleSync } = require('@emnapi/core');
-const { bytes } = require('./wasm/wasmBytes.js');
+const { bytes } = require('./wasm/wasmBytes.cjs');
 const { decode } = require('../utils/base122.js');
 const { decompressSync } = require('fflate');
 

@@ -126,7 +126,7 @@ async function main() {
     fs.mkdirSync(wasmOutputDir, { recursive: true });
   }
 
-  await convertBinary(targetWasmFile, path.join(wasmOutputDir, "wasmBytes.ts"));
+  await convertBinary(targetWasmFile, path.join(wasmOutputDir, "wasmBytes.cjs"));
 
   console.log("Copying templates");
   fs.cpSync("./templates", templatesOutputDir, { recursive: true });

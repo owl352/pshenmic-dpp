@@ -18,7 +18,7 @@ const kShortened = 0b111 // Uses the illegal index to signify the last two-byte 
  * with raw data bytes or a string of bytes (i.e. the type of argument to btoa())
  * @returns {Uint8Array} The data in a regular array representing byte values.
  */
-export function decode (base122Data) {
+function decode (base122Data) {
   const strData = typeof (base122Data) === 'string' ? base122Data : utf8DataToString(base122Data)
   const decoded = []
   let curByte = 0
@@ -65,3 +65,5 @@ export function decode (base122Data) {
 function utf8DataToString (data) {
   return new TextDecoder().decode(data)
 }
+
+module.exports = {decode}
