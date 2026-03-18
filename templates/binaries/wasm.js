@@ -1,3 +1,3 @@
-import protocol from "./wasmCreation.cjs"
+import * as protocol from "./wasmCreation.cjs"
 
-/* exports here */ = protocol;
+/* exports here */ = protocol.default;
