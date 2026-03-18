@@ -48,3 +48,4 @@ const wasm = instantiateNapiModuleSync(decompressSync(wasmBytes), {
 });
 
 module.exports = wasm.napiModule.exports;
+module.exports.default = wasm.napiModule.exports;
