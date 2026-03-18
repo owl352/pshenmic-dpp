@@ -1,6 +1,8 @@
-import protocol from '../binaries/node.js'
+// @ts-ignore
+import protocol from '../binaries/node.cjs'
 import { dppProvider } from './dpp/provider.js'
 
+// @ts-ignore
 dppProvider.setDpp(protocol)
 
 export * from './dpp/enums.js'
