@@ -113,6 +113,13 @@ pub fn generic_of_js_val<T: RefFromWasmAbi<Abi = u32>>(
             .as_f64()
             .ok_or_else(|| JsValue::from(JsError::new("Invalid JS object pointer")))?
             as u32;
+        if ptr_u32 == 0 {
+            return Err(JsError::new(&format!(
+                "{} object has already been freed (null pointer). Do not use WASM objects after calling .free() on them.",
+                class_name
+            ))
+            .into());
+        }
         let reference = unsafe { T::ref_from_abi(ptr_u32) };
         Ok(reference)
     } else {

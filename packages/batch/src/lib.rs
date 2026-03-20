@@ -118,9 +118,7 @@ impl BatchTransitionWASM {
                     .to_wasm::<DocumentTransitionWASM>("DocumentTransitionWASM")?
                     .clone();
 
-                Ok(DocumentTransition::from(
-                    document_transition.clone().clone(),
-                ))
+                Ok(DocumentTransition::from(document_transition.clone()))
             })
             .collect::<Result<Vec<DocumentTransition>, JsValue>>()?;
 

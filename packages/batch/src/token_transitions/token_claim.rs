@@ -71,8 +71,8 @@ impl TokenClaimTransitionWASM {
     }
 
     #[wasm_bindgen(setter = "base")]
-    pub fn set_base(&mut self, base: TokenBaseTransitionWASM) {
-        self.0.set_base(base.into())
+    pub fn set_base(&mut self, base: &TokenBaseTransitionWASM) {
+        self.0.set_base(base.clone().into())
     }
 
     #[wasm_bindgen(setter = "publicNote")]
