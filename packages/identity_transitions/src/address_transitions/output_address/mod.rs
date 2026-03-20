@@ -23,7 +23,10 @@ impl OutputAddressWASM {
 
     #[wasm_bindgen(constructor)]
     pub fn new(address: &PlatformAddressWASM, credits: Credits) -> Self {
-        OutputAddressWASM { address: address.clone(), credits }
+        OutputAddressWASM {
+            address: address.clone(),
+            credits,
+        }
     }
 
     #[wasm_bindgen(getter=address)]

@@ -164,7 +164,9 @@ impl IdentityCreateTransitionWASM {
 
     #[wasm_bindgen(setter = "assetLock")]
     pub fn set_asset_lock_proof(&mut self, proof: &AssetLockProofWASM) -> Result<(), JsValue> {
-        self.0.set_asset_lock_proof(proof.clone().into()).with_js_error()
+        self.0
+            .set_asset_lock_proof(proof.clone().into())
+            .with_js_error()
     }
 
     #[wasm_bindgen(js_name = "toStateTransition")]
