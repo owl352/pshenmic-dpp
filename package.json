@@ -29,7 +29,6 @@
   ],
   "exports": {
     ".": {
-      "node": "./dist/src/native.js",
       "react-native": "./dist/src/react-native.js",
       "default": "./dist/src/wasm.js"
     },
