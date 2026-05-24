@@ -123,22 +123,24 @@ jobs:
     name: Publish to NPM
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22.x
+      - name: Use Node.js 24.x
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing (OIDC) requires npm >= 11.5.1
+      - run: npm install -g npm@latest
 
       - name: Install dependencies
         run: yarn install --immutable
-
-#      - name: Build JS DOC
-#        run: |
-#          yarn docs
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -151,20 +153,8 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+-([a-zA-Z0-9]+).*/\1/')
-            yarn publish --tag "$TAG" --non-interactive
+            npm publish --tag "$TAG" --provenance --access public
           else
             echo "LATEST=true" >> $GITHUB_ENV
-            yarn publish --tag latest --non-interactive
+            npm publish --tag latest --provenance --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-#      - name: Setup Pages
-#        if: env.LATEST == 'true'
-#        uses: actions/configure-pages@v5
-#
-#      - name: Upload artifact
-#        if: env.LATEST == 'true'
-#        uses: actions/upload-pages-artifact@v3
-#        with:
-#          path: './auto-docs'
