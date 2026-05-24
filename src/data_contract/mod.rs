@@ -134,6 +134,21 @@ impl DataContractNAPI {
             .set_value("documentSchemas", schema)
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
+        let tokens_value_map: Vec<(Value, Value)> = tokens
+            .into_iter()
+            .map(|(pos, config)| {
+                platform_value::to_value(config)
+                    .map(|v| (Value::Text(pos.to_string()), v))
+                    .map_err(|err| {
+                        napi::Error::new(napi::Status::GenericFailure, err.to_string())
+                    })
+            })
+            .collect::<Result<_, napi::Error>>()?;
+
+        contract_value
+            .set_value("tokens", Value::Map(tokens_value_map))
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
+
         let data_contract = DataContract::from_value(
             contract_value,
             full_validation.unwrap_or(true),
@@ -141,16 +156,7 @@ impl DataContractNAPI {
         )
         .with_js_error()?;
 
-        let data_contract_with_tokens = match data_contract {
-            DataContract::V0(v0) => DataContract::from(v0),
-            DataContract::V1(mut v1) => {
-                v1.set_tokens(tokens);
-
-                DataContract::from(v1)
-            }
-        };
-
-        Ok(DataContractNAPI(data_contract_with_tokens))
+        Ok(DataContractNAPI(data_contract))
     }
 
     #[napi(js_name = "fromValue")]
