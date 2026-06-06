@@ -1,5 +1,11 @@
-import { DataContractWASM, IdentifierWASM, PlatformVersionWASM } from 'pshenmic-dpp'
-import { buildTokenConfiguration } from './utils/buildTokenConfiguration'
+import {AuthorizedActionTakersWASM, ChangeControlRulesWASM, DataContractWASM,
+  DistributionFunctionWASM, IdentifierWASM, PlatformVersionWASM,
+  RewardDistributionTypeWASM, TokenConfigurationConventionWASM, TokenConfigurationLocalizationWASM,
+  TokenConfigurationWASM,
+  TokenDistributionRecipientWASM, TokenDistributionRulesWASM, TokenKeepsHistoryRulesWASM,
+  TokenMarketplaceRulesWASM, TokenPerpetualDistributionWASM,
+  TokenTradeModeWASM} from 'pshenmic-dpp'
+import {buildTokenConfiguration} from './utils/buildTokenConfiguration.js'
 
 const OWNER_ID_BASE58 = 'HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr'
 
@@ -43,7 +49,7 @@ describe('DataContract', function () {
         BigInt(1),
         {},
         undefined,
-        [{ position: 0, tokenConfiguration: tokenConfig }],
+        [{position: 0, tokenConfiguration: tokenConfig}],
         true,
         PlatformVersionWASM.PLATFORM_V10
       )
@@ -67,14 +73,14 @@ describe('DataContract', function () {
     })
 
     test('should create a contract with both documents and tokens', function () {
-      const tokenConfig = buildTokenConfiguration({ baseSupply: BigInt(50) })
+      const tokenConfig = buildTokenConfiguration({baseSupply: BigInt(50)})
 
       const contract = new DataContractWASM(
         OWNER_ID_BASE58,
         BigInt(1),
         DOCUMENT_SCHEMA,
         undefined,
-        [{ position: 0, tokenConfiguration: tokenConfig }],
+        [{position: 0, tokenConfiguration: tokenConfig}],
         true,
         PlatformVersionWASM.PLATFORM_V10
       )
@@ -127,7 +133,7 @@ describe('DataContract', function () {
         BigInt(1),
         {},
         undefined,
-        [{ position: 0, tokenConfiguration: tokenConfig }],
+        [{position: 0, tokenConfiguration: tokenConfig}],
         true,
         PlatformVersionWASM.PLATFORM_V10
       )
@@ -188,7 +194,7 @@ describe('DataContract', function () {
 
       expect(contract.tokens.length).toEqual(0)
 
-      contract.tokens = [{ position: 0, tokenConfiguration: buildTokenConfiguration() }]
+      contract.tokens = [{position: 0, tokenConfiguration: buildTokenConfiguration()}]
 
       expect(contract.tokens.length).toEqual(1)
     })
@@ -227,6 +233,49 @@ describe('DataContract', function () {
       contract.ownerId = newOwner
 
       expect(contract.ownerId.base58()).toEqual(newOwner.base58())
+    })
+  })
+
+  describe('tokens', function () {
+    test('should allow setting tokens after construction', function () {
+      const owner = '8J8k9aQ5Hotx8oLdnYAhYpyBJJGg4wZALptKLuDE9Df6'
+      const taker = () => AuthorizedActionTakersWASM.ContractOwner()
+      const rule = () => new ChangeControlRulesWASM(taker(), taker(), false, false, false)
+
+      const conventions = new TokenConfigurationConventionWASM(
+        {en: new TokenConfigurationLocalizationWASM(true, 'Tok', 'Toks')}, 8)
+
+      const perpetual = new TokenPerpetualDistributionWASM(
+        RewardDistributionTypeWASM.EpochBasedDistribution(1, DistributionFunctionWASM.FixedAmountDistribution(1n)),
+        TokenDistributionRecipientWASM.Identity(IdentifierWASM.fromBase58(owner))) // <- swap to .ContractOwner() => passes
+
+      const distributionRules = new TokenDistributionRulesWASM(
+        rule(), rule(), true, rule(), rule(), perpetual, undefined, undefined)
+
+      const tokenConfiguration = new TokenConfigurationWASM(
+        conventions, rule(), 100n,
+        new TokenKeepsHistoryRulesWASM(true, true, true, true, true, true),
+        false, false, rule(), distributionRules,
+        new TokenMarketplaceRulesWASM(TokenTradeModeWASM.NotTradeable(), rule()),
+        rule(), rule(), rule(), rule(), rule(), rule(),
+        taker(), undefined, undefined, undefined)
+
+      const contract = new DataContractWASM(owner, 1n, {note: {}}, undefined,
+        [{position: 0, tokenConfiguration}], true, undefined)
+
+      expect(contract).toBeInstanceOf(DataContractWASM)
+      expect(contract.tokens.length).toEqual(1)
+      expect(contract.tokens[0].position).toEqual(0)
+
+      const perpetualDistribution = contract.tokens[0].tokenConfiguration
+        .distributionRules.perpetualDistribution
+
+      expect(perpetualDistribution).toBeDefined()
+
+      const recipient = perpetualDistribution!.distributionRecipient
+
+      expect(recipient.getType()).toEqual(`Identity(${owner})`)
+      expect(recipient.getValue()?.base58()).toEqual(owner)
     })
   })
 })

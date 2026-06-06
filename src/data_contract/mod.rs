@@ -134,14 +134,14 @@ impl DataContractNAPI {
             .set_value("documentSchemas", schema)
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
+        // data contract from value require human readable values, when identifier .toValue() returns bytes
+        // for fix we convert all to json and then to value, because identifier => json = string instead bytes
         let tokens_value_map: Vec<(Value, Value)> = tokens
             .into_iter()
             .map(|(pos, config)| {
-                platform_value::to_value(config)
-                    .map(|v| (Value::Text(pos.to_string()), v))
-                    .map_err(|err| {
-                        napi::Error::new(napi::Status::GenericFailure, err.to_string())
-                    })
+                serde_json::to_value(config)
+                    .map(|json| (Value::Text(pos.to_string()), Value::from(json)))
+                    .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))
             })
             .collect::<Result<_, napi::Error>>()?;
 
