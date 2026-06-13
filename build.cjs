@@ -70,7 +70,7 @@ async function main() {
     try {
       await execTask(
         `cargo zigbuild ${targetFlags} ${isRelease ? "--release" : ""}`,
-        { env: { ...process.env } }
+        { env: { ...process.env }, maxBuffer: 1024 * 1024 * 50 }
       );
 
       nativeTargets.forEach((target) => {
