@@ -269,6 +269,42 @@ export interface VerifiedIdentityWithAddressInfos {
   infos: VerifiedPlatformAddressInfo[]
 }
 
+export interface AssetLockValue {
+  initialCreditValue: bigint
+  txOutScript: Uint8Array
+  remainingCreditValue: bigint
+  usedTags: Uint8Array[]
+}
+
+export type StoredAssetLockInfoType = 'FullyConsumed' | 'PartiallyConsumed' | 'NotPresent'
+
+export interface StoredAssetLockInfo {
+  type: StoredAssetLockInfoType
+  value?: AssetLockValue
+}
+
+export type ShieldedNullifier = [Uint8Array, boolean]
+
+export interface VerifiedShieldedNullifiersWithAddressInfos {
+  nullifiers: ShieldedNullifier[]
+  infos: VerifiedPlatformAddressInfo[]
+}
+
+export interface VerifiedShieldedNullifiersWithWithdrawalDocument {
+  nullifiers: ShieldedNullifier[]
+  documents: VerifiedDocument[]
+}
+
+export interface VerifiedAssetLockConsumedWithAddressInfos {
+  storedAssetLockInfo: StoredAssetLockInfo
+  infos: VerifiedPlatformAddressInfo[]
+}
+
+export interface VerifiedIdentityWithShieldedNullifiers {
+  identity: IdentityWASM
+  nullifiers: ShieldedNullifier[]
+}
+
 export type VerifiedStateTransitionResultVariants = DataContractWASM
 | IdentityWASM
 | IdentifierWASM
@@ -289,6 +325,12 @@ export type VerifiedStateTransitionResultVariants = DataContractWASM
 | VerifiedPlatformAddressInfo[]
 | VerifiedIdentityFullWithAddressInfos
 | VerifiedIdentityWithAddressInfos
+| StoredAssetLockInfo
+| ShieldedNullifier[]
+| VerifiedShieldedNullifiersWithAddressInfos
+| VerifiedShieldedNullifiersWithWithdrawalDocument
+| VerifiedAssetLockConsumedWithAddressInfos
+| VerifiedIdentityWithShieldedNullifiers
 
 export type VerifiedStateTransitionResultVariantsRAW =
   protocol.DataContractNAPI
@@ -311,6 +353,12 @@ export type VerifiedStateTransitionResultVariantsRAW =
   | protocol.PlatformAddressInfoNAPI[]
   | protocol.VerifiedIdentityFullWithAddressInfosNAPI
   | protocol.VerifiedIdentityWithAddressInfosNAPI
+  | protocol.StoredAssetLockInfoNAPI
+  | Array<[Uint8Array, boolean]>
+  | [Array<[Uint8Array, boolean]>, protocol.PlatformAddressInfoNAPI[]]
+  | [Array<[Uint8Array, boolean]>, protocol.VerifiedDocumentNAPI[]]
+  | [protocol.StoredAssetLockInfoNAPI, protocol.PlatformAddressInfoNAPI[]]
+  | [protocol.IdentityNAPI, Array<[Uint8Array, boolean]>]
 
 export interface VerifiedStateTransitionResult {
   rootHash: Uint8Array

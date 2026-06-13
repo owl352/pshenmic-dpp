@@ -2,7 +2,7 @@ use crate::dynamic_value::DynamicValue;
 use dpp::version::{
     PlatformVersion, v1::PLATFORM_V1, v2::PLATFORM_V2, v3::PLATFORM_V3, v4::PLATFORM_V4,
     v5::PLATFORM_V5, v6::PLATFORM_V6, v7::PLATFORM_V7, v8::PLATFORM_V8, v9::PLATFORM_V9,
-    v10::PLATFORM_V10, v11::PLATFORM_V11,
+    v10::PLATFORM_V10, v11::PLATFORM_V11, v12::PLATFORM_V12,
 };
 use napi::Status;
 use napi_derive::napi;
@@ -21,8 +21,9 @@ pub enum PlatformVersionNAPI {
     PLATFORM_V8 = 8,
     PLATFORM_V9 = 9,
     PLATFORM_V10 = 10,
-    #[default]
     PLATFORM_V11 = 11,
+    #[default]
+    PLATFORM_V12 = 12,
 }
 
 impl From<PlatformVersionNAPI> for String {
@@ -39,6 +40,7 @@ impl From<PlatformVersionNAPI> for String {
             PlatformVersionNAPI::PLATFORM_V9 => String::from("PLATFORM_V9"),
             PlatformVersionNAPI::PLATFORM_V10 => String::from("PLATFORM_V10"),
             PlatformVersionNAPI::PLATFORM_V11 => String::from("PLATFORM_V11"),
+            PlatformVersionNAPI::PLATFORM_V12 => String::from("PLATFORM_V12"),
         }
     }
 }
@@ -57,6 +59,7 @@ impl From<PlatformVersionNAPI> for PlatformVersion {
             PlatformVersionNAPI::PLATFORM_V9 => PLATFORM_V9,
             PlatformVersionNAPI::PLATFORM_V10 => PLATFORM_V10,
             PlatformVersionNAPI::PLATFORM_V11 => PLATFORM_V11,
+            PlatformVersionNAPI::PLATFORM_V12 => PLATFORM_V12,
         }
     }
 }
@@ -77,6 +80,7 @@ impl TryFrom<u64> for PlatformVersionNAPI {
             9 => Ok(PlatformVersionNAPI::PLATFORM_V9),
             10 => Ok(PlatformVersionNAPI::PLATFORM_V10),
             11 => Ok(PlatformVersionNAPI::PLATFORM_V11),
+            12 => Ok(PlatformVersionNAPI::PLATFORM_V12),
             _ => Err(napi::Error::new(
                 Status::InvalidArg,
                 format!("unknown platform version value: {}", value),
@@ -101,6 +105,7 @@ impl TryFrom<String> for PlatformVersionNAPI {
             "platform_v9" => Ok(PlatformVersionNAPI::PLATFORM_V9),
             "platform_v10" => Ok(PlatformVersionNAPI::PLATFORM_V10),
             "platform_v11" => Ok(PlatformVersionNAPI::PLATFORM_V11),
+            "platform_v12" => Ok(PlatformVersionNAPI::PLATFORM_V12),
             _ => Err(napi::Error::new(
                 Status::InvalidArg,
                 format!("unknown platform version value: {}", value),

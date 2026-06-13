@@ -1,10 +1,17 @@
 import {
+  AssetLockValue,
   IdentityTokenBalance,
+  ShieldedNullifier,
+  StoredAssetLockInfo,
   TokenStatus,
+  VerifiedAssetLockConsumedWithAddressInfos,
   VerifiedPlatformAddressInfo, VerifiedBalanceTransfer,
   VerifiedDocument,
   VerifiedIdentityBalance, VerifiedIdentityFullWithAddressInfos, VerifiedIdentityTokenInfo,
   VerifiedIdentityWithAddressInfos,
+  VerifiedIdentityWithShieldedNullifiers,
+  VerifiedShieldedNullifiersWithAddressInfos,
+  VerifiedShieldedNullifiersWithWithdrawalDocument,
   VerifiedStateTransitionResultVariants, VerifiedStateTransitionResultVariantsRAW,
   VerifiedTokenGroupActionWithDocument, VerifiedTokenGroupActionWithTokenBalance,
   VerifiedTokenGroupActionWithTokenIdentityInfo,
@@ -12,8 +19,9 @@ import {
 } from '../../types.js'
 import { DataContractWASM } from '../../structs/DataContract.js'
 import type {
+  AssetLockValueNAPI,
   IdentityTokenBalanceNAPI, TokenStatusNAPI,
-  PlatformAddressInfoNAPI, VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityFullWithAddressInfosNAPI,
+  PlatformAddressInfoNAPI, StoredAssetLockInfoNAPI, VerifiedBalanceTransferNAPI, VerifiedDocumentNAPI, VerifiedIdentityFullWithAddressInfosNAPI,
   VerifiedIdentityTokenInfoNAPI, VerifiedIdentityWithAddressInfosNAPI, VerifiedTokenGroupActionWithDocumentNAPI,
   VerifiedTokenGroupActionWithTokenBalanceNAPI,
   VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
@@ -110,6 +118,39 @@ const converters: () => Map<Function, Converter> = (): Map<Function, Converter> 
   ])
 }
 
+function convertPlatformAddressInfos (infos: PlatformAddressInfoNAPI[]): VerifiedPlatformAddressInfo[] {
+  return infos.map(info => ({
+    nonce: info.nonce,
+    address: PlatformAddressWASM.createFromRawInstance(info.address),
+    balance: info.credits != null ? BigInt(info.credits) : undefined
+  }))
+}
+
+function convertVerifiedDocuments (docs: VerifiedDocumentNAPI[]): VerifiedDocument[] {
+  return docs.map(item => ({
+    id: IdentifierWASM.createFromRawInstance(item.id),
+    document: item.document != null
+      ? DocumentWASM.createFromRawInstance(item.document)
+      : undefined
+  }))
+}
+
+function convertAssetLockValue (v: AssetLockValueNAPI): AssetLockValue {
+  return {
+    initialCreditValue: BigInt(v.initialCreditValue),
+    txOutScript: v.txOutScript,
+    remainingCreditValue: BigInt(v.remainingCreditValue),
+    usedTags: v.usedTags
+  }
+}
+
+function convertStoredAssetLockInfo (v: StoredAssetLockInfoNAPI): StoredAssetLockInfo {
+  return {
+    type: v.type as StoredAssetLockInfo['type'],
+    value: v.value != null ? convertAssetLockValue(v.value) : undefined
+  }
+}
+
 function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI[] | PlatformAddressInfoNAPI[]): VerifiedIdentityBalance[] | VerifiedDocument[] | VerifiedPlatformAddressInfo[] {
   const [first] = result
   if (first == null) return []
@@ -122,28 +163,76 @@ function convertArray (result: IdentityTokenBalanceNAPI[] | VerifiedDocumentNAPI
   }
 
   if (first instanceof dppProvider.dpp.VerifiedDocumentNAPI) {
-    return (result as VerifiedDocumentNAPI[]).map(item => ({
-      id: IdentifierWASM.createFromRawInstance(item.id),
-      document: item.document != null
-        ? DocumentWASM.createFromRawInstance(item.document)
-        : undefined
-    }))
+    return convertVerifiedDocuments(result as VerifiedDocumentNAPI[])
   }
 
   if (first instanceof dppProvider.dpp.PlatformAddressInfoNAPI) {
-    return (result as PlatformAddressInfoNAPI[]).map(item => ({
-      nonce: item.nonce,
-      address: PlatformAddressWASM.createFromRawInstance(item.address),
-      balance: item.credits != null ? BigInt(item.credits) : undefined
-    }))
+    return convertPlatformAddressInfos(result as PlatformAddressInfoNAPI[])
   }
 
   throw new Error('Unknown array type')
 }
 
+function convertTuple (result: any[]): VerifiedStateTransitionResultVariants {
+  const [first, second] = result
+
+  if (first instanceof dppProvider.dpp.StoredAssetLockInfoNAPI) {
+    return {
+      storedAssetLockInfo: convertStoredAssetLockInfo(first),
+      infos: convertPlatformAddressInfos(second)
+    } as VerifiedAssetLockConsumedWithAddressInfos
+  }
+
+  if (first instanceof dppProvider.dpp.IdentityNAPI) {
+    return {
+      identity: IdentityWASM.createFromRawInstance(first),
+      nullifiers: second as ShieldedNullifier[]
+    } as VerifiedIdentityWithShieldedNullifiers
+  }
+
+  if (Array.isArray(first) && Array.isArray(second)) {
+    const secondFirst = second[0]
+
+    if (secondFirst != null && secondFirst instanceof dppProvider.dpp.VerifiedDocumentNAPI) {
+      return {
+        nullifiers: first as ShieldedNullifier[],
+        documents: convertVerifiedDocuments(second)
+      } as VerifiedShieldedNullifiersWithWithdrawalDocument
+    }
+
+    return {
+      nullifiers: first as ShieldedNullifier[],
+      infos: secondFirst != null ? convertPlatformAddressInfos(second) : []
+    } as VerifiedShieldedNullifiersWithAddressInfos
+  }
+
+  throw new Error('Unknown tuple type')
+}
+
 export function convertResult (result: VerifiedStateTransitionResultVariantsRAW): VerifiedStateTransitionResultVariants {
   if (Array.isArray(result)) {
-    return convertArray(result)
+    if (result.length === 2) {
+      const [first] = result
+
+      if (first instanceof dppProvider.dpp.StoredAssetLockInfoNAPI || first instanceof dppProvider.dpp.IdentityNAPI) {
+        return convertTuple(result)
+      }
+
+      if (Array.isArray(first) && (first.length === 0 || Array.isArray(first[0]))) {
+        return convertTuple(result)
+      }
+    }
+
+    const [first] = result
+    if (first != null && Array.isArray(first) && first[0] instanceof Uint8Array) {
+      return result as ShieldedNullifier[]
+    }
+
+    return convertArray(result as any)
+  }
+
+  if (result instanceof dppProvider.dpp.StoredAssetLockInfoNAPI) {
+    return convertStoredAssetLockInfo(result as StoredAssetLockInfoNAPI)
   }
 
   for (const [Type, handler] of converters()) {

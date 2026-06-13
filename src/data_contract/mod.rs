@@ -107,7 +107,7 @@ impl DataContractNAPI {
         let mut contract_value = Value::Map(ValueMap::new());
 
         contract_value
-            .set_value("$format_version", data_contract_structure_version_value)
+            .set_value("$formatVersion", data_contract_structure_version_value)
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
         contract_value

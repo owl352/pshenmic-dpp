@@ -17,11 +17,10 @@ pub enum NetworkNAPI {
 impl From<Network> for NetworkNAPI {
     fn from(value: Network) -> Self {
         match value {
-            Network::Dash => NetworkNAPI::Mainnet,
+            Network::Mainnet => NetworkNAPI::Mainnet,
             Network::Devnet => NetworkNAPI::Devnet,
             Network::Testnet => NetworkNAPI::Testnet,
             Network::Regtest => NetworkNAPI::Regtest,
-            _ => NetworkNAPI::Testnet,
         }
     }
 }
@@ -40,7 +39,7 @@ impl From<NetworkNAPI> for String {
 impl From<NetworkNAPI> for Network {
     fn from(network: NetworkNAPI) -> Self {
         match network {
-            NetworkNAPI::Mainnet => Network::Dash,
+            NetworkNAPI::Mainnet => Network::Mainnet,
             NetworkNAPI::Testnet => Network::Testnet,
             NetworkNAPI::Devnet => Network::Devnet,
             NetworkNAPI::Regtest => Network::Regtest,

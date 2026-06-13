@@ -1,3 +1,4 @@
+use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::identity::core_script::CoreScript;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::Identifier;

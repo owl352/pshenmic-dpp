@@ -2,13 +2,13 @@ use dpp::address_funds::PlatformAddress;
 use dpp::fee::Credits;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_create_from_addresses_transition::IdentityCreateFromAddressesTransition;
 use dpp::state_transition::identity_create_from_addresses_transition::accessors::IdentityCreateFromAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_create_from_addresses_transition::v0::IdentityCreateFromAddressesTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionLike,
-    StateTransitionWitnessSigned,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionWitnessSigned,
 };
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -16,12 +16,11 @@ use napi_derive::napi;
 use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFeeStrategyStepNAPI;
 use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
-use crate::address_transitions::utils::js_inputs_to_inputs;
 use crate::dynamic_value::{BigIntString, TryToU64};
 use crate::identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
-use crate::utils::WithJsError;
+use crate::utils::{WithJsError, js_inputs_to_inputs};
 
 #[napi(js_name = "IdentityCreateFromAddressesTransitionNAPI")]
 pub struct IdentityCreateFromAddressesTransitionNAPI(IdentityCreateFromAddressesTransition);

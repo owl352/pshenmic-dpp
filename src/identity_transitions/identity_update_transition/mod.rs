@@ -1,3 +1,4 @@
+use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};

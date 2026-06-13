@@ -5,4 +5,3 @@ pub mod create_from_address_transition;
 pub mod entities;
 pub mod identity_credit_transfer_to_addresses_transition;
 pub mod top_up_from_address;
-mod utils;

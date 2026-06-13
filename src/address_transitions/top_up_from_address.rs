@@ -2,12 +2,12 @@ use dpp::address_funds::PlatformAddress;
 use dpp::fee::Credits;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_topup_from_addresses_transition::IdentityTopUpFromAddressesTransition;
 use dpp::state_transition::identity_topup_from_addresses_transition::accessors::IdentityTopUpFromAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_topup_from_addresses_transition::v0::IdentityTopUpFromAddressesTransitionV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionLike,
-    StateTransitionWitnessSigned,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionWitnessSigned,
 };
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -15,13 +15,12 @@ use napi_derive::napi;
 use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFeeStrategyStepNAPI;
 use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
-use crate::address_transitions::utils::js_inputs_to_inputs;
 use crate::dynamic_value::TryToU64;
 use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI};
 use crate::identifier::IdentifierNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
-use crate::utils::WithJsError;
+use crate::utils::{WithJsError, js_inputs_to_inputs};
 
 #[derive(Clone)]
 #[napi(js_name = "IdentityTopUpFromAddressesTransitionNAPI")]

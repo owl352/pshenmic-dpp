@@ -195,11 +195,6 @@ impl MasternodeVoteTransitionNAPI {
         Ok(MasternodeVoteTransitionNAPI(rs_transition))
     }
 
-    #[napi(getter, js_name = "userFeeIncrease")]
-    pub fn get_user_fee_increase(&self) -> u16 {
-        self.0.user_fee_increase()
-    }
-
     #[napi(js_name = "getSignableBytes")]
     pub fn get_signable_bytes(&self) -> Result<Uint8Array, napi::Error> {
         Ok(self.0.signable_bytes().with_js_error()?.into())
@@ -211,11 +206,6 @@ impl MasternodeVoteTransitionNAPI {
             None => None,
             Some(asset_lock_proof) => Some(AssetLockProofNAPI::from(asset_lock_proof.clone())),
         }
-    }
-
-    #[napi(setter, js_name = "userFeeIncrease")]
-    pub fn set_user_fee_increase(&mut self, amount: u16) {
-        self.0.set_user_fee_increase(amount)
     }
 
     #[napi(getter, js_name = "modifiedDataIds")]
