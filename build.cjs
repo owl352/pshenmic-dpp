@@ -112,8 +112,9 @@ async function main() {
   console.log("--- Post-build processing ---");
 
   console.log("Running ferric-cli");
+  // TODO: Enable android
   await execTask(
-    `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`,
+    `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir} --target aarch64-apple-ios-sim`,
   );
 
   console.log("Running wasm-opt");
