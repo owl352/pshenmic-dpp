@@ -61,73 +61,68 @@ async function main() {
     { env: { ...process.env, EMNAPI_LINK_DIR: emnapi } }
   );
 
-  console.log("--- Building Native Binaries via zigbuild ---");
+  console.log("--- Building Native Binaries ---");
 
-  if (nativeTargets.length > 0) {
-    const targetFlags = nativeTargets.map(t => `--target ${t}`).join(" ");
-    console.log(`Building for targets: ${nativeTargets.join(", ")}...`);
+  const darwinTargets = nativeTargets.filter(t => t.includes("apple-darwin"));
+  const zigbuildTargets = nativeTargets.filter(t => !t.includes("apple-darwin"));
 
-    try {
-      await execTask(
-        `cargo zigbuild ${targetFlags} ${isRelease ? "--release" : ""}`,
-        { env: { ...process.env, CFLAGS_aarch64_apple_darwin: "-w", CXXFLAGS_aarch64_apple_darwin: "-w" }, maxBuffer: 1024 * 1024 * 50 }
-      );
+  if (darwinTargets.length > 0) {
+    const targetFlags = darwinTargets.map(t => `--target ${t}`).join(" ");
+    console.log(`Building darwin targets with cargo: ${darwinTargets.join(", ")}...`);
 
-      nativeTargets.forEach((target) => {
-        let extension;
-
-        if (target.includes("apple-darwin")) {
-          extension = "dylib";
-        } else if (target.includes("windows")) {
-          extension = "dll";
-        } else {
-          extension = "so";
-        }
-
-        const nativeBinPath = path.join(
-          __dirname, "target", target, buildProfile, `lib${binName}.${extension}`
-        );
-
-        const nativeOutputDir = path.join(binariesOutputDir, "native", target);
-
-        if (fs.existsSync(nativeBinPath)) {
-          if (!fs.existsSync(nativeOutputDir)) {
-            fs.mkdirSync(nativeOutputDir, { recursive: true });
-          }
-
-          const destPath = path.join(nativeOutputDir, `${binName}.node`);
-
-          fs.copyFileSync(nativeBinPath, destPath);
-          console.log(`Successfully built and copied: ${target}`);
-        } else {
-          console.error(`FAILED: File not found for ${target}: ${nativeBinPath}`);
-        }
-      });
-
-    } catch (err) {
-      console.error(`FAILED to build native targets:`, err.message);
-      if (err.stderr) console.error(`build stderr: \n${err.stderr}`);
-      throw err;
-    }
+    await execTask(
+      `cargo build ${targetFlags} ${isRelease ? "--release" : ""}`,
+      { env: { ...process.env }, maxBuffer: 1024 * 1024 * 50 }
+    );
   }
+
+  if (zigbuildTargets.length > 0) {
+    const targetFlags = zigbuildTargets.map(t => `--target ${t}`).join(" ");
+    console.log(`Building cross targets with zigbuild: ${zigbuildTargets.join(", ")}...`);
+
+    await execTask(
+      `cargo zigbuild ${targetFlags} ${isRelease ? "--release" : ""}`,
+      { env: { ...process.env }, maxBuffer: 1024 * 1024 * 50 }
+    );
+  }
+
+  nativeTargets.forEach((target) => {
+    let extension;
+
+    if (target.includes("apple-darwin")) {
+      extension = "dylib";
+    } else if (target.includes("windows")) {
+      extension = "dll";
+    } else {
+      extension = "so";
+    }
+
+    const nativeBinPath = path.join(
+      __dirname, "target", target, buildProfile, `lib${binName}.${extension}`
+    );
+
+    const nativeOutputDir = path.join(binariesOutputDir, "native", target);
+
+    if (fs.existsSync(nativeBinPath)) {
+      if (!fs.existsSync(nativeOutputDir)) {
+        fs.mkdirSync(nativeOutputDir, { recursive: true });
+      }
+
+      const destPath = path.join(nativeOutputDir, `${binName}.node`);
+
+      fs.copyFileSync(nativeBinPath, destPath);
+      console.log(`Successfully built and copied: ${target}`);
+    } else {
+      console.error(`FAILED: File not found for ${target}: ${nativeBinPath}`);
+    }
+  });
 
   console.log("--- Post-build processing ---");
 
   console.log("Running ferric-cli");
   await execTask(
     `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`,
-    {
-      env: {
-        ...process.env,
-        CC_aarch64_apple_darwin: "/usr/bin/cc",
-        CXX_aarch64_apple_darwin: "/usr/bin/c++",
-        CFLAGS_aarch64_apple_darwin: "-w",
-        CXXFLAGS_aarch64_apple_darwin: "-w",
-        AWS_LC_SYS_TARGET_CC_aarch64_apple_darwin: "/usr/bin/cc",
-        AWS_LC_SYS_TARGET_CXX_aarch64_apple_darwin: "/usr/bin/c++",
-      },
-      maxBuffer: 1024 * 1024 * 50,
-    },
+    { maxBuffer: 1024 * 1024 * 50 },
   );
 
   console.log("Running wasm-opt");
