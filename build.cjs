@@ -122,7 +122,14 @@ async function main() {
   console.log("Running ferric-cli");
   await execTask(
     `npm run ferric:build -- --configuration ${buildProfile} --output ${binariesOutputDir}`,
-    { maxBuffer: 1024 * 1024 * 50 },
+    {
+      env: {
+        ...process.env,
+        AWS_LC_SYS_TARGET_CC_aarch64_apple_darwin: "/usr/bin/cc",
+        AWS_LC_SYS_TARGET_CXX_aarch64_apple_darwin: "/usr/bin/c++",
+      },
+      maxBuffer: 1024 * 1024 * 50,
+    },
   );
 
   console.log("Running wasm-opt");
