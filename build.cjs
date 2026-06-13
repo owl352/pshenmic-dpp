@@ -70,7 +70,7 @@ async function main() {
     try {
       await execTask(
         `cargo zigbuild ${targetFlags} ${isRelease ? "--release" : ""}`,
-        { env: { ...process.env }, maxBuffer: 1024 * 1024 * 50 }
+        { env: { ...process.env, CFLAGS_aarch64_apple_darwin: "-w", CXXFLAGS_aarch64_apple_darwin: "-w" }, maxBuffer: 1024 * 1024 * 50 }
       );
 
       nativeTargets.forEach((target) => {
@@ -106,7 +106,7 @@ async function main() {
 
     } catch (err) {
       console.error(`FAILED to build native targets:`, err.message);
-      if (err.stderr) console.error(err.stderr.slice(-2000));
+      if (err.stderr) console.error(`build stderr: \n${err.stderr}`);
       throw err;
     }
   }
@@ -121,9 +121,12 @@ async function main() {
         ...process.env,
         CC_aarch64_apple_darwin: "/usr/bin/cc",
         CXX_aarch64_apple_darwin: "/usr/bin/c++",
+        CFLAGS_aarch64_apple_darwin: "-w",
+        CXXFLAGS_aarch64_apple_darwin: "-w",
         AWS_LC_SYS_TARGET_CC_aarch64_apple_darwin: "/usr/bin/cc",
         AWS_LC_SYS_TARGET_CXX_aarch64_apple_darwin: "/usr/bin/c++",
       },
+      maxBuffer: 1024 * 1024 * 50,
     },
   );
 
