@@ -52,6 +52,15 @@ export {
 export {
   IdentityTopUpFromAddressesTransitionWASM
 } from './structs/AddressTransitions/IdentityTopUpFromAddressesTransition.js'
+export { SerializedActionWASM } from './structs/ShieldedTransitions/SerializedAction.js'
+export { ShieldTransitionWASM } from './structs/ShieldedTransitions/ShieldTransition.js'
+export { ShieldedTransferTransitionWASM } from './structs/ShieldedTransitions/ShieldedTransferTransition.js'
+export { UnshieldTransitionWASM } from './structs/ShieldedTransitions/UnshieldTransition.js'
+export { ShieldFromAssetLockTransitionWASM } from './structs/ShieldedTransitions/ShieldFromAssetLockTransition.js'
+export { ShieldedWithdrawalTransitionWASM } from './structs/ShieldedTransitions/ShieldedWithdrawalTransition.js'
+export {
+  IdentityCreateFromShieldedPoolTransitionWASM
+} from './structs/ShieldedTransitions/IdentityCreateFromShieldedPoolTransition.js'
 export { ActionTakerWASM } from './structs/TokenConfiguration/ActionTaker.js'
 export { AuthorizedActionTakersWASM } from './structs/TokenConfiguration/AuthorizedActionTakers.js'
 export { ChangeControlRulesWASM } from './structs/TokenConfiguration/ChangeControlRules.js'

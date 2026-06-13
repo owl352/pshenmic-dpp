@@ -70,14 +70,6 @@ export class MasternodeVoteTransitionWASM {
     this._rawMasternodeVoteTransition.signature = value
   }
 
-  get userFeeIncrease (): number {
-    return this._rawMasternodeVoteTransition.userFeeIncrease
-  }
-
-  set userFeeIncrease (value: number) {
-    this._rawMasternodeVoteTransition.userFeeIncrease = value
-  }
-
   get assetLock (): AssetLockProofWASM | undefined {
     const lock = this._rawMasternodeVoteTransition.assetLock
 
