@@ -106,6 +106,8 @@ async function main() {
 
     } catch (err) {
       console.error(`FAILED to build native targets:`, err.message);
+      if (err.stderr) console.error(err.stderr.slice(-2000));
+      throw err;
     }
   }
 
@@ -117,6 +119,8 @@ async function main() {
     {
       env: {
         ...process.env,
+        CC_aarch64_apple_darwin: "/usr/bin/cc",
+        CXX_aarch64_apple_darwin: "/usr/bin/c++",
         AWS_LC_SYS_TARGET_CC_aarch64_apple_darwin: "/usr/bin/cc",
         AWS_LC_SYS_TARGET_CXX_aarch64_apple_darwin: "/usr/bin/c++",
       },
