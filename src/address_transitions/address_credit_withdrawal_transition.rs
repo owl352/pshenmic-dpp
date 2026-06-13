@@ -6,7 +6,7 @@ use dpp::state_transition::address_credit_withdrawal_transition::AddressCreditWi
 use dpp::state_transition::address_credit_withdrawal_transition::accessors::AddressCreditWithdrawalTransitionAccessorsV0;
 use dpp::state_transition::address_credit_withdrawal_transition::v0::AddressCreditWithdrawalTransitionV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionLike,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionHasUserFeeIncrease,
     StateTransitionWitnessSigned,
 };
 use napi::bindgen_prelude::Uint8Array;
@@ -15,13 +15,12 @@ use napi_derive::napi;
 use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFeeStrategyStepNAPI;
 use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
-use crate::address_transitions::utils::js_inputs_to_inputs;
 use crate::core_script::CoreScriptNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::enums::pooling::PoolingNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
-use crate::utils::WithJsError;
+use crate::utils::{WithJsError, js_inputs_to_inputs};
 
 #[derive(Clone)]
 #[napi(js_name = "AddressCreditWithdrawalTransitionNAPI")]

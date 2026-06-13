@@ -1,21 +1,20 @@
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::IdentityCreditTransferToAddressesTransition;
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::accessors::IdentityCreditTransferToAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::v0::IdentityCreditTransferToAddressesTransitionV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionIdentitySigned, StateTransitionLike,
-    StateTransitionSingleSigned,
+    StateTransition, StateTransitionIdentitySigned, StateTransitionSingleSigned,
 };
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
-use crate::address_transitions::utils::js_outputs_to_outputs;
 use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
-use crate::utils::WithJsError;
+use crate::utils::{WithJsError, js_outputs_to_outputs};
 
 #[napi(js_name = "IdentityCreditTransferToAddressesTransitionNAPI")]
 pub struct IdentityCreditTransferToAddressesTransitionNAPI(

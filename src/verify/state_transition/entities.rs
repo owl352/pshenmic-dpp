@@ -1,4 +1,8 @@
 use dpp::{
+    asset_lock::{
+        StoredAssetLockInfo,
+        reduced_asset_lock_value::{AssetLockValue, AssetLockValueGettersV0},
+    },
     block::{block_info::BlockInfo, epoch::Epoch},
     state_transition::proof_result::StateTransitionProofResult,
     tokens::{
@@ -6,7 +10,7 @@ use dpp::{
         status::{TokenStatus, v0::TokenStatusV0Accessors},
     },
 };
-use napi::bindgen_prelude::{Either20, Uint8Array};
+use napi::bindgen_prelude::{Either26, Uint8Array};
 use napi_derive::napi;
 
 use crate::{
@@ -132,7 +136,7 @@ impl VerifiedStateTransitionResultNAPI {
     pub fn result(
         &self,
     ) -> Result<
-        Either20<
+        Either26<
             DataContractNAPI,
             IdentityNAPI,
             IdentifierNAPI,
@@ -153,6 +157,12 @@ impl VerifiedStateTransitionResultNAPI {
             Vec<PlatformAddressInfoNAPI>,
             VerifiedIdentityFullWithAddressInfosNAPI,
             VerifiedIdentityWithAddressInfosNAPI,
+            StoredAssetLockInfoNAPI,
+            Vec<(Uint8Array, bool)>,
+            (Vec<(Uint8Array, bool)>, Vec<PlatformAddressInfoNAPI>),
+            (Vec<(Uint8Array, bool)>, Vec<VerifiedDocumentNAPI>),
+            (StoredAssetLockInfoNAPI, Vec<PlatformAddressInfoNAPI>),
+            (IdentityNAPI, Vec<(Uint8Array, bool)>),
         >,
         napi::Error,
     > {
@@ -404,5 +414,75 @@ impl VerifiedIdentityWithAddressInfosNAPI {
     #[napi(getter, js_name = "infos")]
     pub fn infos(&self) -> Vec<PlatformAddressInfoNAPI> {
         self.infos.clone()
+    }
+}
+
+#[napi(js_name = "AssetLockValueNAPI")]
+pub struct AssetLockValueNAPI(AssetLockValue);
+
+impl From<AssetLockValue> for AssetLockValueNAPI {
+    fn from(value: AssetLockValue) -> Self {
+        AssetLockValueNAPI(value)
+    }
+}
+
+#[napi]
+impl AssetLockValueNAPI {
+    #[napi(getter, js_name = "initialCreditValue")]
+    pub fn initial_credit_value(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.initial_credit_value())
+    }
+
+    #[napi(getter, js_name = "txOutScript")]
+    pub fn tx_out_script(&self) -> Uint8Array {
+        self.0.tx_out_script().clone().into()
+    }
+
+    #[napi(getter, js_name = "remainingCreditValue")]
+    pub fn remaining_credit_value(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.remaining_credit_value())
+    }
+
+    #[napi(getter, js_name = "usedTags")]
+    pub fn used_tags(&self) -> Vec<Uint8Array> {
+        self.0
+            .used_tags_ref()
+            .clone()
+            .iter()
+            .map(|tag| tag.0.clone().into())
+            .collect()
+    }
+}
+
+#[napi(js_name = "StoredAssetLockInfoNAPI")]
+pub struct StoredAssetLockInfoNAPI(StoredAssetLockInfo);
+
+impl From<StoredAssetLockInfo> for StoredAssetLockInfoNAPI {
+    fn from(value: StoredAssetLockInfo) -> Self {
+        StoredAssetLockInfoNAPI(value)
+    }
+}
+
+#[napi]
+impl StoredAssetLockInfoNAPI {
+    #[napi(getter, js_name = "type")]
+    pub fn enum_type(&self) -> String {
+        match self.0 {
+            StoredAssetLockInfo::FullyConsumed => "FullyConsumed",
+            StoredAssetLockInfo::PartiallyConsumed(_) => "PartiallyConsumed",
+            StoredAssetLockInfo::NotPresent => "NotPresent",
+        }
+        .to_string()
+    }
+
+    #[napi(getter, js_name = "value")]
+    pub fn value(&self) -> Option<AssetLockValueNAPI> {
+        match &self.0 {
+            StoredAssetLockInfo::FullyConsumed => None,
+            StoredAssetLockInfo::PartiallyConsumed(asset_lock_value) => {
+                Some(asset_lock_value.clone().into())
+            }
+            StoredAssetLockInfo::NotPresent => None,
+        }
     }
 }

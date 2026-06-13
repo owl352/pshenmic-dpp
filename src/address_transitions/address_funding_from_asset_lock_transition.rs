@@ -5,7 +5,7 @@ use dpp::state_transition::address_funding_from_asset_lock_transition::AddressFu
 use dpp::state_transition::address_funding_from_asset_lock_transition::accessors::AddressFundingFromAssetLockTransitionAccessorsV0;
 use dpp::state_transition::address_funding_from_asset_lock_transition::v0::AddressFundingFromAssetLockTransitionV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionLike,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionHasUserFeeIncrease,
     StateTransitionSingleSigned, StateTransitionWitnessSigned,
 };
 use napi::bindgen_prelude::Uint8Array;
@@ -14,12 +14,11 @@ use napi_derive::napi;
 use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFeeStrategyStepNAPI;
 use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNullableCreditsNAPI;
-use crate::address_transitions::utils::{js_inputs_to_inputs, js_outputs_to_outputs_nullable};
 use crate::asset_lock_proof::AssetLockProofNAPI;
 use crate::dynamic_value::{BigIntString, TryToU64};
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
-use crate::utils::WithJsError;
+use crate::utils::{WithJsError, js_inputs_to_inputs, js_outputs_to_outputs_nullable};
 
 #[napi(js_name = "AddressFundingFromAssetLockTransitionNAPI")]
 pub struct AddressFundingFromAssetLockTransitionNAPI(AddressFundingFromAssetLockTransition);

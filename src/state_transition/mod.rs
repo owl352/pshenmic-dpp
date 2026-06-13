@@ -316,6 +316,14 @@ impl StateTransitionNAPI {
             AddressFundsTransfer(_) => "ADDRESS_FUNDS_TRANSFER",
             AddressFundingFromAssetLock(_) => "ADDRESS_FUNDING_FROM_ASSET_LOCK",
             AddressCreditWithdrawal(_) => "ADDRESS_CREDIT_WITHDRAWAL",
+            StateTransition::Shield(_) => "SHIELD",
+            StateTransition::ShieldedTransfer(_) => "SHIELDED_TRANSFER",
+            StateTransition::Unshield(_) => "UNSHIELDED",
+            StateTransition::ShieldFromAssetLock(_) => "SHIELD_FROM_ASSET_LOCK",
+            StateTransition::ShieldedWithdrawal(_) => "SHIELDED_WITHDRAWAL",
+            StateTransition::IdentityCreateFromShieldedPool(_) => {
+                "IDENTITY_CREATE_FROM_SHIELDED_POOL"
+            }
         }
         .to_string()
     }
@@ -338,6 +346,12 @@ impl StateTransitionNAPI {
             AddressFundsTransfer(_) => 12,
             AddressFundingFromAssetLock(_) => 13,
             AddressCreditWithdrawal(_) => 14,
+            StateTransition::Shield(_) => 15,
+            StateTransition::ShieldedTransfer(_) => 16,
+            StateTransition::Unshield(_) => 17,
+            StateTransition::ShieldFromAssetLock(_) => 18,
+            StateTransition::ShieldedWithdrawal(_) => 19,
+            StateTransition::IdentityCreateFromShieldedPool(_) => 20,
         }
     }
 
@@ -428,6 +442,12 @@ impl StateTransitionNAPI {
             AddressFundsTransfer(_) => None,
             AddressFundingFromAssetLock(_) => None,
             AddressCreditWithdrawal(_) => None,
+            StateTransition::Shield(_) => None,
+            StateTransition::ShieldedTransfer(_) => None,
+            StateTransition::Unshield(_) => None,
+            StateTransition::ShieldFromAssetLock(_) => None,
+            StateTransition::ShieldedWithdrawal(_) => None,
+            StateTransition::IdentityCreateFromShieldedPool(_) => None,
         }
     }
 
@@ -457,6 +477,12 @@ impl StateTransitionNAPI {
             AddressFundsTransfer(_) => None,
             AddressFundingFromAssetLock(_) => None,
             AddressCreditWithdrawal(_) => None,
+            StateTransition::Shield(_) => None,
+            StateTransition::ShieldedTransfer(_) => None,
+            StateTransition::Unshield(_) => None,
+            StateTransition::ShieldFromAssetLock(_) => None,
+            StateTransition::ShieldedWithdrawal(_) => None,
+            StateTransition::IdentityCreateFromShieldedPool(_) => None,
         }
     }
 
@@ -602,6 +628,42 @@ impl StateTransitionNAPI {
                     "Cannot set owner for AddressCreditWithdrawal",
                 ))?;
             }
+            StateTransition::Shield(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for Shield",
+                ))?;
+            }
+            StateTransition::ShieldedTransfer(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for ShieldedTransfer",
+                ))?;
+            }
+            StateTransition::Unshield(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for Unshield",
+                ))?;
+            }
+            StateTransition::ShieldFromAssetLock(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for ShieldFromAssetLock",
+                ))?;
+            }
+            StateTransition::ShieldedWithdrawal(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for ShieldedWithdrawal",
+                ))?;
+            }
+            StateTransition::IdentityCreateFromShieldedPool(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for IdentityCreateFromShieldedPool",
+                ))?;
+            }
         };
 
         Ok(())
@@ -673,6 +735,30 @@ impl StateTransitionNAPI {
             AddressCreditWithdrawal(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot set identity contract nonce for AddressCreditWithdrawal",
+            ))?,
+            StateTransition::Shield(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for Shield",
+            ))?,
+            StateTransition::ShieldedTransfer(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for ShildedTransfer",
+            ))?,
+            StateTransition::Unshield(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for Unshield",
+            ))?,
+            StateTransition::ShieldFromAssetLock(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for ShieldFromAssetLock",
+            ))?,
+            StateTransition::ShieldedWithdrawal(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for ShieldedWithdrawal",
+            ))?,
+            StateTransition::IdentityCreateFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for IdentityCreateFromShieldedPool",
             ))?,
         };
 
@@ -758,6 +844,30 @@ impl StateTransitionNAPI {
             StateTransition::AddressCreditWithdrawal(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot set identity nonce for AddressCreditWithdrawal",
+            ))?,
+            StateTransition::Shield(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for Shield",
+            ))?,
+            StateTransition::ShieldedTransfer(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for ShieldedTransfer",
+            ))?,
+            StateTransition::Unshield(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for Unshield",
+            ))?,
+            StateTransition::ShieldFromAssetLock(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for ShieldFromAssetLock",
+            ))?,
+            StateTransition::ShieldedWithdrawal(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for ShieldedWithdrawal",
+            ))?,
+            StateTransition::IdentityCreateFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for IdentityCreateFromShieldedPool",
             ))?,
         };
 
