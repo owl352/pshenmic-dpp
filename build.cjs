@@ -178,7 +178,7 @@ async function main() {
   const types = fs.readFileSync(wasmTypesPath, { encoding: "utf8" });
   fs.writeFileSync(
     path.join(binariesOutputDir, "bindingsTypes.ts"),
-    types.replace(/declare const/g, "const"),
+    types.replace(/declare const/g, "const").replace(/const enum/g, 'enum'),
   );
 
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
