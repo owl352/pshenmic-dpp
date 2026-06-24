@@ -14,17 +14,31 @@ dpp = { git = "https://github.com/dashpay/platform", rev = "1ba1ca582882a04cdbef
     "state-transition-signing",
     "platform-value",
     "document-json-conversion",
-    "data-contract-json-conversion"
+    "data-contract-json-conversion",
+    "shielded-client"
 ] }
 drive = { git = "https://github.com/dashpay/platform", rev = "1ba1ca582882a04cdbeffb834d129c15c7d6cfe9", default-features = false, features = [
     "verify"
 ] }
-indexmap = { version = "2.0.2" }
+grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", rev = "fc814983d4d36c6ea049642556b9a31ab8d4dfaa", features = ["client"] }
+indexmap = "2.0.2"
+# ZIP-32 AccountId for Orchard key derivation from a seed (matches the version
+# the orchard fork uses, so it unifies to a single crate instance).
+zip32 = "=0.2.1"
+# halo2_proofs pins indexmap 1.x and gates RandomState/`IndexMap::new()` behind
+# `#[cfg(has_std)]`, which its build.rs only auto-detects on native. Force the
+# `std` feature on so it compiles for the wasm target too.
+indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"] }
 napi = {version = "3.9.1", features = ["napi3", "serde-json"], default-features = false}
 napi-derive = "3.5.6"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 hex = "0.4.3"
 sha2 = "0.10.8"
+# Used by the transparent Shield builder: a private-key-backed `Signer` impl
+# (async-trait) driven synchronously from the napi boundary (futures block_on).
+async-trait = "0.1"
+futures = "0.3"
+
 
 [build-dependencies]
 napi-build = "2.3.1"
