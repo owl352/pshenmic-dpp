@@ -1,0 +1,7 @@
+# Enable wasm threads/atomics for the shielded (Orchard/Halo 2) proving stack.
+# Scoped to the wasm target only, so native builds are unaffected. Building this
+# target requires a nightly toolchain with `-Z build-std` (see build.cjs), which
+# rebuilds std with atomics so `+atomics` takes effect for real (it is silently
+# dropped on stable).
+[target.wasm32-wasip1-threads]
+rustflags = ["-C", "target-feature=+atomics,+bulk-memory,+mutable-globals"]

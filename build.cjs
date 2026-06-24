@@ -12,6 +12,10 @@ const typingsForCodegen = 'export * from "./bindingsTypes.ts"';
 
 const buildProfile = process.env.PROFILE ?? "release";
 const isRelease = buildProfile === "release";
+// Toolchain used only for the wasm build (needs nightly `-Z build-std` to
+// rebuild std with atomics for the Orchard/Halo 2 proving stack). Pinnable so
+// published artifacts are reproducible and immune to nightly flag churn.
+const wasmToolchain = process.env.WASM_TOOLCHAIN ?? "nightly";
 const wasmOptScript =
   process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, "scripts/wasm-opt.sh");
 const binariesOutputDir =
@@ -56,9 +60,23 @@ async function main() {
     __dirname, "target", "wasm32-wasip1-threads", buildProfile, `${binName}.wasm`
   );
 
+  // The shielded (Orchard/Halo 2) proving stack needs wasm threads/atomics,
+  // which require rebuilding std with atomics: nightly + `-Z build-std`.
+  // `panic_immediate_abort` drops std's panic-formatting machinery to shrink the
+  // binary (matches our `panic = "abort"` release profile). RUSTFLAGS is set
+  // explicitly here so it wins over any inherited RUSTFLAGS (e.g. CI's
+  // `-crt-static`), which would otherwise override .cargo/config.toml and drop
+  // the atomics flags. Native builds below keep the inherited env.
   await execTask(
-    `cargo build --target wasm32-wasip1-threads ${isRelease ? "--release" : ""}`,
-    { env: { ...process.env, EMNAPI_LINK_DIR: emnapi } }
+    `cargo +${wasmToolchain} build --target wasm32-wasip1-threads -Z unstable-options -Z build-std=std,panic_abort ${isRelease ? "--release" : ""}`,
+    {
+      env: {
+        ...process.env,
+        EMNAPI_LINK_DIR: emnapi,
+        RUSTFLAGS:
+          "-C target-feature=+atomics,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort",
+      },
+    }
   );
 
   console.log("--- Building Native Binaries ---");
