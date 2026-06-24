@@ -45,6 +45,17 @@ jobs:
         run: |
           sdkmanager --install "ndk;27.1.12297006"
 
+      # The wasm build rebuilds std with atomics (-Z build-std) for the Orchard
+      # /Halo 2 proving stack, which requires nightly + rust-src. Pinned for
+      # reproducible, flag-stable artifacts (see WASM_TOOLCHAIN below). Installed
+      # first so the stable step below stays the rustup default for native builds.
+      - name: Setup Rust nightly (wasm build-std)
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2026-06-17
+          targets: wasm32-wasip1-threads
+          components: rust-src
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -73,6 +84,7 @@ jobs:
         env:
           RUSTFLAGS: '-C target-feature=-crt-static'
           NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin
+          WASM_TOOLCHAIN: nightly-2026-06-17
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
