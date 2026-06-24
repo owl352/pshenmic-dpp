@@ -1,2 +1,12 @@
+pub mod builder;
+pub mod commitment_tree;
+pub mod memo;
+pub mod merkle_path;
+pub mod note;
+pub mod note_recovery;
+pub mod orchard_address;
+pub mod proover;
 pub mod serialized_action;
+pub mod signer;
+pub mod spendable_note;
 pub mod transitions;
