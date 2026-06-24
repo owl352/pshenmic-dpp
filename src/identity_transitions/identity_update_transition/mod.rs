@@ -1,8 +1,8 @@
-use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_update_transition::IdentityUpdateTransition;
 use dpp::state_transition::identity_update_transition::accessors::IdentityUpdateTransitionAccessorsV0;
 use dpp::state_transition::identity_update_transition::v0::IdentityUpdateTransitionV0;
