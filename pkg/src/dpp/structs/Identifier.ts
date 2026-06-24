@@ -15,6 +15,8 @@ export class IdentifierWASM {
       const id = new dpp.DynamicValue(rawId)
 
       this._rawIdentifier = new dpp.IdentifierNAPI(id)
+    } else if (rawId instanceof dpp.IdentifierNAPI) {
+      this._rawIdentifier = rawId
     } else {
       throw new Error('Invalid raw ID')
     }
