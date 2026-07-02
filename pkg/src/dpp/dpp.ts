@@ -115,6 +115,7 @@ export { BatchTransitionWASM } from './structs/Batch/BatchTransition.js'
 
 export { verifySignatureDigest } from './verify/verifySignatureDigest.js'
 export { verifyEpochsInfoProof } from './verify/System/verifyEpochsInfoProof.js'
+export { verifyFinalizedEpochInfosProof } from './verify/System/verifyFinalizedEpochInfosProof.js'
 export { verifyTotalCreditsProof } from './verify/System/verifyTotalCreditsProof.js'
 export { verifyVotePollVoteStateProof } from './verify/Contested/verifyVotePollVoteStateProof.js'
 export { verifyContractProof } from './verify/Contract/verifyContract.js'

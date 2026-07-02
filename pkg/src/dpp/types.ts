@@ -127,9 +127,30 @@ export interface ExtendedEpochInfo {
   protocolVersion: number
 }
 
+export interface FinalizedEpochInfo {
+  epochIndex: number
+  firstBlockTime: Date
+  firstBlockHeight: bigint
+  totalBlocksInEpoch: bigint
+  firstCoreBlockHeight: number
+  nextEpochStartCoreBlockHeight: number
+  totalProcessingFees: bigint
+  totalDistributedStorageFees: bigint
+  totalCreatedStorageFees: bigint
+  coreBlockRewards: bigint
+  blockProposers: {proposer: IdentifierWASM, count: bigint}[],
+  feeMultiplierPermille: bigint,
+  protocolVersion: number
+}
+
 export interface VerifiedEpochsInfo {
   rootHash: Uint8Array
   epochsInfo: ExtendedEpochInfo[]
+}
+
+export interface VerifiedFinalizedEpochsInfo {
+  rootHash: Uint8Array
+  epochInfos: FinalizedEpochInfo[]
 }
 
 export interface VerifiedTotalCredits {
