@@ -15,11 +15,13 @@ use dpp::{
     state_transition::{StateTransition, public_key_in_creation::IdentityPublicKeyInCreation},
     version::PlatformVersion,
 };
-use futures::executor::block_on;
 use grovedb_commitment_tree::{
     Anchor, FullViewingKey, OutgoingViewingKey, SpendAuthorizingKey, SpendingKey,
 };
-use napi::{Either, bindgen_prelude::Uint8Array};
+use napi::{
+    Either, Env,
+    bindgen_prelude::{PromiseRaw, Uint8Array},
+};
 use napi_derive::napi;
 use zip32::AccountId;
 
@@ -79,17 +81,23 @@ pub struct ShieldedBuilderNAPI {
 
 #[napi]
 impl ShieldedBuilderNAPI {
-    #[napi(constructor)]
-    pub fn new() -> Self {
-        ShieldedBuilderNAPI {
-            proover: OrchardProverNAPI::new(),
-        }
+    #[napi(js_name = "init")]
+    pub async fn new() -> Self {
+        let proover = OrchardProverNAPI::new().await;
+        ShieldedBuilderNAPI { proover }
     }
+
+    // Every proving method below parses its JS arguments synchronously and
+    // runs the actual Halo 2 proving inside `env.spawn_future`, i.e. on a
+    // worker thread. Proving takes seconds and joins the rayon pool — done
+    // on the JS thread it would freeze the event loop, and on a browser
+    // main thread it aborts outright (`Atomics.wait` is forbidden there).
 
     #[napi(js_name = "shieldFromAssetLock")]
     #[allow(clippy::too_many_arguments)]
-    pub fn shield_from_asset_lock(
+    pub fn shield_from_asset_lock<'env>(
         &self,
+        env: &'env Env,
         js_recipient: &OrchardAddressNAPI,
         js_shield_amount: BigIntString,
         js_asset_lock_proof: &AssetLockProofNAPI,
@@ -99,8 +107,10 @@ impl ShieldedBuilderNAPI {
         js_sender_ovk: Option<Uint8Array>,
         js_surplus_output: Option<PlatformAddressLikeNAPI>,
         js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<StateTransitionNAPI, napi::Error> {
+    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
         let shield_amount = js_shield_amount.try_to_u64()?;
+
+        let recipient: OrchardAddress = js_recipient.into();
 
         let asset_lock_proof: AssetLockProof = js_asset_lock_proof.clone().into();
 
@@ -127,24 +137,27 @@ impl ShieldedBuilderNAPI {
 
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
 
-        let state_transition: StateTransition = build_shield_from_asset_lock_transition(
-            &js_recipient.into(),
-            shield_amount,
-            asset_lock_proof,
-            PrivateKeyNAPI::bytes_from_js_value(js_private_key)?
-                .to_vec()
-                .as_slice()
-                .as_ref(),
-            &self.proover,
-            memo.to_bytes(),
-            sender_ovk,
-            surplus_output,
-            js_dummy_outputs as usize,
-            &platform_version,
-        )
-        .with_js_error()?;
+        let private_key = PrivateKeyNAPI::bytes_from_js_value(js_private_key)?.to_vec();
 
-        Ok(StateTransitionNAPI::from(state_transition))
+        let prover = self.proover.shared();
+
+        env.spawn_future(async move {
+            let state_transition: StateTransition = build_shield_from_asset_lock_transition(
+                &recipient,
+                shield_amount,
+                asset_lock_proof,
+                private_key.as_slice(),
+                &prover,
+                memo.to_bytes(),
+                sender_ovk,
+                surplus_output,
+                js_dummy_outputs as usize,
+                &platform_version,
+            )
+            .with_js_error()?;
+
+            Ok(StateTransitionNAPI::from(state_transition))
+        })
     }
 
     /// Builds a `ShieldedWithdrawal` state transition (shielded pool -> core L1).
@@ -165,8 +178,9 @@ impl ShieldedBuilderNAPI {
     /// consensus charges for it.
     #[napi(js_name = "shieldedWithdrawal")]
     #[allow(clippy::too_many_arguments)]
-    pub fn shielded_withdrawal(
+    pub fn shielded_withdrawal<'env>(
         &self,
+        env: &'env Env,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_withdrawal_amount: BigIntString,
         js_output_script: &CoreScriptNAPI,
@@ -179,10 +193,10 @@ impl ShieldedBuilderNAPI {
         js_anchor: Uint8Array,
         js_memo: &ShieldedMemoNAPI,
         js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<ShieldedWithdrawalResultNAPI, napi::Error> {
+    ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let withdrawal_amount = js_withdrawal_amount.try_to_u64()?;
 
-        let spends = js_spends.iter().map(|s| s.to_spendable()).collect();
+        let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
 
         let output_script = js_output_script.clone().into();
 
@@ -207,25 +221,29 @@ impl ShieldedBuilderNAPI {
 
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
 
-        let (state_transition, fee) = build_shielded_withdrawal_transition(
-            spends,
-            withdrawal_amount,
-            output_script,
-            js_core_fee_per_byte,
-            pooling,
-            &change_address,
-            &fvk,
-            &ask,
-            anchor,
-            &self.proover,
-            memo.to_bytes(),
-            &platform_version,
-        )
-        .with_js_error()?;
+        let prover = self.proover.shared();
 
-        Ok(ShieldedWithdrawalResultNAPI {
-            state_transition,
-            fee,
+        env.spawn_future(async move {
+            let (state_transition, fee) = build_shielded_withdrawal_transition(
+                spends,
+                withdrawal_amount,
+                output_script,
+                js_core_fee_per_byte,
+                pooling,
+                &change_address,
+                &fvk,
+                &ask,
+                anchor,
+                &prover,
+                memo.to_bytes(),
+                &platform_version,
+            )
+            .with_js_error()?;
+
+            Ok(ShieldedWithdrawalResultNAPI {
+                state_transition,
+                fee,
+            })
         })
     }
 
@@ -248,8 +266,9 @@ impl ShieldedBuilderNAPI {
     /// Returns the proven state transition plus the fixed shielded fee (credits).
     #[napi(js_name = "unshield")]
     #[allow(clippy::too_many_arguments)]
-    pub fn unshield(
+    pub fn unshield<'env>(
         &self,
+        env: &'env Env,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_output_address: PlatformAddressLikeNAPI,
         js_unshield_amount: BigIntString,
@@ -260,10 +279,10 @@ impl ShieldedBuilderNAPI {
         js_anchor: Uint8Array,
         js_memo: &ShieldedMemoNAPI,
         js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<ShieldedWithdrawalResultNAPI, napi::Error> {
+    ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let unshield_amount = js_unshield_amount.try_to_u64()?;
 
-        let spends = js_spends.iter().map(|s| s.to_spendable()).collect();
+        let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
 
         let output_address: PlatformAddress =
             PlatformAddressNAPI::try_from(js_output_address)?.into();
@@ -287,23 +306,27 @@ impl ShieldedBuilderNAPI {
 
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
 
-        let (state_transition, fee) = build_unshield_transition(
-            spends,
-            output_address,
-            unshield_amount,
-            &change_address,
-            &fvk,
-            &ask,
-            anchor,
-            &self.proover,
-            memo.to_bytes(),
-            &platform_version,
-        )
-        .with_js_error()?;
+        let prover = self.proover.shared();
 
-        Ok(ShieldedWithdrawalResultNAPI {
-            state_transition,
-            fee,
+        env.spawn_future(async move {
+            let (state_transition, fee) = build_unshield_transition(
+                spends,
+                output_address,
+                unshield_amount,
+                &change_address,
+                &fvk,
+                &ask,
+                anchor,
+                &prover,
+                memo.to_bytes(),
+                &platform_version,
+            )
+            .with_js_error()?;
+
+            Ok(ShieldedWithdrawalResultNAPI {
+                state_transition,
+                fee,
+            })
         })
     }
 
@@ -325,8 +348,9 @@ impl ShieldedBuilderNAPI {
     /// Returns the proven state transition plus the fixed shielded fee (credits).
     #[napi(js_name = "shieldedTransfer")]
     #[allow(clippy::too_many_arguments)]
-    pub fn shielded_transfer(
+    pub fn shielded_transfer<'env>(
         &self,
+        env: &'env Env,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_recipient: &OrchardAddressNAPI,
         js_transfer_amount: BigIntString,
@@ -337,10 +361,10 @@ impl ShieldedBuilderNAPI {
         js_anchor: Uint8Array,
         js_memo: &ShieldedMemoNAPI,
         js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<ShieldedWithdrawalResultNAPI, napi::Error> {
+    ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let transfer_amount = js_transfer_amount.try_to_u64()?;
 
-        let spends = js_spends.iter().map(|s| s.to_spendable()).collect();
+        let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
 
         let recipient: OrchardAddress = js_recipient.into();
         let change_address: OrchardAddress = js_change_address.into();
@@ -362,23 +386,27 @@ impl ShieldedBuilderNAPI {
 
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
 
-        let (state_transition, fee) = build_shielded_transfer_transition(
-            spends,
-            &recipient,
-            transfer_amount,
-            &change_address,
-            &fvk,
-            &ask,
-            anchor,
-            &self.proover,
-            memo.to_bytes(),
-            &platform_version,
-        )
-        .with_js_error()?;
+        let prover = self.proover.shared();
 
-        Ok(ShieldedWithdrawalResultNAPI {
-            state_transition,
-            fee,
+        env.spawn_future(async move {
+            let (state_transition, fee) = build_shielded_transfer_transition(
+                spends,
+                &recipient,
+                transfer_amount,
+                &change_address,
+                &fvk,
+                &ask,
+                anchor,
+                &prover,
+                memo.to_bytes(),
+                &platform_version,
+            )
+            .with_js_error()?;
+
+            Ok(ShieldedWithdrawalResultNAPI {
+                state_transition,
+                fee,
+            })
         })
     }
 
@@ -399,8 +427,9 @@ impl ShieldedBuilderNAPI {
     /// - `platform_version` - protocol version (defaults to the latest)
     #[napi(js_name = "shield")]
     #[allow(clippy::too_many_arguments)]
-    pub fn shield(
+    pub fn shield<'env>(
         &self,
+        env: &'env Env,
         js_recipient: &OrchardAddressNAPI,
         js_shield_amount: BigIntString,
         js_inputs: Vec<&InputAddressNAPI>,
@@ -410,8 +439,10 @@ impl ShieldedBuilderNAPI {
         js_memo: &ShieldedMemoNAPI,
         js_sender_ovk: Option<Uint8Array>,
         js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<StateTransitionNAPI, napi::Error> {
+    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
         let shield_amount = js_shield_amount.try_to_u64()?;
+
+        let recipient: OrchardAddress = js_recipient.into();
 
         let inputs = js_inputs_to_inputs(js_inputs)?;
 
@@ -440,24 +471,26 @@ impl ShieldedBuilderNAPI {
 
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
 
-        // The Shield builder is async only because the `Signer` trait is async;
-        // our signer does no IO, so blocking is fine and keeps `&self.proover`
-        // usable (napi async methods can't borrow self across an await).
-        let state_transition = block_on(build_shield_transition(
-            &js_recipient.into(),
-            shield_amount,
-            inputs,
-            fee_strategy,
-            &signer,
-            js_user_fee_increase,
-            &self.proover,
-            memo.to_bytes(),
-            sender_ovk,
-            &platform_version,
-        ))
-        .with_js_error()?;
+        let prover = self.proover.shared();
 
-        Ok(StateTransitionNAPI::from(state_transition))
+        env.spawn_future(async move {
+            let state_transition = build_shield_transition(
+                &recipient,
+                shield_amount,
+                inputs,
+                fee_strategy,
+                &signer,
+                js_user_fee_increase,
+                &prover,
+                memo.to_bytes(),
+                sender_ovk,
+                &platform_version,
+            )
+            .await
+            .with_js_error()?;
+
+            Ok(StateTransitionNAPI::from(state_transition))
+        })
     }
 
     /// Builds an `IdentityCreateFromShieldedPool` transition (pool -> new identity).
@@ -478,8 +511,9 @@ impl ShieldedBuilderNAPI {
     /// - `platform_version` - protocol version (defaults to the latest)
     #[napi(js_name = "identityCreateFromShieldedPool")]
     #[allow(clippy::too_many_arguments)]
-    pub fn identity_create_from_shielded_pool(
+    pub fn identity_create_from_shielded_pool<'env>(
         &self,
+        env: &'env Env,
         js_public_keys: Vec<&IdentityPublicKeyInCreationNAPI>,
         js_private_keys: Vec<&PrivateKeyNAPI>,
         js_denomination: BigIntString,
@@ -492,7 +526,7 @@ impl ShieldedBuilderNAPI {
         js_anchor: Uint8Array,
         js_memo: &ShieldedMemoNAPI,
         js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<IdentityCreateFromShieldedPoolResultNAPI, napi::Error> {
+    ) -> Result<PromiseRaw<'env, IdentityCreateFromShieldedPoolResultNAPI>, napi::Error> {
         if js_public_keys.len() != js_private_keys.len() {
             return Err(napi::Error::new(
                 napi::Status::InvalidArg,
@@ -547,23 +581,28 @@ impl ShieldedBuilderNAPI {
 
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
 
-        let result = block_on(build_identity_create_from_shielded_pool_transition(
-            public_keys,
-            denomination,
-            send_to_address,
-            spends,
-            &change_address,
-            &fvk,
-            &ask,
-            anchor,
-            &self.proover,
-            &signer,
-            memo.to_bytes(),
-            &platform_version,
-        ))
-        .with_js_error()?;
+        let prover = self.proover.shared();
 
-        Ok(IdentityCreateFromShieldedPoolResultNAPI(result))
+        env.spawn_future(async move {
+            let result = build_identity_create_from_shielded_pool_transition(
+                public_keys,
+                denomination,
+                send_to_address,
+                spends,
+                &change_address,
+                &fvk,
+                &ask,
+                anchor,
+                &prover,
+                &signer,
+                memo.to_bytes(),
+                &platform_version,
+            )
+            .await
+            .with_js_error()?;
+
+            Ok(IdentityCreateFromShieldedPoolResultNAPI(result))
+        })
     }
 }
 

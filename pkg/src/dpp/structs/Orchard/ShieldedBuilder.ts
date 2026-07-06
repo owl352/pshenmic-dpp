@@ -28,12 +28,30 @@ export class ShieldedBuilderWASM {
   /** @private **/
   _rawShieldedBuilder: ShieldedBuilderNAPI
 
+  /**
+   * Building the Halo 2 proving key takes ~10s, and the key is deterministic,
+   * so it's built once per process: every builder instance shares the same
+   * raw builder. Cleared on failure so a failed init can be retried.
+   */
+  private static _initPromise: Promise<ShieldedBuilderNAPI> | null = null
+
   constructor () {
-    this._rawShieldedBuilder = new dppProvider.dpp.ShieldedBuilderNAPI()
+    // empty
+  }
+
+  async init(): Promise<void> {
+    if (ShieldedBuilderWASM._initPromise == null) {
+      ShieldedBuilderWASM._initPromise = dppProvider.dpp.ShieldedBuilderNAPI.init()
+        .catch((e: Error) => {
+          ShieldedBuilderWASM._initPromise = null
+          throw e
+        })
+    }
+    this._rawShieldedBuilder = await ShieldedBuilderWASM._initPromise
   }
 
   /** Asset lock -> pool (deposit). */
-  shieldFromAssetLock (
+  async shieldFromAssetLock (
     recipient: OrchardAddressWASM,
     shieldAmount: bigint,
     assetLockProof: AssetLockProofWASM,
@@ -43,9 +61,9 @@ export class ShieldedBuilderWASM {
     senderOvk?: Uint8Array,
     surplusOutput?: PlatformAddressLike,
     platformVersion?: PlatformVersionNAPI
-  ): StateTransitionWASM {
+  ): Promise<StateTransitionWASM> {
     return StateTransitionWASM.createFromRawInstance(
-      this._rawShieldedBuilder.shieldFromAssetLock(
+      await this._rawShieldedBuilder.shieldFromAssetLock(
         recipient._rawOrchardAddress,
         shieldAmount.toString(),
         assetLockProof._rawAssetLockProof,
@@ -60,7 +78,7 @@ export class ShieldedBuilderWASM {
   }
 
   /** Transparent platform addresses -> pool (deposit). One private key per input. */
-  shield (
+  async shield (
     recipient: OrchardAddressWASM,
     shieldAmount: bigint,
     inputs: InputAddressWASM[],
@@ -70,9 +88,9 @@ export class ShieldedBuilderWASM {
     memo: ShieldedMemoWASM,
     senderOvk?: Uint8Array,
     platformVersion?: PlatformVersionNAPI
-  ): StateTransitionWASM {
+  ): Promise<StateTransitionWASM> {
     return StateTransitionWASM.createFromRawInstance(
-      this._rawShieldedBuilder.shield(
+      await this._rawShieldedBuilder.shield(
         recipient._rawOrchardAddress,
         shieldAmount.toString(),
         inputs.map(i => i._rawInputAddress),
@@ -87,7 +105,7 @@ export class ShieldedBuilderWASM {
   }
 
   /** Pool -> core L1 (spend). */
-  shieldedWithdrawal (
+  async shieldedWithdrawal (
     spends: SpendableNoteWASM[],
     withdrawalAmount: bigint,
     outputScript: CoreScriptWASM,
@@ -100,9 +118,9 @@ export class ShieldedBuilderWASM {
     anchor: Uint8Array,
     memo: ShieldedMemoWASM,
     platformVersion?: PlatformVersionNAPI
-  ): ShieldedWithdrawalResultWASM {
+  ): Promise<ShieldedWithdrawalResultWASM> {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
-      this._rawShieldedBuilder.shieldedWithdrawal(
+      await this._rawShieldedBuilder.shieldedWithdrawal(
         spends.map(s => s._rawSpendableNote),
         withdrawalAmount.toString(),
         outputScript._rawCoreScript,
@@ -120,7 +138,7 @@ export class ShieldedBuilderWASM {
   }
 
   /** Pool -> platform identity balance (spend). */
-  unshield (
+  async unshield (
     spends: SpendableNoteWASM[],
     outputAddress: PlatformAddressLike,
     unshieldAmount: bigint,
@@ -131,9 +149,9 @@ export class ShieldedBuilderWASM {
     anchor: Uint8Array,
     memo: ShieldedMemoWASM,
     platformVersion?: PlatformVersionNAPI
-  ): ShieldedWithdrawalResultWASM {
+  ): Promise<ShieldedWithdrawalResultWASM> {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
-      this._rawShieldedBuilder.unshield(
+      await this._rawShieldedBuilder.unshield(
         spends.map(s => s._rawSpendableNote),
         preparePlatformAddressValue(outputAddress),
         unshieldAmount.toString(),
@@ -149,7 +167,7 @@ export class ShieldedBuilderWASM {
   }
 
   /** Pool -> pool (spend). */
-  shieldedTransfer (
+  async shieldedTransfer (
     spends: SpendableNoteWASM[],
     recipient: OrchardAddressWASM,
     transferAmount: bigint,
@@ -160,9 +178,9 @@ export class ShieldedBuilderWASM {
     anchor: Uint8Array,
     memo: ShieldedMemoWASM,
     platformVersion?: PlatformVersionNAPI
-  ): ShieldedWithdrawalResultWASM {
+  ): Promise<ShieldedWithdrawalResultWASM> {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
-      this._rawShieldedBuilder.shieldedTransfer(
+      await this._rawShieldedBuilder.shieldedTransfer(
         spends.map(s => s._rawSpendableNote),
         recipient._rawOrchardAddress,
         transferAmount.toString(),
@@ -178,7 +196,7 @@ export class ShieldedBuilderWASM {
   }
 
   /** Pool -> new identity (spend). One private key per public key, same order. */
-  identityCreateFromShieldedPool (
+  async identityCreateFromShieldedPool (
     publicKeys: IdentityPublicKeyInCreationWASM[],
     privateKeys: PrivateKeyWASM[],
     denomination: bigint,
@@ -191,9 +209,9 @@ export class ShieldedBuilderWASM {
     anchor: Uint8Array,
     memo: ShieldedMemoWASM,
     platformVersion?: PlatformVersionNAPI
-  ): IdentityCreateFromShieldedPoolResultWASM {
+  ): Promise<IdentityCreateFromShieldedPoolResultWASM> {
     return IdentityCreateFromShieldedPoolResultWASM.createFromRawInstance(
-      this._rawShieldedBuilder.identityCreateFromShieldedPool(
+      await this._rawShieldedBuilder.identityCreateFromShieldedPool(
         publicKeys.map(k => k._rawKeyInCreation),
         privateKeys.map(k => k._rawPrivateKey),
         denomination.toString(),
