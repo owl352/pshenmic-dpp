@@ -25,7 +25,10 @@ export async function convertBinary(inputFile, outputFile) {
       const encodedData = Buffer.from(encode(compressedChunks)).toString(
         "utf-8",
       );
-      const outputContent = `const bytes = "${encodedData}"\nmodule.exports = {bytes}`;
+      // The JSDoc cast widens the inferred type from the multi-MB string
+      // LITERAL to `string` — otherwise tsc embeds the whole payload
+      // (\uXXXX-escaped, >2x the size) into the emitted .d.cts.
+      const outputContent = `/** @type {string} */\nconst bytes = "${encodedData}"\nmodule.exports = {bytes}`;
 
       fs.writeFileSync(outputFile, outputContent);
 

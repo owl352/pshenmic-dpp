@@ -1,5 +1,5 @@
 import * as dpp from "pshenmic-dpp/wasm";
-import {IdentifierWASM} from "pshenmic-dpp/wasm";
+import {IdentifierWASM, ShieldedBuilderWASM} from "pshenmic-dpp/wasm";
 
 let identifierBytes: Uint8Array;
 
@@ -45,5 +45,44 @@ describe("dpp", function () {
 
       expect(identifier.bytes()).toEqual(identifierBytes);
     });
+  })
+
+  describe('shielded init', function () {
+    test('should allow to use old instances after shielded init', async function () {
+      const identifier = IdentifierWASM.fromBytes(identifierBytes);
+
+      const builder = new ShieldedBuilderWASM()
+
+      await builder.init();
+
+      expect(identifier.bytes()).toEqual(identifierBytes);
+    })
+
+    test('should build a real Halo 2 proof with instances created before init', async function () {
+      const seed = new Uint8Array(64).fill(7);
+
+      // created BEFORE init — must stay usable by the proving call
+      const recipient = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0);
+      const senderOvk = dpp.orchardOvkFromSeed(seed, 1, 0);
+      const privateKey = dpp.PrivateKeyWASM.fromWIF('cUy4wbim4y9NDwC24omx8oWY5WqfmjSU2gdcZtTXza2xDCAkQXRP');
+      const outPoint = new dpp.OutPointWASM('79af4b339ddfee8c9b6d08d74155373c6ef547cda5e65473a254b9b0f8533f0c', 0);
+      const assetLockProof = dpp.AssetLockProofWASM.createChainAssetLockProof(1499737, outPoint);
+      const memo = dpp.ShieldedMemoWASM.empty();
+
+      const builder = new ShieldedBuilderWASM();
+      await builder.init();
+
+      const st = await builder.shieldFromAssetLock(
+        recipient,
+        40_000_000_000n,
+        assetLockProof,
+        privateKey,
+        memo,
+        0,
+        senderOvk
+      );
+
+      expect(st.hex().length).toBeGreaterThan(0);
+    }, 120000)
   })
 });

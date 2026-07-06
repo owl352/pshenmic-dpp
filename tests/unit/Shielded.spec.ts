@@ -288,21 +288,23 @@ describe('SpendableNote', function () {
 })
 
 describe('OrchardProver', function () {
-  // Constructing the prover builds the Halo 2 proving key (~seconds).
-  test('should construct a prover', function () {
+  // Initializing the prover builds the Halo 2 proving key (~seconds).
+  test('should construct a prover', async function () {
     const prover = new OrchardProverWASM()
+    await prover.init()
 
     expect(prover).toBeInstanceOf(OrchardProverWASM)
   }, 30000)
 })
 
 describe('ShieldedBuilder', function () {
-  // The builder builds its own Halo 2 proving key on construction (~seconds),
+  // The builder builds its own Halo 2 proving key on init (~seconds),
   // so build it once and reuse it across the deposit test.
   let builder: ShieldedBuilderWASM
 
-  beforeAll(function () {
+  beforeAll(async function () {
     builder = new ShieldedBuilderWASM()
+    await builder.init()
   }, 30000)
 
   describe('constructor', function () {
@@ -312,7 +314,7 @@ describe('ShieldedBuilder', function () {
   })
 
   describe('shield (transparent -> pool deposit)', function () {
-    test('should build and prove a shield transition', function () {
+    test('should build and prove a shield transition', async function () {
       const recipient = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const senderOvk = orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
 
@@ -321,7 +323,7 @@ describe('ShieldedBuilder', function () {
       // address, nonce, balance — balance must cover amount + fee.
       const input = new InputAddressWASM(inputAddress, 0, DASH / 2n)
 
-      const st = builder.shield(
+      const st = await builder.shield(
         recipient,
         (DASH * 4n) / 10n, // 0.4 DASH into the pool
         [input],
