@@ -4,4 +4,4 @@
 # rebuilds std with atomics so `+atomics` takes effect for real (it is silently
 # dropped on stable).
 [target.wasm32-wasip1-threads]
-rustflags = ["-C", "target-feature=+atomics,+bulk-memory,+mutable-globals"]
+rustflags = ["-C", "target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals"]

@@ -1,45 +1,24 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2312
+set -euo pipefail
 
+# Optimization is NOT optional: the unoptimized wasm is >8MB, and Chrome
+# refuses to sync-compile modules larger than 8MB on the main thread — the
+# browser build would break at import time. A system binaryen is preferred;
+# otherwise the `wasm-opt` npm devDependency provides the binary.
 if command -v wasm-opt &> /dev/null; then
-  echo "Optimizing wasm using Binaryen"
-  wasm-opt \
+  WASM_OPT=wasm-opt
+else
+  WASM_OPT="npx wasm-opt"
+fi
+
+echo "Optimizing wasm using Binaryen (${WASM_OPT})"
+${WASM_OPT} \
+    --enable-simd \
     --enable-threads \
-    --code-folding \
-    --const-hoisting \
-    --abstract-type-refining \
-    --dce \
-    --strip-producers \
-    -Oz \
-    --generate-global-effects \
     --enable-bulk-memory \
-    --enable-nontrapping-float-to-int  \
-    -tnh \
-    --flatten \
-    --rereloop \
-    -Oz \
-    --converge \
-    --vacuum \
-    --dce \
-    --gsi \
-    --inlining-optimizing \
-    --merge-blocks \
-    --simplify-locals \
-    --optimize-casts \
-    --optimize-instructions \
-    --optimize-stack-ir \
-    --remove-unused-brs \
-    --remove-unused-module-elements \
-    --remove-unused-names \
-    --remove-unused-types \
-    --gufa \
-    --once-reduction \
-    -Oz \
-    -Oz \
+    --enable-nontrapping-float-to-int \
+    -O3 \
     "${OUTPUT_FILE}" \
     -o \
     "${OUTPUT_FILE}"
-
-else
-  echo "wasm-opt command not found. Skipping wasm optimization."
-fi

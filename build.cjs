@@ -4,6 +4,7 @@ const { exec } = require("child_process");
 const { promisify } = require("node:util");
 const fs = require("fs");
 const { convertBinary } = require("./utils/convertBinary.mjs");
+const { buildWorkerBundle } = require("./utils/buildWorkerBundle.mjs");
 const {
   getStructsForEsmExport,
 } = require("./utils/getStructsForEsmExport.mjs");
@@ -74,7 +75,7 @@ async function main() {
         ...process.env,
         EMNAPI_LINK_DIR: emnapi,
         RUSTFLAGS:
-          "-C target-feature=+atomics,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort",
+          "-C target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort",
       },
     }
   );
@@ -155,12 +156,26 @@ async function main() {
     env: { ...process.env, OUTPUT_FILE: targetWasmFile.toString() },
   });
 
+  // Chrome refuses to sync-compile wasm larger than 8MB on the main thread,
+  // and the browser entry instantiates synchronously at import time.
+  const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
+  const wasmSize = fs.statSync(targetWasmFile).size;
+  if (wasmSize >= CHROME_SYNC_COMPILE_LIMIT) {
+    throw new Error(
+      `wasm binary is ${(wasmSize / 1024 / 1024).toFixed(2)}MB — over Chrome's ` +
+      "8MB main-thread sync-compile limit; the browser build would break at import time.",
+    );
+  }
+  console.log(`wasm size after wasm-opt: ${(wasmSize / 1024 / 1024).toFixed(2)}MB`);
+
   const wasmOutputDir = path.join(binariesOutputDir, "wasm");
   if (!fs.existsSync(wasmOutputDir)) {
     fs.mkdirSync(wasmOutputDir, { recursive: true });
   }
 
   await convertBinary(targetWasmFile, path.join(wasmOutputDir, "wasmBytes.cjs"));
+
+  buildWorkerBundle(path.join(wasmOutputDir, "workerBundle.cjs"));
 
   console.log("Copying templates");
   fs.cpSync("./templates", templatesOutputDir, { recursive: true });
