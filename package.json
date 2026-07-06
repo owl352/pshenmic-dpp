@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "2.0.0-dev.23",
+  "version": "2.0.0-dev.24",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
@@ -61,7 +61,8 @@
     "ts-standard": "^12.0.2",
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "wasm-opt": "^1.4.0"
   },
   "dependencies": {
     "@emnapi/core": "1.9.0",
