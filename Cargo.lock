@@ -2791,7 +2791,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "2.0.0-dev.24"
+version = "2.0.0-dev.25"
 dependencies = [
  "async-trait",
  "dpp",

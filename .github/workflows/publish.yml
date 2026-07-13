@@ -57,7 +57,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-linux-android, x86_64-linux-android, aarch64-apple-ios-sim, aarch64-apple-darwin, x86_64-apple-darwin
+          targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-unknown-linux-gnu, aarch64-unknown-linux-musl, aarch64-linux-android, x86_64-linux-android, aarch64-apple-ios-sim, aarch64-apple-darwin, x86_64-apple-darwin
           components: rustfmt, rust-src
 
       - name: Cache Rust dependencies
@@ -81,7 +81,7 @@ jobs:
         run: yarn build:full
         env:
           RUSTFLAGS: '-C target-feature=-crt-static'
-          NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin
+          NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-gnu,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin
           WASM_TOOLCHAIN: nightly-2026-06-17
 
       - name: Upload build artifact
