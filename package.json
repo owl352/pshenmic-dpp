@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "2.0.0-dev.24",
+  "version": "2.0.0-dev.25",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
