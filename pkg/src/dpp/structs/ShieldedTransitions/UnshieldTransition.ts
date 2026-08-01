@@ -1,4 +1,4 @@
-import type { UnshieldTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI, UnshieldTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { SerializedActionWASM } from './SerializedAction.js'
 import { PlatformAddressWASM } from '../PlatformAddress/PlatformAddress.js'
 import { PlatformAddressLike } from '../../types.js'
@@ -74,6 +74,13 @@ export class UnshieldTransitionWASM {
 
   set bindingsSignature (value: Uint8Array) {
     this._rawUnshieldTransition.bindingsSignature = value
+  }
+
+  static computeMinimumFee (
+    numActions: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.UnshieldTransitionNAPI.computeMinimumFee(numActions, platformVersion))
   }
 
   toStateTransition (): StateTransitionWASM {

@@ -1,4 +1,4 @@
-import type { IdentityCreateFromShieldedPoolTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI, IdentityCreateFromShieldedPoolTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { SerializedActionWASM } from './SerializedAction.js'
 import { PlatformAddressWASM } from '../PlatformAddress/PlatformAddress.js'
@@ -96,6 +96,14 @@ export class IdentityCreateFromShieldedPoolTransitionWASM {
 
   set identityId (value: IdentifierLike) {
     this._rawIdentityCreateFromShieldedPoolTransition.identityId = prepareIdentifierValue(value)
+  }
+
+  static computeMinimumFee (
+    numActions: number,
+    numKeys: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.IdentityCreateFromShieldedPoolTransitionNAPI.computeMinimumFee(numActions, numKeys, platformVersion))
   }
 
   toStateTransition (): StateTransitionWASM {

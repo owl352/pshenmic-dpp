@@ -16,6 +16,7 @@ use crate::{
     utils::WithJsError,
 };
 use dpp::prelude::AssetLockProof;
+use dpp::{ProtocolError, platform_value};
 use napi::{Either, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
 
@@ -129,9 +130,17 @@ impl AssetLockProofNAPI {
 
     #[napi(js_name = "hex")]
     pub fn to_string(&self) -> Result<String, napi::Error> {
-        Ok(hex::encode(
-            self.0.to_raw_object().with_js_error()?.to_string(),
-        ))
+        // dpp's `AssetLockProof::to_raw_object` is gone; `ValueConvertible::to_object`
+        // is not a drop-in replacement — it serializes the enum, tagging the output
+        // with `$type`. Serialize the inner variant to keep the previous shape.
+        let value = match &self.0 {
+            AssetLockProof::Instant(instant) => platform_value::to_value(instant),
+            AssetLockProof::Chain(chain) => platform_value::to_value(chain),
+        }
+        .map_err(ProtocolError::ValueError)
+        .with_js_error()?;
+
+        Ok(hex::encode(value.to_string()))
         // TODO: Check hex encoding
         // Ok(hex::encode(serde_json::to_string(&self.0).map_err(
         //     |err| napi::Error::new(napi::Status::GenericFailure, err.to_string()),

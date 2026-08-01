@@ -18,6 +18,7 @@ import {
   Purpose,
   SecurityLevel,
   KeyType,
+  PlatformVersionWASM,
   StateTransitionWASM
 } from 'pshenmic-dpp'
 
@@ -190,6 +191,27 @@ describe('ShieldedTransferTransition', function () {
       expect(restored.actions.length).toEqual(1)
     })
   })
+
+  describe('computeMinimumFee', function () {
+    test('should return a positive fee', function () {
+      const fee = ShieldedTransferTransitionWASM.computeMinimumFee(2)
+
+      expect(typeof fee).toEqual('bigint')
+      expect(fee).toBeGreaterThan(BigInt(0))
+    })
+
+    test('should grow with the action count', function () {
+      const oneAction = ShieldedTransferTransitionWASM.computeMinimumFee(1)
+      const twoActions = ShieldedTransferTransitionWASM.computeMinimumFee(2)
+
+      expect(twoActions).toBeGreaterThan(oneAction)
+    })
+
+    test('should default to the latest platform version', function () {
+      expect(ShieldedTransferTransitionWASM.computeMinimumFee(2))
+        .toEqual(ShieldedTransferTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+    })
+  })
 })
 
 describe('ShieldTransition', function () {
@@ -291,6 +313,27 @@ describe('ShieldTransition', function () {
       expect(restored.actions.length).toEqual(1)
     })
   })
+
+  describe('computeMinimumFee', function () {
+    test('should return a positive fee', function () {
+      const fee = ShieldTransitionWASM.computeMinimumFee(2)
+
+      expect(typeof fee).toEqual('bigint')
+      expect(fee).toBeGreaterThan(BigInt(0))
+    })
+
+    test('should grow with the action count', function () {
+      const oneAction = ShieldTransitionWASM.computeMinimumFee(1)
+      const twoActions = ShieldTransitionWASM.computeMinimumFee(2)
+
+      expect(twoActions).toBeGreaterThan(oneAction)
+    })
+
+    test('should default to the latest platform version', function () {
+      expect(ShieldTransitionWASM.computeMinimumFee(2))
+        .toEqual(ShieldTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+    })
+  })
 })
 
 describe('UnshieldTransition', function () {
@@ -379,6 +422,27 @@ describe('UnshieldTransition', function () {
       expect(restored.anchor).toEqual(anchor)
       expect(restored.proof).toEqual(proof)
       expect(restored.bindingsSignature).toEqual(bindingsSignature)
+    })
+  })
+
+  describe('computeMinimumFee', function () {
+    test('should return a positive fee', function () {
+      const fee = UnshieldTransitionWASM.computeMinimumFee(2)
+
+      expect(typeof fee).toEqual('bigint')
+      expect(fee).toBeGreaterThan(BigInt(0))
+    })
+
+    test('should grow with the action count', function () {
+      const oneAction = UnshieldTransitionWASM.computeMinimumFee(1)
+      const twoActions = UnshieldTransitionWASM.computeMinimumFee(2)
+
+      expect(twoActions).toBeGreaterThan(oneAction)
+    })
+
+    test('should default to the latest platform version', function () {
+      expect(UnshieldTransitionWASM.computeMinimumFee(2))
+        .toEqual(UnshieldTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
     })
   })
 })
@@ -491,6 +555,27 @@ describe('ShieldFromAssetLockTransition', function () {
       expect(restored.actions.length).toEqual(1)
     })
   })
+
+  describe('computeMinimumFee', function () {
+    test('should return a positive fee', function () {
+      const fee = ShieldFromAssetLockTransitionWASM.computeMinimumFee(2)
+
+      expect(typeof fee).toEqual('bigint')
+      expect(fee).toBeGreaterThan(BigInt(0))
+    })
+
+    test('should grow with the action count', function () {
+      const oneAction = ShieldFromAssetLockTransitionWASM.computeMinimumFee(1)
+      const twoActions = ShieldFromAssetLockTransitionWASM.computeMinimumFee(2)
+
+      expect(twoActions).toBeGreaterThan(oneAction)
+    })
+
+    test('should default to the latest platform version', function () {
+      expect(ShieldFromAssetLockTransitionWASM.computeMinimumFee(2))
+        .toEqual(ShieldFromAssetLockTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+    })
+  })
 })
 
 describe('ShieldedWithdrawalTransition', function () {
@@ -588,6 +673,27 @@ describe('ShieldedWithdrawalTransition', function () {
       expect(restored.bindingsSignature).toEqual(bindingsSignature)
       expect(restored.coreFeePerByte).toEqual(coreFeePerByte)
       expect(restored.pooling).toEqual('Never')
+    })
+  })
+
+  describe('computeMinimumFee', function () {
+    test('should return a positive fee', function () {
+      const fee = ShieldedWithdrawalTransitionWASM.computeMinimumFee(2)
+
+      expect(typeof fee).toEqual('bigint')
+      expect(fee).toBeGreaterThan(BigInt(0))
+    })
+
+    test('should grow with the action count', function () {
+      const oneAction = ShieldedWithdrawalTransitionWASM.computeMinimumFee(1)
+      const twoActions = ShieldedWithdrawalTransitionWASM.computeMinimumFee(2)
+
+      expect(twoActions).toBeGreaterThan(oneAction)
+    })
+
+    test('should default to the latest platform version', function () {
+      expect(ShieldedWithdrawalTransitionWASM.computeMinimumFee(2))
+        .toEqual(ShieldedWithdrawalTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
     })
   })
 })
@@ -705,5 +811,67 @@ describe('IdentityCreateFromShieldedPoolTransition', function () {
       expect(restored.sendToAddressOnCreationFailure.bytes()).toEqual(sendToAddressOnCreationFailure.bytes())
       expect(restored.identityId.bytes()).toEqual(identityId.bytes())
     })
+  })
+
+  describe('computeMinimumFee', function () {
+    test('should return a positive fee', function () {
+      const fee = IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3)
+
+      expect(typeof fee).toEqual('bigint')
+      expect(fee).toBeGreaterThan(BigInt(0))
+    })
+
+    test('should grow with the action count', function () {
+      const oneAction = IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(1, 3)
+      const twoActions = IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3)
+
+      expect(twoActions).toBeGreaterThan(oneAction)
+    })
+
+    test('should grow with the key count', function () {
+      const oneKey = IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 1)
+      const threeKeys = IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3)
+
+      expect(threeKeys).toBeGreaterThan(oneKey)
+    })
+
+    test('should default to the latest platform version', function () {
+      expect(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3))
+        .toEqual(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3, PlatformVersionWASM.PLATFORM_V12))
+    })
+  })
+})
+
+describe('computeMinimumFee across shielded transitions', function () {
+  const numActions = 2
+
+  test('Shield should be the compute-only fee, without the per-action storage term', function () {
+    expect(ShieldTransitionWASM.computeMinimumFee(numActions))
+      .toBeLessThan(ShieldedTransferTransitionWASM.computeMinimumFee(numActions))
+  })
+
+  test('Shield and ShieldedTransfer should agree with no actions', function () {
+    expect(ShieldTransitionWASM.computeMinimumFee(0))
+      .toEqual(ShieldedTransferTransitionWASM.computeMinimumFee(0))
+  })
+
+  test('ShieldFromAssetLock should match ShieldedTransfer', function () {
+    expect(ShieldFromAssetLockTransitionWASM.computeMinimumFee(numActions))
+      .toEqual(ShieldedTransferTransitionWASM.computeMinimumFee(numActions))
+  })
+
+  test('Unshield should add the output address write on top of ShieldedTransfer', function () {
+    expect(UnshieldTransitionWASM.computeMinimumFee(numActions))
+      .toBeGreaterThan(ShieldedTransferTransitionWASM.computeMinimumFee(numActions))
+  })
+
+  test('ShieldedWithdrawal should add the withdrawal document write on top of Unshield', function () {
+    expect(ShieldedWithdrawalTransitionWASM.computeMinimumFee(numActions))
+      .toBeGreaterThan(UnshieldTransitionWASM.computeMinimumFee(numActions))
+  })
+
+  test('IdentityCreateFromShieldedPool should add the identity create floor on top of ShieldedTransfer', function () {
+    expect(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(numActions, 1))
+      .toBeGreaterThan(ShieldedTransferTransitionWASM.computeMinimumFee(numActions))
   })
 })

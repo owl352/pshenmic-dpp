@@ -17,6 +17,10 @@ export class RecoveredNoteWASM {
     return NoteWASM.createFromRawInstance(this._rawRecoveredNote.note)
   }
 
+  get nullifier (): Uint8Array {
+    return this._rawRecoveredNote.nullifier
+  }
+
   static createFromRawInstance (rawInstance: RecoveredNoteNAPI): RecoveredNoteWASM {
     const instance: RecoveredNoteWASM = Object.create(RecoveredNoteWASM.prototype)
     instance._rawRecoveredNote = rawInstance

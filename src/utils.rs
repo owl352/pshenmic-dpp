@@ -14,6 +14,7 @@ use dpp::{
     ProtocolError, platform_value::Value, prelude::Identifier, util::hash::hash_double_to_vec,
 };
 use napi::Status;
+use napi::bindgen_prelude::Uint8Array;
 
 use crate::dynamic_value::DynamicValue;
 
@@ -128,4 +129,26 @@ pub fn js_outputs_to_outputs(
             ))
         })
         .collect::<Result<BTreeMap<PlatformAddress, Credits>, napi::Error>>()
+}
+
+/// Convert a JS byte array into an Orchard anchor, rejecting the wrong length
+/// instead of panicking on the `TryInto`.
+pub fn js_bytes_to_anchor(js_anchor: Uint8Array) -> Result<[u8; 32], napi::Error> {
+    js_anchor
+        .to_vec()
+        .try_into()
+        .map_err(|_| napi::Error::new(Status::InvalidArg, "anchor must be 32 bytes length"))
+}
+
+/// Convert a JS byte array into a RedPallas binding signature, rejecting the
+/// wrong length instead of panicking on the `TryInto`.
+pub fn js_bytes_to_binding_signature(
+    js_binding_signature: Uint8Array,
+) -> Result<[u8; 64], napi::Error> {
+    js_binding_signature.to_vec().try_into().map_err(|_| {
+        napi::Error::new(
+            Status::InvalidArg,
+            "bindings_signature must be 64 bytes length",
+        )
+    })
 }

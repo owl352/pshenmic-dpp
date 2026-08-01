@@ -1,4 +1,4 @@
-import type { ShieldFromAssetLockTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI, ShieldFromAssetLockTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { SerializedActionWASM } from './SerializedAction.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { PlatformAddressWASM } from '../PlatformAddress/PlatformAddress.js'
@@ -99,6 +99,13 @@ export class ShieldFromAssetLockTransitionWASM {
 
   set signature (value: Uint8Array) {
     this._rawShieldFromAssetLockTransition.signature = value
+  }
+
+  static computeMinimumFee (
+    numActions: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.ShieldFromAssetLockTransitionNAPI.computeMinimumFee(numActions, platformVersion))
   }
 
   toStateTransition (): StateTransitionWASM {

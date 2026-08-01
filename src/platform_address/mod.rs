@@ -92,9 +92,7 @@ impl PlatformAddressNAPI {
     #[napi(js_name = "fromBech32m")]
     pub fn from_bech32m(bech32m: String) -> Result<Self, napi::Error> {
         Ok(PlatformAddressNAPI(
-            PlatformAddress::from_bech32m_string(bech32m.as_str())
-                .with_js_error()?
-                .0,
+            PlatformAddress::from_bech32m_string(bech32m.as_str()).with_js_error()?,
         ))
     }
 

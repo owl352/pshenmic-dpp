@@ -384,6 +384,12 @@ export type VerifiedStateTransitionResultVariantsRAW =
 export interface VerifiedStateTransitionResult {
   rootHash: Uint8Array
   result: VerifiedStateTransitionResultVariants
+  /**
+   * Whether the proof binds the execution of this specific state transition.
+   * When false, the result is a height-pinned snapshot of the state the
+   * transition affects, not evidence that the transition executed.
+   */
+  isExecutionProved: boolean
 }
 
 export type WhereOperator =

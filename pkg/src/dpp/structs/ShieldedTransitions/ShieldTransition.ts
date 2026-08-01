@@ -1,4 +1,4 @@
-import type { ShieldTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI, ShieldTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { InputAddressWASM } from '../AddressTransitions/entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from '../AddressTransitions/entities/AddressFundsFeeStrategyStep.js'
 import { AddressWitnessWASM } from '../PlatformAddress/AddressWitness.js'
@@ -104,6 +104,13 @@ export class ShieldTransitionWASM {
 
   set inputWitnesses (value: AddressWitnessWASM[]) {
     this._rawShieldTransition.inputWitnesses = value.map(w => w._rawWitness)
+  }
+
+  static computeMinimumFee (
+    numActions: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.ShieldTransitionNAPI.computeMinimumFee(numActions, platformVersion))
   }
 
   toStateTransition (): StateTransitionWASM {
