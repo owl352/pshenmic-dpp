@@ -31,6 +31,7 @@ export function verifyStateTransitionResult (
 
   return {
     rootHash: verified.rootHash,
-    result: convertResult(verified.result)
+    result: convertResult(verified.result),
+    isExecutionProved: verified.isExecutionProved
   }
 }

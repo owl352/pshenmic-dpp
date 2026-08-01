@@ -272,10 +272,13 @@ impl DataContractNAPI {
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
 
-        let value = self
+        let serialization_format: Result<DataContractInSerializationFormat, ProtocolError> = self
             .0
             .clone()
-            .to_value(&platform_version.into())
+            .try_into_platform_versioned(&platform_version.into());
+
+        let value = platform_value::to_value(serialization_format.with_js_error()?)
+            .map_err(ProtocolError::ValueError)
             .with_js_error()?;
 
         value.try_into()
@@ -511,7 +514,14 @@ impl DataContractNAPI {
             false => PlatformVersionNAPI::try_from(js_platform_version)?,
         };
 
-        let json: Value = self.0.to_value(&platform_version.into()).with_js_error()?;
+        let serialization_format: Result<DataContractInSerializationFormat, ProtocolError> = self
+            .0
+            .clone()
+            .try_into_platform_versioned(&platform_version.into());
+
+        let json: Value = platform_value::to_value(serialization_format.with_js_error()?)
+            .map_err(ProtocolError::ValueError)
+            .with_js_error()?;
 
         DynamicValue::try_from(json)
     }

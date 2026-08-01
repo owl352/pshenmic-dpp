@@ -4,7 +4,7 @@ use dpp::{
         reduced_asset_lock_value::{AssetLockValue, AssetLockValueGettersV0},
     },
     block::{block_info::BlockInfo, epoch::Epoch},
-    state_transition::proof_result::StateTransitionProofResult,
+    state_transition::proof_result::StateTransitionProofOutcome,
     tokens::{
         info::{IdentityTokenInfo, v0::IdentityTokenInfoV0Accessors},
         status::{TokenStatus, v0::TokenStatusV0Accessors},
@@ -127,7 +127,7 @@ impl BlockInfoNAPI {
 #[napi(js_name = "VerifiedStateTransitionResultNAPI")]
 pub struct VerifiedStateTransitionResultNAPI {
     pub root_hash: Uint8Array,
-    pub(crate) result: StateTransitionProofResult,
+    pub(crate) result: StateTransitionProofOutcome,
 }
 
 #[napi]
@@ -166,7 +166,15 @@ impl VerifiedStateTransitionResultNAPI {
         >,
         napi::Error,
     > {
-        state_transition_proof_result_to_js(&self.result)
+        state_transition_proof_result_to_js(self.result.result())
+    }
+
+    /// Whether the proof binds the execution of this specific state transition.
+    /// When false the result is a height-pinned snapshot of the affected state,
+    /// not evidence that the transition executed.
+    #[napi(getter, js_name = "isExecutionProved")]
+    pub fn is_execution_proved(&self) -> bool {
+        self.result.is_execution_proved()
     }
 }
 
