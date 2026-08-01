@@ -1,10 +1,13 @@
 use dpp::{
     address_funds::{AddressFundsFeeStrategyStep, AddressWitness},
-    shielded::SerializedAction,
+    shielded::{SerializedAction, compute_shielded_verification_fee},
     state_transition::{
         StateTransition, StateTransitionHasUserFeeIncrease, StateTransitionWitnessSigned,
-        shield_transition::{ShieldTransition, v0::ShieldTransitionV0},
+        shield_transition::{
+            ShieldTransition, accessors::ShieldTransitionAccessorsV0, v0::ShieldTransitionV0,
+        },
     },
+    version::PlatformVersion,
 };
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -14,10 +17,11 @@ use crate::{
         address_funds_fee_step::AddressFundsFeeStrategyStepNAPI, input_address::InputAddressNAPI,
     },
     dynamic_value::{BigIntString, TryToU64},
+    enums::platform_version::PlatformVersionNAPI,
     orchard::serialized_action::SerializedActionNAPI,
     platform_address::address_witness::AddressWitnessNAPI,
     state_transition::StateTransitionNAPI,
-    utils::js_inputs_to_inputs,
+    utils::{WithJsError, js_bytes_to_anchor, js_bytes_to_binding_signature, js_inputs_to_inputs},
 };
 
 #[derive(Debug, Clone)]
@@ -107,56 +111,36 @@ impl ShieldTransitionNAPI {
 
     #[napi(getter, js_name = "actions")]
     pub fn actions(&self) -> Vec<SerializedActionNAPI> {
-        match self.0.clone() {
-            ShieldTransition::V0(shield_transition_v0) => shield_transition_v0
-                .actions
-                .iter()
-                .map(|t| t.clone().into())
-                .collect(),
-        }
+        self.0.actions().iter().map(|t| t.clone().into()).collect()
     }
 
     #[napi(getter, js_name = "amount")]
     pub fn amount(&self) -> BigIntString {
-        match self.0.clone() {
-            ShieldTransition::V0(shield_transition_v0) => {
-                BigIntString::from_u64(shield_transition_v0.amount)
-            }
-        }
+        BigIntString::from_u64(self.0.amount())
     }
 
     #[napi(getter, js_name = "anchor")]
     pub fn anchor(&self) -> Uint8Array {
-        match self.0.clone() {
-            ShieldTransition::V0(shield_transition_v0) => shield_transition_v0.anchor.into(),
-        }
+        self.0.anchor().into()
     }
 
     #[napi(getter, js_name = "proof")]
     pub fn proof(&self) -> Uint8Array {
-        match self.0.clone() {
-            ShieldTransition::V0(shield_transition_v0) => shield_transition_v0.proof.into(),
-        }
+        self.0.proof().to_vec().into()
     }
 
     #[napi(getter, js_name = "bindingsSignature")]
     pub fn bindings_signature(&self) -> Uint8Array {
-        match self.0.clone() {
-            ShieldTransition::V0(shield_transition_v0) => {
-                shield_transition_v0.binding_signature.into()
-            }
-        }
+        self.0.binding_signature().into()
     }
 
     #[napi(getter, js_name = "feeStrategy")]
     pub fn fee_strategy(&self) -> Vec<AddressFundsFeeStrategyStepNAPI> {
-        match self.0.clone() {
-            ShieldTransition::V0(shield_transition_v0) => shield_transition_v0
-                .fee_strategy
-                .iter()
-                .map(|s| s.clone().into())
-                .collect(),
-        }
+        self.0
+            .fee_strategy()
+            .iter()
+            .map(|s| s.clone().into())
+            .collect()
     }
 
     #[napi(getter, js_name = "userFeeIncrease")]
@@ -181,55 +165,27 @@ impl ShieldTransitionNAPI {
 
     #[napi(setter, js_name = "actions")]
     pub fn set_actions(&mut self, actions: Vec<&SerializedActionNAPI>) {
-        match self.0.clone() {
-            ShieldTransition::V0(mut shield_transition_v0) => {
-                shield_transition_v0.actions =
-                    actions.into_iter().map(|a| a.clone().into()).collect();
-                self.0 = ShieldTransition::V0(shield_transition_v0);
-            }
-        }
+        self.0
+            .set_actions(actions.into_iter().map(|a| a.clone().into()).collect());
     }
 
     #[napi(setter, js_name = "amount")]
     pub fn set_amount(&mut self, amount: BigIntString) -> Result<(), napi::Error> {
-        match self.0.clone() {
-            ShieldTransition::V0(mut shield_transition_v0) => {
-                shield_transition_v0.amount = amount.try_to_u64()?;
-                self.0 = ShieldTransition::V0(shield_transition_v0);
-            }
-        }
+        self.0.set_amount(amount.try_to_u64()?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "anchor")]
     pub fn set_anchor(&mut self, js_anchor: Uint8Array) -> Result<(), napi::Error> {
-        if js_anchor.len() != 32 {
-            return Err(napi::Error::new(
-                napi::Status::InvalidArg,
-                "anchor must be 32 bytes length",
-            ));
-        }
-
-        match self.0.clone() {
-            ShieldTransition::V0(mut shield_transition_v0) => {
-                shield_transition_v0.anchor = js_anchor.to_vec().try_into().unwrap();
-                self.0 = ShieldTransition::V0(shield_transition_v0);
-            }
-        }
+        self.0.set_anchor(js_bytes_to_anchor(js_anchor)?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "proof")]
     pub fn set_proof(&mut self, proof: Uint8Array) {
-        match self.0.clone() {
-            ShieldTransition::V0(mut shield_transition_v0) => {
-                shield_transition_v0.proof = proof.to_vec();
-
-                self.0 = ShieldTransition::V0(shield_transition_v0)
-            }
-        }
+        self.0.set_proof(proof.to_vec());
     }
 
     #[napi(setter, js_name = "bindingsSignature")]
@@ -237,35 +193,16 @@ impl ShieldTransitionNAPI {
         &mut self,
         js_bindings_signature: Uint8Array,
     ) -> Result<(), napi::Error> {
-        match self.0.clone() {
-            ShieldTransition::V0(mut shield_transition_v0) => {
-                if js_bindings_signature.len() != 64 {
-                    return Err(napi::Error::new(
-                        napi::Status::InvalidArg,
-                        "bindings_signature must be 64 bytes length",
-                    ));
-                }
-
-                shield_transition_v0.binding_signature =
-                    js_bindings_signature.to_vec().try_into().unwrap();
-
-                self.0 = ShieldTransition::V0(shield_transition_v0)
-            }
-        }
+        self.0
+            .set_binding_signature(js_bytes_to_binding_signature(js_bindings_signature)?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "feeStrategy")]
     pub fn set_fee_strategy(&mut self, fee_strategy: Vec<&AddressFundsFeeStrategyStepNAPI>) {
-        match self.0.clone() {
-            ShieldTransition::V0(mut shield_transition_v0) => {
-                shield_transition_v0.fee_strategy =
-                    fee_strategy.into_iter().map(|s| s.clone().into()).collect();
-
-                self.0 = ShieldTransition::V0(shield_transition_v0);
-            }
-        }
+        self.0
+            .set_fee_strategy(fee_strategy.into_iter().map(|s| s.clone().into()).collect());
     }
 
     #[napi(setter, js_name = "userFeeIncrease")]
@@ -281,6 +218,18 @@ impl ShieldTransitionNAPI {
                 .map(|w| w.clone().into())
                 .collect(),
         )
+    }
+
+    #[napi(js_name = "computeMinimumFee")]
+    pub fn compute_minimum_fee(
+        js_num_actions: u32,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        compute_shielded_verification_fee(js_num_actions as usize, &platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "toStateTransition")]

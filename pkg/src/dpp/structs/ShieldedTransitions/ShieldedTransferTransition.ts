@@ -1,4 +1,4 @@
-import type { ShieldedTransferTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI, ShieldedTransferTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { SerializedActionWASM } from './SerializedAction.js'
 import { dppProvider } from '../../provider.js'
 import { StateTransitionWASM } from '../StateTransition.js'
@@ -61,6 +61,13 @@ export class ShieldedTransferTransitionWASM {
 
   set bindingsSignature (value: Uint8Array) {
     this._rawShieldedTransferTransition.bindingsSignature = value
+  }
+
+  static computeMinimumFee (
+    numActions: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.ShieldedTransferTransitionNAPI.computeMinimumFee(numActions, platformVersion))
   }
 
   toStateTransition (): StateTransitionWASM {

@@ -1,4 +1,4 @@
-import type { ShieldedWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI, ShieldedWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { SerializedActionWASM } from './SerializedAction.js'
 import { CoreScriptWASM } from '../CoreScript.js'
 import { PoolingLike } from '../../types.js'
@@ -94,6 +94,13 @@ export class ShieldedWithdrawalTransitionWASM {
 
   set outputScript (value: CoreScriptWASM) {
     this._rawShieldedWithdrawalTransition.outputScript = value._rawCoreScript
+  }
+
+  static computeMinimumFee (
+    numActions: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.ShieldedWithdrawalTransitionNAPI.computeMinimumFee(numActions, platformVersion))
   }
 
   toStateTransition (): StateTransitionWASM {

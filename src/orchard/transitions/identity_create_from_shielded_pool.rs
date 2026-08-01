@@ -1,5 +1,5 @@
 use dpp::{
-    shielded::SerializedAction,
+    shielded::{SerializedAction, compute_shielded_identity_create_fee},
     state_transition::{
         StateTransition,
         identity_create_from_shielded_pool_transition::{
@@ -9,17 +9,20 @@ use dpp::{
         },
         public_key_in_creation::IdentityPublicKeyInCreation,
     },
+    version::PlatformVersion,
 };
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::{
     dynamic_value::{BigIntString, IdentifierLikeNAPI, PlatformAddressLikeNAPI, TryToU64},
+    enums::platform_version::PlatformVersionNAPI,
     identifier::IdentifierNAPI,
     identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI,
     orchard::serialized_action::SerializedActionNAPI,
     platform_address::PlatformAddressNAPI,
     state_transition::StateTransitionNAPI,
+    utils::{WithJsError, js_bytes_to_anchor, js_bytes_to_binding_signature},
 };
 
 #[derive(Debug, Clone)]
@@ -118,23 +121,17 @@ impl IdentityCreateFromShieldedPoolTransitionNAPI {
 
     #[napi(getter, js_name = "anchor")]
     pub fn anchor(&self) -> Uint8Array {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(st) => st.anchor.into(),
-        }
+        self.0.anchor().into()
     }
 
     #[napi(getter, js_name = "proof")]
     pub fn proof(&self) -> Uint8Array {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(st) => st.proof.into(),
-        }
+        self.0.proof().to_vec().into()
     }
 
     #[napi(getter, js_name = "bindingsSignature")]
     pub fn bindings_signature(&self) -> Uint8Array {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(st) => st.binding_signature.into(),
-        }
+        self.0.binding_signature().into()
     }
 
     #[napi(getter, js_name = "sendToAddressOnCreationFailure")]
@@ -149,66 +146,37 @@ impl IdentityCreateFromShieldedPoolTransitionNAPI {
 
     #[napi(setter, js_name = "publicKeys")]
     pub fn set_public_keys(&mut self, js_public_keys: Vec<&IdentityPublicKeyInCreationNAPI>) {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.public_keys = js_public_keys
-                    .into_iter()
-                    .map(|k| k.clone().into())
-                    .collect()
-            }
-        }
+        self.0.set_public_keys(
+            js_public_keys
+                .into_iter()
+                .map(|k| k.clone().into())
+                .collect(),
+        );
     }
 
     #[napi(setter, js_name = "denomination")]
     pub fn set_denomination(&mut self, denomination: BigIntString) -> Result<(), napi::Error> {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.denomination = denomination.try_to_u64()?;
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st);
-            }
-        }
+        self.0.set_denomination(denomination.try_to_u64()?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "actions")]
     pub fn set_actions(&mut self, actions: Vec<&SerializedActionNAPI>) {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.actions = actions.into_iter().map(|a| a.clone().into()).collect();
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st);
-            }
-        }
+        self.0
+            .set_actions(actions.into_iter().map(|a| a.clone().into()).collect());
     }
 
     #[napi(setter, js_name = "anchor")]
     pub fn set_anchor(&mut self, js_anchor: Uint8Array) -> Result<(), napi::Error> {
-        if js_anchor.len() != 32 {
-            return Err(napi::Error::new(
-                napi::Status::InvalidArg,
-                "anchor must be 32 bytes length",
-            ));
-        }
-
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.anchor = js_anchor.to_vec().try_into().unwrap();
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st);
-            }
-        }
+        self.0.set_anchor(js_bytes_to_anchor(js_anchor)?);
 
         Ok(())
     }
 
     #[napi(setter, js_name = "proof")]
     pub fn set_proof(&mut self, proof: Uint8Array) {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.proof = proof.to_vec();
-
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st)
-            }
-        }
+        self.0.set_proof(proof.to_vec());
     }
 
     #[napi(setter, js_name = "bindingsSignature")]
@@ -216,20 +184,8 @@ impl IdentityCreateFromShieldedPoolTransitionNAPI {
         &mut self,
         js_bindings_signature: Uint8Array,
     ) -> Result<(), napi::Error> {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                if js_bindings_signature.len() != 64 {
-                    return Err(napi::Error::new(
-                        napi::Status::InvalidArg,
-                        "bindings_signature must be 64 bytes length",
-                    ));
-                }
-
-                st.binding_signature = js_bindings_signature.to_vec().try_into().unwrap();
-
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st)
-            }
-        }
+        self.0
+            .set_binding_signature(js_bytes_to_binding_signature(js_bindings_signature)?);
 
         Ok(())
     }
@@ -239,29 +195,36 @@ impl IdentityCreateFromShieldedPoolTransitionNAPI {
         &mut self,
         js_address: PlatformAddressLikeNAPI,
     ) -> Result<(), napi::Error> {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.send_to_address_on_creation_failure =
-                    PlatformAddressNAPI::try_from(js_address)?.into();
-
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st)
-            }
-        }
+        self.0.set_send_to_address_on_creation_failure(
+            PlatformAddressNAPI::try_from(js_address)?.into(),
+        );
 
         Ok(())
     }
 
     #[napi(setter, js_name = "identityId")]
     pub fn set_identity_id(&mut self, js_id: IdentifierLikeNAPI) -> Result<(), napi::Error> {
-        match self.0.clone() {
-            IdentityCreateFromShieldedPoolTransition::V0(mut st) => {
-                st.identity_id = IdentifierNAPI::try_from(js_id)?.into();
-
-                self.0 = IdentityCreateFromShieldedPoolTransition::V0(st)
-            }
-        }
+        self.0
+            .set_identity_id(IdentifierNAPI::try_from(js_id)?.into());
 
         Ok(())
+    }
+
+    #[napi(js_name = "computeMinimumFee")]
+    pub fn compute_minimum_fee(
+        js_num_actions: u32,
+        js_num_keys: u32,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        compute_shielded_identity_create_fee(
+            js_num_actions as usize,
+            js_num_keys as usize,
+            &platform_version,
+        )
+        .map(BigIntString::from_u64)
+        .with_js_error()
     }
 
     #[napi(js_name = "toStateTransition")]
