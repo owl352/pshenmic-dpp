@@ -8,7 +8,7 @@ edition = "2024"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-dpp = { git = "https://github.com/dashpay/platform", rev = "1ba1ca582882a04cdbeffb834d129c15c7d6cfe9", default-features = false, features = [
+dpp = { git = "https://github.com/dashpay/platform", tag = "v4.1.0", default-features = false, features = [
     "identity-value-conversion",
     "identity-serialization",
     "state-transition-signing",
@@ -17,10 +17,10 @@ dpp = { git = "https://github.com/dashpay/platform", rev = "1ba1ca582882a04cdbef
     "data-contract-json-conversion",
     "shielded-client"
 ] }
-drive = { git = "https://github.com/dashpay/platform", rev = "1ba1ca582882a04cdbeffb834d129c15c7d6cfe9", default-features = false, features = [
+drive = { git = "https://github.com/dashpay/platform", tag = "v4.1.0", default-features = false, features = [
     "verify"
 ] }
-grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", rev = "fc814983d4d36c6ea049642556b9a31ab8d4dfaa", features = ["client"] }
+grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", tag = "v5.0.1", features = ["client"] }
 indexmap = "2.0.2"
 # ZIP-32 AccountId for Orchard key derivation from a seed (matches the version
 # the orchard fork uses, so it unifies to a single crate instance).
