@@ -3,16 +3,21 @@ use dpp::identity::state_transition::{AssetLockProved, OptionallyAssetLockProved
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_topup_transition::IdentityTopUpTransition;
 use dpp::state_transition::identity_topup_transition::accessors::IdentityTopUpTransitionAccessorsV0;
 use dpp::state_transition::identity_topup_transition::v0::IdentityTopUpTransitionV0;
 use dpp::state_transition::{StateTransition, StateTransitionLike, StateTransitionSingleSigned};
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
+use crate::dynamic_value::BigIntString;
 use crate::dynamic_value::IdentifierLikeNAPI;
+use crate::dynamic_value::TryToU64;
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::WithJsError;
@@ -110,6 +115,19 @@ impl IdentityTopUpTransitionNAPI {
     #[napi(setter, js_name = "signature")]
     pub fn set_signature(&mut self, signature: Uint8Array) {
         self.0.set_signature_bytes(signature.to_vec())
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

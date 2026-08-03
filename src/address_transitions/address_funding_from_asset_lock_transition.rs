@@ -5,9 +5,10 @@ use dpp::state_transition::address_funding_from_asset_lock_transition::AddressFu
 use dpp::state_transition::address_funding_from_asset_lock_transition::accessors::AddressFundingFromAssetLockTransitionAccessorsV0;
 use dpp::state_transition::address_funding_from_asset_lock_transition::v0::AddressFundingFromAssetLockTransitionV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionHasUserFeeIncrease,
-    StateTransitionSingleSigned, StateTransitionWitnessSigned,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionEstimatedFeeValidation,
+    StateTransitionHasUserFeeIncrease, StateTransitionSingleSigned, StateTransitionWitnessSigned,
 };
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -16,6 +17,7 @@ use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNullableCreditsNAPI;
 use crate::asset_lock_proof::AssetLockProofNAPI;
 use crate::dynamic_value::{BigIntString, TryToU64};
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::{WithJsError, js_inputs_to_inputs, js_outputs_to_outputs_nullable};
@@ -188,6 +190,19 @@ impl AddressFundingFromAssetLockTransitionNAPI {
             .collect();
 
         self.0.set_witnesses(input_witnesses);
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

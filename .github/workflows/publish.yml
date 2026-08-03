@@ -57,16 +57,24 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-unknown-linux-gnu, aarch64-unknown-linux-musl, aarch64-linux-android, x86_64-linux-android, aarch64-apple-ios-sim, aarch64-apple-darwin, x86_64-apple-darwin
+          targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-unknown-linux-gnu, aarch64-unknown-linux-musl, aarch64-linux-android, x86_64-linux-android, aarch64-apple-ios-sim, aarch64-apple-darwin, x86_64-apple-darwin, x86_64-pc-windows-msvc, aarch64-pc-windows-msvc
           components: rustfmt, rust-src
 
       - name: Cache Rust dependencies
         uses: swatinem/rust-cache@v2
 
+      # The Microsoft CRT/SDK headers cargo-xwin downloads for the windows-msvc
+      # targets are ~1GB and are not covered by rust-cache.
+      - name: Cache xwin CRT/SDK
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/cargo-xwin
+          key: ${{ runner.os }}-cargo-xwin
+
       - name: Install pre-built Rust tools
         uses: taiki-e/install-action@v2
         with:
-          tool: cargo-zigbuild, wasm-bindgen-cli@0.2.105, wasm-opt
+          tool: cargo-zigbuild, cargo-xwin, wasm-bindgen-cli@0.2.105, wasm-opt
 
       - name: Install LLVM for WebAssembly (macOS)
         run: |
@@ -81,8 +89,10 @@ jobs:
         run: yarn build:full
         env:
           RUSTFLAGS: '-C target-feature=-crt-static'
-          NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-gnu,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin
+          NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-gnu,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc,aarch64-pc-windows-msvc
           WASM_TOOLCHAIN: nightly-2026-06-17
+          # Accepts Microsoft's license for the CRT/SDK headers cargo-xwin downloads.
+          XWIN_ACCEPT_LICENSE: '1'
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -104,6 +114,8 @@ jobs:
             os: ubuntu-latest
           - target: aarch64-apple-darwin
             os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
 
     steps:
       - name: Checkout repository

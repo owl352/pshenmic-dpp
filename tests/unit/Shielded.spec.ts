@@ -27,7 +27,9 @@ const ACCOUNT = 0
 // A funded testnet WIF reused across the builder/deposit tests.
 const WIF = 'cUy4wbim4y9NDwC24omx8oWY5WqfmjSU2gdcZtTXza2xDCAkQXRP'
 
-// Memo payloads are a fixed 32 bytes (MEMO_PAYLOAD_SIZE).
+// The memo payload field is a fixed 32 bytes (MEMO_PAYLOAD_SIZE) on the wire.
+// Text memos may be shorter and are zero-padded to it; `other` payloads are
+// taken verbatim and so must match it exactly.
 const MEMO_PAYLOAD_SIZE = 32
 
 const DASH = 100_000_000_000n
@@ -62,6 +64,7 @@ describe('ShieldedMemo', function () {
 
       expect(memo).toBeInstanceOf(ShieldedMemoWASM)
       expect(memo.toBytes().length).toEqual(36) // on-wire memo size
+      expect(memo.toString()).toEqual('')
     })
   })
 
@@ -72,11 +75,41 @@ describe('ShieldedMemo', function () {
 
       expect(memo).toBeInstanceOf(ShieldedMemoWASM)
       expect(memo.toBytes().length).toEqual(36)
-      expect(memo.toString().endsWith(text)).toBe(true)
+      expect(memo.toString()).toEqual(text)
     })
 
-    test('should reject a payload that is not 32 bytes', function () {
-      expect(() => ShieldedMemoWASM.fromString('too short')).toThrow()
+    test('should accept text shorter than the payload', function () {
+      const text = 'thanks for lunch' // 16 bytes, half the payload
+      const memo = ShieldedMemoWASM.fromString(text)
+      const bytes = memo.toBytes()
+
+      // The wire memo stays a fixed 36 bytes: a 4-byte little-endian kind tag
+      // (1 = text), the utf-8 text, then zero padding out to the 32-byte
+      // payload. The padding is not part of the decoded text.
+      expect(bytes.length).toEqual(36)
+      expect(Array.from(bytes.slice(0, 4))).toEqual([1, 0, 0, 0])
+      expect(new TextDecoder().decode(bytes.slice(4, 4 + text.length))).toEqual(text)
+      expect(bytes.slice(4 + text.length).every((byte) => byte === 0)).toBe(true)
+      expect(memo.toString()).toEqual(text)
+    })
+
+    test('should accept an empty string', function () {
+      const memo = ShieldedMemoWASM.fromString('')
+
+      expect(memo.toBytes().length).toEqual(36)
+      expect(memo.toString()).toEqual('')
+    })
+
+    test('should count multi-byte characters by their utf-8 byte length', function () {
+      // 8 x U+1F355 = 32 bytes, exactly the payload; 9 would be 36 bytes.
+      const memo = ShieldedMemoWASM.fromString('🍕'.repeat(8))
+
+      expect(memo.toString()).toEqual('🍕'.repeat(8))
+      expect(() => ShieldedMemoWASM.fromString('🍕'.repeat(9))).toThrow()
+    })
+
+    test('should reject text longer than 32 bytes', function () {
+      expect(() => ShieldedMemoWASM.fromString('A'.repeat(MEMO_PAYLOAD_SIZE + 1))).toThrow()
     })
   })
 

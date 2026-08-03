@@ -4,6 +4,7 @@ use dpp::platform_value::Identifier;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_credit_withdrawal_transition::IdentityCreditWithdrawalTransition;
 use dpp::state_transition::identity_credit_withdrawal_transition::accessors::IdentityCreditWithdrawalTransitionAccessorsV0;
@@ -12,12 +13,14 @@ use dpp::state_transition::{
     StateTransition, StateTransitionIdentitySigned, StateTransitionLike,
     StateTransitionSingleSigned,
 };
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
 use crate::core_script::CoreScriptNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::enums::pooling::PoolingNAPI;
 use crate::enums::purpose::PurposeNAPI;
 use crate::identifier::IdentifierNAPI;
@@ -207,6 +210,19 @@ impl IdentityCreditWithdrawalTransitionNAPI {
             .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
 
         IdentityCreditWithdrawalTransitionNAPI::from_bytes(bytes.into())
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

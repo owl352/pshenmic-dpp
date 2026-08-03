@@ -35,8 +35,8 @@ const nativeTargets = specificTarget
     "aarch64-unknown-linux-gnu",
     "x86_64-unknown-linux-musl",
     "aarch64-unknown-linux-musl",
-    // "x86_64-pc-windows-msvc",
-    // "aarch64-pc-windows-msvc"
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
   ];
 
 const emnapi = path.join(
@@ -83,7 +83,12 @@ async function main() {
   console.log("--- Building Native Binaries ---");
 
   const darwinTargets = nativeTargets.filter(t => t.includes("apple-darwin"));
-  const zigbuildTargets = nativeTargets.filter(t => !t.includes("apple-darwin"));
+  // zig cannot emit the MSVC ABI, so windows goes through cargo-xwin (clang-cl
+  // + lld-link against the Microsoft CRT/SDK headers xwin downloads).
+  const windowsTargets = nativeTargets.filter(t => t.includes("windows"));
+  const zigbuildTargets = nativeTargets.filter(
+    t => !t.includes("apple-darwin") && !t.includes("windows")
+  );
 
   if (darwinTargets.length > 0) {
     const targetFlags = darwinTargets.map(t => `--target ${t}`).join(" ");
@@ -105,19 +110,36 @@ async function main() {
     );
   }
 
+  // One invocation per windows target: cargo-xwin injects the SDK/CRT lib
+  // paths via RUSTFLAGS, and with several `--target` flags only the last
+  // target's paths survive, so the others fail to link ("machine type x64
+  // conflicts with arm64"). Requires XWIN_ACCEPT_LICENSE=1 in the environment
+  // (accepts Microsoft's license for the CRT/SDK headers xwin downloads).
+  for (const target of windowsTargets) {
+    console.log(`Building windows target with xwin: ${target}...`);
+
+    await execTask(
+      `cargo xwin build --target ${target} ${isRelease ? "--release" : ""}`,
+      { env: { ...process.env }, maxBuffer: 1024 * 1024 * 50 }
+    );
+  }
+
   nativeTargets.forEach((target) => {
     let extension;
+    // MSVC emits `pshenmic_dpp.dll`; the unix toolchains prefix with `lib`.
+    let prefix = "lib";
 
     if (target.includes("apple-darwin")) {
       extension = "dylib";
     } else if (target.includes("windows")) {
       extension = "dll";
+      prefix = "";
     } else {
       extension = "so";
     }
 
     const nativeBinPath = path.join(
-      __dirname, "target", target, buildProfile, `lib${binName}.${extension}`
+      __dirname, "target", target, buildProfile, `${prefix}${binName}.${extension}`
     );
 
     const nativeOutputDir = path.join(binariesOutputDir, "native", target);

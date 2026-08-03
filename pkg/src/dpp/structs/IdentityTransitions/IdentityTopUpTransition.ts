@@ -1,4 +1,4 @@
-import type { IdentityTopUpTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityTopUpTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
@@ -61,6 +61,10 @@ export class IdentityTopUpTransitionWASM {
   getOptionalAssetLockProof (): AssetLockProofWASM | undefined {
     const lock = this._rawIdentityTopUpTransition.getOptionalAssetLockProof()
     return (lock != null) ? AssetLockProofWASM.createFromRawInstance(lock) : undefined
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityTopUpTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

@@ -6,9 +6,10 @@ use dpp::state_transition::address_credit_withdrawal_transition::AddressCreditWi
 use dpp::state_transition::address_credit_withdrawal_transition::accessors::AddressCreditWithdrawalTransitionAccessorsV0;
 use dpp::state_transition::address_credit_withdrawal_transition::v0::AddressCreditWithdrawalTransitionV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionHasUserFeeIncrease,
-    StateTransitionWitnessSigned,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionEstimatedFeeValidation,
+    StateTransitionHasUserFeeIncrease, StateTransitionWitnessSigned,
 };
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -17,6 +18,7 @@ use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
 use crate::core_script::CoreScriptNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::enums::pooling::PoolingNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
@@ -210,6 +212,34 @@ impl AddressCreditWithdrawalTransitionNAPI {
             .collect();
 
         self.0.set_witnesses(input_witnesses);
+    }
+
+    #[napi(js_name = "estimateMinFee")]
+    pub fn estimate_min_fee(
+        js_input_count: u32,
+        js_has_change_output: bool,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> BigIntString {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        BigIntString::from_u64(AddressCreditWithdrawalTransition::estimate_min_fee(
+            js_input_count as usize,
+            js_has_change_output,
+            &platform_version,
+        ))
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

@@ -1,4 +1,4 @@
-import type { PlatformAddressNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformAddressNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { NetworkLike, PlatformAddressLike } from '../../types.js'
 import { preparePlatformAddressValue, valueToDynamicValue } from '../../utils.js'
@@ -33,6 +33,20 @@ export class PlatformAddressWASM {
 
   hash (): Uint8Array {
     return this._rawPlatformAddress.hash()
+  }
+
+  /**
+   * Storage fee charged for creating balance entries for addresses that are not in state yet.
+   *
+   * A minimum fee prices every output as a fresh address, but the fee actually charged is
+   * metered: paying an address that already exists adds no bytes, while each address created
+   * costs this much storage on top of processing.
+   */
+  static estimateStorageFeeForNewAddresses (
+    addressCount: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.PlatformAddressNAPI.estimateStorageFeeForNewAddresses(addressCount, platformVersion))
   }
 
   static fromBech32m (bech32m: string): PlatformAddressWASM {

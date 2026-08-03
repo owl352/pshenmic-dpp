@@ -1,4 +1,4 @@
-import type { StateTransitionNAPI } from '../../../binaries/bindingsTypes.js'
+import type { StateTransitionNAPI, PlatformVersionNAPI } from '../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../provider.js'
 import { PrivateKeyWASM } from './PrivateKey.js'
 import { IdentityPublicKeyWASM } from './IdentityPublicKey.js'
@@ -114,6 +114,10 @@ export class StateTransitionWASM {
 
   getSignableBytes (): Uint8Array {
     return this._rawStateTransition.getSignableBytes()
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawStateTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

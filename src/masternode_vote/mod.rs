@@ -7,6 +7,7 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{self, Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
 use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
 use dpp::state_transition::masternode_vote_transition::v0::MasternodeVoteTransitionV0;
@@ -14,11 +15,13 @@ use dpp::state_transition::{
     StateTransition, StateTransitionIdentitySigned, StateTransitionLike,
     StateTransitionSingleSigned,
 };
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::asset_lock_proof::AssetLockProofNAPI;
 use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::masternode_vote::vote::VoteNAPI;
 use crate::state_transition::StateTransitionNAPI;
@@ -162,6 +165,19 @@ impl MasternodeVoteTransitionNAPI {
             .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "Invalid base64 string"))?;
 
         MasternodeVoteTransitionNAPI::from_bytes(bytes.into())
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

@@ -22,14 +22,10 @@ impl From<ShieldedMemoNAPI> for ShieldedMemo {
 impl ShieldedMemoNAPI {
     #[napi(js_name = "fromString")]
     pub fn from_string(value: String) -> Result<Self, napi::Error> {
-        if value.len() != MEMO_PAYLOAD_SIZE {
-            return Err(napi::Error::new(
-                napi::Status::InvalidArg,
-                format!("Memo payload must be {MEMO_PAYLOAD_SIZE}"),
-            ));
-        }
-
-        Ok(ShieldedMemoNAPI(ShieldedMemo::Text(value)))
+        // Delegate so the length rule stays defined in exactly one place.
+        ShieldedMemo::text(value)
+            .map(ShieldedMemoNAPI)
+            .map_err(|error| napi::Error::new(napi::Status::InvalidArg, error.to_string()))
     }
 
     #[napi(js_name = "empty")]
@@ -42,7 +38,10 @@ impl ShieldedMemoNAPI {
         if payload.len() != MEMO_PAYLOAD_SIZE {
             return Err(napi::Error::new(
                 napi::Status::InvalidArg,
-                format!("Memo payload must be {MEMO_PAYLOAD_SIZE}"),
+                format!(
+                    "Memo payload must be exactly {MEMO_PAYLOAD_SIZE} bytes, got {}",
+                    payload.len()
+                ),
             ));
         }
 
@@ -54,14 +53,14 @@ impl ShieldedMemoNAPI {
 
     #[napi(js_name = "toString")]
     pub fn to_string(&self) -> Result<String, napi::Error> {
-        Ok(str::from_utf8(&self.0.to_bytes().clone())
-            .map_err(|_| {
-                napi::Error::new(
-                    napi::Status::GenericFailure,
-                    "cannot convert bytes to utf-8",
-                )
-            })?
-            .to_string())
+        match &self.0 {
+            ShieldedMemo::Empty => Ok(String::new()),
+            ShieldedMemo::Text(text) => Ok(text.clone()),
+            ShieldedMemo::Other { kind, .. } => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                format!("memo of kind {kind} is not text; use toBytes instead"),
+            )),
+        }
     }
 
     #[napi(js_name = "toBytes")]

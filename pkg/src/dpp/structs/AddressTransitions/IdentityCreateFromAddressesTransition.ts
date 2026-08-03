@@ -1,4 +1,4 @@
-import type { IdentityCreateFromAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreateFromAddressesTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
@@ -79,6 +79,10 @@ export class IdentityCreateFromAddressesTransitionWASM {
 
   set inputWitness (value: AddressWitnessWASM[]) {
     this._rawIdentityCreateFromAddressesTransition.inputWitness = value.map(w => w._rawWitness)
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityCreateFromAddressesTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

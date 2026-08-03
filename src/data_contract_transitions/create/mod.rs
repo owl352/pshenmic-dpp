@@ -5,11 +5,13 @@ use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::DataContract;
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
 use dpp::state_transition::StateTransition;
+use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV0;
 use dpp::state_transition::data_contract_create_transition::{
     DataContractCreateTransition, DataContractCreateTransitionV0,
 };
 use dpp::validation::operations::ProtocolValidationOperation;
+use dpp::version::PlatformVersion;
 use dpp::version::{TryFromPlatformVersioned, TryIntoPlatformVersioned};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -85,6 +87,19 @@ impl DataContractCreateTransitionNAPI {
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
         DataContractCreateTransitionNAPI::from_bytes(bytes.into())
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

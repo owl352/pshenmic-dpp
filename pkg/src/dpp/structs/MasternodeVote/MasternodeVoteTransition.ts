@@ -1,4 +1,4 @@
-import type { MasternodeVoteTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { MasternodeVoteTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { VoteWASM } from './Vote.js'
 import { dppProvider } from '../../provider.js'
@@ -84,6 +84,10 @@ export class MasternodeVoteTransitionWASM {
 
   getSignableBytes (): Uint8Array {
     return this._rawMasternodeVoteTransition.getSignableBytes()
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawMasternodeVoteTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

@@ -1,4 +1,4 @@
-import type { IdentityCreateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreateTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { dppProvider } from '../../provider.js'
@@ -58,6 +58,10 @@ export class IdentityCreateTransitionWASM {
 
   getIdentifier (): IdentifierWASM {
     return IdentifierWASM.createFromRawInstance(this._rawIdentityCreateTransition.getIdentifier())
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityCreateTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

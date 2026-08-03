@@ -1,4 +1,4 @@
-import type { IdentityTopUpFromAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityTopUpFromAddressesTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike } from '../../types.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
@@ -72,6 +72,10 @@ export class IdentityTopUpFromAddressesTransitionWASM {
 
   set inputWitness (addressWitness: AddressWitnessWASM[]) {
     this._rawIdentityTopUpFromAddressesTransition.inputWitness = addressWitness.map(w => w._rawWitness)
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityTopUpFromAddressesTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

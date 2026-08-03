@@ -3,10 +3,17 @@ const path = require('node:path');
 function isMusl() {
   if (process.platform !== 'linux')
     return false;
-  const report = process.report?.getReport?.();
-  return !report?.header?.glibcVersionRuntime;
+  try {
+    const report = process.report?.getReport?.();
+    return !report?.header?.glibcVersionRuntime;
+  }
+  catch {
+    // getReport() is unavailable in some embedders/worker contexts; assume
+    // glibc, and let the require below fall back to WebAssembly if wrong.
+    return false;
+  }
 }
-function getBinaryPath() {
+function getTarget() {
   const platform = process.platform;
   const arch = process.arch;
   let target = '';
@@ -24,27 +31,43 @@ function getBinaryPath() {
       target = `x86_64-unknown-linux-${libc}`;
     }
   }
-  // else if (platform === 'win32') {
-  //   if (arch === 'arm64') {
-  //     target = 'aarch64-pc-windows-msvc';
-  //   }
-  //   else {
-  //     target = 'x86_64-pc-windows-msvc';
-  //   }
-  // }
+  else if (platform === 'win32') {
+    if (arch === 'arm64') {
+      target = 'aarch64-pc-windows-msvc';
+    }
+    else {
+      target = 'x86_64-pc-windows-msvc';
+    }
+  }
   else {
     console.error(`Unsupported platform: ${platform} ${arch}. Using WebAssembly instead Node-API`);
     return null;
   }
-  console.log(`running on native dpp (${target})`);
-  return path.join('native', target, 'pshenmic_dpp.node');
+  return target;
 }
-const binaryPath = getBinaryPath();
-let exportedModule;
-if (binaryPath !== null) {
-  exportedModule = require(`./${binaryPath}`);
+
+// The native addon can be unusable even on a supported platform: the binary may
+// be missing from the package, built for another libc/arch, or fail to link
+// against a system dependency (e.g. the VC++ runtime on Windows). None of that
+// should be fatal — WebAssembly is a complete fallback, so any load failure
+// degrades to it instead of taking the whole import down.
+function loadNative() {
+  const target = getTarget();
+  if (target === null) {
+    return null;
+  }
+  try {
+    const nativeModule = require(`./${path.join('native', target, 'pshenmic_dpp.node')}`);
+    console.log(`running on native dpp (${target})`);
+    return nativeModule;
+  }
+  catch (error) {
+    // Only the first line: node appends a multi-line "Require stack" to
+    // MODULE_NOT_FOUND messages, which buries the actual reason.
+    const reason = String(error?.message ?? error).split('\n')[0];
+    console.error(`Failed to load native dpp (${target}): ${reason}. Using WebAssembly instead Node-API`);
+    return null;
+  }
 }
-else {
-  exportedModule = require('./wasmCreation.cjs');
-}
-module.exports = exportedModule;
+
+module.exports = loadNative() ?? require('./wasmCreation.cjs');

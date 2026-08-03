@@ -1,4 +1,4 @@
-import type { AddressCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AddressCreditWithdrawalTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
 import { PoolingLike } from '../../types.js'
@@ -101,6 +101,18 @@ export class AddressCreditWithdrawalTransitionWASM {
 
   set inputWitness (value: AddressWitnessWASM[]) {
     this._rawAddressCreditWithdrawalTransition.inputWitness = value.map(witness => witness._rawWitness)
+  }
+
+  static estimateMinFee (
+    inputCount: number,
+    hasChangeOutput: boolean,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.AddressCreditWithdrawalTransitionNAPI.estimateMinFee(inputCount, hasChangeOutput, platformVersion))
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawAddressCreditWithdrawalTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

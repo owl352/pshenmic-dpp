@@ -1,4 +1,4 @@
-import type { DataContractCreateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { DataContractCreateTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { DataContractWASM } from '../DataContract.js'
 import { PlatformVersionLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
@@ -41,6 +41,10 @@ export class DataContractCreateTransitionWASM {
     return DataContractWASM.createFromRawInstance(
       this._rawDataContractCreateTransition.getDataContract(valueToDynamicValue(platformVersion), fullValidation)
     )
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawDataContractCreateTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {
