@@ -1,4 +1,4 @@
-import type { IdentityCreditTransferNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreditTransferNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue } from '../../utils.js'
@@ -77,6 +77,10 @@ export class IdentityCreditTransferWASM {
 
   getSignableBytes (): Uint8Array {
     return this._rawIdentityCreditTransfer.getSignableBytes()
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityCreditTransfer.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

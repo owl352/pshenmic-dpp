@@ -1,4 +1,4 @@
-import type { AddressFundsTransferTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AddressFundsTransferTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
 import { AddressWitnessWASM } from '../PlatformAddress/AddressWitness.js'
@@ -64,6 +64,18 @@ export class AddressFundsTransferTransitionWASM {
 
   set inputWitness (witness: AddressWitnessWASM[]) {
     this._rawAddressFundsTransferTransition.inputWitness = witness.map(w => w._rawWitness)
+  }
+
+  static estimateMinFee (
+    inputCount: number,
+    outputCount: number,
+    platformVersion?: PlatformVersionNAPI
+  ): bigint {
+    return BigInt(dppProvider.dpp.AddressFundsTransferTransitionNAPI.estimateMinFee(inputCount, outputCount, platformVersion))
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawAddressFundsTransferTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

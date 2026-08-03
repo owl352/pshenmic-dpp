@@ -1,14 +1,24 @@
 pub mod address_witness;
 
 use dpp::address_funds::PlatformAddress;
+use dpp::version::PlatformVersion;
 use napi::{Either, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{DynamicValue, PlatformAddressLikeNAPI},
+    dynamic_value::{BigIntString, DynamicValue, PlatformAddressLikeNAPI, TryToU64},
     enums::network::NetworkNAPI,
+    enums::platform_version::PlatformVersionNAPI,
     utils::WithJsError,
 };
+
+/// Bytes GroveDB charges when a platform address balance entry is created.
+///
+/// Not a dpp constant: it is the size the node's own fee regression suite pins down — a transfer
+/// to one address that is not in state is charged 6_075_000 credits of storage, which is this
+/// many bytes at `storage_disk_usage_credit_per_byte` (27_000). Paying an address that already
+/// exists only updates a sum item and adds no bytes.
+const PLATFORM_ADDRESS_STORAGE_BYTES: u64 = 225;
 
 #[derive(Clone)]
 #[napi(js_name = "PlatformAddressNAPI")]
@@ -58,6 +68,33 @@ impl PlatformAddressNAPI {
     #[napi(js_name = "bytes")]
     pub fn address(&self) -> Uint8Array {
         Uint8Array::from(self.0.to_bytes())
+    }
+
+    /// Storage fee GroveDB charges for creating balance entries for addresses that are not in
+    /// state yet.
+    ///
+    /// Minimum fees price a transition as if every one of its outputs pays a fresh address, but
+    /// the fee actually charged is metered: paying an address that already exists writes no new
+    /// bytes and costs (close to) nothing in storage, while every address created costs
+    /// `PLATFORM_ADDRESS_STORAGE_BYTES` at the disk rate. Add this to a processing estimate when
+    /// you know how many of your outputs are new.
+    #[napi(js_name = "estimateStorageFeeForNewAddresses")]
+    pub fn estimate_storage_fee_for_new_addresses(
+        js_address_count: u32,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> BigIntString {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        BigIntString::from_u64(
+            PLATFORM_ADDRESS_STORAGE_BYTES
+                .saturating_mul(
+                    platform_version
+                        .fee_version
+                        .storage
+                        .storage_disk_usage_credit_per_byte,
+                )
+                .saturating_mul(js_address_count as u64),
+        )
     }
 
     #[napi(js_name = "toAddress")]

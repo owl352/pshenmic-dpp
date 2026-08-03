@@ -1,4 +1,4 @@
-import type { IdentityCreditWithdrawalTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreditWithdrawalTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike, PoolingLike } from '../../types.js'
 import { CoreScriptWASM } from '../CoreScript.js'
@@ -125,6 +125,10 @@ export class IdentityCreditWithdrawalTransitionWASM {
     if (lock != null) {
       return AssetLockProofWASM.createFromRawInstance(lock)
     }
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityCreditWithdrawalTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

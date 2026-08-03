@@ -2,6 +2,7 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::batch_transition::accessors::DocumentsBatchTransitionAccessorsV0;
 use dpp::state_transition::batch_transition::batched_transition::BatchedTransition;
 use dpp::state_transition::batch_transition::batched_transition::document_transition::DocumentTransition;
@@ -13,12 +14,14 @@ use dpp::state_transition::{
     StateTransition, StateTransitionIdentitySigned, StateTransitionLike, StateTransitionOwned,
     StateTransitionSingleSigned,
 };
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::batch::batched_transition::BatchedTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::WithJsError;
@@ -205,6 +208,19 @@ impl BatchTransitionNAPI {
                 "Invalid state document_transition content",
             )),
         }
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

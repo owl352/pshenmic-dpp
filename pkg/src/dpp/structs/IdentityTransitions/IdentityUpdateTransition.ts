@@ -1,4 +1,4 @@
-import type { IdentityUpdateTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityUpdateTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js'
 import { dppProvider } from '../../provider.js'
@@ -112,6 +112,10 @@ export class IdentityUpdateTransitionWASM {
     } else {
       return undefined
     }
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityUpdateTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

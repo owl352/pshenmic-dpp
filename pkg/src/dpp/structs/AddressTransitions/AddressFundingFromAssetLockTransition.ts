@@ -1,4 +1,4 @@
-import type { AddressFundingFromAssetLockTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { AddressFundingFromAssetLockTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { InputAddressWASM } from './entities/InputAddress.js'
 import { AddressFundsFeeStrategyStepWASM } from './entities/AddressFundsFeeStrategyStep.js'
@@ -83,6 +83,10 @@ export class AddressFundingFromAssetLockTransitionWASM {
 
   set signature (value: Uint8Array) {
     this._rawAddressFundingFromAssetLockTransition.signature = value
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawAddressFundingFromAssetLockTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

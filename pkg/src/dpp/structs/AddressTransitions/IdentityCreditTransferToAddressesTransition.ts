@@ -1,4 +1,4 @@
-import type { IdentityCreditTransferToAddressesTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IdentityCreditTransferToAddressesTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { OutputAddressWASM } from './entities/OutputAddress.js'
 import { dppProvider } from '../../provider.js'
@@ -65,6 +65,10 @@ export class IdentityCreditTransferToAddressesTransitionWASM {
 
   set signature (sig: Uint8Array) {
     this._rawIdentityCreditTransferToAddressesTransition.signature = sig
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawIdentityCreditTransferToAddressesTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

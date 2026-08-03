@@ -1,4 +1,4 @@
-import type { BatchTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { BatchTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { BatchedTransitionWASM } from './BatchedTransition.js'
@@ -109,6 +109,10 @@ export class BatchTransitionWASM {
 
   setIdentityContractNonce (nonce: bigint): void {
     this._rawBatchTransition.setIdentityContractNonce(nonce.toString())
+  }
+
+  calculateMinRequiredFee (platformVersion?: PlatformVersionNAPI): bigint {
+    return BigInt(this._rawBatchTransition.calculateMinRequiredFee(platformVersion))
   }
 
   bytes (): Uint8Array {

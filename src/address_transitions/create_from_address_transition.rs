@@ -8,8 +8,10 @@ use dpp::state_transition::identity_create_from_addresses_transition::accessors:
 use dpp::state_transition::identity_create_from_addresses_transition::v0::IdentityCreateFromAddressesTransitionV0;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::{
-    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionWitnessSigned,
+    StateTransition, StateTransitionAddressesFeeStrategy, StateTransitionEstimatedFeeValidation,
+    StateTransitionWitnessSigned,
 };
+use dpp::version::PlatformVersion;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -17,6 +19,7 @@ use crate::address_transitions::entities::address_funds_fee_step::AddressFundsFe
 use crate::address_transitions::entities::input_address::InputAddressNAPI;
 use crate::address_transitions::entities::output_address::OutputAddressNAPI;
 use crate::dynamic_value::{BigIntString, TryToU64};
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI;
 use crate::platform_address::address_witness::AddressWitnessNAPI;
 use crate::state_transition::StateTransitionNAPI;
@@ -198,6 +201,19 @@ impl IdentityCreateFromAddressesTransitionNAPI {
             .collect();
 
         self.0.set_witnesses(input_witnesses);
+    }
+
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        self.0
+            .calculate_min_required_fee(&platform_version)
+            .map(BigIntString::from_u64)
+            .with_js_error()
     }
 
     #[napi(js_name = "bytes")]

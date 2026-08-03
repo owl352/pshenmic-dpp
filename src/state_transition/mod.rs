@@ -29,8 +29,10 @@ use dpp::state_transition::identity_update_transition::accessors::IdentityUpdate
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
 use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
 use dpp::state_transition::{
-    StateTransition, StateTransitionIdentitySigned, StateTransitionSigningOptions,
+    StateTransition, StateTransitionEstimatedFeeValidation, StateTransitionIdentitySigned,
+    StateTransitionSigningOptions,
 };
+use dpp::version::PlatformVersion;
 use napi::Either;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -38,6 +40,7 @@ use sha2::{Digest, Sha256};
 
 use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::key_type::KeyTypeNAPI;
+use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::enums::purpose::PurposeNAPI;
 use crate::enums::security_level::SecurityLevelNAPI;
 use crate::identifier::IdentifierNAPI;
@@ -296,6 +299,56 @@ impl StateTransitionNAPI {
     #[napi(js_name = "getActionName")]
     pub fn get_action_name(&self) -> String {
         self.0.name()
+    }
+
+    /// The minimum fee the network requires for this transition to be accepted.
+    ///
+    /// This is the same value the node checks the payer balance against before execution.
+    /// The fee actually charged is metered during execution and depends on state (for
+    /// example, paying an address that does not exist yet adds storage cost), so it can
+    /// be higher than this minimum.
+    #[napi(js_name = "calculateMinRequiredFee")]
+    pub fn calculate_min_required_fee(
+        &self,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<BigIntString, napi::Error> {
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        let fee = match &self.0 {
+            DataContractCreate(st) => st.calculate_min_required_fee(&platform_version),
+            DataContractUpdate(st) => st.calculate_min_required_fee(&platform_version),
+            Batch(st) => st.calculate_min_required_fee(&platform_version),
+            StateTransition::IdentityCreate(st) => st.calculate_min_required_fee(&platform_version),
+            IdentityTopUp(st) => st.calculate_min_required_fee(&platform_version),
+            IdentityUpdate(st) => st.calculate_min_required_fee(&platform_version),
+            IdentityCreditWithdrawal(st) => st.calculate_min_required_fee(&platform_version),
+            IdentityCreditTransfer(st) => st.calculate_min_required_fee(&platform_version),
+            MasternodeVote(st) => st.calculate_min_required_fee(&platform_version),
+            IdentityCreditTransferToAddresses(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            IdentityCreateFromAddresses(st) => st.calculate_min_required_fee(&platform_version),
+            IdentityTopUpFromAddresses(st) => st.calculate_min_required_fee(&platform_version),
+            AddressFundsTransfer(st) => st.calculate_min_required_fee(&platform_version),
+            AddressFundingFromAssetLock(st) => st.calculate_min_required_fee(&platform_version),
+            AddressCreditWithdrawal(st) => st.calculate_min_required_fee(&platform_version),
+            StateTransition::Shield(st) => st.calculate_min_required_fee(&platform_version),
+            StateTransition::ShieldedTransfer(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::Unshield(st) => st.calculate_min_required_fee(&platform_version),
+            StateTransition::ShieldFromAssetLock(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::ShieldedWithdrawal(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::IdentityCreateFromShieldedPool(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+        };
+
+        fee.map(BigIntString::from_u64).with_js_error()
     }
 
     #[napi(js_name = "getActionType")]
