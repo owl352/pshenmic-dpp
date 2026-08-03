@@ -13,7 +13,7 @@ function isMusl() {
     return false;
   }
 }
-function getBinaryPath() {
+function getTarget() {
   const platform = process.platform;
   const arch = process.arch;
   let target = '';
@@ -43,7 +43,7 @@ function getBinaryPath() {
     console.error(`Unsupported platform: ${platform} ${arch}. Using WebAssembly instead Node-API`);
     return null;
   }
-  return path.join('native', target, 'pshenmic_dpp.node');
+  return target;
 }
 
 // The native addon can be unusable even on a supported platform: the binary may
@@ -52,20 +52,20 @@ function getBinaryPath() {
 // should be fatal — WebAssembly is a complete fallback, so any load failure
 // degrades to it instead of taking the whole import down.
 function loadNative() {
-  const binaryPath = getBinaryPath();
-  if (binaryPath === null) {
+  const target = getTarget();
+  if (target === null) {
     return null;
   }
   try {
-    const nativeModule = require(`./${binaryPath}`);
-    console.log(`running on native dpp (${binaryPath})`);
+    const nativeModule = require(`./${path.join('native', target, 'pshenmic_dpp.node')}`);
+    console.log(`running on native dpp (${target})`);
     return nativeModule;
   }
   catch (error) {
     // Only the first line: node appends a multi-line "Require stack" to
     // MODULE_NOT_FOUND messages, which buries the actual reason.
     const reason = String(error?.message ?? error).split('\n')[0];
-    console.error(`Failed to load native dpp (${binaryPath}): ${reason}. Using WebAssembly instead Node-API`);
+    console.error(`Failed to load native dpp (${target}): ${reason}. Using WebAssembly instead Node-API`);
     return null;
   }
 }
