@@ -1,3 +1,4 @@
+pub mod address_funds;
 pub mod contested;
 pub mod contract;
 pub mod document;

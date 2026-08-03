@@ -559,3 +559,108 @@ export interface VerifiedShieldedNullifiers {
   rootHash: Uint8Array
   nullifiers: VerifiedShieldedNullifier[]
 }
+
+export type AddressBalanceOperation = 'setCredits' | 'addToCredits'
+
+export interface AddressBalanceChange {
+  address: PlatformAddressWASM
+  /** `setCredits` means `credits` is the new balance, `addToCredits` means it is the delta. */
+  operation: AddressBalanceOperation
+  credits: bigint
+}
+
+export interface BlockAddressBalanceChanges {
+  blockHeight: bigint
+  changes: AddressBalanceChange[]
+}
+
+export interface VerifiedRecentAddressBalanceChanges {
+  rootHash: Uint8Array
+  blocks: BlockAddressBalanceChanges[]
+}
+
+export type CompactedAddressBalanceOperation = 'setCredits' | 'addToCreditsOperations'
+
+export interface BlockHeightCredit {
+  blockHeight: bigint
+  credits: bigint
+}
+
+export interface CompactedAddressBalanceChange {
+  address: PlatformAddressWASM
+  operation: CompactedAddressBalanceOperation
+  /** Populated when `operation` is `setCredits`. */
+  setCredits?: bigint
+  /** Populated when `operation` is `addToCreditsOperations`, otherwise empty. */
+  addToCreditsOperations: BlockHeightCredit[]
+}
+
+export interface CompactedBlockAddressBalanceChanges {
+  startBlockHeight: bigint
+  endBlockHeight: bigint
+  changes: CompactedAddressBalanceChange[]
+}
+
+export interface VerifiedRecentCompactedAddressBalanceChanges {
+  rootHash: Uint8Array
+  ranges: CompactedBlockAddressBalanceChanges[]
+}
+
+export type GroveElementType =
+  | 'Item' | 'ItemWithSumItem' | 'SumItem'
+  | 'Reference' | 'ReferenceWithSumItem'
+  | 'Tree' | 'SumTree' | 'BigSumTree' | 'ProvableSumTree'
+  | 'CountTree' | 'ProvableCountTree'
+  | 'CountSumTree' | 'ProvableCountSumTree' | 'ProvableCountProvableSumTree'
+  | 'CommitmentTree' | 'MmrTree' | 'BulkAppendTree' | 'DenseAppendOnlyFixedSizeTree'
+
+export type GroveElementWrapper = 'NonCounted' | 'NotSummed' | 'NotCountedOrSummed'
+
+export interface GroveElement {
+  type: GroveElementType
+  /** Set when the element opts out of its parent's aggregates; `type` still describes the wrapped element. */
+  wrapper?: GroveElementWrapper
+  /** An item's payload, or a subtree's root key. Absent for empty subtrees. */
+  value?: Uint8Array
+  sum?: bigint
+  count?: bigint
+}
+
+export interface GroveElementEntry {
+  key: Uint8Array
+  element: GroveElement
+}
+
+export interface GroveLeafInfo {
+  key: Uint8Array
+  /** Pass as `expectedRootHash` when verifying this key's branch proof. */
+  hash: Uint8Array
+  count?: bigint
+}
+
+export interface GroveAncestor {
+  levelsUp: number
+  count: bigint
+  key: Uint8Array
+  hash: Uint8Array
+}
+
+export interface VerifiedAddressesTrunkState {
+  rootHash: Uint8Array
+  elements: GroveElementEntry[]
+  /** Subtrees the trunk stops at. Empty when the whole tree fit in the trunk. */
+  leafKeys: GroveLeafInfo[]
+  chunkDepths: number[]
+  maxTreeDepth: number
+  /** Which truncated subtree would hold `key`, or undefined if it is already in `elements`. */
+  traceKeyToLeaf: (key: Uint8Array) => GroveLeafInfo | undefined
+  getAncestor: (leafKey: Uint8Array, minPrivacyTreeCount: bigint) => GroveAncestor | undefined
+}
+
+export interface VerifiedAddressesBranchState {
+  elements: GroveElementEntry[]
+  leafKeys: GroveLeafInfo[]
+  branchRootHash: Uint8Array
+  traceKeyToLeaf: (key: Uint8Array) => GroveLeafInfo | undefined
+  getAncestor: (leafKey: Uint8Array, minPrivacyTreeCount: bigint) => GroveAncestor | undefined
+}
