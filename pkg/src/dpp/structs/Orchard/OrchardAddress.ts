@@ -1,7 +1,9 @@
 import type { OrchardAddressNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
-import { NetworkLike } from '../../types.js'
+import { NetworkLike, ScopeLike } from '../../types.js'
 import { valueToDynamicValue } from '../../utils.js'
+import { FullViewingKeyWASM } from './FullViewingKey.js'
+import { IncomingViewingKeyWASM } from './IncomingViewingKey.js'
 
 export class OrchardAddressWASM {
   /** @private **/
@@ -28,9 +30,55 @@ export class OrchardAddressWASM {
   }
 
   /** Derives the address from a BIP-39 seed via ZIP-32 (m/32'/coinType'/account'). */
-  static fromSeed (seed: Uint8Array, coinType: number, account: number, diversifierIndex?: number): OrchardAddressWASM {
+  static fromSeed (
+    seed: Uint8Array,
+    coinType: number,
+    account: number,
+    diversifierIndex?: number,
+    scope?: ScopeLike
+  ): OrchardAddressWASM {
     return OrchardAddressWASM.createFromRawInstance(
-      dppProvider.dpp.OrchardAddressNAPI.fromSeed(seed, coinType, account, diversifierIndex)
+      dppProvider.dpp.OrchardAddressNAPI.fromSeed(
+        seed,
+        coinType,
+        account,
+        diversifierIndex,
+        scope == null ? undefined : valueToDynamicValue(scope)
+      )
+    )
+  }
+
+  /**
+   * Derives the address at `diversifierIndex` (default 0) from a full viewing
+   * key, for `scope` (default External).
+   */
+  static fromFullViewingKey (
+    fullViewingKey: FullViewingKeyWASM,
+    diversifierIndex?: number,
+    scope?: ScopeLike
+  ): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.dpp.OrchardAddressNAPI.fromFullViewingKey(
+        fullViewingKey._rawFullViewingKey,
+        diversifierIndex,
+        scope == null ? undefined : valueToDynamicValue(scope)
+      )
+    )
+  }
+
+  /**
+   * Derives the address at `diversifierIndex` (default 0) from an incoming
+   * viewing key. The scope is fixed by the key itself.
+   */
+  static fromIncomingViewingKey (
+    incomingViewingKey: IncomingViewingKeyWASM,
+    diversifierIndex?: number
+  ): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.dpp.OrchardAddressNAPI.fromIncomingViewingKey(
+        incomingViewingKey._rawIncomingViewingKey,
+        diversifierIndex
+      )
     )
   }
 

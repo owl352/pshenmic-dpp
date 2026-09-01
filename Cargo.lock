@@ -2304,7 +2304,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "2.0.0-dev.28"
+version = "2.0.0-dev.29"
 dependencies = [
  "async-trait",
  "dpp",
@@ -2317,6 +2317,7 @@ dependencies = [
  "napi",
  "napi-build",
  "napi-derive",
+ "rand",
  "serde_json",
  "sha2",
  "zip32",

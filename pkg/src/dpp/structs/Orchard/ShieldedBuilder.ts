@@ -6,6 +6,7 @@ import { OrchardAddressWASM } from './OrchardAddress.js'
 import { ShieldedMemoWASM } from './ShieldedMemo.js'
 import { SpendableNoteWASM } from './SpendableNote.js'
 import { ShieldedWithdrawalResultWASM } from './ShieldedWithdrawalResult.js'
+import { ShieldedOutputWASM } from './ShieldedOutput.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
 import { PrivateKeyWASM } from '../PrivateKey.js'
 import { CoreScriptWASM } from '../CoreScript.js'
@@ -190,6 +191,45 @@ export class ShieldedBuilderWASM {
         account,
         anchor,
         memo._rawShieldedMemo,
+        platformVersion
+      )
+    )
+  }
+
+  /**
+   * Pool -> pool, paying several Orchard addresses in one proof.
+   *
+   * The spend side matches `shieldedTransfer` — every note must belong to the
+   * `seed`/`coinType`/`account` this call derives its spend authority from, and
+   * all must be witnessed against the same `anchor`. The output side is a list,
+   * each entry carrying its own amount and memo, and the leftover always goes
+   * to `changeAddress` (a zero-value change note is still written, which keeps
+   * the fee predictable before the change amount is known).
+   *
+   * Consensus prices the fee off the bundle's action count, which Orchard sets
+   * to `max(spends, outputs + 1, 2)` and caps at 16 — so a fan-out of 15
+   * recipients is the ceiling, and each extra action adds proving time. Passing
+   * more throws before proving rather than after.
+   */
+  async shieldedTransferMulti (
+    spends: SpendableNoteWASM[],
+    outputs: ShieldedOutputWASM[],
+    changeAddress: OrchardAddressWASM,
+    seed: Uint8Array,
+    coinType: number,
+    account: number,
+    anchor: Uint8Array,
+    platformVersion?: PlatformVersionNAPI
+  ): Promise<ShieldedWithdrawalResultWASM> {
+    return ShieldedWithdrawalResultWASM.createFromRawInstance(
+      await this._rawShieldedBuilder.shieldedTransferMulti(
+        spends.map(s => s._rawSpendableNote),
+        outputs.map(o => o._rawShieldedOutput),
+        changeAddress._rawOrchardAddress,
+        seed,
+        coinType,
+        account,
+        anchor,
         platformVersion
       )
     )

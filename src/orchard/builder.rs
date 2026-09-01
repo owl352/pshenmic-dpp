@@ -15,15 +15,12 @@ use dpp::{
     state_transition::{StateTransition, public_key_in_creation::IdentityPublicKeyInCreation},
     version::PlatformVersion,
 };
-use grovedb_commitment_tree::{
-    Anchor, FullViewingKey, OutgoingViewingKey, SpendAuthorizingKey, SpendingKey,
-};
+use grovedb_commitment_tree::{Anchor, FullViewingKey, OutgoingViewingKey, SpendAuthorizingKey};
 use napi::{
     Either, Env,
     bindgen_prelude::{PromiseRaw, Uint8Array},
 };
 use napi_derive::napi;
-use zip32::AccountId;
 
 use crate::{
     address_transitions::entities::{
@@ -36,9 +33,11 @@ use crate::{
     identifier::IdentifierNAPI,
     identity_public_key_in_creation::IdentityPublicKeyInCreationNAPI,
     orchard::{
-        memo::ShieldedMemoNAPI, orchard_address::OrchardAddressNAPI, proover::OrchardProverNAPI,
-        serialized_action::SerializedActionNAPI, signer::AddressKeySigner,
-        signer::IdentityKeySigner, spendable_note::SpendableNoteNAPI,
+        memo::ShieldedMemoNAPI, multi_transfer::build_multi_output_shielded_transfer,
+        orchard_address::OrchardAddressNAPI, proover::OrchardProverNAPI,
+        serialized_action::SerializedActionNAPI, shielded_output::ShieldedOutputNAPI,
+        signer::AddressKeySigner, signer::IdentityKeySigner, spendable_note::SpendableNoteNAPI,
+        viewing_key::spending_key_from_seed,
     },
     platform_address::PlatformAddressNAPI,
     private_key::PrivateKeyNAPI,
@@ -54,19 +53,7 @@ fn spend_authority_from_seed(
     coin_type: u32,
     account: u32,
 ) -> Result<(FullViewingKey, SpendAuthorizingKey), napi::Error> {
-    let account_id = AccountId::try_from(account).map_err(|_| {
-        napi::Error::new(
-            napi::Status::InvalidArg,
-            "account must be a non-hardened index (< 2^31)",
-        )
-    })?;
-
-    let spending_key = SpendingKey::from_zip32_seed(seed, coin_type, account_id).map_err(|e| {
-        napi::Error::new(
-            napi::Status::InvalidArg,
-            format!("failed to derive Orchard spending key from seed: {e:?}"),
-        )
-    })?;
+    let spending_key = spending_key_from_seed(seed, coin_type, account)?;
 
     Ok((
         FullViewingKey::from(&spending_key),
@@ -402,6 +389,84 @@ impl ShieldedBuilderNAPI {
                 &platform_version,
             )
             .with_js_error()?;
+
+            Ok(ShieldedWithdrawalResultNAPI {
+                state_transition,
+                fee,
+            })
+        })
+    }
+
+    /// Builds a `ShieldedTransfer` that pays many Orchard addresses at once
+    /// (shielded pool -> shielded pool).
+    ///
+    /// Same spend side as [`Self::shielded_transfer`] — one account's notes, one
+    /// anchor — but the output side is a list instead of a single recipient, so
+    /// one proof and one fee cover the whole fan-out. Consensus never sees the
+    /// output count (outputs are ciphertext inside the actions), so this needs no
+    /// protocol change; what it does see is `actions.len()`, which Orchard sets to
+    /// `max(spends, outputs + change, 2)` and prices the fee from.
+    ///
+    /// - `spends` - notes to spend with their Merkle paths
+    /// - `outputs` - recipients, each with its own amount and memo (at least one)
+    /// - `change_address` - Orchard address that receives the shielded change note;
+    ///   it is always written, even at zero value, so the action count — and with
+    ///   it the fee — is fixed before the change amount is known
+    /// - `seed` / `coin_type` / `account` - BIP-39 seed + ZIP-32 path for the spend authority
+    /// - `anchor` - 32-byte Sinsemilla root the Merkle paths are witnessed against
+    /// - `platform_version` - protocol version (defaults to the latest)
+    ///
+    /// Returns the proven state transition plus the fixed shielded fee (credits).
+    /// Errors before proving if the bundle would exceed the consensus action cap,
+    /// rather than after a multi-second proof the node would reject.
+    #[napi(js_name = "shieldedTransferMulti")]
+    #[allow(clippy::too_many_arguments)]
+    pub fn shielded_transfer_multi<'env>(
+        &self,
+        env: &'env Env,
+        js_spends: Vec<&SpendableNoteNAPI>,
+        js_outputs: Vec<&ShieldedOutputNAPI>,
+        js_change_address: &OrchardAddressNAPI,
+        js_seed: Uint8Array,
+        js_coin_type: u32,
+        js_account: u32,
+        js_anchor: Uint8Array,
+        js_platform_version: Option<PlatformVersionNAPI>,
+    ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
+        let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
+
+        let outputs: Vec<_> = js_outputs.iter().map(|o| o.to_parts()).collect();
+
+        let change_address: OrchardAddress = js_change_address.into();
+
+        let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
+
+        if js_anchor.len() != 32 {
+            return Err(napi::Error::new(
+                napi::Status::InvalidArg,
+                "anchor must be 32 bytes length",
+            ));
+        }
+        let anchor_bytes: [u8; 32] = js_anchor.to_vec().as_slice().try_into().unwrap();
+        let anchor = Option::from(Anchor::from_bytes(anchor_bytes)).ok_or_else(|| {
+            napi::Error::new(napi::Status::InvalidArg, "anchor is not a valid value")
+        })?;
+
+        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+
+        let prover = self.proover.shared();
+
+        env.spawn_future(async move {
+            let (state_transition, fee) = build_multi_output_shielded_transfer(
+                spends,
+                outputs,
+                &change_address,
+                &fvk,
+                &ask,
+                anchor,
+                &prover,
+                &platform_version,
+            )?;
 
             Ok(ShieldedWithdrawalResultNAPI {
                 state_transition,
