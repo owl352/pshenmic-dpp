@@ -1,15 +1,16 @@
 use dpp::shielded::SerializedAction;
 use grovedb_commitment_tree::DashMemo;
 use grovedb_commitment_tree::{
-    COMPACT_NOTE_SIZE, CompactAction, EphemeralKeyBytes, ExtractedNoteCommitment, FullViewingKey,
-    Nullifier, OrchardDomain, PreparedIncomingViewingKey, Scope, SpendingKey,
-    try_compact_note_decryption,
+    COMPACT_NOTE_SIZE, CompactAction, EphemeralKeyBytes, ExtractedNoteCommitment, Nullifier,
+    OrchardDomain, PreparedIncomingViewingKey, Scope, try_compact_note_decryption,
 };
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
-use zip32::AccountId;
 
-use crate::orchard::{note::NoteNAPI, serialized_action::SerializedActionNAPI};
+use crate::orchard::{
+    note::NoteNAPI, serialized_action::SerializedActionNAPI,
+    viewing_key::full_viewing_key_from_seed,
+};
 
 /// A note recovered from a shielded action by trial-decryption, together with
 /// the index of the action it was found in (its on-wire / tree-leaf order
@@ -56,22 +57,7 @@ pub fn recover_notes(
     js_coin_type: u32,
     js_account: u32,
 ) -> Result<Vec<RecoveredNoteNAPI>, napi::Error> {
-    let account_id = AccountId::try_from(js_account).map_err(|_| {
-        napi::Error::new(
-            napi::Status::InvalidArg,
-            "account must be a non-hardened index (< 2^31)",
-        )
-    })?;
-
-    let spending_key = SpendingKey::from_zip32_seed(js_seed.as_ref(), js_coin_type, account_id)
-        .map_err(|e| {
-            napi::Error::new(
-                napi::Status::InvalidArg,
-                format!("failed to derive Orchard spending key from seed: {e:?}"),
-            )
-        })?;
-
-    let fvk = FullViewingKey::from(&spending_key);
+    let fvk = full_viewing_key_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
     let ivk = PreparedIncomingViewingKey::new(&fvk.to_ivk(Scope::External));
 
     let mut recovered = Vec::new();

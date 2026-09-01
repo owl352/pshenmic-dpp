@@ -1,6 +1,8 @@
 import {
   ShieldedMemoWASM,
   OrchardAddressWASM,
+  FullViewingKeyWASM,
+  IncomingViewingKeyWASM,
   orchardOvkFromSeed,
   NoteWASM,
   MerklePathWASM,
@@ -167,6 +169,180 @@ describe('OrchardAddress', function () {
       const ovk = orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
 
       expect(ovk.length).toEqual(32)
+    })
+  })
+
+  describe('fromFullViewingKey', function () {
+    test('should match the address derived from the same seed', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(OrchardAddressWASM.fromFullViewingKey(fvk).bytes())
+        .toEqual(OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+    })
+
+    test('should derive a different address per diversifier index', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(OrchardAddressWASM.fromFullViewingKey(fvk, 1).bytes())
+        .not.toEqual(OrchardAddressWASM.fromFullViewingKey(fvk, 0).bytes())
+    })
+
+    test('should derive a different address per scope', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'internal').bytes())
+        .not.toEqual(OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'external').bytes())
+    })
+
+    test('should reject an unknown scope', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(() => OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'nope' as any)).toThrow()
+    })
+  })
+
+  describe('fromIncomingViewingKey', function () {
+    test('should match the address derived from the same seed', function () {
+      const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(OrchardAddressWASM.fromIncomingViewingKey(ivk).bytes())
+        .toEqual(OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+    })
+
+    test('should derive a different address per diversifier index', function () {
+      const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(OrchardAddressWASM.fromIncomingViewingKey(ivk, 7).bytes())
+        .not.toEqual(OrchardAddressWASM.fromIncomingViewingKey(ivk, 0).bytes())
+    })
+  })
+
+  describe('fromSeed scope', function () {
+    test('should derive the internal-scope address', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT, 0, 'internal').bytes())
+        .toEqual(OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'internal').bytes())
+    })
+  })
+})
+
+describe('FullViewingKey', function () {
+  describe('fromSeed', function () {
+    test('should derive a 96-byte key deterministically', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(fvk).toBeInstanceOf(FullViewingKeyWASM)
+      expect(fvk.bytes().length).toEqual(96)
+      expect(fvk.bytes()).toEqual(FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+    })
+
+    test('should differ per account', function () {
+      expect(FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, 1).bytes())
+        .not.toEqual(FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, 0).bytes())
+    })
+
+    test('should reject a hardened account index', function () {
+      expect(() => FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, 0x80000000)).toThrow()
+    })
+  })
+
+  describe('serialization', function () {
+    test('should roundtrip through bytes', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(FullViewingKeyWASM.fromBytes(fvk.bytes()).bytes()).toEqual(fvk.bytes())
+    })
+
+    test('should reject bytes of the wrong length', function () {
+      expect(() => FullViewingKeyWASM.fromBytes(new Uint8Array(64))).toThrow()
+    })
+
+    test('should reject bytes that are not a valid key', function () {
+      expect(() => FullViewingKeyWASM.fromBytes(new Uint8Array(96).fill(0xff))).toThrow()
+    })
+  })
+
+  describe('toOvk', function () {
+    test('should match orchardOvkFromSeed for the external scope', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(fvk.toOvk()).toEqual(orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT))
+      expect(fvk.toOvk('internal')).not.toEqual(fvk.toOvk('external'))
+    })
+  })
+
+  describe('toIvk', function () {
+    test('should derive the same key as IncomingViewingKey.fromSeed', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(fvk.toIvk().bytes())
+        .toEqual(IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+      expect(fvk.toIvk('internal').bytes()).not.toEqual(fvk.toIvk('external').bytes())
+    })
+  })
+
+  describe('scopeForAddress', function () {
+    test('should report the scope of its own addresses', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(fvk.scopeForAddress(fvk.address(0, 'external'))).toEqual('External')
+      expect(fvk.scopeForAddress(fvk.address(0, 'internal'))).toEqual('Internal')
+    })
+
+    test('should return null for a foreign address', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const other = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, 1)
+
+      expect(fvk.scopeForAddress(other.address())).toBeNull()
+    })
+  })
+})
+
+describe('IncomingViewingKey', function () {
+  describe('fromSeed', function () {
+    test('should derive a 64-byte key deterministically', function () {
+      const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(ivk).toBeInstanceOf(IncomingViewingKeyWASM)
+      expect(ivk.bytes().length).toEqual(64)
+      expect(ivk.bytes()).toEqual(IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+    })
+  })
+
+  describe('fromFullViewingKey', function () {
+    test('should match the key derived from the same seed', function () {
+      const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(IncomingViewingKeyWASM.fromFullViewingKey(fvk).bytes())
+        .toEqual(IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+    })
+  })
+
+  describe('serialization', function () {
+    test('should roundtrip through bytes', function () {
+      const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(IncomingViewingKeyWASM.fromBytes(ivk.bytes()).bytes()).toEqual(ivk.bytes())
+    })
+
+    test('should reject bytes of the wrong length', function () {
+      expect(() => IncomingViewingKeyWASM.fromBytes(new Uint8Array(96))).toThrow()
+    })
+  })
+
+  describe('diversifierIndex', function () {
+    test('should recover the index of its own address', function () {
+      const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+
+      expect(ivk.diversifierIndex(ivk.address(5))).toEqual(5)
+    })
+
+    test('should return null for a foreign address', function () {
+      const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const other = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, 1)
+
+      expect(ivk.diversifierIndex(other.address())).toBeNull()
     })
   })
 })

@@ -10,5 +10,6 @@ export {
   AssetLockProofTypeNAPI as AssetLockProofType,
   PoolingNAPI as PoolingWASM,
   GasFeesPaidByNAPI as GasFeesPaidByWASM,
-  VoteStateResultTypeNAPI as VoteStateResultType
+  VoteStateResultTypeNAPI as VoteStateResultType,
+  ScopeNAPI as ScopeWASM
 } from '../../binaries/bindingsTypes.js'

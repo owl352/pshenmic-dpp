@@ -31,6 +31,10 @@ zip32 = "=0.2.1"
 indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"] }
 napi = {version = "3.9.1", features = ["napi3", "serde-json", "async"], default-features = false}
 napi-derive = "3.5.6"
+# Multi-output shielded transfers rebuild the Orchard prove/sign pipeline
+# locally (dpp's helper is `pub(crate)`), which needs an `OsRng` from the same
+# rand version orchard is built against.
+rand = "0.8.5"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 hex = "0.4.3"
 sha2 = "0.10.8"

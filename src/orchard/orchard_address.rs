@@ -1,35 +1,16 @@
 use dpp::address_funds::{ORCHARD_ADDRESS_SIZE, OrchardAddress};
-use grovedb_commitment_tree::{FullViewingKey, Scope, SpendingKey};
+use grovedb_commitment_tree::Scope;
 use napi::{Either, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
-use zip32::AccountId;
 
-use crate::{dynamic_value::DynamicValue, enums::network::NetworkNAPI, utils::WithJsError};
-
-/// Derives an Orchard `FullViewingKey` from a BIP-39 seed via ZIP-32
-/// (`m/32'/coin_type'/account'`, all hardened). `coin_type` is SLIP-44
-/// (Dash = 5, testnets = 1).
-fn full_viewing_key_from_seed(
-    seed: &[u8],
-    coin_type: u32,
-    account: u32,
-) -> Result<FullViewingKey, napi::Error> {
-    let account_id = AccountId::try_from(account).map_err(|_| {
-        napi::Error::new(
-            napi::Status::InvalidArg,
-            "account must be a non-hardened index (< 2^31)",
-        )
-    })?;
-
-    let spending_key = SpendingKey::from_zip32_seed(seed, coin_type, account_id).map_err(|e| {
-        napi::Error::new(
-            napi::Status::InvalidArg,
-            format!("failed to derive Orchard spending key from seed: {e:?}"),
-        )
-    })?;
-
-    Ok(FullViewingKey::from(&spending_key))
-}
+use crate::{
+    dynamic_value::DynamicValue,
+    enums::{network::NetworkNAPI, scope::scope_or_external},
+    orchard::viewing_key::{
+        FullViewingKeyNAPI, IncomingViewingKeyNAPI, full_viewing_key_from_seed,
+    },
+    utils::WithJsError,
+};
 
 #[derive(Clone)]
 #[napi(js_name = "OrchardAddressNAPI")]
@@ -109,21 +90,42 @@ impl OrchardAddressNAPI {
 
     /// Derives the Orchard payment address from a BIP-39 seed via ZIP-32
     /// (`m/32'/coin_type'/account'`). `diversifier_index` selects the diversified
-    /// address (default 0). `coin_type` is SLIP-44 (Dash = 5, testnets = 1).
+    /// address (default 0), `scope` the ZIP-32 scope (default `External`).
+    /// `coin_type` is SLIP-44 (Dash = 5, testnets = 1).
     #[napi(js_name = "fromSeed")]
     pub fn from_seed(
         seed: Uint8Array,
         coin_type: u32,
         account: u32,
         diversifier_index: Option<u32>,
+        js_scope: Option<&DynamicValue>,
     ) -> Result<Self, napi::Error> {
         let fvk = full_viewing_key_from_seed(seed.as_ref(), coin_type, account)?;
-        let payment_address = fvk.address_at(diversifier_index.unwrap_or(0), Scope::External);
+        let payment_address =
+            fvk.address_at(diversifier_index.unwrap_or(0), scope_or_external(js_scope)?);
 
-        Ok(OrchardAddressNAPI(
-            OrchardAddress::from_raw_bytes(&payment_address.to_raw_address_bytes())
-                .with_js_error()?,
-        ))
+        Ok(OrchardAddressNAPI(OrchardAddress::from(payment_address)))
+    }
+
+    /// Derives the payment address at `diversifier_index` (default 0) from a
+    /// full viewing key, for the given `scope` (default `External`).
+    #[napi(js_name = "fromFullViewingKey")]
+    pub fn from_full_viewing_key(
+        js_full_viewing_key: &FullViewingKeyNAPI,
+        diversifier_index: Option<u32>,
+        js_scope: Option<&DynamicValue>,
+    ) -> Result<Self, napi::Error> {
+        js_full_viewing_key.address(diversifier_index, js_scope)
+    }
+
+    /// Derives the payment address at `diversifier_index` (default 0) from an
+    /// incoming viewing key. The scope is fixed by the key itself.
+    #[napi(js_name = "fromIncomingViewingKey")]
+    pub fn from_incoming_viewing_key(
+        js_incoming_viewing_key: &IncomingViewingKeyNAPI,
+        diversifier_index: Option<u32>,
+    ) -> Result<Self, napi::Error> {
+        js_incoming_viewing_key.address(diversifier_index)
     }
 
     #[napi(js_name = "bytes")]

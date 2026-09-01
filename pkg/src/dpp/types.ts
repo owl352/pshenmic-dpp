@@ -5,6 +5,7 @@ import {
   NetworkWASM,
   PlatformVersionWASM, PoolingWASM,
   Purpose,
+  ScopeWASM,
   SecurityLevel,
   TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType
 } from './enums.js'
@@ -58,6 +59,7 @@ export type TokenEmergencyActionLike = TokenEmergencyActionWASM | keyof typeof T
 export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType | Lowercase<keyof typeof AssetLockProofType>
 export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>
 export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>
+export type ScopeLike = ScopeWASM | keyof typeof ScopeWASM | Lowercase<keyof typeof ScopeWASM>
 
 export type AddressWitnessP2PKH = protocol.AddressWitnessP2pkhNAPI
 export type AddressWitnessP2SH = protocol.AddressWitnessP2shNAPI
