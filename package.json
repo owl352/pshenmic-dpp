@@ -68,6 +68,6 @@
     "@emnapi/core": "1.9.0",
     "@emnapi/runtime": "1.9.0",
     "@tybys/wasm-util": "^0.10.1",
-    "fflate": "^0.8.2"
+    "fflate": "^0.8.3"
   }
 }
