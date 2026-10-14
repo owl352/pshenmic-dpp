@@ -1,86 +1,86 @@
-## NOTE: v2.0.0-dev under active development and until the first stable release, it may not correspond to previous versions in terms of functionality.
-## At this moment supported platforms: WebAssembly, aarch64-apple-ios-sim, x86_64-linux-android
 ___
 # PSHENMIC-DPP
 
 ## General
-Pshenmic-dpp is package with rust bindings for JS
+Pshenmic-dpp is a package with Rust bindings for JS.
 
-That module uses [rs-dpp](https://github.com/dashpay/platform) and creates bindings for JavaScript.
-Each structure from rs-dpp is represented by a separate package, so you can build not the whole module, but only a part of it.
+The module uses [rs-dpp](https://github.com/dashpay/platform) (Dash Platform `v4.1.0`) and exposes its structures,
+state transitions and proof verification to JavaScript/TypeScript via [napi-rs](https://napi.rs).
+The same API is available on WebAssembly, Node.js native addons and React Native.
 
 ___
 ## How To Install
 `yarn add pshenmic-dpp`
 
+or
+
+`npm i pshenmic-dpp`
+
+___
+## Supported Platforms
+
+| Entry point | Environment | Targets |
+|---|---|---|
+| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1-threads` (via emnapi) |
+| `pshenmic-dpp/native` (`node`) | Node.js | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl`, `x86_64-apple-darwin`, `aarch64-apple-darwin`, `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc` |
+| `react-native` | React Native (via `react-native-node-api`) | `aarch64-linux-android`, `x86_64-linux-android`, `aarch64-apple-ios-sim` |
+
+The root import `pshenmic-dpp` resolves to the right build automatically through the `exports` conditions.
+
+```ts
+import { IdentifierWASM } from 'pshenmic-dpp'
+
+const identifier = IdentifierWASM.fromBase58('ckBqfQe7LU7vwrwXopyCB4n5phZShjA16BGhNGpsD5U')
+console.log(identifier.hex())
+```
+
 ___
 ## Current features
 
-**At this moment available structs:**
-- `DocumentWASM`
-- `BatchWASM`
-- `DocumentsBaseTransitionWASM`
-- `TokenBaseTransitionWASM`
-- `TokenPricingScheduleWASM`
-- `TokenTransitionWASM`
-- `BatchedTransitionWASM`
-- `TokenConfigurationChangeItemWASM`
-- `TokenConfigurationWASM`
-- `ActionTakerWASM`
-- `AuthorizedActionTakersWASM`
-- `ChangeControlRulesWASM`
-- `TokenConfigurationConventionWASM`
-- `DistributionFunctionWASM`
-- `TokenDistributionRecipientWASM`
-- `TokenDistributionRulesWASM`
-- distribution structs:
-  - `DistributionFixedAmountWASM`
-  - `DistributionRandomWASM`
-  - `DistributionStepDecreasingAmountWASM`
-  - `DistributionLinearWASM`
-  - `DistributionPolynomialWASM`
-  - `DistributionExponentialWASM`
-  - `DistributionLogarithmicWASM`
-  - `DistributionInvertedLogarithmicWASM`
-- `GroupWASM`
-- `TokenKeepsHistoryRulesWASM`
-- `TokenConfigurationLocalizationWASM`
-- `TokenMarketplaceRulesWASM`
-- `TokenPerpetualDistributionWASM`
-- `TokenPreProgrammedDistributionWASM`
-- `RewardDistributionTypeWASM`
-- `TokenTradeModeWASM`
+### Core
+- `IdentifierWASM`
+- `IdentityWASM`
+- `PartialIdentityWASM`
+- `IdentityPublicKeyWASM`
+- `IdentityPublicKeyInCreationWASM`
+- `PrivateKeyWASM`
+- `PublicKeyWASM`
+- `CoreScriptWASM`
+- `ContractBoundsWASM`
+- `ConsensusErrorWASM`
+- `StateTransitionWASM`
 - `GroupStateTransitionInfoWASM`
-- `DocumentsTransitionWASM`
-- `PrefundedVotingBalanceWASM`
 - `PrivateEncryptedNoteWASM`
 - `SharedEncryptedNoteWASM`
-- DocumentsTransitions:
-  - `DocuemntCreateTransitionWASM`
-  - `DocuemntDeleteTransitionWASM`
-  - `DocuemntPurchaseTransitionWASM`
-  - `DocuemntReplaceTransitionWASM`
-  - `DocumentTransferTransitionWASM`
-  - `DocumentUpdatePriceTransitionWASM`
-- Tokens Transitions:
-  - `TokenConfigUpdateTransitionWASM`
-  - `TokenDirectPurchaseTransitionWASM`
-  - `TokenSetPriceForDirectPurchaseTransitionWASM`
-  - `TokenBurnTransitionWASM`
-  - `TokenClaimTransitionWASM`
-  - `TokenDestroyFrozenFundsTransitionWASM`
-  - `TokenEmergencyActionTransitionWASM`
-  - `TokenFreezeTransitionWASM`
-  - `TokenMintTransitionWASM`
-  - `TokenTransferTransitionWASM`
-  - `TokenUnFreezeTransitionWASM`
-- `IdentityPublicKeyWASM`
-- Identity Transitions:
-  - `IdentityCreateTransitionWASM`
-  - `IdentityCreditWithdrawalTransitionWASM`
-  - `IdentityCreditTransferTransitionWASM`
-  - `IdentityTopUpTransitionWASM`
-  - `IdentityUpdateTransitionWASM`
+- Enums: `KeyType`, `Purpose`, `SecurityLevel`, `NetworkWASM`, `PlatformVersionWASM`, `ActionGoal`,
+  `TokenDistributionType`, `TokenEmergencyActionWASM`, `AssetLockProofType`, `PoolingWASM`, `GasFeesPaidByWASM`,
+  `VoteStateResultType`, `ScopeWASM`
+
+### Asset Lock
+- `AssetLockProofWASM`
+- `ChainAssetLockProofWASM`
+- `InstantAssetLockProofWASM`
+- `InstantLockWASM`
+- `TransactionWASM`
+- `TxInWASM`
+- `TxOutWASM`
+- `OutPointWASM`
+- `WitnessWASM`
+
+### Identity Transitions
+- `IdentityCreateTransitionWASM`
+- `IdentityTopUpTransitionWASM`
+- `IdentityUpdateTransitionWASM`
+- `IdentityCreditTransferWASM`
+- `IdentityCreditWithdrawalTransitionWASM`
+
+### Platform Addresses
+- `PlatformAddressWASM`
+- `AddressWitnessWASM`
+- `InputAddressWASM`
+- `OutputAddressWASM`
+- `OutputAddressNullableCreditsWASM`
+- `AddressFundsFeeStrategyStepWASM`
 - Address Transitions:
   - `AddressCreditWithdrawalTransitionWASM`
   - `AddressFundingFromAssetLockTransitionWASM`
@@ -88,21 +88,108 @@ ___
   - `IdentityCreateFromAddressesTransitionWASM`
   - `IdentityCreditTransferToAddressesTransitionWASM`
   - `IdentityTopUpFromAddressesTransitionWASM`
-- `PlatformAddressWASM`
-- `IdentityPublicKeyInCreationWASM`
-- `AssetLockProofWASM`
-- `OutPointWASM`
-- `TxOutWASM`
-- `CoreScriptWASM`
-- `PrivateKeyWASM`
-- `IdentityWASM`
-- `IdentifierWASM`
-- `StateTransitionWASM`
-- `DataContractWASM`
-- `ContractBoundsWASM`
-- `MasternodeVoteTransitionWASM`
-- `VotePollWASM`
-- `VoteWASM`
-- `ResourceVoteChoiceWASM`
-- `Enums`
 
+### Shielded Pool (Orchard)
+- `OrchardAddressWASM`, `orchardOvkFromSeed`
+- `FullViewingKeyWASM`
+- `IncomingViewingKeyWASM`
+- `NoteWASM`
+- `SpendableNoteWASM`
+- `RecoveredNoteWASM`, `recoverNotes`
+- `ShieldedMemoWASM`
+- `ShieldedOutputWASM`
+- `MerklePathWASM`
+- `CommitmentTreeWASM`
+- `OrchardProverWASM`
+- `ShieldedBuilderWASM`
+- `ShieldedWithdrawalResultWASM`
+- `IdentityCreateFromShieldedPoolResultWASM`
+- Shielded Transitions:
+  - `ShieldTransitionWASM`
+  - `ShieldFromAssetLockTransitionWASM`
+  - `ShieldedTransferTransitionWASM`
+  - `UnshieldTransitionWASM`
+  - `ShieldedWithdrawalTransitionWASM`
+  - `IdentityCreateFromShieldedPoolTransitionWASM`
+  - `SerializedActionWASM`
+
+### Data Contracts & Documents
+- `DataContractWASM`
+- `DataContractCreateTransitionWASM`
+- `DataContractUpdateTransitionWASM`
+- `DocumentWASM`
+
+### Batch
+- `BatchTransitionWASM`
+- `BatchedTransitionWASM`
+- `DocumentTransitionWASM`
+- `DocumentBaseTransitionWASM`
+- `TokenTransitionWASM`
+- `TokenBaseTransitionWASM`
+- `TokenPaymentInfoWASM`
+- `TokenPricingScheduleWASM`
+- `PrefundedVotingBalanceWASM`
+- Document Transitions:
+  - `DocumentCreateTransitionWASM`
+  - `DocumentDeleteTransitionWASM`
+  - `DocumentPurchaseTransitionWASM`
+  - `DocumentReplaceTransitionWASM`
+  - `DocumentTransferTransitionWASM`
+  - `DocumentUpdatePriceTransitionWASM`
+- Token Transitions:
+  - `TokenBurnTransitionWASM`
+  - `TokenClaimTransitionWASM`
+  - `TokenConfigUpdateTransitionWASM`
+  - `TokenDestroyFrozenFundsTransitionWASM`
+  - `TokenDirectPurchaseTransitionWASM`
+  - `TokenEmergencyActionTransitionWASM`
+  - `TokenFreezeTransitionWASM`
+  - `TokenMintTransitionWASM`
+  - `TokenSetPriceForDirectPurchaseTransitionWASM`
+  - `TokenTransferTransitionWASM`
+  - `TokenUnFreezeTransitionWASM`
+
+### Token Configuration
+- `TokenConfigurationWASM`
+- `TokenConfigurationChangeItemWASM`
+- `TokenConfigurationConventionWASM`
+- `TokenConfigurationLocalizationWASM`
+- `TokenKeepsHistoryRulesWASM`
+- `TokenMarketplaceRulesWASM`
+- `TokenTradeModeWASM`
+- `TokenDistributionRulesWASM`
+- `TokenDistributionRecipientWASM`
+- `TokenPerpetualDistributionWASM`
+- `TokenPreProgrammedDistributionWASM`
+- `RewardDistributionTypeWASM`
+- `DistributionFunctionWASM`
+- `ActionTakerWASM`
+- `AuthorizedActionTakersWASM`
+- `ChangeControlRulesWASM`
+- `GroupWASM`
+
+### Masternode Voting
+- `MasternodeVoteTransitionWASM`
+- `VoteWASM`
+- `VotePollWASM`
+- `ResourceVoteChoiceWASM`
+
+### Proof Verification
+- Signatures: `verifySignatureDigest`
+- System: `verifyEpochsInfoProof`, `verifyFinalizedEpochInfosProof`, `verifyTotalCreditsProof`
+- State transitions: `verifyStateTransitionResult`
+- Contracts & documents: `verifyContractProof`, `verifyDocumentsProof`
+- Contested resources: `verifyVotePollVoteStateProof`
+- Identity: `verifyIdentityByIdentifierProof`, `verifyIdentityByUniqueKeyHashProof`,
+  `verifyIdentifierByNonUniquePublicKeyHashProof`, `verifyIdentityBalanceProof`, `verifyIdentityKeysByIdentifierProof`,
+  `verifyIdentityNonceProof`, `verifyIdentityContractNonceProof`
+- Tokens: `verifyTokenBalancesForIdentitiesProof`, `verifyTokensBalancesForIdentityProof`, `verifyTokenContractInfoProof`,
+  `verifyTokenDirectPurchasePrices`, `verifyTokenTotalSupplyProof`
+- Platform addresses: `verifyPlatformAddressInfo`, `verifyPlatformAddressesInfos`, `verifyAddressesTrunkState`,
+  `verifyAddressesBranchState`, `verifyRecentAddressBalanceChanges`, `verifyRecentCompactedAddressBalanceChanges`
+- Shielded pool: `verifyShieldedPoolStateProof`, `verifyShieldedAnchorsProof`, `verifyMostRecentShieldedAnchorProof`,
+  `verifyShieldedEncryptedNotesProof`, `verifyShieldedNotesCountProof`, `verifyShieldedNullifiersProof`
+
+### Utils (`pshenmic-dpp/wasm/utils`)
+- `valueToDynamicValue`, `valueFromDynamicValue`
+- `prepareIdentifierValue`, `preparePlatformAddressValue`
