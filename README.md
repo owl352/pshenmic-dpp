@@ -4,7 +4,7 @@ ___
 ## General
 Pshenmic-dpp is a package with Rust bindings for JS.
 
-The module uses [rs-dpp](https://github.com/dashpay/platform) (Dash Platform `v4.1.0`) and exposes its structures,
+The module uses [rs-dpp](https://github.com/dashpay/platform) (Dash Platform `v5.0.0-rc.2`) and exposes its structures,
 state transitions and proof verification to JavaScript/TypeScript via [napi-rs](https://napi.rs).
 The same API is available on WebAssembly, Node.js native addons and React Native.
 
