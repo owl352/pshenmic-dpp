@@ -3,6 +3,7 @@ import { GasFeesPaidByLike, IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 import { IdentifierWASM } from '../Identifier.js'
+import { TokenShieldedPaymentWASM } from './TokenShieldedPayment.js'
 
 export class TokenPaymentInfoWASM {
   /** @private **/
@@ -13,15 +14,28 @@ export class TokenPaymentInfoWASM {
     tokenContractPosition: number,
     minimumTokenCost?: bigint,
     maximumTokenCost?: bigint,
-    gasFeesPaidBy?: GasFeesPaidByLike
+    gasFeesPaidBy?: GasFeesPaidByLike,
+    shieldedPayment?: TokenShieldedPaymentWASM
   ) {
     this._rawTokenPaymentInfo = new dppProvider.dpp.TokenPaymentInfoNAPI(
       paymentTokenContractId != null ? prepareIdentifierValue(paymentTokenContractId) : undefined,
       tokenContractPosition,
       minimumTokenCost?.toString(),
       maximumTokenCost?.toString(),
-      valueToDynamicValue(gasFeesPaidBy)
+      valueToDynamicValue(gasFeesPaidBy),
+      shieldedPayment?._rawTokenShieldedPayment
     )
+  }
+
+  get shieldedPayment (): TokenShieldedPaymentWASM | undefined {
+    const payment = this._rawTokenPaymentInfo.shieldedPayment
+
+    return payment != null ? TokenShieldedPaymentWASM.createFromRawInstance(payment) : undefined
+  }
+
+  /** A shielded payment turns the payment info into V1, clearing it turns it back into V0 **/
+  set shieldedPayment (value: TokenShieldedPaymentWASM | undefined | null) {
+    this._rawTokenPaymentInfo.shieldedPayment = value?._rawTokenShieldedPayment
   }
 
   get paymentTokenContractId (): IdentifierWASM | undefined {

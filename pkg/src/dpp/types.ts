@@ -7,7 +7,7 @@ import {
   Purpose,
   ScopeWASM,
   SecurityLevel,
-  TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType
+  TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType, ContractFeePot
 } from './enums.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { languageCodes } from './constants.js'
@@ -16,6 +16,7 @@ import { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfig
 import { GroupWASM } from './structs/TokenConfiguration/Group.js'
 import { DocumentCreateTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentCreateTransition.js'
 import { DocumentDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentDeleteTransition.js'
+import { DocumentIndexOnlyDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentIndexOnlyDeleteTransition.js'
 import { DocumentPurchaseTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentPurchaseTransition.js'
 import { DocumentReplaceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentReplaceTransition.js'
 import { DocumentTransferTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentTransferTransition.js'
@@ -28,6 +29,13 @@ import {
 import { TokenBurnTransitionWASM } from './structs/Batch/TokenTransitions/TokenBurnTransition.js'
 import { TokenClaimTransitionWASM } from './structs/Batch/TokenTransitions/TokenClaimTransition.js'
 import { TokenUnFreezeTransitionWASM } from './structs/Batch/TokenTransitions/TokenUnFreezeTransition.js'
+import { TokenShieldTransitionWASM } from './structs/Batch/TokenTransitions/TokenShieldTransition.js'
+import { TokenUnshieldTransitionWASM } from './structs/Batch/TokenTransitions/TokenUnshieldTransition.js'
+import { TokenShieldedTransferTransitionWASM } from './structs/Batch/TokenTransitions/TokenShieldedTransferTransition.js'
+import { TokenMintToPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenMintToPoolTransition.js'
+import { TokenBurnFromPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenBurnFromPoolTransition.js'
+import { TokenClaimToPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenClaimToPoolTransition.js'
+import { TokenDirectPurchaseToPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenDirectPurchaseToPoolTransition.js'
 import { TokenTransferTransitionWASM } from './structs/Batch/TokenTransitions/TokenTransferTransition.js'
 import { TokenMintTransitionWASM } from './structs/Batch/TokenTransitions/TokenMintTransition.js'
 import { TokenFreezeTransitionWASM } from './structs/Batch/TokenTransitions/TokenFreezeTransition.js'
@@ -60,6 +68,41 @@ export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLock
 export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>
 export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>
 export type ScopeLike = ScopeWASM | keyof typeof ScopeWASM | Lowercase<keyof typeof ScopeWASM>
+export type ContractFeePotLike = ContractFeePot | keyof typeof ContractFeePot | Lowercase<keyof typeof ContractFeePot>
+
+/** Identifiers inside plain moderation and contract group objects: base58 string or 32 bytes **/
+export type PlainIdentifier = string | Uint8Array
+
+export interface ContractModerationReason {
+  code?: number | null
+  text: string
+  documents?: Array<{ documentTypeName: string, documentId: PlainIdentifier }>
+  reasonDocumentId?: PlainIdentifier
+}
+
+export type ContractUserModerationAction =
+  { $type: 'ban', identityId: PlainIdentifier, reason: ContractModerationReason }
+  | { $type: 'unban', identityId: PlainIdentifier }
+  | { $type: 'suspend', identityId: PlainIdentifier, until: number | bigint, reason: ContractModerationReason }
+  | { $type: 'unsuspend', identityId: PlainIdentifier }
+  | { $type: 'warn', identityId: PlainIdentifier, reason: ContractModerationReason }
+  | { $type: 'clearWarnings', identityId: PlainIdentifier }
+  | { $type: 'deleteDocument', documentTypeName: string, documentId: PlainIdentifier, reason: ContractModerationReason }
+  | { $type: 'restoreDocument', documentTypeName: string, document: Uint8Array }
+  | { $type: 'changeDocumentFields', documentTypeName: string, documentId: PlainIdentifier, fields: Record<string, any>, reason: ContractModerationReason }
+  | { $type: 'deleteSettledDocument', documentTypeName: string, documentId: PlainIdentifier, reason: ContractModerationReason }
+  | { $type: 'approveTeamAction', actionId: PlainIdentifier }
+
+export interface ContractGroupRegistration {
+  admins?: PlainIdentifier[]
+  name?: string | null
+  description?: string | null
+}
+
+export interface ContractGroupMembership {
+  contractGroupId: PlainIdentifier
+  member: 'contract' | { documentType: string } | { token: number }
+}
 
 export type AddressWitnessP2PKH = protocol.AddressWitnessP2pkhNAPI
 export type AddressWitnessP2SH = protocol.AddressWitnessP2shNAPI
@@ -103,6 +146,7 @@ export interface DataContractGroups {
 export type DocumentTransitionLike =
   DocumentCreateTransitionWASM
   | DocumentDeleteTransitionWASM
+  | DocumentIndexOnlyDeleteTransitionWASM
   | DocumentPurchaseTransitionWASM
   | DocumentReplaceTransitionWASM
   | DocumentTransferTransitionWASM
@@ -119,6 +163,13 @@ export type TokenTransitionLike =
   | TokenMintTransitionWASM
   | TokenTransferTransitionWASM
   | TokenUnFreezeTransitionWASM
+  | TokenShieldTransitionWASM
+  | TokenUnshieldTransitionWASM
+  | TokenShieldedTransferTransitionWASM
+  | TokenMintToPoolTransitionWASM
+  | TokenBurnFromPoolTransitionWASM
+  | TokenClaimToPoolTransitionWASM
+  | TokenDirectPurchaseToPoolTransitionWASM
 
 export interface ExtendedEpochInfo {
   index: number

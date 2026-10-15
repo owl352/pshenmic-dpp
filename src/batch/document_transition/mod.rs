@@ -8,6 +8,7 @@ use napi_derive::napi;
 
 use crate::batch::document_transition::transitions::create::DocumentCreateTransitionNAPI;
 use crate::batch::document_transition::transitions::delete::DocumentDeleteTransitionNAPI;
+use crate::batch::document_transition::transitions::index_only_delete::DocumentIndexOnlyDeleteTransitionNAPI;
 use crate::batch::document_transition::transitions::purchase::DocumentPurchaseTransitionNAPI;
 use crate::batch::document_transition::transitions::replace::DocumentReplaceTransitionNAPI;
 use crate::batch::document_transition::transitions::transfer::DocumentTransferTransitionNAPI;
@@ -91,6 +92,21 @@ impl DocumentTransitionNAPI {
     pub fn get_delete_transition(&self) -> Result<DocumentDeleteTransitionNAPI, napi::Error> {
         match self.0.clone() {
             DocumentTransition::Delete(delete) => Ok(DocumentDeleteTransitionNAPI::from(delete)),
+            _ => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "transition type mismatch",
+            )),
+        }
+    }
+
+    #[napi(getter, js_name = "indexOnlyDeleteTransition")]
+    pub fn get_index_only_delete_transition(
+        &self,
+    ) -> Result<DocumentIndexOnlyDeleteTransitionNAPI, napi::Error> {
+        match self.0.clone() {
+            DocumentTransition::IndexOnlyDelete(index_only_delete) => Ok(
+                DocumentIndexOnlyDeleteTransitionNAPI::from(index_only_delete),
+            ),
             _ => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "transition type mismatch",

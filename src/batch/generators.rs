@@ -1,10 +1,12 @@
 use dpp::fee::Credits;
 use dpp::prelude::{Identifier, IdentityNonce};
+use dpp::state_transition::batch_transition::batched_transition::document_index_only_delete_transition::v0::DocumentIndexOnlyDeleteTransitionV0;
 use dpp::state_transition::batch_transition::batched_transition::document_purchase_transition::DocumentPurchaseTransitionV0;
 use dpp::state_transition::batch_transition::batched_transition::document_transfer_transition::DocumentTransferTransitionV0;
 use dpp::state_transition::batch_transition::batched_transition::document_update_price_transition::DocumentUpdatePriceTransitionV0;
 use dpp::state_transition::batch_transition::batched_transition::{
-    DocumentPurchaseTransition, DocumentTransferTransition, DocumentUpdatePriceTransition,
+    DocumentIndexOnlyDeleteTransition, DocumentPurchaseTransition, DocumentTransferTransition,
+    DocumentUpdatePriceTransition,
 };
 use dpp::state_transition::batch_transition::document_base_transition::DocumentBaseTransition;
 use dpp::state_transition::batch_transition::document_base_transition::v1::DocumentBaseTransitionV1;
@@ -54,6 +56,24 @@ pub fn generate_delete_transition(
             data_contract_id: document.rs_get_data_contract_id(),
             token_payment_info: token_payment_info.map(|info| info.clone().into()),
         }),
+    })
+}
+
+pub fn generate_index_only_delete_transition(
+    document: &DocumentNAPI,
+    identity_contract_nonce: IdentityNonce,
+    document_type_name: String,
+    token_payment_info: Option<&TokenPaymentInfoNAPI>,
+) -> DocumentIndexOnlyDeleteTransition {
+    DocumentIndexOnlyDeleteTransition::V0(DocumentIndexOnlyDeleteTransitionV0 {
+        base: DocumentBaseTransition::V1(DocumentBaseTransitionV1 {
+            id: document.rs_get_id(),
+            identity_contract_nonce,
+            document_type_name,
+            data_contract_id: document.rs_get_data_contract_id(),
+            token_payment_info: token_payment_info.map(|info| info.clone().into()),
+        }),
+        data: document.rs_get_properties(),
     })
 }
 

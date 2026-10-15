@@ -1,19 +1,19 @@
 use dpp::identity::IdentityPublicKey;
 use dpp::identity::contract_bounds::ContractBounds;
-use dpp::identity::identity_public_key::v0::IdentityPublicKeyV0;
 use dpp::platform_value::BinaryData;
-use dpp::platform_value::string_encoding::Encoding::Hex;
 use dpp::state_transition::public_key_in_creation::IdentityPublicKeyInCreation;
 use dpp::state_transition::public_key_in_creation::accessors::{
     IdentityPublicKeyInCreationV0Getters, IdentityPublicKeyInCreationV0Setters,
+    IdentityPublicKeyInCreationV1Getters,
 };
 use dpp::state_transition::public_key_in_creation::v0::IdentityPublicKeyInCreationV0;
+use dpp::state_transition::public_key_in_creation::v1::IdentityPublicKeyInCreationV1;
 use napi::Either;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::contract_bounds::ContractBoundsNAPI;
-use crate::dynamic_value::DynamicValue;
+use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::enums::key_type::KeyTypeNAPI;
 use crate::enums::purpose::PurposeNAPI;
 use crate::enums::security_level::SecurityLevelNAPI;
@@ -39,21 +39,7 @@ impl From<IdentityPublicKeyInCreationNAPI> for IdentityPublicKeyInCreation {
 
 impl From<IdentityPublicKeyInCreationNAPI> for IdentityPublicKey {
     fn from(value: IdentityPublicKeyInCreationNAPI) -> Self {
-        let contract_bounds = match value.0.contract_bounds() {
-            None => None,
-            Some(bounds) => Some(bounds.clone()),
-        };
-
-        IdentityPublicKey::V0(IdentityPublicKeyV0 {
-            id: value.0.id(),
-            purpose: value.0.purpose(),
-            security_level: value.0.security_level(),
-            contract_bounds,
-            key_type: value.0.key_type(),
-            read_only: value.0.read_only(),
-            data: value.0.data().clone(),
-            disabled_at: None,
-        })
+        value.0.into()
     }
 }
 
@@ -69,9 +55,14 @@ impl IdentityPublicKeyInCreationNAPI {
         binary_data: Uint8Array,
         signature: Option<Uint8Array>,
         js_contract_bounds: Option<&ContractBoundsNAPI>,
+        js_total_budget: Option<BigIntString>,
+        js_expires_at: Option<BigIntString>,
     ) -> Result<IdentityPublicKeyInCreationNAPI, napi::Error> {
-        Ok(IdentityPublicKeyInCreationNAPI(
-            IdentityPublicKeyInCreation::V0(IdentityPublicKeyInCreationV0 {
+        let total_budget = js_total_budget.map(|val| val.try_to_u64()).transpose()?;
+        let expires_at = js_expires_at.map(|val| val.try_to_u64()).transpose()?;
+
+        let mut public_key = IdentityPublicKeyInCreationNAPI(IdentityPublicKeyInCreation::V0(
+            IdentityPublicKeyInCreationV0 {
                 id,
                 key_type: KeyTypeNAPI::try_from(js_key_type)?.into(),
                 purpose: PurposeNAPI::try_from(js_purpose)?.into(),
@@ -83,22 +74,51 @@ impl IdentityPublicKeyInCreationNAPI {
                 signature: BinaryData::from(
                     signature.map(|sig| sig.to_vec()).unwrap_or(Vec::new()),
                 ),
-            }),
-        ))
+            },
+        ));
+
+        if total_budget.is_some() || expires_at.is_some() {
+            public_key.set_limits(total_budget, expires_at);
+        }
+
+        Ok(public_key)
     }
 
     #[napi(js_name = toIdentityPublicKey)]
-    pub fn to_identity_public_key(&self) -> Result<IdentityPublicKeyNAPI, napi::Error> {
-        IdentityPublicKeyNAPI::new(
-            self.0.id(),
-            &String::from(PurposeNAPI::from(self.0.purpose())).into(),
-            &String::from(SecurityLevelNAPI::from(self.0.security_level())).into(),
-            &String::from(KeyTypeNAPI::from(self.0.key_type())).into(),
-            self.0.read_only(),
-            self.0.data().to_string(Hex),
-            None,
-            self.get_contract_bounds().clone().as_ref(),
-        )
+    pub fn to_identity_public_key(&self) -> IdentityPublicKeyNAPI {
+        IdentityPublicKey::from(&self.0).into()
+    }
+
+    #[napi(getter, js_name = "totalBudget")]
+    pub fn get_total_budget(&self) -> Option<BigIntString> {
+        self.0.total_budget().map(BigIntString::from_u64)
+    }
+
+    #[napi(getter, js_name = "expiresAt")]
+    pub fn get_expires_at(&self) -> Option<BigIntString> {
+        self.0.expires_at().map(BigIntString::from_u64)
+    }
+
+    #[napi(js_name = "hasLimits")]
+    pub fn has_limits(&self) -> bool {
+        self.0.has_limits()
+    }
+
+    #[napi(setter, js_name = "totalBudget")]
+    pub fn set_total_budget(
+        &mut self,
+        total_budget: Option<BigIntString>,
+    ) -> Result<(), napi::Error> {
+        let total_budget = total_budget.map(|val| val.try_to_u64()).transpose()?;
+        self.set_limits(total_budget, self.0.expires_at());
+        Ok(())
+    }
+
+    #[napi(setter, js_name = "expiresAt")]
+    pub fn set_expires_at(&mut self, expires_at: Option<BigIntString>) -> Result<(), napi::Error> {
+        let expires_at = expires_at.map(|val| val.try_to_u64()).transpose()?;
+        self.set_limits(self.0.total_budget(), expires_at);
+        Ok(())
     }
 
     #[napi(js_name = "validatePrivateKey")]
@@ -208,5 +228,29 @@ impl IdentityPublicKeyInCreationNAPI {
     pub fn set_contract_bounds(&mut self, js_bounds: Option<&ContractBoundsNAPI>) {
         self.0
             .set_contract_bounds(js_bounds.map(|bounds| bounds.clone().into()));
+    }
+}
+
+impl IdentityPublicKeyInCreationNAPI {
+    /// Budget and expiry only exist on V1 keys, so setting either upgrades a V0 key.
+    /// The signature does not cover the limits: sign again afterwards
+    fn set_limits(&mut self, total_budget: Option<u64>, expires_at: Option<u64>) {
+        match &mut self.0 {
+            IdentityPublicKeyInCreation::V0(v0) => {
+                if total_budget.is_some() || expires_at.is_some() {
+                    self.0 = IdentityPublicKeyInCreation::V1(
+                        IdentityPublicKeyInCreationV1::from_v0_with_limits(
+                            v0.clone(),
+                            total_budget,
+                            expires_at,
+                        ),
+                    );
+                }
+            }
+            IdentityPublicKeyInCreation::V1(v1) => {
+                v1.total_budget = total_budget;
+                v1.expires_at = expires_at;
+            }
+        }
     }
 }

@@ -2327,6 +2327,7 @@ dependencies = [
  "napi-build",
  "napi-derive",
  "rand",
+ "serde",
  "serde_json",
  "sha2",
  "zip32",

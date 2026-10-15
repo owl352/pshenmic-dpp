@@ -73,6 +73,7 @@ ___
 - `IdentityUpdateTransitionWASM`
 - `IdentityCreditTransferWASM`
 - `IdentityCreditWithdrawalTransitionWASM`
+- `IdentityKeyLimitsUpdateTransitionWASM`
 
 ### Platform Addresses
 - `PlatformAddressWASM`
@@ -111,12 +112,19 @@ ___
   - `UnshieldTransitionWASM`
   - `ShieldedWithdrawalTransitionWASM`
   - `IdentityCreateFromShieldedPoolTransitionWASM`
+  - `ShieldFromIdentityTransitionWASM`
+  - `IdentityTopUpFromShieldedPoolTransitionWASM`
+  - `TokenShieldedTransferWithShieldedFeeTransitionWASM`
+  - `TokenUnshieldWithShieldedFeeTransitionWASM`
+  - `TokenPurchaseFromShieldedPoolTransitionWASM`
   - `SerializedActionWASM`
 
 ### Data Contracts & Documents
 - `DataContractWASM`
 - `DataContractCreateTransitionWASM`
 - `DataContractUpdateTransitionWASM`
+- `ContractUserModerationTransitionWASM`
+- `ContractFeeClaimTransitionWASM`
 - `DocumentWASM`
 
 ### Batch
@@ -127,11 +135,13 @@ ___
 - `TokenTransitionWASM`
 - `TokenBaseTransitionWASM`
 - `TokenPaymentInfoWASM`
+- `TokenShieldedPaymentWASM`
 - `TokenPricingScheduleWASM`
 - `PrefundedVotingBalanceWASM`
 - Document Transitions:
   - `DocumentCreateTransitionWASM`
   - `DocumentDeleteTransitionWASM`
+  - `DocumentIndexOnlyDeleteTransitionWASM`
   - `DocumentPurchaseTransitionWASM`
   - `DocumentReplaceTransitionWASM`
   - `DocumentTransferTransitionWASM`
@@ -148,6 +158,13 @@ ___
   - `TokenSetPriceForDirectPurchaseTransitionWASM`
   - `TokenTransferTransitionWASM`
   - `TokenUnFreezeTransitionWASM`
+  - `TokenShieldTransitionWASM`
+  - `TokenUnshieldTransitionWASM`
+  - `TokenShieldedTransferTransitionWASM`
+  - `TokenMintToPoolTransitionWASM`
+  - `TokenBurnFromPoolTransitionWASM`
+  - `TokenClaimToPoolTransitionWASM`
+  - `TokenDirectPurchaseToPoolTransitionWASM`
 
 ### Token Configuration
 - `TokenConfigurationWASM`

@@ -152,3 +152,30 @@ pub fn js_bytes_to_binding_signature(
         )
     })
 }
+
+/// Passes a dpp structure without a dedicated class (moderation actions, contract group
+/// registrations) to JS as a plain object, in its serde shape
+pub fn serde_to_js<T: serde::Serialize>(value: &T) -> Result<DynamicValue, napi::Error> {
+    dpp::platform_value::to_value(value)
+        .map_err(ProtocolError::ValueError)
+        .with_js_error()?
+        .try_into()
+}
+
+/// Identifiers can come as bytes or as base58 strings: platform values decode the first,
+/// only the human-readable (JSON) decoding accepts the second
+pub fn serde_from_js<T: serde::de::DeserializeOwned>(
+    js_value: &DynamicValue,
+) -> Result<T, napi::Error> {
+    let value = Value::try_from(js_value.clone())?;
+
+    dpp::platform_value::from_value(value.clone()).or_else(|_| {
+        let json: serde_json::Value = value
+            .try_into()
+            .map_err(ProtocolError::ValueError)
+            .with_js_error()?;
+
+        serde_json::from_value(json)
+            .map_err(|err| napi::Error::new(Status::InvalidArg, err.to_string()))
+    })
+}

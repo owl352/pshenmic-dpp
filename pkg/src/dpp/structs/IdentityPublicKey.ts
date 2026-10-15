@@ -10,7 +10,7 @@ export class IdentityPublicKeyWASM {
   /** @private **/
   _rawIdentityPublicKey: IdentityPublicKeyNAPI
 
-  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number, contractBounds?: ContractBoundsWASM) {
+  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: string, disabledAt?: bigint | number, contractBounds?: ContractBoundsWASM, totalBudget?: bigint | number, expiresAt?: bigint | number) {
     const dpp = dppProvider.dpp
 
     if (purpose == null || securityLevel == null || keyType == null) {
@@ -25,7 +25,9 @@ export class IdentityPublicKeyWASM {
       readOnly,
       binaryData,
       disabledAt?.toString(),
-      contractBounds?._rawContractBounds
+      contractBounds?._rawContractBounds,
+      totalBudget?.toString(),
+      expiresAt?.toString()
     )
   }
 
@@ -128,6 +130,35 @@ export class IdentityPublicKeyWASM {
     if (this._rawIdentityPublicKey.contractBounds != null) {
       return ContractBoundsWASM.createFromRawInstance(this._rawIdentityPublicKey.contractBounds)
     }
+  }
+
+  get totalBudget (): bigint | undefined {
+    const totalBudget = this._rawIdentityPublicKey.totalBudget
+
+    return (totalBudget != null) ? BigInt(totalBudget) : undefined
+  }
+
+  /** Setting a budget or an expiry turns the key into a V1 key (platform v14+) **/
+  set totalBudget (totalBudget: bigint | number | undefined | null) {
+    this._rawIdentityPublicKey.totalBudget = totalBudget?.toString()
+  }
+
+  get expiresAt (): bigint | undefined {
+    const expiresAt = this._rawIdentityPublicKey.expiresAt
+
+    return (expiresAt != null) ? BigInt(expiresAt) : undefined
+  }
+
+  set expiresAt (expiresAt: bigint | number | undefined | null) {
+    this._rawIdentityPublicKey.expiresAt = expiresAt?.toString()
+  }
+
+  hasLimits (): boolean {
+    return this._rawIdentityPublicKey.hasLimits()
+  }
+
+  isExpiredAt (timestamp: bigint | number): boolean {
+    return this._rawIdentityPublicKey.isExpiredAt(timestamp.toString())
   }
 
   removeDisabledAt (): void {

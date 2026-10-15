@@ -16,6 +16,13 @@ import { TokenMintTransitionWASM } from './TokenTransitions/TokenMintTransition.
 import { TokenFreezeTransitionWASM } from './TokenTransitions/TokenFreezeTransition.js'
 import { TokenEmergencyActionTransitionWASM } from './TokenTransitions/TokenEmergencyActionTransition.js'
 import { TokenDirectPurchaseTransitionWASM } from './TokenTransitions/TokenDirectPurchaseTransition.js'
+import { TokenShieldTransitionWASM } from './TokenTransitions/TokenShieldTransition.js'
+import { TokenUnshieldTransitionWASM } from './TokenTransitions/TokenUnshieldTransition.js'
+import { TokenShieldedTransferTransitionWASM } from './TokenTransitions/TokenShieldedTransferTransition.js'
+import { TokenMintToPoolTransitionWASM } from './TokenTransitions/TokenMintToPoolTransition.js'
+import { TokenBurnFromPoolTransitionWASM } from './TokenTransitions/TokenBurnFromPoolTransition.js'
+import { TokenClaimToPoolTransitionWASM } from './TokenTransitions/TokenClaimToPoolTransition.js'
+import { TokenDirectPurchaseToPoolTransitionWASM } from './TokenTransitions/TokenDirectPurchaseToPoolTransition.js'
 import { IdentifierWASM } from '../Identifier.js'
 import { prepareIdentifierValue } from '../../utils.js'
 
@@ -76,6 +83,20 @@ export class TokenTransitionWASM {
       return TokenSetPriceForDirectPurchaseTransitionWASM.createFromRawInstance(transition)
     } else if (transition instanceof dppProvider.dpp.TokenTransferTransitionNAPI) {
       return TokenTransferTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenShieldTransitionNAPI) {
+      return TokenShieldTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenUnshieldTransitionNAPI) {
+      return TokenUnshieldTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenShieldedTransferTransitionNAPI) {
+      return TokenShieldedTransferTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenMintToPoolTransitionNAPI) {
+      return TokenMintToPoolTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenBurnFromPoolTransitionNAPI) {
+      return TokenBurnFromPoolTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenClaimToPoolTransitionNAPI) {
+      return TokenClaimToPoolTransitionWASM.createFromRawInstance(transition)
+    } else if (transition instanceof dppProvider.dpp.TokenDirectPurchaseToPoolTransitionNAPI) {
+      return TokenDirectPurchaseToPoolTransitionWASM.createFromRawInstance(transition)
     } else {
       return TokenUnFreezeTransitionWASM.createFromRawInstance(transition)
     }
