@@ -55,3 +55,73 @@ codegen-units = 1
 panic = "abort"
 incremental = false
 debug = false
+
+# The wasm build must stay under Chrome's 8MB main-thread sync-compile limit
+# (see build.cjs), so it optimizes for size. The Orchard/Halo 2 proving stack
+# keeps opt-level 3, where proving time is spent.
+[profile.release-wasm]
+inherits = "release"
+opt-level = "s"
+
+[profile.release-wasm.package.halo2_proofs]
+opt-level = 3
+
+[profile.release-wasm.package.halo2_gadgets]
+opt-level = 3
+
+[profile.release-wasm.package.halo2_poseidon]
+opt-level = 3
+
+[profile.release-wasm.package.orchard]
+opt-level = 3
+
+[profile.release-wasm.package.pasta_curves]
+opt-level = 3
+
+[profile.release-wasm.package.ff]
+opt-level = 3
+
+[profile.release-wasm.package.group]
+opt-level = 3
+
+[profile.release-wasm.package.sinsemilla]
+opt-level = 3
+
+[profile.release-wasm.package.reddsa]
+opt-level = 3
+
+[profile.release-wasm.package.blake2b_simd]
+opt-level = 3
+
+[profile.release-wasm.package.rayon]
+opt-level = 3
+
+[profile.release-wasm.package."rayon-core"]
+opt-level = 3
+
+[profile.release-wasm.package.subtle]
+opt-level = 3
+
+[profile.release-wasm.package.bitvec]
+opt-level = 3
+
+[profile.release-wasm.package.incrementalmerkletree]
+opt-level = 3
+
+[profile.release-wasm.package.zcash_note_encryption]
+opt-level = 3
+
+[profile.release-wasm.package."grovedb-commitment-tree"]
+opt-level = 3
+
+[profile.release-wasm.package.chacha20]
+opt-level = 3
+
+[profile.release-wasm.package.chacha20poly1305]
+opt-level = 3
+
+[profile.release-wasm.package.aes]
+opt-level = 3
+
+[profile.release-wasm.package.fpe]
+opt-level = 3

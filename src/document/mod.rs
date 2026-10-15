@@ -37,6 +37,9 @@ pub struct DocumentNAPI {
     transferred_at_core_block_height: Option<CoreBlockHeight>,
     entropy: Option<[u8; 32]>,
     creator_id: Option<IdentifierNAPI>,
+    contract_version: Option<u32>,
+    moderated_at: Option<TimestampMillis>,
+    moderated_by: Option<IdentifierNAPI>,
 }
 
 impl From<DocumentNAPI> for Document {
@@ -56,6 +59,9 @@ impl From<DocumentNAPI> for Document {
             updated_at_core_block_height: wasm_doc.updated_at_core_block_height,
             transferred_at_core_block_height: wasm_doc.transferred_at_core_block_height,
             creator_id: wasm_doc.creator_id.map(|id| id.into()),
+            contract_version: wasm_doc.contract_version,
+            moderated_at: wasm_doc.moderated_at,
+            moderated_by: wasm_doc.moderated_by.map(|id| id.into()),
         })
     }
 }
@@ -80,6 +86,9 @@ impl From<Document> for DocumentNAPI {
             transferred_at_core_block_height: doc.transferred_at_core_block_height(),
             entropy: None,
             creator_id: doc.creator_id().map(|id| id.into()),
+            contract_version: doc.contract_version(),
+            moderated_at: doc.moderated_at(),
+            moderated_by: doc.moderated_by().map(|id| id.into()),
         }
     }
 }
@@ -109,6 +118,9 @@ impl DocumentNAPI {
             transferred_at_core_block_height: document.transferred_at_core_block_height(),
             entropy,
             creator_id: document.creator_id().map(|id| id.into()),
+            contract_version: document.contract_version(),
+            moderated_at: document.moderated_at(),
+            moderated_by: document.moderated_by().map(|id| id.into()),
         }
     }
 }
@@ -169,6 +181,9 @@ impl DocumentNAPI {
             updated_at_core_block_height: None,
             transferred_at_core_block_height: None,
             creator_id,
+            contract_version: None,
+            moderated_at: None,
+            moderated_by: None,
         })
     }
 
@@ -264,6 +279,21 @@ impl DocumentNAPI {
     #[napi(getter, js_name = "creatorId")]
     pub fn get_creator_id(&self) -> Option<IdentifierNAPI> {
         self.creator_id.clone()
+    }
+
+    #[napi(getter, js_name = "contractVersion")]
+    pub fn get_contract_version(&self) -> Option<u32> {
+        self.contract_version
+    }
+
+    #[napi(getter, js_name = "moderatedAt")]
+    pub fn get_moderated_at(&self) -> Option<BigIntString> {
+        self.moderated_at.map(BigIntString::from_u64)
+    }
+
+    #[napi(getter, js_name = "moderatedBy")]
+    pub fn get_moderated_by(&self) -> Option<IdentifierNAPI> {
+        self.moderated_by.clone()
     }
 
     #[napi(setter, js_name = "id")]
@@ -403,6 +433,33 @@ impl DocumentNAPI {
         };
 
         self.creator_id = creator_id;
+
+        Ok(())
+    }
+
+    #[napi(setter, js_name = "contractVersion")]
+    pub fn set_contract_version(&mut self, contract_version: Option<u32>) {
+        self.contract_version = contract_version
+    }
+
+    #[napi(setter, js_name = "moderatedAt")]
+    pub fn set_moderated_at(
+        &mut self,
+        moderated_at: Option<BigIntString>,
+    ) -> Result<(), napi::Error> {
+        self.moderated_at = moderated_at.map(|t| t.try_to_u64()).transpose()?;
+        Ok(())
+    }
+
+    #[napi(setter, js_name = "moderatedBy")]
+    pub fn set_moderated_by(
+        &mut self,
+        js_moderated_by: Option<IdentifierLikeNAPI>,
+    ) -> Result<(), napi::Error> {
+        self.moderated_by = match js_moderated_by {
+            None => None,
+            Some(id) => Some(IdentifierNAPI::try_from(id)?),
+        };
 
         Ok(())
     }

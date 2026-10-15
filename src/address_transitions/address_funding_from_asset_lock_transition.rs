@@ -1,6 +1,6 @@
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::state_transition::address_funding_from_asset_lock_transition::AddressFundingFromAssetLockTransition;
 use dpp::state_transition::address_funding_from_asset_lock_transition::accessors::AddressFundingFromAssetLockTransitionAccessorsV0;
 use dpp::state_transition::address_funding_from_asset_lock_transition::v0::AddressFundingFromAssetLockTransitionV0;
@@ -229,15 +229,17 @@ impl AddressFundingFromAssetLockTransitionNAPI {
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(data: Uint8Array) -> Result<Self, napi::Error> {
         Ok(Self(
-            AddressFundingFromAssetLockTransition::deserialize_from_bytes(data.to_vec().as_slice())
-                .with_js_error()?,
+            AddressFundingFromAssetLockTransition::deserialize_from_bytes_untrusted(
+                data.to_vec().as_slice(),
+            )
+            .with_js_error()?,
         ))
     }
 
     #[napi(js_name = "fromHex")]
     pub fn from_hex(data: String) -> Result<Self, napi::Error> {
         Ok(Self(
-            AddressFundingFromAssetLockTransition::deserialize_from_bytes(
+            AddressFundingFromAssetLockTransition::deserialize_from_bytes_untrusted(
                 decode(&data, Encoding::Hex)
                     .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "Invalid hex string"))?
                     .as_slice(),
@@ -249,7 +251,7 @@ impl AddressFundingFromAssetLockTransitionNAPI {
     #[napi(js_name = "fromBase64")]
     pub fn from_base64(data: String) -> Result<Self, napi::Error> {
         Ok(Self(
-            AddressFundingFromAssetLockTransition::deserialize_from_bytes(
+            AddressFundingFromAssetLockTransition::deserialize_from_bytes_untrusted(
                 decode(&data, Encoding::Base64)
                     .map_err(|_| {
                         napi::Error::new(napi::Status::InvalidArg, "Invalid Base64 string")

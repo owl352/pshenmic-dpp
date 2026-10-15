@@ -93,7 +93,7 @@ describe('AddressFundsTransferTransition fees', function () {
 
     test('should default to the latest platform version', function () {
       expect(AddressFundsTransferTransitionWASM.estimateMinFee(1, 1))
-        .toEqual(AddressFundsTransferTransitionWASM.estimateMinFee(1, 1, PlatformVersionWASM.PLATFORM_V13))
+        .toEqual(AddressFundsTransferTransitionWASM.estimateMinFee(1, 1, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 
@@ -258,7 +258,7 @@ describe('new address storage fee', function () {
 
   test('should default to the latest platform version', function () {
     expect(PlatformAddressWASM.estimateStorageFeeForNewAddresses(1))
-      .toEqual(PlatformAddressWASM.estimateStorageFeeForNewAddresses(1, PlatformVersionWASM.PLATFORM_V13))
+      .toEqual(PlatformAddressWASM.estimateStorageFeeForNewAddresses(1, PlatformVersionWASM.PLATFORM_V14))
   })
 
   test('should exceed the per output component of the min fee', function () {

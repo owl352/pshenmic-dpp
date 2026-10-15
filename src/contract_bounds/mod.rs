@@ -40,6 +40,17 @@ impl ContractBoundsNAPI {
         Ok(ContractBoundsNAPI(rs_contract_bounds))
     }
 
+    #[napi(factory, js_name = "contractGroup")]
+    pub fn contract_group(
+        js_group_id: IdentifierLikeNAPI,
+    ) -> Result<ContractBoundsNAPI, napi::Error> {
+        let group_id: IdentifierNAPI = js_group_id.try_into()?;
+
+        Ok(ContractBoundsNAPI(ContractBounds::ContractGroup {
+            id: group_id.into(),
+        }))
+    }
+
     #[napi(getter, js_name = "identifier")]
     pub fn id(&self) -> IdentifierNAPI {
         self.0.identifier().into()
@@ -77,6 +88,9 @@ impl ContractBoundsNAPI {
                 id: contract_id.into(),
                 document_type_name,
             },
+            ContractBounds::ContractGroup { .. } => ContractBounds::ContractGroup {
+                id: contract_id.into(),
+            },
         };
 
         Ok(())
@@ -85,7 +99,9 @@ impl ContractBoundsNAPI {
     #[napi(setter, js_name = "documentTypeName")]
     pub fn set_document_type_name(&mut self, document_type_name: String) {
         self.0 = match self.clone().0 {
-            ContractBounds::SingleContract { .. } => self.clone().0,
+            ContractBounds::SingleContract { .. } | ContractBounds::ContractGroup { .. } => {
+                self.clone().0
+            }
             ContractBounds::SingleContractDocumentType { id, .. } => {
                 ContractBounds::SingleContractDocumentType {
                     id,

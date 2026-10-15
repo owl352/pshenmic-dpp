@@ -44,6 +44,12 @@ export class ContractBoundsWASM {
     return new ContractBoundsWASM(contractId, documentTypeName)
   }
 
+  static ContractGroup (groupId: IdentifierLike): ContractBoundsWASM {
+    return ContractBoundsWASM.createFromRawInstance(
+      dppProvider.dpp.ContractBoundsNAPI.contractGroup(prepareIdentifierValue(groupId))
+    )
+  }
+
   static createFromRawInstance (rawInstance: ContractBoundsNAPI): ContractBoundsWASM {
     const instance: ContractBoundsWASM = Object.create(ContractBoundsWASM.prototype)
     instance._rawContractBounds = rawInstance

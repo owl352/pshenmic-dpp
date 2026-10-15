@@ -14,7 +14,10 @@ use dpp::{
     data_contract::{
         TokenConfiguration,
         associated_token::token_configuration::{
-            accessors::v0::{TokenConfigurationV0Getters, TokenConfigurationV0Setters},
+            accessors::{
+                v0::{TokenConfigurationV0Getters, TokenConfigurationV0Setters},
+                v1::{TokenConfigurationV1Getters, TokenConfigurationV1Setters},
+            },
             v0::TokenConfigurationV0,
         },
     },
@@ -153,9 +156,7 @@ impl TokenConfigurationNAPI {
 
     #[napi(getter, js_name = "marketplaceRules")]
     pub fn get_marketplace_rules(&self) -> TokenMarketplaceRulesNAPI {
-        match self.0.clone() {
-            TokenConfiguration::V0(v0) => v0.marketplace_rules.clone().into(),
-        }
+        self.0.as_v0().marketplace_rules.clone().into()
     }
 
     #[napi(getter, js_name = "manualMintingRules")]
@@ -203,6 +204,64 @@ impl TokenConfigurationNAPI {
         self.0.description().clone()
     }
 
+    #[napi(getter, js_name = "hasShieldedPool")]
+    pub fn get_has_shielded_pool(&self) -> bool {
+        self.0.has_shielded_pool()
+    }
+
+    #[napi(getter, js_name = "isTransferable")]
+    pub fn get_is_transferable(&self) -> bool {
+        self.0.is_transferable()
+    }
+
+    #[napi(getter, js_name = "minimumPoolNotesForOutgoing")]
+    pub fn get_minimum_pool_notes_for_outgoing(&self) -> BigIntString {
+        BigIntString::from_u64(self.0.minimum_pool_notes_for_outgoing())
+    }
+
+    #[napi(getter, js_name = "minimumPoolNotesForOutgoingChangeRules")]
+    pub fn get_minimum_pool_notes_for_outgoing_change_rules(
+        &self,
+    ) -> Option<ChangeControlRulesNAPI> {
+        match &self.0 {
+            TokenConfiguration::V0(_) => None,
+            TokenConfiguration::V1(v1) => Some(
+                v1.minimum_pool_notes_for_outgoing_change_rules
+                    .clone()
+                    .into(),
+            ),
+        }
+    }
+
+    #[napi(setter, js_name = "hasShieldedPool")]
+    pub fn set_has_shielded_pool(&mut self, has_shielded_pool: bool) {
+        self.0.set_has_shielded_pool(has_shielded_pool)
+    }
+
+    #[napi(setter, js_name = "isTransferable")]
+    pub fn set_is_transferable(&mut self, transferable: bool) {
+        self.0.set_transferable(transferable)
+    }
+
+    #[napi(setter, js_name = "minimumPoolNotesForOutgoing")]
+    pub fn set_minimum_pool_notes_for_outgoing(
+        &mut self,
+        minimum_pool_notes: Option<BigIntString>,
+    ) -> Result<(), napi::Error> {
+        let minimum_pool_notes = minimum_pool_notes.map(|v| v.try_to_u64()).transpose()?;
+
+        match self
+            .0
+            .set_minimum_pool_notes_for_outgoing(minimum_pool_notes)
+        {
+            true => Ok(()),
+            false => Err(napi::Error::new(
+                napi::Status::InvalidArg,
+                "minimum pool notes for outgoing requires a token with a shielded pool",
+            )),
+        }
+    }
+
     #[napi(setter, js_name = "conventions")]
     pub fn set_conventions(&mut self, conventions: &TokenConfigurationConventionNAPI) {
         self.0.set_conventions(conventions.clone().into())
@@ -221,13 +280,7 @@ impl TokenConfigurationNAPI {
 
     #[napi(setter, js_name = "keepsHistory")]
     pub fn set_keeps_history(&mut self, keeps_history: &TokenKeepsHistoryRulesNAPI) {
-        self.0 = match self.0.clone() {
-            TokenConfiguration::V0(mut v0) => {
-                v0.keeps_history = keeps_history.clone().into();
-
-                TokenConfiguration::V0(v0)
-            }
-        };
+        self.0.as_v0_mut().keeps_history = keeps_history.clone().into();
     }
 
     #[napi(setter, js_name = "startAsPaused")]
@@ -263,13 +316,7 @@ impl TokenConfigurationNAPI {
 
     #[napi(setter, js_name = "marketplaceRules")]
     pub fn set_marketplace_rules(&mut self, marketplace_rules: &TokenMarketplaceRulesNAPI) {
-        self.0 = match self.0.clone() {
-            TokenConfiguration::V0(mut v0) => {
-                v0.marketplace_rules = marketplace_rules.clone().into();
-
-                TokenConfiguration::V0(v0)
-            }
-        }
+        self.0.as_v0_mut().marketplace_rules = marketplace_rules.clone().into();
     }
 
     #[napi(setter, js_name = "manualMintingRules")]

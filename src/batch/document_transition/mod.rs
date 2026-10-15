@@ -1,8 +1,8 @@
-use dpp::prelude::{Identifier};
+use dpp::prelude::Identifier;
 use dpp::state_transition::batch_transition::batched_transition::document_transition::{
     DocumentTransition, DocumentTransitionV0Methods,
 };
-use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::{DocumentTransitionActionType, DocumentTransitionActionTypeGetter};
+use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::DocumentTransitionActionTypeGetter;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -43,15 +43,7 @@ impl DocumentTransitionNAPI {
 
     #[napi(getter, js_name = "actionTypeNumber")]
     pub fn get_action_type_number(&self) -> u8 {
-        match self.0.action_type() {
-            DocumentTransitionActionType::Create => 0,
-            DocumentTransitionActionType::Replace => 1,
-            DocumentTransitionActionType::Delete => 2,
-            DocumentTransitionActionType::Transfer => 3,
-            DocumentTransitionActionType::Purchase => 4,
-            DocumentTransitionActionType::UpdatePrice => 5,
-            DocumentTransitionActionType::IgnoreWhileBumpingRevision => 6,
-        }
+        BatchTypeNAPI::from(self.0.action_type()).into()
     }
 
     #[napi(getter, js_name = "dataContractId")]

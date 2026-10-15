@@ -53,10 +53,13 @@ jobs:
       # /Halo 2 proving stack, which requires nightly + rust-src. Pinned for
       # reproducible, flag-stable artifacts (see WASM_TOOLCHAIN below). Installed
       # first so the stable step below stays the rustup default for native builds.
+      # Must stay on a 1.99 nightly: from 1.100 rustc links crt1-reactor.o itself,
+      # which collides with the copy napi-build 2.3 adds (duplicate `_initialize`).
+      # Newer napi-build detects this but requires emnapi v2.
       - name: Setup Rust nightly (wasm build-std)
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2026-10-13
+          toolchain: nightly-2026-08-15
           targets: wasm32-wasip1-threads
           components: rust-src
 
@@ -96,7 +99,7 @@ jobs:
         env:
           RUSTFLAGS: '-C target-feature=-crt-static'
           NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-gnu,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc,aarch64-pc-windows-msvc
-          WASM_TOOLCHAIN: nightly-2026-10-13
+          WASM_TOOLCHAIN: nightly-2026-08-15
           # Accepts Microsoft's license for the CRT/SDK headers cargo-xwin downloads.
           XWIN_ACCEPT_LICENSE: '1'
 

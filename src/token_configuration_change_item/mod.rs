@@ -117,6 +117,15 @@ impl TokenConfigurationChangeItemNAPI {
                 String::from("MarketplaceTradeModeAdminGroup")
             }
             TokenConfigurationChangeItem::MainControlGroup(_) => String::from("MainControlGroup"),
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoing(_) => {
+                String::from("MinimumPoolNotesForOutgoing")
+            }
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoingControlGroup(_) => {
+                String::from("MinimumPoolNotesForOutgoingControlGroup")
+            }
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoingAdminGroup(_) => {
+                String::from("MinimumPoolNotesForOutgoingAdminGroup")
+            }
         }
     }
 
@@ -228,6 +237,15 @@ impl TokenConfigurationChangeItemNAPI {
             }
             TokenConfigurationChangeItem::MainControlGroup(group_contract_position) => {
                 Either9::I(group_contract_position)
+            }
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoing(minimum_pool_notes) => {
+                Either9::D(Some(BigIntString::from_u64(minimum_pool_notes)))
+            }
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoingControlGroup(
+                action_takers,
+            ) => Either9::C(AuthorizedActionTakersNAPI::from(action_takers)),
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoingAdminGroup(action_takers) => {
+                Either9::C(AuthorizedActionTakersNAPI::from(action_takers))
             }
         }
     }
@@ -411,6 +429,42 @@ impl TokenConfigurationChangeItemNAPI {
         TokenConfigurationChangeItemNAPI(TokenConfigurationChangeItem::MaxSupplyAdminGroup(
             action_taker.clone().into(),
         ))
+    }
+}
+
+#[napi]
+impl TokenConfigurationChangeItemNAPI {
+    #[napi(js_name = "MinimumPoolNotesForOutgoingItem")]
+    pub fn minimum_pool_notes_for_outgoing_item(
+        minimum_pool_notes: BigIntString,
+    ) -> Result<Self, napi::Error> {
+        Ok(TokenConfigurationChangeItemNAPI(
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoing(
+                minimum_pool_notes.try_to_u64()?,
+            ),
+        ))
+    }
+
+    #[napi(js_name = "MinimumPoolNotesForOutgoingControlGroupItem")]
+    pub fn minimum_pool_notes_for_outgoing_control_group_item(
+        action_taker: &AuthorizedActionTakersNAPI,
+    ) -> Self {
+        TokenConfigurationChangeItemNAPI(
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoingControlGroup(
+                action_taker.clone().into(),
+            ),
+        )
+    }
+
+    #[napi(js_name = "MinimumPoolNotesForOutgoingAdminGroupItem")]
+    pub fn minimum_pool_notes_for_outgoing_admin_group_item(
+        action_taker: &AuthorizedActionTakersNAPI,
+    ) -> Self {
+        TokenConfigurationChangeItemNAPI(
+            TokenConfigurationChangeItem::MinimumPoolNotesForOutgoingAdminGroup(
+                action_taker.clone().into(),
+            ),
+        )
     }
 }
 

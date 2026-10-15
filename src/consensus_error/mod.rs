@@ -1,4 +1,4 @@
-use dpp::{consensus::ConsensusError, serialization::PlatformDeserializable};
+use dpp::{consensus::ConsensusError, serialization::PlatformDeserializableUntrusted};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -14,7 +14,8 @@ impl ConsensusErrorNAPI {
         let error_bytes = error.to_vec();
 
         Ok(ConsensusErrorNAPI(
-            ConsensusError::deserialize_from_bytes(error_bytes.as_slice()).with_js_error()?,
+            ConsensusError::deserialize_from_bytes_untrusted(error_bytes.as_slice())
+                .with_js_error()?,
         ))
     }
 

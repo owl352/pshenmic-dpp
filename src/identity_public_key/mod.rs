@@ -1,6 +1,6 @@
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::platform_value::string_encoding::{decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::{
     identity::{
         KeyType, Purpose,
@@ -283,7 +283,8 @@ impl IdentityPublicKeyNAPI {
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<IdentityPublicKeyNAPI, napi::Error> {
         Ok(IdentityPublicKeyNAPI(
-            IdentityPublicKey::deserialize_from_bytes(bytes.to_vec().as_slice()).with_js_error()?,
+            IdentityPublicKey::deserialize_from_bytes_untrusted(bytes.to_vec().as_slice())
+                .with_js_error()?,
         ))
     }
 
@@ -292,8 +293,8 @@ impl IdentityPublicKeyNAPI {
         let bytes = decode(&hex, Encoding::Hex)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;
 
-        let public_key =
-            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let public_key = IdentityPublicKey::deserialize_from_bytes_untrusted(bytes.as_slice())
+            .with_js_error()?;
 
         Ok(IdentityPublicKeyNAPI(public_key))
     }
@@ -303,8 +304,8 @@ impl IdentityPublicKeyNAPI {
         let bytes = decode(&base64, Encoding::Base64)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;
 
-        let public_key =
-            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let public_key = IdentityPublicKey::deserialize_from_bytes_untrusted(bytes.as_slice())
+            .with_js_error()?;
 
         Ok(IdentityPublicKeyNAPI(public_key))
     }

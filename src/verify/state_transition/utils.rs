@@ -319,5 +319,30 @@ pub fn state_transition_proof_result_to_js(
                     .collect(),
             )))
         }
+        StateTransitionProofResult::VerifiedTokenShieldedPoolBalance(token_id, balance) => {
+            Ok(Either26::D(VerifiedIdentityBalanceNAPI {
+                id: IdentifierNAPI::from(token_id.clone()),
+                balance: BigIntString::from_u64(balance.clone()),
+            }))
+        }
+        StateTransitionProofResult::VerifiedTokenGroupActionWithShieldedPoolBalance(
+            group_power,
+            group_action_status,
+            amount,
+        ) => Ok(Either26::N(VerifiedTokenGroupActionWithTokenBalanceNAPI {
+            group_sum_power: group_power.clone(),
+            group_action_status: GroupActionStatusNAPI::from(group_action_status.clone()).into(),
+            amount: amount.clone().map(BigIntString::from_u64),
+        })),
+        StateTransitionProofResult::VerifiedContractModerationListStatuses(..)
+        | StateTransitionProofResult::VerifiedContractFeeClaim(..)
+        | StateTransitionProofResult::VerifiedContractDocumentRemoval(..)
+        | StateTransitionProofResult::VerifiedContractTeamActionSignature(..)
+        | StateTransitionProofResult::VerifiedTokenGroupActionWithShieldedNullifiers(..) => {
+            Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "this state transition proof result is not supported yet",
+            ))
+        }
     }
 }

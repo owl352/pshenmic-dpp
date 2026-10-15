@@ -3,7 +3,7 @@ use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::DataContract;
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::state_transition::StateTransition;
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV0;
@@ -65,8 +65,10 @@ impl DataContractCreateTransitionNAPI {
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<DataContractCreateTransitionNAPI, napi::Error> {
         let rs_data_contract_create_transition: DataContractCreateTransition =
-            DataContractCreateTransition::deserialize_from_bytes(bytes.to_vec().as_slice())
-                .with_js_error()?;
+            DataContractCreateTransition::deserialize_from_bytes_untrusted(
+                bytes.to_vec().as_slice(),
+            )
+            .with_js_error()?;
 
         Ok(DataContractCreateTransitionNAPI(
             rs_data_contract_create_transition,

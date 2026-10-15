@@ -162,6 +162,24 @@ export class TokenConfigurationChangeItemWASM {
     )
   }
 
+  static MinimumPoolNotesForOutgoingItem (minimumPoolNotes: bigint): TokenConfigurationChangeItemWASM {
+    return new TokenConfigurationChangeItemWASM(
+      dppProvider.dpp.TokenConfigurationChangeItemNAPI.MinimumPoolNotesForOutgoingItem(minimumPoolNotes.toString())
+    )
+  }
+
+  static MinimumPoolNotesForOutgoingControlGroupItem (actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM {
+    return new TokenConfigurationChangeItemWASM(
+      dppProvider.dpp.TokenConfigurationChangeItemNAPI.MinimumPoolNotesForOutgoingControlGroupItem(actionTaker._rawAuthorizedActionTakers)
+    )
+  }
+
+  static MinimumPoolNotesForOutgoingAdminGroupItem (actionTaker: AuthorizedActionTakersWASM): TokenConfigurationChangeItemWASM {
+    return new TokenConfigurationChangeItemWASM(
+      dppProvider.dpp.TokenConfigurationChangeItemNAPI.MinimumPoolNotesForOutgoingAdminGroupItem(actionTaker._rawAuthorizedActionTakers)
+    )
+  }
+
   static MintingAllowChoosingDestinationItem (flag: boolean): TokenConfigurationChangeItemWASM {
     return new TokenConfigurationChangeItemWASM(
       dppProvider.dpp.TokenConfigurationChangeItemNAPI.MintingAllowChoosingDestinationItem(flag)

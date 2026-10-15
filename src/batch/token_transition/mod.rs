@@ -88,20 +88,23 @@ impl TokenTransitionNAPI {
     #[napi(js_name = "getTransition")]
     pub fn to_transition(
         &self,
-    ) -> Either11<
-        TokenConfigUpdateTransitionNAPI,
-        TokenDirectPurchaseTransitionNAPI,
-        TokenSetPriceForDirectPurchaseTransitionNAPI,
-        TokenBurnTransitionNAPI,
-        TokenClaimTransitionNAPI,
-        TokenDestroyFrozenFundsTransitionNAPI,
-        TokenEmergencyActionTransitionNAPI,
-        TokenFreezeTransitionNAPI,
-        TokenMintTransitionNAPI,
-        TokenTransferTransitionNAPI,
-        TokenUnFreezeTransitionNAPI,
+    ) -> Result<
+        Either11<
+            TokenConfigUpdateTransitionNAPI,
+            TokenDirectPurchaseTransitionNAPI,
+            TokenSetPriceForDirectPurchaseTransitionNAPI,
+            TokenBurnTransitionNAPI,
+            TokenClaimTransitionNAPI,
+            TokenDestroyFrozenFundsTransitionNAPI,
+            TokenEmergencyActionTransitionNAPI,
+            TokenFreezeTransitionNAPI,
+            TokenMintTransitionNAPI,
+            TokenTransferTransitionNAPI,
+            TokenUnFreezeTransitionNAPI,
+        >,
+        napi::Error,
     > {
-        match self.clone().0 {
+        let transition = match self.clone().0 {
             TokenTransition::ConfigUpdate(token_transition) => {
                 Either11::A(TokenConfigUpdateTransitionNAPI::from(token_transition).into())
             }
@@ -135,7 +138,24 @@ impl TokenTransitionNAPI {
             TokenTransition::Unfreeze(token_transition) => {
                 Either11::K(TokenUnFreezeTransitionNAPI::from(token_transition).into())
             }
-        }
+            TokenTransition::Shield(_)
+            | TokenTransition::Unshield(_)
+            | TokenTransition::ShieldedTransfer(_)
+            | TokenTransition::MintToPool(_)
+            | TokenTransition::BurnFromPool(_)
+            | TokenTransition::ClaimToPool(_)
+            | TokenTransition::DirectPurchaseToPool(_) => {
+                return Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    format!(
+                        "{} token transition is not supported yet",
+                        self.get_transition_type()
+                    ),
+                ));
+            }
+        };
+
+        Ok(transition)
     }
 
     #[napi(js_name = "getTransitionTypeNumber")]
@@ -152,6 +172,13 @@ impl TokenTransitionNAPI {
             TokenTransition::ConfigUpdate(_) => 8,
             TokenTransition::DirectPurchase(_) => 9,
             TokenTransition::SetPriceForDirectPurchase(_) => 10,
+            TokenTransition::Shield(_) => 11,
+            TokenTransition::Unshield(_) => 12,
+            TokenTransition::ShieldedTransfer(_) => 13,
+            TokenTransition::MintToPool(_) => 14,
+            TokenTransition::BurnFromPool(_) => 15,
+            TokenTransition::ClaimToPool(_) => 16,
+            TokenTransition::DirectPurchaseToPool(_) => 17,
         }
     }
 
@@ -171,6 +198,13 @@ impl TokenTransitionNAPI {
             TokenTransition::SetPriceForDirectPurchase(_) => {
                 "SetPriceForDirectPurchase".to_string()
             }
+            TokenTransition::Shield(_) => "Shield".to_string(),
+            TokenTransition::Unshield(_) => "Unshield".to_string(),
+            TokenTransition::ShieldedTransfer(_) => "ShieldedTransfer".to_string(),
+            TokenTransition::MintToPool(_) => "MintToPool".to_string(),
+            TokenTransition::BurnFromPool(_) => "BurnFromPool".to_string(),
+            TokenTransition::ClaimToPool(_) => "ClaimToPool".to_string(),
+            TokenTransition::DirectPurchaseToPool(_) => "DirectPurchaseToPool".to_string(),
         }
     }
 
