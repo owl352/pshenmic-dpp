@@ -76,6 +76,10 @@ async function main() {
   // dpp). It replaces std's default features, which also drops `backtrace`
   // (rustc_demangle), unused under immediate-abort panics. ~270KB smaller,
   // no measurable proving slowdown.
+  // `--cfg tokio_unstable` is what makes napi (>=3.11) treat the target as
+  // threaded and run async `#[napi]` fns / `spawn_future` (the proving stack)
+  // on tokio; without it napi compiles that path out and every async call
+  // rejects with "Built-in Tokio async tasks require a threaded WASI target".
   await execTask(
     `cargo +${wasmToolchain} build --target wasm32-wasip1-threads -Z unstable-options -Z build-std=std,panic_abort -Z build-std-features=optimize_for_size ${isRelease ? `--profile ${wasmProfile}` : ""}`,
     {
@@ -83,7 +87,7 @@ async function main() {
         ...process.env,
         EMNAPI_LINK_DIR: emnapi,
         RUSTFLAGS:
-          "-C target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort",
+          "-C target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort --cfg tokio_unstable",
       },
     }
   );

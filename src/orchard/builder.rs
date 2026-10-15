@@ -27,9 +27,10 @@ use dpp::{
 use grovedb_commitment_tree::{Anchor, FullViewingKey, OutgoingViewingKey, SpendAuthorizingKey};
 use napi::{
     Either, Env,
-    bindgen_prelude::{PromiseRaw, Uint8Array},
+    bindgen_prelude::{PromiseRaw, ToNapiValue, Uint8Array},
 };
 use napi_derive::napi;
+use std::{future::Future, pin::Pin};
 
 use dpp::group::{GroupStateTransitionInfo, GroupStateTransitionInfoStatus};
 use dpp::identity::Identity;
@@ -169,6 +170,19 @@ impl TokenTarget {
     }
 }
 
+type ProvingFuture<T> = Pin<Box<dyn Future<Output = Result<T, napi::Error>> + Send>>;
+
+/// `Env::spawn_future` monomorphizes napi's whole async machinery per future
+/// type, i.e. once per proving method. Boxing the futures collapses that to one
+/// instantiation per result type, keeping the wasm under Chrome's 8MB
+/// sync-compile limit; the extra indirection is one virtual call per proof.
+fn spawn_proving<T: 'static + Send + ToNapiValue>(
+    env: &Env,
+    future: ProvingFuture<T>,
+) -> Result<PromiseRaw<'_, T>, napi::Error> {
+    env.spawn_future(future)
+}
+
 #[napi(js_name = "ShieldedBuilderNAPI")]
 pub struct ShieldedBuilderNAPI {
     proover: OrchardProverNAPI,
@@ -183,7 +197,7 @@ impl ShieldedBuilderNAPI {
     }
 
     // Every proving method below parses its JS arguments synchronously and
-    // runs the actual Halo 2 proving inside `env.spawn_future`, i.e. on a
+    // runs the actual Halo 2 proving inside `spawn_proving`, i.e. on a
     // worker thread. Proving takes seconds and joins the rayon pool — done
     // on the JS thread it would freeze the event loop, and on a browser
     // main thread it aborts outright (`Atomics.wait` is forbidden there).
@@ -236,23 +250,26 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition: StateTransition = build_shield_from_asset_lock_transition(
-                &recipient,
-                shield_amount,
-                asset_lock_proof,
-                private_key.as_slice(),
-                &prover,
-                memo.to_bytes(),
-                sender_ovk,
-                surplus_output,
-                js_dummy_outputs as usize,
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition: StateTransition = build_shield_from_asset_lock_transition(
+                    &recipient,
+                    shield_amount,
+                    asset_lock_proof,
+                    private_key.as_slice(),
+                    &prover,
+                    memo.to_bytes(),
+                    sender_ovk,
+                    surplus_output,
+                    js_dummy_outputs as usize,
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a `ShieldedWithdrawal` state transition (shielded pool -> core L1).
@@ -318,28 +335,31 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_shielded_withdrawal_transition(
-                spends,
-                withdrawal_amount,
-                output_script,
-                js_core_fee_per_byte,
-                pooling,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                &prover,
-                memo.to_bytes(),
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_shielded_withdrawal_transition(
+                    spends,
+                    withdrawal_amount,
+                    output_script,
+                    js_core_fee_per_byte,
+                    pooling,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    &prover,
+                    memo.to_bytes(),
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds an `Unshield` state transition (shielded pool -> platform address).
@@ -403,26 +423,29 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_unshield_transition(
-                spends,
-                output_address,
-                unshield_amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                &prover,
-                memo.to_bytes(),
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_unshield_transition(
+                    spends,
+                    output_address,
+                    unshield_amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    &prover,
+                    memo.to_bytes(),
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds a `ShieldedTransfer` state transition (shielded pool -> shielded pool).
@@ -483,26 +506,29 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_shielded_transfer_transition(
-                spends,
-                &recipient,
-                transfer_amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                &prover,
-                memo.to_bytes(),
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_shielded_transfer_transition(
+                    spends,
+                    &recipient,
+                    transfer_amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    &prover,
+                    memo.to_bytes(),
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds a `ShieldedTransfer` that pays many Orchard addresses at once
@@ -564,23 +590,26 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_multi_output_shielded_transfer(
-                spends,
-                outputs,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                &prover,
-                &platform_version,
-            )?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_multi_output_shielded_transfer(
+                    spends,
+                    outputs,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    &prover,
+                    &platform_version,
+                )?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds a `Shield` state transition (transparent platform addresses -> pool).
@@ -646,24 +675,27 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_shield_transition(
-                &recipient,
-                shield_amount,
-                inputs,
-                fee_strategy,
-                &signer,
-                js_user_fee_increase,
-                &prover,
-                memo.to_bytes(),
-                sender_ovk,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_shield_transition(
+                    &recipient,
+                    shield_amount,
+                    inputs,
+                    fee_strategy,
+                    &signer,
+                    js_user_fee_increase,
+                    &prover,
+                    memo.to_bytes(),
+                    sender_ovk,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds an `IdentityCreateFromShieldedPool` transition (pool -> new identity).
@@ -756,26 +788,29 @@ impl ShieldedBuilderNAPI {
 
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let result = build_identity_create_from_shielded_pool_transition(
-                public_keys,
-                denomination,
-                send_to_address,
-                spends,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                &prover,
-                &signer,
-                memo.to_bytes(),
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let result = build_identity_create_from_shielded_pool_transition(
+                    public_keys,
+                    denomination,
+                    send_to_address,
+                    spends,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    &prover,
+                    &signer,
+                    memo.to_bytes(),
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(IdentityCreateFromShieldedPoolResultNAPI(result))
-        })
+                Ok(IdentityCreateFromShieldedPoolResultNAPI(result))
+            }),
+        )
     }
 
     /// Builds a `ShieldFromIdentity` transition (identity balance -> shielded pool), signed with
@@ -806,25 +841,28 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_shield_from_identity_transition(
-                &identity,
-                &recipient,
-                shield_amount,
-                nonce,
-                &signer,
-                Some(&signing_key),
-                js_user_fee_increase,
-                &prover,
-                memo,
-                sender_ovk,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_shield_from_identity_transition(
+                    &identity,
+                    &recipient,
+                    shield_amount,
+                    nonce,
+                    &signer,
+                    Some(&signing_key),
+                    js_user_fee_increase,
+                    &prover,
+                    memo,
+                    sender_ovk,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds an `IdentityTopUpFromShieldedPool` transition (shielded pool -> identity balance).
@@ -855,26 +893,29 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_identity_top_up_from_shielded_pool_transition(
-                spends,
-                identity_id,
-                top_up_amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                &prover,
-                memo,
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_identity_top_up_from_shielded_pool_transition(
+                    spends,
+                    identity_id,
+                    top_up_amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    &prover,
+                    memo,
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds the shielded payment of a document's token cost, spent from the token's shielded
@@ -909,26 +950,29 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let payment = build_document_shielded_token_payment(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                document_id,
-                spends,
-                amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                memo,
-                &prover,
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let payment = build_document_shielded_token_payment(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    document_id,
+                    spends,
+                    amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    memo,
+                    &prover,
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(TokenShieldedPaymentNAPI::from(payment))
-        })
+                Ok(TokenShieldedPaymentNAPI::from(payment))
+            }),
+        )
     }
 
     /// Builds a token `Shield` batch transition (owner token balance -> token shielded pool),
@@ -968,28 +1012,31 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_shield_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                &recipient,
-                amount,
-                memo,
-                sender_ovk,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_shield_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    &recipient,
+                    amount,
+                    memo,
+                    sender_ovk,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a token `Unshield` batch transition (token shielded pool -> `recipientId`'s token
@@ -1037,32 +1084,35 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_unshield_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                spends,
-                recipient_id,
-                amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                memo,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_unshield_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    spends,
+                    recipient_id,
+                    amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    memo,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a token `ShieldedTransfer` batch transition (token shielded pool -> token
@@ -1110,32 +1160,35 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_shielded_transfer_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                spends,
-                &recipient,
-                transfer_amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                memo,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_shielded_transfer_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    spends,
+                    &recipient,
+                    transfer_amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    memo,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a token `MintToPool` batch transition (new tokens minted into the token shielded
@@ -1179,30 +1232,33 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_mint_to_pool_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                &recipient,
-                amount,
-                memo,
-                sender_ovk,
-                js_public_note,
-                using_group_info,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_mint_to_pool_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    &recipient,
+                    amount,
+                    memo,
+                    sender_ovk,
+                    js_public_note,
+                    using_group_info,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a token `BurnFromPool` batch transition (tokens burned out of the token shielded
@@ -1252,33 +1308,36 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_burn_from_pool_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                spends,
-                amount,
-                &change_address,
-                &fvk,
-                &ask,
-                anchor,
-                memo,
-                js_public_note,
-                using_group_info,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_burn_from_pool_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    spends,
+                    amount,
+                    &change_address,
+                    &fvk,
+                    &ask,
+                    anchor,
+                    memo,
+                    js_public_note,
+                    using_group_info,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a token `ClaimToPool` batch transition (a distribution claimed into the token
@@ -1323,31 +1382,34 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_claim_to_pool_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                &recipient,
-                amount,
-                distribution_type,
-                claim_up_to,
-                memo,
-                sender_ovk,
-                js_public_note,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_claim_to_pool_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    &recipient,
+                    amount,
+                    distribution_type,
+                    claim_up_to,
+                    memo,
+                    sender_ovk,
+                    js_public_note,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a token `DirectPurchaseToPool` batch transition (tokens bought at their direct
@@ -1390,29 +1452,32 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let state_transition = build_token_direct_purchase_to_pool_transition(
-                token.token_id,
-                token.owner_id,
-                token.data_contract_id,
-                token.token_contract_position,
-                &recipient,
-                token_count,
-                total_agreed_price,
-                memo,
-                sender_ovk,
-                &identity_public_key,
-                identity_contract_nonce,
-                js_user_fee_increase,
-                &signer,
-                &prover,
-                &platform_version,
-            )
-            .await
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let state_transition = build_token_direct_purchase_to_pool_transition(
+                    token.token_id,
+                    token.owner_id,
+                    token.data_contract_id,
+                    token.token_contract_position,
+                    &recipient,
+                    token_count,
+                    total_agreed_price,
+                    memo,
+                    sender_ovk,
+                    &identity_public_key,
+                    identity_contract_nonce,
+                    js_user_fee_increase,
+                    &signer,
+                    &prover,
+                    &platform_version,
+                )
+                .await
+                .with_js_error()?;
 
-            Ok(StateTransitionNAPI::from(state_transition))
-        })
+                Ok(StateTransitionNAPI::from(state_transition))
+            }),
+        )
     }
 
     /// Builds a `TokenShieldedTransferWithShieldedFee` transition: tokens move inside the token
@@ -1456,39 +1521,42 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) =
-                build_token_shielded_transfer_with_shielded_fee_transition(
-                    token_id,
-                    data_contract_id,
-                    js_token_contract_position,
-                    TokenPoolSpender {
-                        spends: token_spends,
-                        change_address: &token_change_address,
-                        fvk: &fvk,
-                        ask: &ask,
-                        anchor: token_anchor,
-                    },
-                    &recipient,
-                    transfer_amount,
-                    memo,
-                    ShieldedFeePayer {
-                        spends: fee_spends,
-                        change_address: &fee_change_address,
-                        fvk: &fvk,
-                        ask: &ask,
-                        anchor: fee_anchor,
-                    },
-                    &prover,
-                    &platform_version,
-                )
-                .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) =
+                    build_token_shielded_transfer_with_shielded_fee_transition(
+                        token_id,
+                        data_contract_id,
+                        js_token_contract_position,
+                        TokenPoolSpender {
+                            spends: token_spends,
+                            change_address: &token_change_address,
+                            fvk: &fvk,
+                            ask: &ask,
+                            anchor: token_anchor,
+                        },
+                        &recipient,
+                        transfer_amount,
+                        memo,
+                        ShieldedFeePayer {
+                            spends: fee_spends,
+                            change_address: &fee_change_address,
+                            fvk: &fvk,
+                            ask: &ask,
+                            anchor: fee_anchor,
+                        },
+                        &prover,
+                        &platform_version,
+                    )
+                    .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds a `TokenUnshieldWithShieldedFee` transition: tokens leave the token shielded pool
@@ -1531,38 +1599,41 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_token_unshield_with_shielded_fee_transition(
-                token_id,
-                data_contract_id,
-                js_token_contract_position,
-                TokenPoolSpender {
-                    spends: token_spends,
-                    change_address: &token_change_address,
-                    fvk: &fvk,
-                    ask: &ask,
-                    anchor: token_anchor,
-                },
-                recipient_id,
-                amount,
-                memo,
-                ShieldedFeePayer {
-                    spends: fee_spends,
-                    change_address: &fee_change_address,
-                    fvk: &fvk,
-                    ask: &ask,
-                    anchor: fee_anchor,
-                },
-                &prover,
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_token_unshield_with_shielded_fee_transition(
+                    token_id,
+                    data_contract_id,
+                    js_token_contract_position,
+                    TokenPoolSpender {
+                        spends: token_spends,
+                        change_address: &token_change_address,
+                        fvk: &fvk,
+                        ask: &ask,
+                        anchor: token_anchor,
+                    },
+                    recipient_id,
+                    amount,
+                    memo,
+                    ShieldedFeePayer {
+                        spends: fee_spends,
+                        change_address: &fee_change_address,
+                        fvk: &fvk,
+                        ask: &ask,
+                        anchor: fee_anchor,
+                    },
+                    &prover,
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 
     /// Builds a `TokenPurchaseFromShieldedPool` transition: tokens are bought at their direct
@@ -1602,33 +1673,36 @@ impl ShieldedBuilderNAPI {
         let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
         let prover = self.proover.shared();
 
-        env.spawn_future(async move {
-            let (state_transition, fee) = build_token_purchase_from_shielded_pool_transition(
-                token_id,
-                data_contract_id,
-                js_token_contract_position,
-                &recipient,
-                &fvk,
-                token_count,
-                total_agreed_price,
-                memo,
-                ShieldedFeePayer {
-                    spends: fee_spends,
-                    change_address: &fee_change_address,
-                    fvk: &fvk,
-                    ask: &ask,
-                    anchor: fee_anchor,
-                },
-                &prover,
-                &platform_version,
-            )
-            .with_js_error()?;
+        spawn_proving(
+            env,
+            Box::pin(async move {
+                let (state_transition, fee) = build_token_purchase_from_shielded_pool_transition(
+                    token_id,
+                    data_contract_id,
+                    js_token_contract_position,
+                    &recipient,
+                    &fvk,
+                    token_count,
+                    total_agreed_price,
+                    memo,
+                    ShieldedFeePayer {
+                        spends: fee_spends,
+                        change_address: &fee_change_address,
+                        fvk: &fvk,
+                        ask: &ask,
+                        anchor: fee_anchor,
+                    },
+                    &prover,
+                    &platform_version,
+                )
+                .with_js_error()?;
 
-            Ok(ShieldedWithdrawalResultNAPI {
-                state_transition,
-                fee,
-            })
-        })
+                Ok(ShieldedWithdrawalResultNAPI {
+                    state_transition,
+                    fee,
+                })
+            }),
+        )
     }
 }
 

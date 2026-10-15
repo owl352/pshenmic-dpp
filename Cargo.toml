@@ -29,8 +29,8 @@ zip32 = "=0.2.1"
 # `#[cfg(has_std)]`, which its build.rs only auto-detects on native. Force the
 # `std` feature on so it compiles for the wasm target too.
 indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"] }
-napi = {version = "3.9.1", features = ["napi3", "serde-json", "async"], default-features = false}
-napi-derive = "3.5.6"
+napi = {version = "=3.11.0", features = ["napi3", "async"], default-features = false}
+napi-derive = "=3.6.0"
 # Multi-output shielded transfers rebuild the Orchard prove/sign pipeline
 # locally (dpp's helper is `pub(crate)`), which needs an `OsRng` from the same
 # rand version orchard is built against.
@@ -46,7 +46,8 @@ futures = "0.3"
 
 
 [build-dependencies]
-napi-build = "2.3.1"
+napi-build = "~2.3.1"
+napi-derive-backend = "=6.0.0"
 
 [profile.release]
 lto = "fat"
