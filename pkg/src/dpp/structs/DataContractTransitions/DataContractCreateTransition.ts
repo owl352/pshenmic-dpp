@@ -2,7 +2,7 @@ import type { DataContractCreateTransitionNAPI, PlatformVersionNAPI } from '../.
 import { DataContractWASM } from '../DataContract.js'
 import { ContractGroupMembership, ContractGroupRegistration, PlatformVersionLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
-import { valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
+import { plainIdentifiersToBytes, valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
 import { IdentifierWASM } from '../Identifier.js'
 import { StateTransitionWASM } from '../StateTransition.js'
 
@@ -34,7 +34,7 @@ export class DataContractCreateTransitionWASM {
 
   /** Registering a contract group turns the transition into V1 (platform v14+) **/
   set contractGroup (value: ContractGroupRegistration | undefined | null) {
-    this._rawDataContractCreateTransition.contractGroup = value != null ? valueToDynamicValue(value) : undefined
+    this._rawDataContractCreateTransition.contractGroup = value != null ? valueToDynamicValue(plainIdentifiersToBytes(value)) : undefined
   }
 
   /** The id of the group this transition registers **/
@@ -49,7 +49,7 @@ export class DataContractCreateTransitionWASM {
   }
 
   set contractGroupMemberships (value: ContractGroupMembership[]) {
-    this._rawDataContractCreateTransition.contractGroupMemberships = valueToDynamicValue(value)
+    this._rawDataContractCreateTransition.contractGroupMemberships = valueToDynamicValue(plainIdentifiersToBytes(value))
   }
 
   get identityNonce (): bigint {

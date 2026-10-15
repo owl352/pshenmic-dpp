@@ -162,20 +162,11 @@ pub fn serde_to_js<T: serde::Serialize>(value: &T) -> Result<DynamicValue, napi:
         .try_into()
 }
 
-/// Identifiers can come as bytes or as base58 strings: platform values decode the first,
-/// only the human-readable (JSON) decoding accepts the second
+/// Identifiers must come as bytes: the TS wrappers convert base58 strings beforehand
 pub fn serde_from_js<T: serde::de::DeserializeOwned>(
     js_value: &DynamicValue,
 ) -> Result<T, napi::Error> {
-    let value = Value::try_from(js_value.clone())?;
-
-    dpp::platform_value::from_value(value.clone()).or_else(|_| {
-        let json: serde_json::Value = value
-            .try_into()
-            .map_err(ProtocolError::ValueError)
-            .with_js_error()?;
-
-        serde_json::from_value(json)
-            .map_err(|err| napi::Error::new(Status::InvalidArg, err.to_string()))
-    })
+    dpp::platform_value::from_value(Value::try_from(js_value.clone())?)
+        .map_err(ProtocolError::ValueError)
+        .with_js_error()
 }

@@ -92,3 +92,23 @@ export function preparePlatformAddressValue (address: PlatformAddressLike): Plat
     return new dppProvider.dpp.DynamicValue(address)
   }
 }
+
+const PLAIN_IDENTIFIER_KEYS = new Set(['identityId', 'documentId', 'actionId', 'reasonDocumentId', 'contractGroupId', 'admins'])
+
+/**
+ * Plain moderation / contract group objects carry identifiers as base58 strings or bytes:
+ * the bindings decode them from bytes only, so identifier fields are turned into bytes here
+ */
+export function plainIdentifiersToBytes (value: any, isIdentifier: boolean = false): any {
+  if (isIdentifier && (typeof value === 'string' || value instanceof IdentifierWASM)) {
+    return new IdentifierWASM(value).bytes()
+  } else if (Array.isArray(value)) {
+    return value.map(item => plainIdentifiersToBytes(item, isIdentifier))
+  } else if (value != null && typeof value === 'object' && !(value instanceof Uint8Array)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, plainIdentifiersToBytes(item, PLAIN_IDENTIFIER_KEYS.has(key))])
+    )
+  }
+
+  return value
+}

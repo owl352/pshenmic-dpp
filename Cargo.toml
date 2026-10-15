@@ -58,10 +58,16 @@ incremental = false
 debug = false
 
 # The wasm build must stay under Chrome's 8MB main-thread sync-compile limit
-# (see build.cjs), so it optimizes for size. The Orchard/Halo 2 proving stack
-# keeps opt-level 3, where proving time is spent.
+# (see build.cjs), so dependencies optimize for minimal size. The Orchard/Halo 2
+# proving stack keeps opt-level 3, where proving time is spent.
 [profile.release-wasm]
 inherits = "release"
+opt-level = "z"
+
+# Fat LTO optimizes the whole linked module at the root crate's opt-level: at
+# "z" it slows proving ~7% even with the proving crates at 3, at "s" it doesn't
+# (~260KB smaller than "s" everywhere, same proving time).
+[profile.release-wasm.package.pshenmic-dpp]
 opt-level = "s"
 
 [profile.release-wasm.package.halo2_proofs]
