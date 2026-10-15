@@ -1,7 +1,7 @@
 use dpp::platform_value::Value;
 use drive::query::WhereOperator::{
-    Between, BetweenExcludeBounds, BetweenExcludeLeft, BetweenExcludeRight, Equal, GreaterThan,
-    GreaterThanOrEquals, In, LessThan, LessThanOrEquals, StartsWith,
+    Between, BetweenExcludeBounds, BetweenExcludeLeft, BetweenExcludeRight, Contains, ContainsAny,
+    Equal, GreaterThan, GreaterThanOrEquals, In, LessThan, LessThanOrEquals, StartsWith,
 };
 use drive::query::{DriveDocumentQuery, InternalClauses, OrderClause, WhereClause};
 use indexmap::IndexMap;
@@ -110,6 +110,18 @@ fn parse_query_internal_clause(
     where_clauses: &DynamicValue,
     platform_version: &PlatformVersion,
 ) -> Result<InternalClauses, napi::Error> {
+    InternalClauses::extract_from_clauses(parse_where_clauses(where_clauses)?, platform_version)
+        .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))
+}
+
+/// `[[field, operator, value], ...]`; undefined or null is no clause
+pub(crate) fn parse_where_clauses(
+    where_clauses: &DynamicValue,
+) -> Result<Vec<WhereClause>, napi::Error> {
+    if where_clauses.is_undefined_or_null() {
+        return Ok(vec![]);
+    }
+
     let mut query_where_clauses: Vec<WhereClause> = Vec::new();
 
     let where_clauses_arr: Vec<DynamicValue> = match where_clauses.is_array() {
@@ -174,9 +186,11 @@ fn parse_query_internal_clause(
                 | "between_exclude_right" => BetweenExcludeRight,
                 "In" | "in" => In,
                 "StartsWith" | "startsWith" | "startswith" | "starts_with" => StartsWith,
+                "Contains" | "contains" => Contains,
+                "ContainsAny" | "containsAny" | "containsany" | "contains_any" => ContainsAny,
                 _ => Err(napi::Error::new(
                     napi::Status::InvalidArg,
-                    "operator is not a known operator (=, >, >=, <, <=, <=, Between, BetweenExcludeBounds, BetweenExcludeLeft, BetweenExcludeRight, In, StartsWith)",
+                    "operator is not a known operator (=, >, >=, <, <=, <=, Between, BetweenExcludeBounds, BetweenExcludeLeft, BetweenExcludeRight, In, StartsWith, Contains, ContainsAny)",
                 ))?,
             },
             None => Err(napi::Error::new(
@@ -192,13 +206,10 @@ fn parse_query_internal_clause(
         })
     }
 
-    Ok(
-        InternalClauses::extract_from_clauses(query_where_clauses, platform_version)
-            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?,
-    )
+    Ok(query_where_clauses)
 }
 
-fn parse_order_by_index_map(
+pub(crate) fn parse_order_by_index_map(
     js_order_by: Vec<Vec<String>>,
 ) -> Result<IndexMap<String, OrderClause>, napi::Error> {
     let mut order_by_map: IndexMap<String, OrderClause> = IndexMap::new();

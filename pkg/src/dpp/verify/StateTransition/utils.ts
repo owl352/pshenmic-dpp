@@ -35,6 +35,7 @@ import { VoteWASM } from '../../structs/MasternodeVote/Vote.js'
 import { DocumentWASM } from '../../structs/Document.js'
 import { PlatformAddressWASM } from '../../structs/PlatformAddress/PlatformAddress.js'
 import { dppProvider } from '../../provider.js'
+import { plainProofValue } from '../../utils.js'
 
 type Converter = (value: any) => VerifiedStateTransitionResultVariants
 
@@ -210,6 +211,11 @@ function convertTuple (result: any[]): VerifiedStateTransitionResultVariants {
 }
 
 export function convertResult (result: VerifiedStateTransitionResultVariantsRAW): VerifiedStateTransitionResultVariants {
+  // The results added in v5 come as plain objects tagged with `$type`
+  if (result instanceof dppProvider.dpp.DynamicValue) {
+    return plainProofValue(result)
+  }
+
   if (Array.isArray(result)) {
     if (result.length === 2) {
       const [first] = result

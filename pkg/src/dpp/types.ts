@@ -380,6 +380,7 @@ export interface VerifiedIdentityWithShieldedNullifiers {
 }
 
 export type VerifiedStateTransitionResultVariants = DataContractWASM
+| VerifiedExtendedStateTransitionResult
 | IdentityWASM
 | IdentifierWASM
 | VerifiedIdentityBalance
@@ -408,6 +409,7 @@ export type VerifiedStateTransitionResultVariants = DataContractWASM
 
 export type VerifiedStateTransitionResultVariantsRAW =
   protocol.DataContractNAPI
+  | protocol.DynamicValue
   | protocol.IdentityNAPI
   | protocol.IdentifierNAPI
   | protocol.VerifiedIdentityBalanceNAPI
@@ -716,4 +718,213 @@ export interface VerifiedAddressesBranchState {
   branchRootHash: Uint8Array
   traceKeyToLeaf: (key: Uint8Array) => GroveLeafInfo | undefined
   getAncestor: (leafKey: Uint8Array, minPrivacyTreeCount: bigint) => GroveAncestor | undefined
+}
+
+/* Platform v5 proofs. Identifiers come as IdentifierWASM, credits and timestamps as bigint */
+
+export interface ProvenModerationReason {
+  code?: number | null
+  text: string
+  documents?: Array<{ documentTypeName: string, documentId: IdentifierWASM }>
+  reasonDocumentId?: IdentifierWASM
+}
+
+export interface ProvenContractWarning {
+  warnedAt: bigint
+  reason: ProvenModerationReason
+}
+
+export type ProvenModerationListStatus =
+  { list: 'banlist', ban: { reason: ProvenModerationReason } | null }
+  | { list: 'suspensions', suspension: { until: bigint, reason: ProvenModerationReason } | null }
+  | { list: 'warnings', warnings: ProvenContractWarning[] }
+
+export interface ProvenDocumentRemoval {
+  documentOwnerId: IdentifierWASM
+  moderatorId: IdentifierWASM
+  reason: ProvenModerationReason
+  removedAt: bigint
+  documentHash: Uint8Array
+  restoration: { moderatorId: IdentifierWASM, restoredAt: bigint } | null
+  keptFields?: Uint8Array
+}
+
+export interface ProvenDocumentRemovalEntry {
+  documentId: IdentifierWASM
+  removal: ProvenDocumentRemoval
+}
+
+export interface ProvenFeePotLastClaim {
+  epochIndex: number
+  timeMs: bigint
+  claimantId: IdentifierWASM
+}
+
+export type GroupActionStatusName = 'actionActive' | 'actionClosed'
+/** Case-insensitive name or 0 (active) / 1 (closed) **/
+export type GroupActionStatusLike = GroupActionStatusName | 'ActionActive' | 'ActionClosed' | 0 | 1
+
+export type VerifiedExtendedStateTransitionResult =
+  { $type: 'contractModerationListStatuses', contractId: IdentifierWASM, identityId: IdentifierWASM, statuses: ProvenModerationListStatus[] }
+  | { $type: 'contractFeeClaim', contractId: IdentifierWASM, pot: 'owner' | 'moderators', lastClaim: ProvenFeePotLastClaim, creditsLeft: bigint, paidBalances: Array<{ identityId: IdentifierWASM, balance: bigint }> }
+  | { $type: 'contractDocumentRemoval', contractId: IdentifierWASM, documentTypeName: string, documentId: IdentifierWASM, removal: ProvenDocumentRemoval }
+  | { $type: 'contractTeamActionSignature', contractId: IdentifierWASM, actionId: IdentifierWASM, status: GroupActionStatusName }
+  | { $type: 'tokenGroupActionWithShieldedNullifiers', groupPower: number, status: GroupActionStatusName, nullifiers: Array<{ nullifier: Uint8Array, spent: boolean }> }
+
+export interface VerifiedProof<T> {
+  rootHash: Uint8Array
+  value: T
+}
+
+export interface ProvenKeyRemainingBudget {
+  keyId: number
+  remainingBudget: bigint | null
+}
+
+export interface VerifiedContractsByRange {
+  rootHash: Uint8Array
+  contracts: Array<{ id: IdentifierWASM, dataContract?: DataContractWASM }>
+}
+
+export interface ProvenContractVersion {
+  contractId: IdentifierWASM
+  version: number | null
+}
+
+export interface ProvenContractGroupInfo {
+  $formatVersion: '0'
+  owner: { singleOwner: IdentifierWASM } | { ownerAndAdmins: { owner: IdentifierWASM, admins: IdentifierWASM[] } }
+  name?: string | null
+  description?: string | null
+}
+
+export type ContractGroupMembersQuery =
+  { kind: 'contracts', startAfter?: IdentifierLike }
+  | { kind: 'documentTypes', startAfter?: [IdentifierLike, string] }
+  | { kind: 'tokens', startAfter?: [IdentifierLike, number] }
+
+export type ProvenContractGroupMembers =
+  { kind: 'contracts', members: IdentifierWASM[] }
+  | { kind: 'documentTypes', members: Array<[IdentifierWASM, string]> }
+  | { kind: 'tokens', members: Array<[IdentifierWASM, number]> }
+
+export interface ProvenContractGroupMemberships {
+  contract: IdentifierWASM[]
+  documentTypes: Record<string, IdentifierWASM[]>
+  tokens: Array<{ tokenContractPosition: number, contractGroupIds: IdentifierWASM[] }>
+}
+
+export type ContractDocumentRemovalsSelection =
+  { documentIds: IdentifierLike[] }
+  | { startAfter?: IdentifierLike, limit: number }
+
+export interface ProvenContractFeePots {
+  owner: { credits: bigint, lastClaim: ProvenFeePotLastClaim | null }
+  moderators: { credits: bigint, lastClaim: ProvenFeePotLastClaim | null }
+}
+
+export type ContractModerationListName = 'banlist' | 'suspensions' | 'warnings'
+
+export interface ProvenModeratorActionCount {
+  moderatorId: IdentifierWASM
+  actionCount: number
+}
+
+export interface ProvenModerationEntry {
+  identityId: IdentifierWASM
+  until: bigint | null
+  reason: ProvenModerationReason
+  warnings: ProvenContractWarning[]
+}
+
+export interface ProvenContractTeamAction {
+  actionId: IdentifierWASM
+  action: {
+    proposerId: IdentifierWASM
+    proposedAt: bigint
+    event: { $type: 'deleteSettledDocument', documentTypeName: string, documentId: IdentifierWASM, documentLastModifiedAt: bigint, documentRevision: bigint | null, reason: ProvenModerationReason }
+  }
+  approvalCount: number
+}
+
+export interface DocumentsQuery {
+  documentTypeName: string
+  where?: WhereClause[]
+  orderBy?: string[][]
+  limit?: number
+  startAt?: IdentifierLike
+  startAtIncluded?: boolean
+}
+
+export interface VerifiedChainedDocuments {
+  rootHash: Uint8Array
+  innerDocuments: DocumentWASM[]
+  outerDocuments: DocumentWASM[]
+  missingOuterIds: IdentifierWASM[]
+  removedOuterDocuments: ProvenDocumentRemovalEntry[]
+}
+
+export interface CompositeSubQuery {
+  /** Defaults to the page's contract **/
+  dataContract?: DataContractWASM
+  documentTypeName: string
+  kind?: 'documents' | 'count'
+  where?: WhereClause[]
+  orderBy?: string[][]
+  limit?: number
+  binding?: { source: 'page' | number, sourceProperty: string, field: string }
+}
+
+export interface ProvenSplitCount {
+  inKey: Uint8Array | null
+  key: Uint8Array
+  count: bigint | null
+}
+
+export interface VerifiedCompositeSubResult {
+  documents?: DocumentWASM[]
+  counts?: ProvenSplitCount[]
+  missingIds: IdentifierWASM[]
+  removals: ProvenDocumentRemovalEntry[]
+}
+
+export interface VerifiedCompositeDocuments {
+  rootHash: Uint8Array
+  pageDocuments: DocumentWASM[]
+  subResults: VerifiedCompositeSubResult[]
+}
+
+export interface AggregateSelect {
+  function: 'count' | 'sum' | 'avg' | 'min' | 'max'
+  field?: string
+}
+
+export interface HavingClause {
+  function: 'count' | 'sum' | 'avg'
+  field?: string
+  operator: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'between' | 'betweenExcludeBounds' | 'betweenExcludeLeft' | 'betweenExcludeRight' | 'in'
+  value: any
+}
+
+export interface AggregateDocumentsQuery {
+  documentTypeName: string
+  select: AggregateSelect
+  groupBy: string[]
+  where?: WhereClause[]
+  orderBy?: string[][]
+  limit?: number
+  offset?: number
+}
+
+export interface ProvenRankedEntry {
+  /** The serialized index value of the group **/
+  key: Uint8Array
+  inKey: Uint8Array | null
+  /** One of them, per the selected aggregate; `avgFixedPoint` is scaled by 10^19 **/
+  value: { count?: bigint, sum?: bigint, avgFixedPoint?: bigint }
+}
+
+export interface ProvenRankedPage {
+  skipped: bigint
+  entries: ProvenRankedEntry[]
 }

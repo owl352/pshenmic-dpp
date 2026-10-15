@@ -195,11 +195,18 @@ ___
 - Signatures: `verifySignatureDigest`
 - System: `verifyEpochsInfoProof`, `verifyFinalizedEpochInfosProof`, `verifyTotalCreditsProof`
 - State transitions: `verifyStateTransitionResult`
-- Contracts & documents: `verifyContractProof`, `verifyDocumentsProof`
+- Contracts & documents: `verifyContractProof`, `verifyContractsByRangeProof`, `verifyContractsVersionsProof`,
+  `verifyDocumentsProof`, `verifyChainedDocumentsProof`, `verifyCompositeDocumentsProof`, `verifyRankedDocumentsProof`,
+  `verifyHavingDocumentsProof`
+- Contract groups: `verifyContractGroupInfoProof`, `verifyContractGroupMembersProof`,
+  `verifyContractGroupMembershipsForContractProof`
+- Contract moderation: `verifyContractModerationStatusProof`, `verifyContractModerationEntriesProof`,
+  `verifyContractModerationActionCountsProof`, `verifyContractDocumentRemovalsProof`, `verifyContractFeePotsProof`,
+  `verifyContractTeamActionsProof`, `verifyContractTeamActionSignersProof`, `verifyContractTeamActionSignatureProof`
 - Contested resources: `verifyVotePollVoteStateProof`
 - Identity: `verifyIdentityByIdentifierProof`, `verifyIdentityByUniqueKeyHashProof`,
   `verifyIdentifierByNonUniquePublicKeyHashProof`, `verifyIdentityBalanceProof`, `verifyIdentityKeysByIdentifierProof`,
-  `verifyIdentityNonceProof`, `verifyIdentityContractNonceProof`
+  `verifyIdentityNonceProof`, `verifyIdentityContractNonceProof`, `verifyIdentityKeysRemainingBudgetsProof`
 - Tokens: `verifyTokenBalancesForIdentitiesProof`, `verifyTokensBalancesForIdentityProof`, `verifyTokenContractInfoProof`,
   `verifyTokenDirectPurchasePrices`, `verifyTokenTotalSupplyProof`
 - Platform addresses: `verifyPlatformAddressInfo`, `verifyPlatformAddressesInfos`, `verifyAddressesTrunkState`,

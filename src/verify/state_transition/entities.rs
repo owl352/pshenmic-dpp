@@ -10,6 +10,7 @@ use dpp::{
         status::{TokenStatus, v0::TokenStatusV0Accessors},
     },
 };
+use napi::Either;
 use napi::bindgen_prelude::{Either26, Uint8Array};
 use napi_derive::napi;
 
@@ -24,7 +25,9 @@ use crate::{
     partial_identity::PartialIdentityNAPI,
     platform_address::PlatformAddressNAPI,
     utils::WithJsError,
-    verify::state_transition::utils::state_transition_proof_result_to_js,
+    verify::state_transition::utils::{
+        extended_proof_result_to_js, state_transition_proof_result_to_js,
+    },
 };
 
 #[derive(Clone)]
@@ -136,37 +139,46 @@ impl VerifiedStateTransitionResultNAPI {
     pub fn result(
         &self,
     ) -> Result<
-        Either26<
-            DataContractNAPI,
-            IdentityNAPI,
-            IdentifierNAPI,
-            VerifiedIdentityBalanceNAPI,
-            VerifiedIdentityTokenInfoNAPI,
-            VerifiedTokenPricingScheduleNAPI,
-            TokenStatusNAPI,
-            Vec<VerifiedIdentityBalanceNAPI>,
-            PartialIdentityNAPI,
-            VerifiedBalanceTransferNAPI,
-            Vec<VerifiedDocumentNAPI>,
-            DocumentNAPI,
-            VerifiedTokenGroupActionWithDocumentNAPI,
-            VerifiedTokenGroupActionWithTokenBalanceNAPI,
-            VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
-            VerifiedTokenGroupActionWithTokenPricingScheduleNAPI,
-            VoteNAPI,
-            Vec<PlatformAddressInfoNAPI>,
-            VerifiedIdentityFullWithAddressInfosNAPI,
-            VerifiedIdentityWithAddressInfosNAPI,
-            StoredAssetLockInfoNAPI,
-            Vec<(Uint8Array, bool)>,
-            (Vec<(Uint8Array, bool)>, Vec<PlatformAddressInfoNAPI>),
-            (Vec<(Uint8Array, bool)>, Vec<VerifiedDocumentNAPI>),
-            (StoredAssetLockInfoNAPI, Vec<PlatformAddressInfoNAPI>),
-            (IdentityNAPI, Vec<(Uint8Array, bool)>),
+        Either<
+            Either26<
+                DataContractNAPI,
+                IdentityNAPI,
+                IdentifierNAPI,
+                VerifiedIdentityBalanceNAPI,
+                VerifiedIdentityTokenInfoNAPI,
+                VerifiedTokenPricingScheduleNAPI,
+                TokenStatusNAPI,
+                Vec<VerifiedIdentityBalanceNAPI>,
+                PartialIdentityNAPI,
+                VerifiedBalanceTransferNAPI,
+                Vec<VerifiedDocumentNAPI>,
+                DocumentNAPI,
+                VerifiedTokenGroupActionWithDocumentNAPI,
+                VerifiedTokenGroupActionWithTokenBalanceNAPI,
+                VerifiedTokenGroupActionWithTokenIdentityInfoNAPI,
+                VerifiedTokenGroupActionWithTokenPricingScheduleNAPI,
+                VoteNAPI,
+                Vec<PlatformAddressInfoNAPI>,
+                VerifiedIdentityFullWithAddressInfosNAPI,
+                VerifiedIdentityWithAddressInfosNAPI,
+                StoredAssetLockInfoNAPI,
+                Vec<(Uint8Array, bool)>,
+                (Vec<(Uint8Array, bool)>, Vec<PlatformAddressInfoNAPI>),
+                (Vec<(Uint8Array, bool)>, Vec<VerifiedDocumentNAPI>),
+                (StoredAssetLockInfoNAPI, Vec<PlatformAddressInfoNAPI>),
+                (IdentityNAPI, Vec<(Uint8Array, bool)>),
+            >,
+            crate::dynamic_value::DynamicValue,
         >,
         napi::Error,
     > {
-        state_transition_proof_result_to_js(self.result.result())
+        // Results added in v5 come as plain objects tagged with `$type`
+        match extended_proof_result_to_js(self.result.result()) {
+            Some(value) => Ok(Either::B(value?)),
+            None => Ok(Either::A(state_transition_proof_result_to_js(
+                self.result.result(),
+            )?)),
+        }
     }
 
     /// Whether the proof binds the execution of this specific state transition.

@@ -17,7 +17,16 @@ use crate::{
         VerifiedTokenGroupActionWithTokenPricingScheduleNAPI, VerifiedTokenPricingScheduleNAPI,
     },
 };
+use dpp::data_contract::config::moderation::{
+    ContractDocumentRemoval, ContractModerationListStatus,
+};
+use dpp::data_contract::document_type::action_fees::{ContractFeePot, ContractFeePotLastClaim};
+use dpp::group::group_action_status::GroupActionStatus;
+use dpp::prelude::Identifier;
 use dpp::state_transition::proof_result::StateTransitionProofResult;
+
+use crate::dynamic_value::DynamicValue;
+use crate::utils::serde_to_js;
 use napi::bindgen_prelude::{Either26, Uint8Array};
 
 pub fn state_transition_proof_result_to_js(
@@ -341,8 +350,146 @@ pub fn state_transition_proof_result_to_js(
         | StateTransitionProofResult::VerifiedTokenGroupActionWithShieldedNullifiers(..) => {
             Err(napi::Error::new(
                 napi::Status::GenericFailure,
-                "this state transition proof result is not supported yet",
+                "this state transition proof result is returned by extended_proof_result_to_js",
             ))
         }
     }
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct PaidBalance {
+    identity_id: Identifier,
+    balance: u64,
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct NullifierStatus<'a> {
+    #[serde(with = "serde_bytes_slice")]
+    nullifier: &'a [u8],
+    spent: bool,
+}
+
+/// Serializes a nullifier as bytes rather than as an array of numbers
+mod serde_bytes_slice {
+    pub fn serialize<S: serde::Serializer>(
+        bytes: &&[u8],
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        serializer.serialize_bytes(bytes)
+    }
+}
+
+#[derive(serde::Serialize)]
+#[serde(tag = "$type", rename_all = "camelCase")]
+enum ExtendedProofResult<'a> {
+    #[serde(rename_all = "camelCase")]
+    ContractModerationListStatuses {
+        contract_id: Identifier,
+        identity_id: Identifier,
+        statuses: &'a [ContractModerationListStatus],
+    },
+    #[serde(rename_all = "camelCase")]
+    ContractFeeClaim {
+        contract_id: Identifier,
+        pot: ContractFeePot,
+        last_claim: &'a ContractFeePotLastClaim,
+        credits_left: u64,
+        paid_balances: Vec<PaidBalance>,
+    },
+    #[serde(rename_all = "camelCase")]
+    ContractDocumentRemoval {
+        contract_id: Identifier,
+        document_type_name: &'a str,
+        document_id: Identifier,
+        removal: &'a ContractDocumentRemoval,
+    },
+    #[serde(rename_all = "camelCase")]
+    ContractTeamActionSignature {
+        contract_id: Identifier,
+        action_id: Identifier,
+        status: GroupActionStatus,
+    },
+    #[serde(rename_all = "camelCase")]
+    TokenGroupActionWithShieldedNullifiers {
+        group_power: u32,
+        status: GroupActionStatus,
+        nullifiers: Vec<NullifierStatus<'a>>,
+    },
+}
+
+/// The proof results added in v5, as plain objects tagged with `$type`: the result union
+/// of `state_transition_proof_result_to_js` is at napi's maximum of 26 variants
+pub fn extended_proof_result_to_js(
+    proof_result: &StateTransitionProofResult,
+) -> Option<Result<DynamicValue, napi::Error>> {
+    let result = match proof_result {
+        StateTransitionProofResult::VerifiedContractModerationListStatuses(
+            contract_id,
+            identity_id,
+            statuses,
+        ) => ExtendedProofResult::ContractModerationListStatuses {
+            contract_id: *contract_id,
+            identity_id: *identity_id,
+            statuses: &statuses.0,
+        },
+        StateTransitionProofResult::VerifiedContractFeeClaim(
+            contract_id,
+            pot,
+            last_claim,
+            credits_left,
+            paid_balances,
+        ) => ExtendedProofResult::ContractFeeClaim {
+            contract_id: *contract_id,
+            pot: *pot,
+            last_claim,
+            credits_left: *credits_left,
+            paid_balances: paid_balances
+                .iter()
+                .map(|(identity_id, balance)| PaidBalance {
+                    identity_id: *identity_id,
+                    balance: *balance,
+                })
+                .collect(),
+        },
+        StateTransitionProofResult::VerifiedContractDocumentRemoval(
+            contract_id,
+            document_type_name,
+            document_id,
+            removal,
+        ) => ExtendedProofResult::ContractDocumentRemoval {
+            contract_id: *contract_id,
+            document_type_name,
+            document_id: *document_id,
+            removal,
+        },
+        StateTransitionProofResult::VerifiedContractTeamActionSignature(
+            contract_id,
+            action_id,
+            status,
+        ) => ExtendedProofResult::ContractTeamActionSignature {
+            contract_id: *contract_id,
+            action_id: *action_id,
+            status: *status,
+        },
+        StateTransitionProofResult::VerifiedTokenGroupActionWithShieldedNullifiers(
+            group_power,
+            status,
+            nullifiers,
+        ) => ExtendedProofResult::TokenGroupActionWithShieldedNullifiers {
+            group_power: *group_power,
+            status: *status,
+            nullifiers: nullifiers
+                .iter()
+                .map(|(nullifier, spent)| NullifierStatus {
+                    nullifier,
+                    spent: *spent,
+                })
+                .collect(),
+        },
+        _ => return None,
+    };
+
+    Some(serde_to_js(&result))
 }
