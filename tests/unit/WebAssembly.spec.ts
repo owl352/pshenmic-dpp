@@ -48,6 +48,9 @@ describe("dpp", function () {
   })
 
   describe('shielded init', function () {
+    // init() builds the Halo 2 proving key on a single wasm thread; on 4-vCPU CI
+    // runners it competes with the native proving suites (ShieldedBuilderV5)
+    // jest runs in parallel, which pushes it past the 40s default.
     test('should allow to use old instances after shielded init', async function () {
       const identifier = IdentifierWASM.fromBytes(identifierBytes);
 
@@ -56,7 +59,7 @@ describe("dpp", function () {
       await builder.init();
 
       expect(identifier.bytes()).toEqual(identifierBytes);
-    })
+    }, 120000)
 
     test('should build a real Halo 2 proof with instances created before init', async function () {
       const seed = new Uint8Array(64).fill(7);
