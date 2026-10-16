@@ -26,6 +26,7 @@ use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
 use crate::utils::WithJsError;
 
+pub mod action_fee_agreement;
 pub mod batched_transition;
 pub mod document_base_transition;
 pub mod document_transition;

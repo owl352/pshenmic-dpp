@@ -2,7 +2,11 @@ use drive::drive::Drive;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
-use crate::{dynamic_value::DynamicValue, enums::platform_version::PlatformVersionNAPI};
+use crate::{
+    dynamic_value::{DynamicValue, IdentifierLikeNAPI},
+    enums::platform_version::PlatformVersionNAPI,
+    identifier::IdentifierNAPI,
+};
 
 #[napi(js_name = "VerifiedShieldedNullifierNAPI")]
 pub struct VerifiedShieldedNullifierNAPI {
@@ -36,17 +40,32 @@ pub fn verify_shielded_nullifiers(
     nullifiers: Vec<Uint8Array>,
     verify_subset_of_proof: bool,
     js_platform_version: &DynamicValue,
+    js_token_id: Option<IdentifierLikeNAPI>,
 ) -> Result<VerifiedShieldedNullifiersNAPI, napi::Error> {
     let platform_version = PlatformVersionNAPI::try_from(js_platform_version)?;
 
     let rs_nullifiers: Vec<Vec<u8>> = nullifiers.iter().map(|n| n.to_vec()).collect();
 
-    let (root_hash, nullifiers) = Drive::verify_shielded_nullifiers(
-        &proof.to_vec(),
-        &rs_nullifiers,
-        verify_subset_of_proof,
-        &platform_version.into(),
-    )
+    let token_id = js_token_id
+        .map(|id| Ok::<[u8; 32], napi::Error>(IdentifierNAPI::try_from(id)?.to_slice()))
+        .transpose()?;
+
+    // `tokenId` selects that token's shielded pool; without it the credits pool.
+    let (root_hash, nullifiers) = match token_id {
+        Some(token_id) => Drive::verify_token_shielded_pool_nullifiers(
+            &proof,
+            token_id,
+            &rs_nullifiers,
+            verify_subset_of_proof,
+            &platform_version.into(),
+        ),
+        None => Drive::verify_shielded_nullifiers(
+            &proof,
+            &rs_nullifiers,
+            verify_subset_of_proof,
+            &platform_version.into(),
+        ),
+    }
     .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))?;
 
     Ok(VerifiedShieldedNullifiersNAPI {

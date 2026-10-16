@@ -5,6 +5,7 @@ use dpp::state_transition::batch_transition::document_replace_transition::v0::v0
 use dpp::state_transition::batch_transition::DocumentReplaceTransition;
 use napi_derive::napi;
 
+use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_replace_transition;
@@ -35,12 +36,14 @@ impl DocumentReplaceTransitionNAPI {
         document: &DocumentNAPI,
         identity_contract_nonce: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
+        action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
     ) -> Result<DocumentReplaceTransitionNAPI, napi::Error> {
         let rs_update_transition = generate_replace_transition(
             document,
             identity_contract_nonce.try_to_u64()?,
             document.get_document_type_name().to_string(),
             token_payment_info,
+            action_fee_agreement,
         );
 
         Ok(DocumentReplaceTransitionNAPI(rs_update_transition))

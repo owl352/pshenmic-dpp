@@ -1,3 +1,4 @@
+pub mod full_identity_by_non_unique_public_key_hash;
 pub mod identifier_by_non_unique_public_key_hash;
 pub mod identity_balance;
 pub mod identity_by_identifier;

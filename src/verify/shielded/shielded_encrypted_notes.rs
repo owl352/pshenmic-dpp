@@ -4,8 +4,9 @@ use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::{
-    dynamic_value::{BigIntString, DynamicValue, TryToU64},
+    dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64},
     enums::platform_version::PlatformVersionNAPI,
+    identifier::IdentifierNAPI,
 };
 
 #[napi(js_name = "VerifiedShieldedEncryptedNoteNAPI")]
@@ -50,18 +51,35 @@ pub fn verify_shielded_encrypted_notes(
     max_elements: u32,
     verify_subset_of_proof: bool,
     js_platform_version: &DynamicValue,
+    js_token_id: Option<IdentifierLikeNAPI>,
 ) -> Result<VerifiedShieldedEncryptedNotesNAPI, napi::Error> {
     let platform_version = PlatformVersionNAPI::try_from(js_platform_version)?;
     let start_index: u64 = start_index.try_to_u64()?;
 
-    let (root_hash, notes, total_count) = Drive::verify_shielded_encrypted_notes(
-        &proof.to_vec(),
-        start_index,
-        count,
-        max_elements,
-        verify_subset_of_proof,
-        &platform_version.into(),
-    )
+    let token_id = js_token_id
+        .map(|id| Ok::<[u8; 32], napi::Error>(IdentifierNAPI::try_from(id)?.to_slice()))
+        .transpose()?;
+
+    // `tokenId` selects that token's shielded pool; without it the credits pool.
+    let (root_hash, notes, total_count) = match token_id {
+        Some(token_id) => Drive::verify_token_shielded_pool_encrypted_notes(
+            &proof,
+            token_id,
+            start_index,
+            count,
+            max_elements,
+            verify_subset_of_proof,
+            &platform_version.into(),
+        ),
+        None => Drive::verify_shielded_encrypted_notes(
+            &proof,
+            start_index,
+            count,
+            max_elements,
+            verify_subset_of_proof,
+            &platform_version.into(),
+        ),
+    }
     .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))?;
 
     Ok(VerifiedShieldedEncryptedNotesNAPI {

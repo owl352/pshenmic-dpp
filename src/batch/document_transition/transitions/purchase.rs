@@ -4,6 +4,7 @@ use dpp::state_transition::batch_transition::batched_transition::DocumentPurchas
 use dpp::state_transition::batch_transition::document_base_transition::document_base_transition_trait::DocumentBaseTransitionAccessors;
 use napi_derive::napi;
 
+use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_purchase_transition;
@@ -34,6 +35,7 @@ impl DocumentPurchaseTransitionNAPI {
         identity_contract_nonce: BigIntString,
         amount: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
+        action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
     ) -> Result<DocumentPurchaseTransitionNAPI, napi::Error> {
         let rs_purchase_transition = generate_purchase_transition(
             document,
@@ -41,6 +43,7 @@ impl DocumentPurchaseTransitionNAPI {
             document.get_document_type_name().to_string(),
             amount.try_to_u64()?,
             token_payment_info,
+            action_fee_agreement,
         );
 
         Ok(DocumentPurchaseTransitionNAPI(rs_purchase_transition))

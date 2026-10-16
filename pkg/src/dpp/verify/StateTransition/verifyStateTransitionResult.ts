@@ -32,6 +32,7 @@ export function verifyStateTransitionResult (
   return {
     rootHash: verified.rootHash,
     result: convertResult(verified.result),
-    isExecutionProved: verified.isExecutionProved
+    isExecutionProved: verified.isExecutionProved,
+    ownerBalance: verified.ownerBalance != null ? BigInt(verified.ownerBalance) : undefined
   }
 }

@@ -7,7 +7,7 @@ import {
   Purpose,
   ScopeWASM,
   SecurityLevel,
-  TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType, ContractFeePot
+  TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType, ContractFeePot, BatchType
 } from './enums.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { languageCodes } from './constants.js'
@@ -69,6 +69,7 @@ export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<key
 export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>
 export type ScopeLike = ScopeWASM | keyof typeof ScopeWASM | Lowercase<keyof typeof ScopeWASM>
 export type ContractFeePotLike = ContractFeePot | keyof typeof ContractFeePot | Lowercase<keyof typeof ContractFeePot>
+export type BatchTypeLike = BatchType | keyof typeof BatchType | Lowercase<keyof typeof BatchType>
 
 /** Identifiers inside plain moderation and contract group objects: base58 string or 32 bytes **/
 export type PlainIdentifier = string | Uint8Array
@@ -191,8 +192,8 @@ export interface FinalizedEpochInfo {
   totalDistributedStorageFees: bigint
   totalCreatedStorageFees: bigint
   coreBlockRewards: bigint
-  blockProposers: {proposer: IdentifierWASM, count: bigint}[],
-  feeMultiplierPermille: bigint,
+  blockProposers: Array<{ proposer: IdentifierWASM, count: bigint }>
+  feeMultiplierPermille: bigint
   protocolVersion: number
 }
 
@@ -445,6 +446,12 @@ export interface VerifiedStateTransitionResult {
    * transition affects, not evidence that the transition executed.
    */
   isExecutionProved: boolean
+  /**
+   * The owner's credit balance after the transition executed, as a snapshot at
+   * the proof's block. Only proofs of owned, fee-paying transitions carry it
+   * (from protocol v14).
+   */
+  ownerBalance?: bigint
 }
 
 export type WhereOperator =
@@ -474,12 +481,41 @@ export type WhereOperator =
   | 'startsWith'
   | 'startswith'
   | 'starts_with'
+  | 'Contains'
+  | 'contains'
+  | 'ContainsAny'
+  | 'containsAny'
+  | 'containsany'
+  | 'contains_any'
 
-export type WhereClause = [
-  field: string,
-  operator: WhereOperator,
-  value: unknown
-]
+/**
+ * The window of a contract `timeRange` grid an `IN_TIME_RANGE` clause selects: the freshest started
+ * window, the oldest one still active, or the one starting at a millisecond timestamp on the grid.
+ * A field bucketed by several grids needs the `grid` (as the contract declares it, in seconds)
+ **/
+export type TimeRangeSelection =
+  | 'newest'
+  | 'oldest'
+  | bigint
+  | {
+    selector?: 'newest' | 'oldest' | 'byStart'
+    startMs?: bigint | number
+    grid?: { rangeSeconds: bigint | number, stepSeconds: bigint | number, phaseSeconds?: bigint | number }
+  }
+
+/** The window of a contract `integerRange` grid an `IN_INTEGER_RANGE` clause selects, by its start **/
+export type IntegerRangeSelection =
+  | bigint
+  | number
+  | {
+    start: bigint | number
+    grid?: { range: bigint | number, step: bigint | number, phase?: bigint | number }
+  }
+
+export type WhereClause =
+  | [field: string, operator: WhereOperator, value: unknown]
+  | [field: string, operator: 'IN_TIME_RANGE' | 'inTimeRange' | 'in_time_range', selection: TimeRangeSelection]
+  | [field: string, operator: 'IN_INTEGER_RANGE' | 'inIntegerRange' | 'in_integer_range', selection: IntegerRangeSelection]
 
 export interface VerifiedDocuments {
   rootHash: Uint8Array
@@ -489,6 +525,11 @@ export interface VerifiedDocuments {
 export interface VerifiedIdentifierByNonUniquePublicKeyHash {
   rootHash: Uint8Array
   identifier?: IdentifierWASM
+}
+
+export interface VerifiedFullIdentityByNonUniquePublicKeyHash {
+  rootHash: Uint8Array
+  identity?: IdentityWASM
 }
 
 export interface VerifiedIdentityBalanceRootHash {
@@ -914,6 +955,30 @@ export interface AggregateDocumentsQuery {
   orderBy?: string[][]
   limit?: number
   offset?: number
+}
+
+/** A count / sum / average query; `groupBy` splits the result per `In` and/or range group **/
+export interface AggregateProofQuery {
+  documentTypeName: string
+  where?: WhereClause[]
+  orderBy?: string[][]
+  groupBy?: string[]
+  limit?: number
+}
+
+export interface ProvenAggregateEntry {
+  /** The serialized `In` value of the group, when grouped by an `In` **/
+  inKey: Uint8Array | null
+  /** The serialized index value of the group, empty for a total **/
+  key: Uint8Array
+  count?: bigint
+  sum?: bigint
+}
+
+export interface ProvenAggregate {
+  /** The proof primitive the query resolved to, as drive picks it **/
+  mode: 'primaryKeyTree' | 'pointLookup' | 'aggregate' | 'distinct' | 'carrierAggregate'
+  entries: ProvenAggregateEntry[]
 }
 
 export interface ProvenRankedEntry {

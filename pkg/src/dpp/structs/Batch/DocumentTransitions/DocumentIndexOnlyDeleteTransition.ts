@@ -1,6 +1,7 @@
 import type { DocumentIndexOnlyDeleteTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
+import { DocumentActionFeeAgreementWASM } from '../DocumentActionFeeAgreement.js'
 import { dppProvider } from '../../../provider.js'
 import { valueFromDynamicValue, valueToDynamicValue } from '../../../utils.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
@@ -14,12 +15,14 @@ export class DocumentIndexOnlyDeleteTransitionWASM {
   constructor (
     document: DocumentWASM,
     identityContractNonce: bigint,
-    tokenPaymentInfo?: TokenPaymentInfoWASM
+    tokenPaymentInfo?: TokenPaymentInfoWASM,
+    actionFeeAgreement?: DocumentActionFeeAgreementWASM
   ) {
     this._rawDocumentIndexOnlyDeleteTransition = new dppProvider.dpp.DocumentIndexOnlyDeleteTransitionNAPI(
       document._rawDocument,
       identityContractNonce?.toString(),
-      tokenPaymentInfo?._rawTokenPaymentInfo
+      tokenPaymentInfo?._rawTokenPaymentInfo,
+      actionFeeAgreement?._rawDocumentActionFeeAgreement
     )
   }
 

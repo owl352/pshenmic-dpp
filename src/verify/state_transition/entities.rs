@@ -188,6 +188,14 @@ impl VerifiedStateTransitionResultNAPI {
     pub fn is_execution_proved(&self) -> bool {
         self.result.is_execution_proved()
     }
+
+    /// The owner's credit balance after the transition executed, as a snapshot at
+    /// the proof's block. Only proofs of owned, fee-paying transitions carry it
+    /// (from protocol v14); undefined otherwise.
+    #[napi(getter, js_name = "ownerBalance")]
+    pub fn owner_balance(&self) -> Option<BigIntString> {
+        self.result.owner_balance().map(BigIntString::from_u64)
+    }
 }
 
 #[derive(Clone)]

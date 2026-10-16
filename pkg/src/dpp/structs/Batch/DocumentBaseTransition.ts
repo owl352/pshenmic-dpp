@@ -1,6 +1,7 @@
 import type { DocumentBaseTransitionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { IdentifierLike } from '../../types.js'
 import { TokenPaymentInfoWASM } from './TokenPaymentInfo.js'
+import { DocumentActionFeeAgreementWASM } from './DocumentActionFeeAgreement.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue } from '../../utils.js'
 import { IdentifierWASM } from '../Identifier.js'
@@ -14,15 +15,37 @@ export class DocumentBaseTransitionWASM {
     identityContractNonce: bigint,
     documentTypeName: string,
     dataContractId: IdentifierLike,
-    tokenPaymentInfo?: TokenPaymentInfoWASM
+    tokenPaymentInfo?: TokenPaymentInfoWASM,
+    actionFeeAgreement?: DocumentActionFeeAgreementWASM
   ) {
     this._rawDocumentBaseTransition = new dppProvider.dpp.DocumentBaseTransitionNAPI(
       prepareIdentifierValue(documentId),
       identityContractNonce?.toString(),
       documentTypeName,
       prepareIdentifierValue(dataContractId),
-      tokenPaymentInfo?._rawTokenPaymentInfo
+      tokenPaymentInfo?._rawTokenPaymentInfo,
+      actionFeeAgreement?._rawDocumentActionFeeAgreement
     )
+  }
+
+  /** 2 when the base carries an action fee agreement (protocol version 14), 1 otherwise **/
+  get featureVersion (): number {
+    return this._rawDocumentBaseTransition.featureVersion
+  }
+
+  get actionFeeAgreement (): DocumentActionFeeAgreementWASM | undefined {
+    const agreement = this._rawDocumentBaseTransition.actionFeeAgreement
+
+    return agreement != null ? DocumentActionFeeAgreementWASM.createFromRawInstance(agreement) : undefined
+  }
+
+  /** Setting an agreement on a V0 / V1 base upgrades it to V2 **/
+  set actionFeeAgreement (actionFeeAgreement: DocumentActionFeeAgreementWASM | undefined | null) {
+    if (actionFeeAgreement != null) {
+      this._rawDocumentBaseTransition.actionFeeAgreement = actionFeeAgreement._rawDocumentActionFeeAgreement
+    } else {
+      this._rawDocumentBaseTransition.clearActionFeeAgreement()
+    }
   }
 
   get id (): IdentifierWASM {
