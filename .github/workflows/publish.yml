@@ -170,8 +170,14 @@ jobs:
       # Trusted publishing (OIDC) requires npm >= 11.5.1
       - run: npm install -g npm@latest
 
+      # `registry-url` makes setup-node write `_authToken=${NODE_AUTH_TOKEN}` into
+      # .npmrc. v4 also exported a placeholder token; v7 no longer does, and
+      # Yarn 1 aborts on an undefined variable there. Defined-but-empty satisfies
+      # Yarn; scoped to this step so `npm publish` still authenticates via OIDC.
       - name: Install dependencies
         run: yarn install --immutable
+        env:
+          NODE_AUTH_TOKEN: ''
 
       - name: Download build artifact
         uses: actions/download-artifact@v8
