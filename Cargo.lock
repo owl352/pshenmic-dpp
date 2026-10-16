@@ -691,8 +691,8 @@ dependencies = [
 
 [[package]]
 name = "data-contracts"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -766,8 +766,8 @@ dependencies = [
 
 [[package]]
 name = "dpp"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -811,8 +811,8 @@ dependencies = [
 
 [[package]]
 name = "dpp-json-convertible-derive"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -821,8 +821,8 @@ dependencies = [
 
 [[package]]
 name = "drive"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "byteorder",
  "derive_more",
@@ -2175,8 +2175,8 @@ dependencies = [
 
 [[package]]
 name = "platform-serialization"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "grovedb-bincode",
  "platform-version",
@@ -2184,8 +2184,8 @@ dependencies = [
 
 [[package]]
 name = "platform-serialization-derive"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2195,8 +2195,8 @@ dependencies = [
 
 [[package]]
 name = "platform-value"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "base64",
  "bs58",
@@ -2214,8 +2214,8 @@ dependencies = [
 
 [[package]]
 name = "platform-version"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "grovedb-bincode",
  "grovedb-version",
@@ -2225,8 +2225,8 @@ dependencies = [
 
 [[package]]
 name = "platform-versioning"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2887,8 +2887,8 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "token-history-contract"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "platform-value",
  "platform-version",
@@ -3284,8 +3284,8 @@ checksum = "d7249219f66ced02969388cf2bb044a09756a083d0fab1e566056b04d9fbcaa5"
 
 [[package]]
 name = "withdrawals-contract"
-version = "5.0.0-rc.2"
-source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.2#2fda500d7a6cf01fdb76a2d32126a2ea0b484019"
+version = "5.0.0-rc.3"
+source = "git+https://github.com/dashpay/platform?tag=v5.0.0-rc.3#0f38a693a4d37c3ca68dd9605b615ea0fbda9338"
 dependencies = [
  "num_enum 0.5.11",
  "platform-value",
