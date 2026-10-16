@@ -156,6 +156,55 @@ impl GroveElementNAPI {
                 None,
                 Some(count.to_string()),
             ),
+            Element::PrivateDocumentStore(total_count, _, _, _) => (
+                "PrivateDocumentStore",
+                None,
+                None,
+                Some(total_count.to_string()),
+            ),
+
+            // Indexed trees: `value` is the primary Merk's root key; the
+            // secondary (ranking) Merks are not surfaced.
+            Element::ProvableSumIndexedTree(root_key, _, sum, _) => (
+                "ProvableSumIndexedTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                None,
+            ),
+            Element::ProvableCountIndexedTree(root_key, _, count, _) => (
+                "ProvableCountIndexedTree",
+                root_key.clone(),
+                None,
+                Some(count.to_string()),
+            ),
+            Element::ProvableCountProvableSumIndexedTree(root_key, count, sum, _, _) => (
+                "ProvableCountProvableSumIndexedTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                Some(count.to_string()),
+            ),
+
+            // Backward-reference variants behave like their plain
+            // counterparts; the referrer list is not surfaced.
+            Element::BidirectionalReference(..) => ("BidirectionalReference", None, None, None),
+            Element::ItemWithBackwardsReferences(value, _, _) => (
+                "ItemWithBackwardsReferences",
+                Some(value.clone()),
+                None,
+                None,
+            ),
+            Element::SumItemWithBackwardsReferences(sum, _, _) => (
+                "SumItemWithBackwardsReferences",
+                None,
+                Some(sum.to_string()),
+                None,
+            ),
+            Element::ItemWithSumItemWithBackwardsReferences(value, sum, _, _) => (
+                "ItemWithSumItemWithBackwardsReferences",
+                Some(value.clone()),
+                Some(sum.to_string()),
+                None,
+            ),
         };
 
         GroveElementNAPI {

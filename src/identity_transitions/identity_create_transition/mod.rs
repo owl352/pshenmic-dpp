@@ -2,7 +2,7 @@ use dpp::identity::state_transition::AssetLockProved;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::decode;
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_create_transition::IdentityCreateTransition;
@@ -112,8 +112,9 @@ impl IdentityCreateTransitionNAPI {
     pub fn from_bytes(bytes: Uint8Array) -> Result<IdentityCreateTransitionNAPI, napi::Error> {
         let bytes_vec = bytes.to_vec();
 
-        let rs_transition = IdentityCreateTransition::deserialize_from_bytes(bytes_vec.as_slice())
-            .with_js_error()?;
+        let rs_transition =
+            IdentityCreateTransition::deserialize_from_bytes_untrusted(bytes_vec.as_slice())
+                .with_js_error()?;
 
         Ok(IdentityCreateTransitionNAPI(rs_transition))
     }

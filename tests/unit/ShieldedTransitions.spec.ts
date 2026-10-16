@@ -209,7 +209,7 @@ describe('ShieldedTransferTransition', function () {
 
     test('should default to the latest platform version', function () {
       expect(ShieldedTransferTransitionWASM.computeMinimumFee(2))
-        .toEqual(ShieldedTransferTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+        .toEqual(ShieldedTransferTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 })
@@ -331,7 +331,7 @@ describe('ShieldTransition', function () {
 
     test('should default to the latest platform version', function () {
       expect(ShieldTransitionWASM.computeMinimumFee(2))
-        .toEqual(ShieldTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+        .toEqual(ShieldTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 })
@@ -442,7 +442,7 @@ describe('UnshieldTransition', function () {
 
     test('should default to the latest platform version', function () {
       expect(UnshieldTransitionWASM.computeMinimumFee(2))
-        .toEqual(UnshieldTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+        .toEqual(UnshieldTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 })
@@ -573,7 +573,7 @@ describe('ShieldFromAssetLockTransition', function () {
 
     test('should default to the latest platform version', function () {
       expect(ShieldFromAssetLockTransitionWASM.computeMinimumFee(2))
-        .toEqual(ShieldFromAssetLockTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+        .toEqual(ShieldFromAssetLockTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 })
@@ -693,7 +693,7 @@ describe('ShieldedWithdrawalTransition', function () {
 
     test('should default to the latest platform version', function () {
       expect(ShieldedWithdrawalTransitionWASM.computeMinimumFee(2))
-        .toEqual(ShieldedWithdrawalTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V12))
+        .toEqual(ShieldedWithdrawalTransitionWASM.computeMinimumFee(2, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 })
@@ -837,7 +837,7 @@ describe('IdentityCreateFromShieldedPoolTransition', function () {
 
     test('should default to the latest platform version', function () {
       expect(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3))
-        .toEqual(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3, PlatformVersionWASM.PLATFORM_V12))
+        .toEqual(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 3, PlatformVersionWASM.PLATFORM_V14))
     })
   })
 })

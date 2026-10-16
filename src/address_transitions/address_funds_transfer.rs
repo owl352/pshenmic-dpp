@@ -1,7 +1,7 @@
 use dpp::address_funds::PlatformAddress;
 use dpp::fee::Credits;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::address_funds_transfer_transition::AddressFundsTransferTransition;
 use dpp::state_transition::address_funds_transfer_transition::accessors::AddressFundsTransferTransitionAccessorsV0;
@@ -215,15 +215,17 @@ impl AddressFundsTransferTransitionNAPI {
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(data: Uint8Array) -> Result<Self, napi::Error> {
         Ok(Self(
-            AddressFundsTransferTransition::deserialize_from_bytes(data.to_vec().as_slice())
-                .with_js_error()?,
+            AddressFundsTransferTransition::deserialize_from_bytes_untrusted(
+                data.to_vec().as_slice(),
+            )
+            .with_js_error()?,
         ))
     }
 
     #[napi(js_name = "fromHex")]
     pub fn from_hex(data: String) -> Result<Self, napi::Error> {
         Ok(Self(
-            AddressFundsTransferTransition::deserialize_from_bytes(
+            AddressFundsTransferTransition::deserialize_from_bytes_untrusted(
                 decode(&data, Encoding::Hex)
                     .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "Invalid hex string"))?
                     .as_slice(),
@@ -235,7 +237,7 @@ impl AddressFundsTransferTransitionNAPI {
     #[napi(js_name = "fromBase64")]
     pub fn from_base64(data: String) -> Result<Self, napi::Error> {
         Ok(Self(
-            AddressFundsTransferTransition::deserialize_from_bytes(
+            AddressFundsTransferTransition::deserialize_from_bytes_untrusted(
                 decode(&data, Encoding::Base64)
                     .map_err(|_| {
                         napi::Error::new(napi::Status::InvalidArg, "Invalid Base64 string")

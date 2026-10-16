@@ -13,6 +13,7 @@ pub enum BatchTypeNAPI {
     Purchase,
     UpdatePrice,
     IgnoreWhileBumpingRevision,
+    IndexOnlyDelete,
 }
 
 impl From<DocumentTransitionActionType> for BatchTypeNAPI {
@@ -27,6 +28,7 @@ impl From<DocumentTransitionActionType> for BatchTypeNAPI {
             DocumentTransitionActionType::IgnoreWhileBumpingRevision => {
                 BatchTypeNAPI::IgnoreWhileBumpingRevision
             }
+            DocumentTransitionActionType::IndexOnlyDelete => BatchTypeNAPI::IndexOnlyDelete,
         }
     }
 }
@@ -43,6 +45,7 @@ impl From<BatchTypeNAPI> for DocumentTransitionActionType {
             BatchTypeNAPI::IgnoreWhileBumpingRevision => {
                 DocumentTransitionActionType::IgnoreWhileBumpingRevision
             }
+            BatchTypeNAPI::IndexOnlyDelete => DocumentTransitionActionType::IndexOnlyDelete,
         }
     }
 }
@@ -57,6 +60,7 @@ impl From<BatchTypeNAPI> for String {
             BatchTypeNAPI::Purchase => "Purchase",
             BatchTypeNAPI::UpdatePrice => "UpdatePrice",
             BatchTypeNAPI::IgnoreWhileBumpingRevision => "IgnoreWhileBumpingRevision",
+            BatchTypeNAPI::IndexOnlyDelete => "IndexOnlyDelete",
         }
         .to_string()
     }
@@ -72,6 +76,7 @@ impl From<BatchTypeNAPI> for u8 {
             BatchTypeNAPI::Purchase => 4,
             BatchTypeNAPI::UpdatePrice => 5,
             BatchTypeNAPI::IgnoreWhileBumpingRevision => 6,
+            BatchTypeNAPI::IndexOnlyDelete => 7,
         }
     }
 }
@@ -88,6 +93,7 @@ impl TryFrom<u64> for BatchTypeNAPI {
             4 => Ok(BatchTypeNAPI::Purchase),
             5 => Ok(BatchTypeNAPI::UpdatePrice),
             6 => Ok(BatchTypeNAPI::IgnoreWhileBumpingRevision),
+            7 => Ok(BatchTypeNAPI::IndexOnlyDelete),
             _ => Err(napi::Error::new(
                 napi::Status::InvalidArg,
                 "Invalid batch type",
@@ -108,6 +114,7 @@ impl TryFrom<String> for BatchTypeNAPI {
             "purchase" => Ok(BatchTypeNAPI::Purchase),
             "updateprice" => Ok(BatchTypeNAPI::UpdatePrice),
             "ignorewhilebumpingrevision" => Ok(BatchTypeNAPI::IgnoreWhileBumpingRevision),
+            "indexonlydelete" => Ok(BatchTypeNAPI::IndexOnlyDelete),
             _ => Err(napi::Error::new(
                 napi::Status::InvalidArg,
                 "Invalid batch type",

@@ -2,13 +2,19 @@ use dpp::data_contract::associated_token::token_distribution_rules::TokenDistrib
 use dpp::data_contract::associated_token::token_distribution_rules::accessors::v0::{
     TokenDistributionRulesV0Getters, TokenDistributionRulesV0Setters,
 };
+use dpp::data_contract::associated_token::token_distribution_rules::accessors::v1::{
+    TokenDistributionRulesV1Getters, TokenDistributionRulesV1Setters,
+};
 use dpp::data_contract::associated_token::token_distribution_rules::v0::TokenDistributionRulesV0;
+use dpp::data_contract::associated_token::token_once_per_identity_distribution::TokenOncePerIdentityDistribution;
+use dpp::data_contract::associated_token::token_once_per_identity_distribution::accessors::v0::TokenOncePerIdentityDistributionV0Methods;
+use dpp::data_contract::associated_token::token_once_per_identity_distribution::v0::TokenOncePerIdentityDistributionV0;
 use dpp::data_contract::associated_token::token_perpetual_distribution::TokenPerpetualDistribution;
 use dpp::data_contract::associated_token::token_pre_programmed_distribution::TokenPreProgrammedDistribution;
 use dpp::prelude::Identifier;
 use napi_derive::napi;
 
-use crate::dynamic_value::IdentifierLikeNAPI;
+use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::token_configuration::change_control_rules::ChangeControlRulesNAPI;
 use crate::token_configuration::perpetual_distribution::TokenPerpetualDistributionNAPI;
@@ -42,6 +48,7 @@ impl TokenDistributionRulesNAPI {
         minting_allow_choosing_destination: bool,
         minting_allow_choosing_destination_rules: &ChangeControlRulesNAPI,
         change_direct_purchase_pricing_rules: &ChangeControlRulesNAPI,
+        js_once_per_identity_distribution_amount: Option<BigIntString>,
     ) -> Result<TokenDistributionRulesNAPI, napi::Error> {
         let perpetual_distribution: Option<TokenPerpetualDistribution> =
             js_perpetual_distribution.map(|val| val.clone().into());
@@ -55,8 +62,8 @@ impl TokenDistributionRulesNAPI {
                 .transpose()?
                 .map(Into::into);
 
-        Ok(TokenDistributionRulesNAPI(TokenDistributionRules::V0(
-            TokenDistributionRulesV0 {
+        let mut rules =
+            TokenDistributionRulesNAPI(TokenDistributionRules::V0(TokenDistributionRulesV0 {
                 perpetual_distribution,
                 perpetual_distribution_rules: perpetual_distribution_rules.clone().into(),
                 pre_programmed_distribution,
@@ -71,8 +78,39 @@ impl TokenDistributionRulesNAPI {
                 change_direct_purchase_pricing_rules: change_direct_purchase_pricing_rules
                     .clone()
                     .into(),
-            },
-        )))
+            }));
+
+        // a once-per-identity distribution makes them V1 rules
+        rules
+            .set_once_per_identity_distribution_amount(js_once_per_identity_distribution_amount)?;
+
+        Ok(rules)
+    }
+
+    /// The amount every identity can claim once, `undefined` when the token has no
+    /// once-per-identity distribution
+    #[napi(getter, js_name = "oncePerIdentityDistributionAmount")]
+    pub fn get_once_per_identity_distribution_amount(&self) -> Option<BigIntString> {
+        self.0
+            .once_per_identity_distribution()
+            .map(|distribution| BigIntString::from_u64(distribution.amount()))
+    }
+
+    #[napi(setter, js_name = "oncePerIdentityDistributionAmount")]
+    pub fn set_once_per_identity_distribution_amount(
+        &mut self,
+        js_amount: Option<BigIntString>,
+    ) -> Result<(), napi::Error> {
+        let distribution = js_amount
+            .map(|amount| amount.try_to_u64())
+            .transpose()?
+            .map(|amount| {
+                TokenOncePerIdentityDistribution::V0(TokenOncePerIdentityDistributionV0 { amount })
+            });
+
+        self.0.set_once_per_identity_distribution(distribution);
+
+        Ok(())
     }
 
     #[napi(getter, js_name = "perpetualDistribution")]

@@ -20,7 +20,7 @@ use dpp::platform_value::string_encoding::Encoding::{Base58, Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::platform_value::{Value, ValueMap};
 use dpp::serialization::{
-    PlatformDeserializableWithPotentialValidationFromVersionedStructure,
+    PlatformDeserializableWithPotentialValidationFromVersionedStructureUntrusted,
     PlatformSerializableWithPlatformVersion,
 };
 use dpp::version::{PlatformVersion, TryIntoPlatformVersioned};
@@ -191,7 +191,7 @@ impl DataContractNAPI {
 
         let bytes = js_bytes.to_vec();
 
-        let rs_data_contract = DataContract::versioned_deserialize(
+        let rs_data_contract = DataContract::versioned_deserialize_untrusted(
             &bytes.as_slice(),
             full_validation,
             &platform_version.into(),

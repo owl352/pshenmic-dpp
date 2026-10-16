@@ -3,12 +3,13 @@ use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::DataContract;
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::state_transition::StateTransition;
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV0;
+use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV1;
 use dpp::state_transition::data_contract_create_transition::{
-    DataContractCreateTransition, DataContractCreateTransitionV0,
+    DataContractCreateTransition, DataContractCreateTransitionV0, DataContractCreateTransitionV1,
 };
 use dpp::validation::operations::ProtocolValidationOperation;
 use dpp::version::PlatformVersion;
@@ -19,8 +20,9 @@ use napi_derive::napi;
 use crate::data_contract::DataContractNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, TryToU64};
 use crate::enums::platform_version::PlatformVersionNAPI;
+use crate::identifier::IdentifierNAPI;
 use crate::state_transition::StateTransitionNAPI;
-use crate::utils::WithJsError;
+use crate::utils::{WithJsError, serde_from_js, serde_to_js};
 
 #[napi(js_name = "DataContractCreateTransitionNAPI")]
 pub struct DataContractCreateTransitionNAPI(DataContractCreateTransition);
@@ -65,8 +67,10 @@ impl DataContractCreateTransitionNAPI {
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<DataContractCreateTransitionNAPI, napi::Error> {
         let rs_data_contract_create_transition: DataContractCreateTransition =
-            DataContractCreateTransition::deserialize_from_bytes(bytes.to_vec().as_slice())
-                .with_js_error()?;
+            DataContractCreateTransition::deserialize_from_bytes_untrusted(
+                bytes.to_vec().as_slice(),
+            )
+            .with_js_error()?;
 
         Ok(DataContractCreateTransitionNAPI(
             rs_data_contract_create_transition,
@@ -189,6 +193,59 @@ impl DataContractCreateTransitionNAPI {
         Ok(DataContractNAPI::from(rs_data_contract))
     }
 
+    /// The contract group this transition registers, as `{ admins, name?, description? }`
+    #[napi(getter, js_name = "contractGroup")]
+    pub fn get_contract_group(&self) -> Result<Option<DynamicValue>, napi::Error> {
+        self.0.contract_group().map(serde_to_js).transpose()
+    }
+
+    /// Registering a contract group makes this a V1 transition (platform v14+)
+    #[napi(setter, js_name = "contractGroup")]
+    pub fn set_contract_group(
+        &mut self,
+        js_contract_group: Option<&DynamicValue>,
+    ) -> Result<(), napi::Error> {
+        let contract_group = js_contract_group
+            .filter(|value| !value.is_undefined_or_null())
+            .map(serde_from_js)
+            .transpose()?;
+
+        if contract_group.is_some() || matches!(self.0, DataContractCreateTransition::V1(_)) {
+            self.as_v1_mut().contract_group = contract_group;
+        }
+
+        Ok(())
+    }
+
+    #[napi(getter, js_name = "contractGroupId")]
+    pub fn get_contract_group_id(&self) -> Option<IdentifierNAPI> {
+        self.0.contract_group_id().map(Into::into)
+    }
+
+    /// The groups the new contract joins, as
+    /// `[{ contractGroupId, member: 'contract' | { documentType } | { token } }]`
+    #[napi(getter, js_name = "contractGroupMemberships")]
+    pub fn get_contract_group_memberships(&self) -> Result<DynamicValue, napi::Error> {
+        serde_to_js(&self.0.contract_group_memberships())
+    }
+
+    #[napi(setter, js_name = "contractGroupMemberships")]
+    pub fn set_contract_group_memberships(
+        &mut self,
+        js_memberships: &DynamicValue,
+    ) -> Result<(), napi::Error> {
+        let memberships: Vec<_> = match js_memberships.is_undefined_or_null() {
+            true => vec![],
+            false => serde_from_js(js_memberships)?,
+        };
+
+        if !memberships.is_empty() || matches!(self.0, DataContractCreateTransition::V1(_)) {
+            self.as_v1_mut().contract_group_memberships = memberships;
+        }
+
+        Ok(())
+    }
+
     #[napi(js_name = "toStateTransition")]
     pub fn to_state_transition(&self) -> StateTransitionNAPI {
         let rs_state_transition = StateTransition::from(self.0.clone());
@@ -210,6 +267,28 @@ impl DataContractCreateTransitionNAPI {
                 napi::Status::GenericFailure,
                 "Incorrect transition type",
             )),
+        }
+    }
+}
+
+impl DataContractCreateTransitionNAPI {
+    /// Contract groups only exist on V1 transitions, so this upgrades a V0 one
+    fn as_v1_mut(&mut self) -> &mut DataContractCreateTransitionV1 {
+        if let DataContractCreateTransition::V0(v0) = &self.0 {
+            self.0 = DataContractCreateTransition::V1(DataContractCreateTransitionV1 {
+                data_contract: v0.data_contract.clone(),
+                identity_nonce: v0.identity_nonce,
+                contract_group: None,
+                contract_group_memberships: vec![],
+                user_fee_increase: v0.user_fee_increase,
+                signature_public_key_id: v0.signature_public_key_id,
+                signature: v0.signature.clone(),
+            });
+        }
+
+        match &mut self.0 {
+            DataContractCreateTransition::V1(v1) => v1,
+            DataContractCreateTransition::V0(_) => unreachable!("upgraded to V1 above"),
         }
     }
 }

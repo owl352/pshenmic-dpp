@@ -1,8 +1,9 @@
 import type { DataContractCreateTransitionNAPI, PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
 import { DataContractWASM } from '../DataContract.js'
-import { PlatformVersionLike } from '../../types.js'
+import { ContractGroupMembership, ContractGroupRegistration, PlatformVersionLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { plainIdentifiersToBytes, valueFromDynamicValue, valueToDynamicValue } from '../../utils.js'
+import { IdentifierWASM } from '../Identifier.js'
 import { StateTransitionWASM } from '../StateTransition.js'
 
 export class DataContractCreateTransitionWASM {
@@ -23,6 +24,32 @@ export class DataContractCreateTransitionWASM {
 
   get featureVersion (): number {
     return this._rawDataContractCreateTransition.featureVersion
+  }
+
+  get contractGroup (): ContractGroupRegistration | undefined {
+    const contractGroup = this._rawDataContractCreateTransition.contractGroup
+
+    return contractGroup != null ? valueFromDynamicValue(contractGroup, true) : undefined
+  }
+
+  /** Registering a contract group turns the transition into V1 (platform v14+) **/
+  set contractGroup (value: ContractGroupRegistration | undefined | null) {
+    this._rawDataContractCreateTransition.contractGroup = value != null ? valueToDynamicValue(plainIdentifiersToBytes(value)) : undefined
+  }
+
+  /** The id of the group this transition registers **/
+  get contractGroupId (): IdentifierWASM | undefined {
+    const id = this._rawDataContractCreateTransition.contractGroupId
+
+    return id != null ? IdentifierWASM.createFromRawInstance(id) : undefined
+  }
+
+  get contractGroupMemberships (): ContractGroupMembership[] {
+    return valueFromDynamicValue(this._rawDataContractCreateTransition.contractGroupMemberships, true)
+  }
+
+  set contractGroupMemberships (value: ContractGroupMembership[]) {
+    this._rawDataContractCreateTransition.contractGroupMemberships = valueToDynamicValue(plainIdentifiersToBytes(value))
   }
 
   get identityNonce (): bigint {

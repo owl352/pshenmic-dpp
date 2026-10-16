@@ -1,7 +1,7 @@
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::batch_transition::accessors::DocumentsBatchTransitionAccessorsV0;
 use dpp::state_transition::batch_transition::batched_transition::BatchedTransition;
@@ -248,8 +248,8 @@ impl BatchTransitionNAPI {
 
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<BatchTransitionNAPI, napi::Error> {
-        let rs_batch =
-            BatchTransition::deserialize_from_bytes(bytes.to_vec().as_slice()).with_js_error()?;
+        let rs_batch = BatchTransition::deserialize_from_bytes_untrusted(bytes.to_vec().as_slice())
+            .with_js_error()?;
 
         Ok(BatchTransitionNAPI::from(rs_batch))
     }

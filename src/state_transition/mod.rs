@@ -4,7 +4,7 @@ use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
 use dpp::identity::KeyType;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::{Encoding, decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransition::{
     AddressCreditWithdrawal, AddressFundingFromAssetLock, AddressFundsTransfer, Batch,
     DataContractCreate, DataContractUpdate, IdentityCreateFromAddresses, IdentityCreditTransfer,
@@ -16,6 +16,8 @@ use dpp::state_transition::batch_transition::batched_transition::BatchedTransiti
 use dpp::state_transition::batch_transition::batched_transition::document_transition::DocumentTransitionV0Methods;
 use dpp::state_transition::batch_transition::batched_transition::token_transition::TokenTransitionV0Methods;
 use dpp::state_transition::batch_transition::methods::v0::DocumentsBatchTransitionMethodsV0;
+use dpp::state_transition::contract_fee_claim_transition::accessors::ContractFeeClaimTransitionAccessorsV0;
+use dpp::state_transition::contract_user_moderation_transition::accessors::ContractUserModerationTransitionAccessorsV0;
 use dpp::state_transition::data_contract_create_transition::DataContractCreateTransition;
 use dpp::state_transition::data_contract_create_transition::accessors::DataContractCreateTransitionAccessorsV0;
 use dpp::state_transition::data_contract_update_transition::DataContractUpdateTransition;
@@ -23,11 +25,14 @@ use dpp::state_transition::data_contract_update_transition::accessors::DataContr
 use dpp::state_transition::identity_credit_transfer_to_addresses_transition::accessors::IdentityCreditTransferToAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
 use dpp::state_transition::identity_credit_withdrawal_transition::accessors::IdentityCreditWithdrawalTransitionAccessorsV0;
+use dpp::state_transition::identity_key_limits_update_transition::accessors::IdentityKeyLimitsUpdateTransitionAccessorsV0;
+use dpp::state_transition::identity_top_up_from_shielded_pool_transition::accessors::IdentityTopUpFromShieldedPoolTransitionAccessorsV0;
 use dpp::state_transition::identity_topup_from_addresses_transition::accessors::IdentityTopUpFromAddressesTransitionAccessorsV0;
 use dpp::state_transition::identity_topup_transition::accessors::IdentityTopUpTransitionAccessorsV0;
 use dpp::state_transition::identity_update_transition::accessors::IdentityUpdateTransitionAccessorsV0;
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
 use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
+use dpp::state_transition::shield_from_identity_transition::accessors::ShieldFromIdentityTransitionAccessorsV0;
 use dpp::state_transition::{
     StateTransition, StateTransitionEstimatedFeeValidation, StateTransitionIdentitySigned,
     StateTransitionSigningOptions,
@@ -257,7 +262,8 @@ impl StateTransitionNAPI {
     pub fn from_bytes(js_bytes: Uint8Array) -> Result<StateTransitionNAPI, napi::Error> {
         let bytes = js_bytes.to_vec();
 
-        let st = StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let st =
+            StateTransition::deserialize_from_bytes_untrusted(bytes.as_slice()).with_js_error()?;
 
         Ok(st.into())
     }
@@ -267,7 +273,8 @@ impl StateTransitionNAPI {
         let bytes = decode(&hex, Encoding::Hex)
             .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
 
-        let st = StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let st =
+            StateTransition::deserialize_from_bytes_untrusted(bytes.as_slice()).with_js_error()?;
 
         Ok(st.into())
     }
@@ -277,7 +284,8 @@ impl StateTransitionNAPI {
         let bytes = decode(&base64, Encoding::Base64)
             .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
 
-        let st = StateTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let st =
+            StateTransition::deserialize_from_bytes_untrusted(bytes.as_slice()).with_js_error()?;
 
         Ok(st.into())
     }
@@ -346,6 +354,30 @@ impl StateTransitionNAPI {
             StateTransition::IdentityCreateFromShieldedPool(st) => {
                 st.calculate_min_required_fee(&platform_version)
             }
+            StateTransition::ShieldFromIdentity(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::IdentityTopUpFromShieldedPool(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::IdentityKeyLimitsUpdate(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::ContractUserModeration(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::ContractFeeClaim(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::TokenShieldedTransferWithShieldedFee(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::TokenUnshieldWithShieldedFee(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
+            StateTransition::TokenPurchaseFromShieldedPool(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
         };
 
         fee.map(BigIntString::from_u64).with_js_error()
@@ -377,6 +409,20 @@ impl StateTransitionNAPI {
             StateTransition::IdentityCreateFromShieldedPool(_) => {
                 "IDENTITY_CREATE_FROM_SHIELDED_POOL"
             }
+            StateTransition::ShieldFromIdentity(_) => "SHIELD_FROM_IDENTITY",
+            StateTransition::IdentityTopUpFromShieldedPool(_) => {
+                "IDENTITY_TOP_UP_FROM_SHIELDED_POOL"
+            }
+            StateTransition::IdentityKeyLimitsUpdate(_) => "IDENTITY_KEY_LIMITS_UPDATE",
+            StateTransition::ContractUserModeration(_) => "CONTRACT_USER_MODERATION",
+            StateTransition::ContractFeeClaim(_) => "CONTRACT_FEE_CLAIM",
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => {
+                "TOKEN_SHIELDED_TRANSFER_WITH_SHIELDED_FEE"
+            }
+            StateTransition::TokenUnshieldWithShieldedFee(_) => "TOKEN_UNSHIELD_WITH_SHIELDED_FEE",
+            StateTransition::TokenPurchaseFromShieldedPool(_) => {
+                "TOKEN_PURCHASE_FROM_SHIELDED_POOL"
+            }
         }
         .to_string()
     }
@@ -405,6 +451,14 @@ impl StateTransitionNAPI {
             StateTransition::ShieldFromAssetLock(_) => 18,
             StateTransition::ShieldedWithdrawal(_) => 19,
             StateTransition::IdentityCreateFromShieldedPool(_) => 20,
+            StateTransition::ShieldFromIdentity(_) => 21,
+            StateTransition::IdentityTopUpFromShieldedPool(_) => 22,
+            StateTransition::IdentityKeyLimitsUpdate(_) => 23,
+            StateTransition::ContractUserModeration(_) => 24,
+            StateTransition::ContractFeeClaim(_) => 25,
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => 26,
+            StateTransition::TokenUnshieldWithShieldedFee(_) => 27,
+            StateTransition::TokenPurchaseFromShieldedPool(_) => 28,
         }
     }
 
@@ -501,6 +555,18 @@ impl StateTransitionNAPI {
             StateTransition::ShieldFromAssetLock(_) => None,
             StateTransition::ShieldedWithdrawal(_) => None,
             StateTransition::IdentityCreateFromShieldedPool(_) => None,
+            StateTransition::ShieldFromIdentity(_) => None,
+            StateTransition::IdentityTopUpFromShieldedPool(_) => None,
+            StateTransition::IdentityKeyLimitsUpdate(_) => None,
+            StateTransition::ContractUserModeration(st) => {
+                Some(BigIntString::from_u64(st.identity_contract_nonce()))
+            }
+            StateTransition::ContractFeeClaim(st) => {
+                Some(BigIntString::from_u64(st.identity_contract_nonce()))
+            }
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => None,
+            StateTransition::TokenUnshieldWithShieldedFee(_) => None,
+            StateTransition::TokenPurchaseFromShieldedPool(_) => None,
         }
     }
 
@@ -536,6 +602,16 @@ impl StateTransitionNAPI {
             StateTransition::ShieldFromAssetLock(_) => None,
             StateTransition::ShieldedWithdrawal(_) => None,
             StateTransition::IdentityCreateFromShieldedPool(_) => None,
+            StateTransition::ShieldFromIdentity(st) => Some(BigIntString::from_u64(st.nonce())),
+            StateTransition::IdentityTopUpFromShieldedPool(_) => None,
+            StateTransition::IdentityKeyLimitsUpdate(st) => {
+                Some(BigIntString::from_u64(st.nonce()))
+            }
+            StateTransition::ContractUserModeration(_) => None,
+            StateTransition::ContractFeeClaim(_) => None,
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => None,
+            StateTransition::TokenUnshieldWithShieldedFee(_) => None,
+            StateTransition::TokenPurchaseFromShieldedPool(_) => None,
         }
     }
 
@@ -717,6 +793,49 @@ impl StateTransitionNAPI {
                     "Cannot set owner for IdentityCreateFromShieldedPool",
                 ))?;
             }
+            StateTransition::ShieldFromIdentity(mut st) => {
+                st.set_identity_id(owner_id.into());
+
+                self.0 = StateTransition::ShieldFromIdentity(st);
+            }
+            StateTransition::IdentityTopUpFromShieldedPool(mut st) => {
+                st.set_identity_id(owner_id.into());
+
+                self.0 = StateTransition::IdentityTopUpFromShieldedPool(st);
+            }
+            StateTransition::IdentityKeyLimitsUpdate(mut st) => {
+                st.set_identity_id(owner_id.into());
+
+                self.0 = StateTransition::IdentityKeyLimitsUpdate(st);
+            }
+            StateTransition::ContractUserModeration(mut st) => {
+                st.set_owner_id(owner_id.into());
+
+                self.0 = StateTransition::ContractUserModeration(st);
+            }
+            StateTransition::ContractFeeClaim(mut st) => {
+                st.set_owner_id(owner_id.into());
+
+                self.0 = StateTransition::ContractFeeClaim(st);
+            }
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for TokenShieldedTransferWithShieldedFee",
+                ))?;
+            }
+            StateTransition::TokenUnshieldWithShieldedFee(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for TokenUnshieldWithShieldedFee",
+                ))?;
+            }
+            StateTransition::TokenPurchaseFromShieldedPool(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for TokenPurchaseFromShieldedPool",
+                ))?;
+            }
         };
 
         Ok(())
@@ -813,6 +932,40 @@ impl StateTransitionNAPI {
                 napi::Status::GenericFailure,
                 "Cannot set identity contract nonce for IdentityCreateFromShieldedPool",
             ))?,
+            StateTransition::ShieldFromIdentity(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for ShieldFromIdentity",
+            ))?,
+            StateTransition::IdentityTopUpFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for IdentityTopUpFromShieldedPool",
+            ))?,
+            StateTransition::IdentityKeyLimitsUpdate(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for IdentityKeyLimitsUpdate",
+            ))?,
+            StateTransition::ContractUserModeration(mut st) => {
+                st.set_identity_contract_nonce(nonce.try_to_u64()?);
+
+                st.into()
+            }
+            StateTransition::ContractFeeClaim(mut st) => {
+                st.set_identity_contract_nonce(nonce.try_to_u64()?);
+
+                st.into()
+            }
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for TokenShieldedTransferWithShieldedFee",
+            ))?,
+            StateTransition::TokenUnshieldWithShieldedFee(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for TokenUnshieldWithShieldedFee",
+            ))?,
+            StateTransition::TokenPurchaseFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for TokenPurchaseFromShieldedPool",
+            ))?,
         };
 
         Ok(())
@@ -826,6 +979,10 @@ impl StateTransitionNAPI {
                     DataContractCreateTransition::V0(mut v0) => {
                         v0.identity_nonce = nonce.try_to_u64()?;
                         v0.into()
+                    }
+                    DataContractCreateTransition::V1(mut v1) => {
+                        v1.identity_nonce = nonce.try_to_u64()?;
+                        v1.into()
                     }
                 };
 
@@ -921,6 +1078,40 @@ impl StateTransitionNAPI {
             StateTransition::IdentityCreateFromShieldedPool(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot set identity nonce for IdentityCreateFromShieldedPool",
+            ))?,
+            StateTransition::ShieldFromIdentity(mut st) => {
+                st.set_nonce(nonce.try_to_u64()?);
+
+                st.into()
+            }
+            StateTransition::IdentityTopUpFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for IdentityTopUpFromShieldedPool",
+            ))?,
+            StateTransition::IdentityKeyLimitsUpdate(mut st) => {
+                st.set_nonce(nonce.try_to_u64()?);
+
+                st.into()
+            }
+            StateTransition::ContractUserModeration(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for ContractUserModeration",
+            ))?,
+            StateTransition::ContractFeeClaim(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for ContractFeeClaim",
+            ))?,
+            StateTransition::TokenShieldedTransferWithShieldedFee(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for TokenShieldedTransferWithShieldedFee",
+            ))?,
+            StateTransition::TokenUnshieldWithShieldedFee(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for TokenUnshieldWithShieldedFee",
+            ))?,
+            StateTransition::TokenPurchaseFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for TokenPurchaseFromShieldedPool",
             ))?,
         };
 

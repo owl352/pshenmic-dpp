@@ -1,8 +1,11 @@
 pub mod address_funds;
 pub mod contested;
 pub mod contract;
+pub mod contract_groups;
+pub mod contract_moderation;
 pub mod document;
 pub mod identity;
+pub mod plain;
 pub mod platform_address;
 pub mod shielded;
 pub mod signature_digest;

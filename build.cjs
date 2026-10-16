@@ -13,6 +13,9 @@ const typingsForCodegen = 'export * from "./bindingsTypes.ts"';
 
 const buildProfile = process.env.PROFILE ?? "release";
 const isRelease = buildProfile === "release";
+// Release wasm builds use the size-optimized `release-wasm` profile (Cargo.toml)
+// to stay under Chrome's 8MB sync-compile limit.
+const wasmProfile = isRelease ? "release-wasm" : buildProfile;
 // Toolchain used only for the wasm build (needs nightly `-Z build-std` to
 // rebuild std with atomics for the Orchard/Halo 2 proving stack). Pinnable so
 // published artifacts are reproducible and immune to nightly flag churn.
@@ -58,7 +61,7 @@ const execTask = promisify(exec);
 async function main() {
   console.log("--- Building WASM (wasm32-wasip1-threads) ---");
   const targetWasmFile = path.join(
-    __dirname, "target", "wasm32-wasip1-threads", buildProfile, `${binName}.wasm`
+    __dirname, "target", "wasm32-wasip1-threads", wasmProfile, `${binName}.wasm`
   );
 
   // The shielded (Orchard/Halo 2) proving stack needs wasm threads/atomics,
@@ -68,14 +71,23 @@ async function main() {
   // explicitly here so it wins over any inherited RUSTFLAGS (e.g. CI's
   // `-crt-static`), which would otherwise override .cargo/config.toml and drop
   // the atomics flags. Native builds below keep the inherited env.
+  // `optimize_for_size` makes std use its compact implementations (notably
+  // slice::sort, monomorphized hundreds of times by the BTreeMap collects in
+  // dpp). It replaces std's default features, which also drops `backtrace`
+  // (rustc_demangle), unused under immediate-abort panics. ~270KB smaller,
+  // no measurable proving slowdown.
+  // `--cfg tokio_unstable` is what makes napi (>=3.11) treat the target as
+  // threaded and run async `#[napi]` fns / `spawn_future` (the proving stack)
+  // on tokio; without it napi compiles that path out and every async call
+  // rejects with "Built-in Tokio async tasks require a threaded WASI target".
   await execTask(
-    `cargo +${wasmToolchain} build --target wasm32-wasip1-threads -Z unstable-options -Z build-std=std,panic_abort ${isRelease ? "--release" : ""}`,
+    `cargo +${wasmToolchain} build --target wasm32-wasip1-threads -Z unstable-options -Z build-std=std,panic_abort -Z build-std-features=optimize_for_size ${isRelease ? `--profile ${wasmProfile}` : ""}`,
     {
       env: {
         ...process.env,
         EMNAPI_LINK_DIR: emnapi,
         RUSTFLAGS:
-          "-C target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort",
+          "-C target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort --cfg tokio_unstable",
       },
     }
   );

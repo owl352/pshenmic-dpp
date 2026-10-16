@@ -1,6 +1,11 @@
 pub mod identity_create_from_shielded_pool;
+pub mod identity_top_up_from_shielded_pool;
 pub mod shield_from_asset_lock;
+pub mod shield_from_identity;
 pub mod shield_transition;
 pub mod shielded_transfer_transition;
 pub mod shielded_withdrawal;
+pub mod token_purchase_from_shielded_pool;
+pub mod token_shielded_transfer_with_shielded_fee;
+pub mod token_unshield_with_shielded_fee;
 pub mod unshield_transition;

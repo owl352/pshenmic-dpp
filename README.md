@@ -4,7 +4,7 @@ ___
 ## General
 Pshenmic-dpp is a package with Rust bindings for JS.
 
-The module uses [rs-dpp](https://github.com/dashpay/platform) (Dash Platform `v4.1.0`) and exposes its structures,
+The module uses [rs-dpp](https://github.com/dashpay/platform) (Dash Platform `v5.0.0-rc.2`) and exposes its structures,
 state transitions and proof verification to JavaScript/TypeScript via [napi-rs](https://napi.rs).
 The same API is available on WebAssembly, Node.js native addons and React Native.
 
@@ -73,6 +73,7 @@ ___
 - `IdentityUpdateTransitionWASM`
 - `IdentityCreditTransferWASM`
 - `IdentityCreditWithdrawalTransitionWASM`
+- `IdentityKeyLimitsUpdateTransitionWASM`
 
 ### Platform Addresses
 - `PlatformAddressWASM`
@@ -111,12 +112,19 @@ ___
   - `UnshieldTransitionWASM`
   - `ShieldedWithdrawalTransitionWASM`
   - `IdentityCreateFromShieldedPoolTransitionWASM`
+  - `ShieldFromIdentityTransitionWASM`
+  - `IdentityTopUpFromShieldedPoolTransitionWASM`
+  - `TokenShieldedTransferWithShieldedFeeTransitionWASM`
+  - `TokenUnshieldWithShieldedFeeTransitionWASM`
+  - `TokenPurchaseFromShieldedPoolTransitionWASM`
   - `SerializedActionWASM`
 
 ### Data Contracts & Documents
 - `DataContractWASM`
 - `DataContractCreateTransitionWASM`
 - `DataContractUpdateTransitionWASM`
+- `ContractUserModerationTransitionWASM`
+- `ContractFeeClaimTransitionWASM`
 - `DocumentWASM`
 
 ### Batch
@@ -127,11 +135,13 @@ ___
 - `TokenTransitionWASM`
 - `TokenBaseTransitionWASM`
 - `TokenPaymentInfoWASM`
+- `TokenShieldedPaymentWASM`
 - `TokenPricingScheduleWASM`
 - `PrefundedVotingBalanceWASM`
 - Document Transitions:
   - `DocumentCreateTransitionWASM`
   - `DocumentDeleteTransitionWASM`
+  - `DocumentIndexOnlyDeleteTransitionWASM`
   - `DocumentPurchaseTransitionWASM`
   - `DocumentReplaceTransitionWASM`
   - `DocumentTransferTransitionWASM`
@@ -148,6 +158,13 @@ ___
   - `TokenSetPriceForDirectPurchaseTransitionWASM`
   - `TokenTransferTransitionWASM`
   - `TokenUnFreezeTransitionWASM`
+  - `TokenShieldTransitionWASM`
+  - `TokenUnshieldTransitionWASM`
+  - `TokenShieldedTransferTransitionWASM`
+  - `TokenMintToPoolTransitionWASM`
+  - `TokenBurnFromPoolTransitionWASM`
+  - `TokenClaimToPoolTransitionWASM`
+  - `TokenDirectPurchaseToPoolTransitionWASM`
 
 ### Token Configuration
 - `TokenConfigurationWASM`
@@ -178,11 +195,18 @@ ___
 - Signatures: `verifySignatureDigest`
 - System: `verifyEpochsInfoProof`, `verifyFinalizedEpochInfosProof`, `verifyTotalCreditsProof`
 - State transitions: `verifyStateTransitionResult`
-- Contracts & documents: `verifyContractProof`, `verifyDocumentsProof`
+- Contracts & documents: `verifyContractProof`, `verifyContractsByRangeProof`, `verifyContractsVersionsProof`,
+  `verifyDocumentsProof`, `verifyChainedDocumentsProof`, `verifyCompositeDocumentsProof`, `verifyRankedDocumentsProof`,
+  `verifyHavingDocumentsProof`
+- Contract groups: `verifyContractGroupInfoProof`, `verifyContractGroupMembersProof`,
+  `verifyContractGroupMembershipsForContractProof`
+- Contract moderation: `verifyContractModerationStatusProof`, `verifyContractModerationEntriesProof`,
+  `verifyContractModerationActionCountsProof`, `verifyContractDocumentRemovalsProof`, `verifyContractFeePotsProof`,
+  `verifyContractTeamActionsProof`, `verifyContractTeamActionSignersProof`, `verifyContractTeamActionSignatureProof`
 - Contested resources: `verifyVotePollVoteStateProof`
 - Identity: `verifyIdentityByIdentifierProof`, `verifyIdentityByUniqueKeyHashProof`,
   `verifyIdentifierByNonUniquePublicKeyHashProof`, `verifyIdentityBalanceProof`, `verifyIdentityKeysByIdentifierProof`,
-  `verifyIdentityNonceProof`, `verifyIdentityContractNonceProof`
+  `verifyIdentityNonceProof`, `verifyIdentityContractNonceProof`, `verifyIdentityKeysRemainingBudgetsProof`
 - Tokens: `verifyTokenBalancesForIdentitiesProof`, `verifyTokensBalancesForIdentityProof`, `verifyTokenContractInfoProof`,
   `verifyTokenDirectPurchasePrices`, `verifyTokenTotalSupplyProof`
 - Platform addresses: `verifyPlatformAddressInfo`, `verifyPlatformAddressesInfos`, `verifyAddressesTrunkState`,

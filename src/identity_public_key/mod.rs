@@ -1,13 +1,15 @@
 use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::platform_value::string_encoding::{decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::{
     identity::{
         KeyType, Purpose,
         hash::IdentityPublicKeyHashMethodsV0,
         identity_public_key::{
             accessors::v0::{IdentityPublicKeyGettersV0, IdentityPublicKeySettersV0},
+            accessors::v1::IdentityPublicKeyGettersV1,
             v0::IdentityPublicKeyV0,
+            v1::IdentityPublicKeyV1,
         },
     },
     platform_value::{BinaryData, string_encoding::Encoding},
@@ -57,25 +59,33 @@ impl IdentityPublicKeyNAPI {
         binary_data: String,
         js_disabled_at: Option<BigIntString>,
         contract_bounds: Option<&ContractBoundsNAPI>,
+        js_total_budget: Option<BigIntString>,
+        js_expires_at: Option<BigIntString>,
     ) -> Result<Self, napi::Error> {
         let purpose: PurposeNAPI = js_purpose.try_into()?;
         let security_level: SecurityLevelNAPI = js_security_level.try_into()?;
         let key_type: KeyTypeNAPI = js_key_type.try_into()?;
         let disabled_at = js_disabled_at.map(|val| val.try_to_u64()).transpose()?;
+        let total_budget = js_total_budget.map(|val| val.try_to_u64()).transpose()?;
+        let expires_at = js_expires_at.map(|val| val.try_to_u64()).transpose()?;
 
-        Ok(IdentityPublicKeyNAPI(IdentityPublicKey::from(
-            IdentityPublicKeyV0 {
-                id,
-                purpose: purpose.into(),
-                security_level: security_level.into(),
-                contract_bounds: contract_bounds.map(|bounds| bounds.clone().into()),
-                key_type: key_type.into(),
-                read_only,
-                data: BinaryData::from_string(binary_data.as_str(), Encoding::Hex)
-                    .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?,
-                disabled_at,
-            },
-        )))
+        let mut public_key = IdentityPublicKeyNAPI(IdentityPublicKey::from(IdentityPublicKeyV0 {
+            id,
+            purpose: purpose.into(),
+            security_level: security_level.into(),
+            contract_bounds: contract_bounds.map(|bounds| bounds.clone().into()),
+            key_type: key_type.into(),
+            read_only,
+            data: BinaryData::from_string(binary_data.as_str(), Encoding::Hex)
+                .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?,
+            disabled_at,
+        }));
+
+        if total_budget.is_some() || expires_at.is_some() {
+            public_key.set_limits(total_budget, expires_at);
+        }
+
+        Ok(public_key)
     }
 
     #[napi(js_name = "validatePrivateKey")]
@@ -154,6 +164,43 @@ impl IdentityPublicKeyNAPI {
         self.0.contract_bounds().map(|bounds| bounds.clone().into())
     }
 
+    #[napi(getter, js_name = "totalBudget")]
+    pub fn get_total_budget(&self) -> Option<BigIntString> {
+        self.0.total_budget().map(BigIntString::from_u64)
+    }
+
+    #[napi(getter, js_name = "expiresAt")]
+    pub fn get_expires_at(&self) -> Option<BigIntString> {
+        self.0.expires_at().map(BigIntString::from_u64)
+    }
+
+    #[napi(js_name = "hasLimits")]
+    pub fn has_limits(&self) -> bool {
+        self.0.has_limits()
+    }
+
+    #[napi(js_name = "isExpiredAt")]
+    pub fn is_expired_at(&self, time_ms: BigIntString) -> Result<bool, napi::Error> {
+        Ok(self.0.is_expired_at(time_ms.try_to_u64()?))
+    }
+
+    #[napi(setter, js_name = "totalBudget")]
+    pub fn set_total_budget(
+        &mut self,
+        total_budget: Option<BigIntString>,
+    ) -> Result<(), napi::Error> {
+        let total_budget = total_budget.map(|val| val.try_to_u64()).transpose()?;
+        self.set_limits(total_budget, self.0.expires_at());
+        Ok(())
+    }
+
+    #[napi(setter, js_name = "expiresAt")]
+    pub fn set_expires_at(&mut self, expires_at: Option<BigIntString>) -> Result<(), napi::Error> {
+        let expires_at = expires_at.map(|val| val.try_to_u64()).transpose()?;
+        self.set_limits(self.0.total_budget(), expires_at);
+        Ok(())
+    }
+
     #[napi(setter, js_name = "keyId")]
     pub fn set_key_id(&mut self, key_id: u32) {
         self.0.set_id(key_id)
@@ -225,16 +272,12 @@ impl IdentityPublicKeyNAPI {
 
     #[napi(setter, js_name = "contractBounds")]
     pub fn set_contract_bounds(&mut self, contract_bounds: Option<&ContractBoundsNAPI>) {
-        self.0 = IdentityPublicKey::V0(IdentityPublicKeyV0 {
-            id: self.0.id(),
-            purpose: self.0.purpose(),
-            security_level: self.0.security_level(),
-            contract_bounds: contract_bounds.map(|bounds| bounds.clone().into()),
-            key_type: self.0.key_type(),
-            read_only: self.0.read_only(),
-            data: self.0.data().clone(),
-            disabled_at: self.0.disabled_at(),
-        })
+        let contract_bounds = contract_bounds.map(|bounds| bounds.clone().into());
+
+        match &mut self.0 {
+            IdentityPublicKey::V0(v0) => v0.contract_bounds = contract_bounds,
+            IdentityPublicKey::V1(v1) => v1.contract_bounds = contract_bounds,
+        }
     }
 
     #[napi(js_name = "removeDisabledAt")]
@@ -283,7 +326,8 @@ impl IdentityPublicKeyNAPI {
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<IdentityPublicKeyNAPI, napi::Error> {
         Ok(IdentityPublicKeyNAPI(
-            IdentityPublicKey::deserialize_from_bytes(bytes.to_vec().as_slice()).with_js_error()?,
+            IdentityPublicKey::deserialize_from_bytes_untrusted(bytes.to_vec().as_slice())
+                .with_js_error()?,
         ))
     }
 
@@ -292,8 +336,8 @@ impl IdentityPublicKeyNAPI {
         let bytes = decode(&hex, Encoding::Hex)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;
 
-        let public_key =
-            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let public_key = IdentityPublicKey::deserialize_from_bytes_untrusted(bytes.as_slice())
+            .with_js_error()?;
 
         Ok(IdentityPublicKeyNAPI(public_key))
     }
@@ -303,9 +347,30 @@ impl IdentityPublicKeyNAPI {
         let bytes = decode(&base64, Encoding::Base64)
             .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?;
 
-        let public_key =
-            IdentityPublicKey::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+        let public_key = IdentityPublicKey::deserialize_from_bytes_untrusted(bytes.as_slice())
+            .with_js_error()?;
 
         Ok(IdentityPublicKeyNAPI(public_key))
+    }
+}
+
+impl IdentityPublicKeyNAPI {
+    /// Budget and expiry only exist on V1 keys, so setting either upgrades a V0 key
+    fn set_limits(&mut self, total_budget: Option<u64>, expires_at: Option<u64>) {
+        match &mut self.0 {
+            IdentityPublicKey::V0(v0) => {
+                if total_budget.is_some() || expires_at.is_some() {
+                    self.0 = IdentityPublicKey::V1(IdentityPublicKeyV1::from_v0_with_limits(
+                        v0.clone(),
+                        total_budget,
+                        expires_at,
+                    ));
+                }
+            }
+            IdentityPublicKey::V1(v1) => {
+                v1.total_budget = total_budget;
+                v1.expires_at = expires_at;
+            }
+        }
     }
 }

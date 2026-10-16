@@ -3,11 +3,15 @@ use dpp::tokens::gas_fees_paid_by::GasFeesPaidBy;
 use dpp::tokens::token_payment_info::TokenPaymentInfo;
 use dpp::tokens::token_payment_info::v0::TokenPaymentInfoV0;
 use dpp::tokens::token_payment_info::v0::v0_accessors::TokenPaymentInfoAccessorsV0;
+use dpp::tokens::token_payment_info::v1::v1_accessors::TokenPaymentInfoAccessorsV1;
 use napi_derive::napi;
 
+use crate::batch::token_payment_info::shielded_payment::TokenShieldedPaymentNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::gas_fees_paid_by::GasFeesPaidByNAPI;
 use crate::identifier::IdentifierNAPI;
+
+pub mod shielded_payment;
 
 #[derive(Clone)]
 #[napi(js_name = "TokenPaymentInfoNAPI")]
@@ -34,6 +38,7 @@ impl TokenPaymentInfoNAPI {
         minimum_token_cost: Option<BigIntString>,
         maximum_token_cost: Option<BigIntString>,
         js_gas_fees_paid_by: &DynamicValue,
+        shielded_payment: Option<&TokenShieldedPaymentNAPI>,
     ) -> Result<Self, napi::Error> {
         let payment_token_contract_id: Option<Identifier> = js_payment_token_contract_id
             .map(IdentifierNAPI::try_from)
@@ -47,15 +52,18 @@ impl TokenPaymentInfoNAPI {
             true => GasFeesPaidBy::default(),
         };
 
-        Ok(TokenPaymentInfoNAPI(TokenPaymentInfo::V0(
-            TokenPaymentInfoV0 {
-                payment_token_contract_id,
-                token_contract_position,
-                minimum_token_cost: minimum_token_cost.map(|n| n.try_to_u64()).transpose()?,
-                maximum_token_cost: maximum_token_cost.map(|n| n.try_to_u64()).transpose()?,
-                gas_fees_paid_by,
-            },
-        )))
+        let mut info = TokenPaymentInfo::V0(TokenPaymentInfoV0 {
+            payment_token_contract_id,
+            token_contract_position,
+            minimum_token_cost: minimum_token_cost.map(|n| n.try_to_u64()).transpose()?,
+            maximum_token_cost: maximum_token_cost.map(|n| n.try_to_u64()).transpose()?,
+            gas_fees_paid_by,
+        });
+
+        // a shielded payment makes it a V1 payment info
+        info.set_shielded_payment(shielded_payment.map(|payment| payment.clone().into()));
+
+        Ok(TokenPaymentInfoNAPI(info))
     }
 
     #[napi(getter, js_name = "paymentTokenContractId")]
@@ -81,6 +89,19 @@ impl TokenPaymentInfoNAPI {
     #[napi(getter, js_name = "gasFeesPaidBy")]
     pub fn gas_fees_paid_by(&self) -> String {
         GasFeesPaidByNAPI::from(self.0.gas_fees_paid_by()).into()
+    }
+
+    #[napi(getter, js_name = "shieldedPayment")]
+    pub fn shielded_payment(&self) -> Option<TokenShieldedPaymentNAPI> {
+        self.0
+            .shielded_payment()
+            .map(|payment| payment.clone().into())
+    }
+
+    #[napi(setter, js_name = "shieldedPayment")]
+    pub fn set_shielded_payment(&mut self, shielded_payment: Option<&TokenShieldedPaymentNAPI>) {
+        self.0
+            .set_shielded_payment(shielded_payment.map(|payment| payment.clone().into()));
     }
 
     #[napi(setter, js_name = "paymentTokenContractId")]
@@ -110,7 +131,7 @@ impl TokenPaymentInfoNAPI {
         minimum_cost: Option<BigIntString>,
     ) -> Result<(), napi::Error> {
         self.0
-            .set_maximum_token_cost(minimum_cost.map(|n| n.try_to_u64()).transpose()?);
+            .set_minimum_token_cost(minimum_cost.map(|n| n.try_to_u64()).transpose()?);
         Ok(())
     }
 

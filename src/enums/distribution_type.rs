@@ -11,6 +11,7 @@ pub enum TokenDistributionTypeNAPI {
     #[default]
     PreProgrammed = 0,
     Perpetual = 1,
+    OncePerIdentity = 2,
 }
 
 impl From<TokenDistributionTypeNAPI> for TokenDistributionType {
@@ -18,6 +19,7 @@ impl From<TokenDistributionTypeNAPI> for TokenDistributionType {
         match distribution_type {
             TokenDistributionTypeNAPI::PreProgrammed => TokenDistributionType::PreProgrammed,
             TokenDistributionTypeNAPI::Perpetual => TokenDistributionType::Perpetual,
+            TokenDistributionTypeNAPI::OncePerIdentity => TokenDistributionType::OncePerIdentity,
         }
     }
 }
@@ -27,6 +29,7 @@ impl From<TokenDistributionType> for TokenDistributionTypeNAPI {
         match distribution_type {
             TokenDistributionType::Perpetual => TokenDistributionTypeNAPI::Perpetual,
             TokenDistributionType::PreProgrammed => TokenDistributionTypeNAPI::PreProgrammed,
+            TokenDistributionType::OncePerIdentity => TokenDistributionTypeNAPI::OncePerIdentity,
         }
     }
 }
@@ -36,6 +39,7 @@ impl From<TokenDistributionTypeNAPI> for String {
         match distribution_type {
             TokenDistributionTypeNAPI::PreProgrammed => String::from("PreProgrammed"),
             TokenDistributionTypeNAPI::Perpetual => String::from("Perpetual"),
+            TokenDistributionTypeNAPI::OncePerIdentity => String::from("OncePerIdentity"),
         }
     }
 }
@@ -45,6 +49,7 @@ impl From<TokenDistributionTypeNAPI> for u8 {
         match value {
             TokenDistributionTypeNAPI::PreProgrammed => 0,
             TokenDistributionTypeNAPI::Perpetual => 1,
+            TokenDistributionTypeNAPI::OncePerIdentity => 2,
         }
     }
 }
@@ -56,6 +61,7 @@ impl TryFrom<String> for TokenDistributionTypeNAPI {
         match value.to_lowercase().as_str() {
             "preprogrammed" => Ok(TokenDistributionTypeNAPI::PreProgrammed),
             "perpetual" => Ok(TokenDistributionTypeNAPI::Perpetual),
+            "onceperidentity" => Ok(TokenDistributionTypeNAPI::OncePerIdentity),
             _ => Err(napi::Error::new(
                 Status::InvalidArg,
                 "Invalid TokenDistributionType value",
@@ -71,6 +77,7 @@ impl TryFrom<u64> for TokenDistributionTypeNAPI {
         match value {
             0 => Ok(TokenDistributionTypeNAPI::PreProgrammed),
             1 => Ok(TokenDistributionTypeNAPI::Perpetual),
+            2 => Ok(TokenDistributionTypeNAPI::OncePerIdentity),
             _ => Err(napi::Error::new(
                 Status::InvalidArg,
                 "Invalid TokenDistributionType value",

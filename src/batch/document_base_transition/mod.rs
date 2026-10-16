@@ -73,7 +73,7 @@ impl DocumentBaseTransitionNAPI {
 
     #[napi(getter, js_name = "tokenPaymentInfo")]
     pub fn get_token_payment_info(&self) -> Option<TokenPaymentInfoNAPI> {
-        self.0.token_payment_info().map(Into::into)
+        self.0.token_payment_info_ref().clone().map(Into::into)
     }
 
     #[napi(setter, js_name = "id")]

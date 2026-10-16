@@ -12,7 +12,7 @@ use dpp::{
 };
 use dpp::{
     platform_value::string_encoding::encode,
-    serialization::{PlatformDeserializable, PlatformSerializable},
+    serialization::{PlatformDeserializableUntrusted, PlatformSerializable},
 };
 use napi::{Status, bindgen_prelude::Uint8Array};
 use napi_derive::napi;
@@ -131,9 +131,11 @@ impl IdentityNAPI {
 
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<IdentityNAPI, napi::Error> {
-        Ok(Identity::deserialize_from_bytes(bytes.to_vec().as_slice())
-            .with_js_error()?
-            .into())
+        Ok(
+            Identity::deserialize_from_bytes_untrusted(bytes.to_vec().as_slice())
+                .with_js_error()?
+                .into(),
+        )
     }
 
     #[napi(js_name = "bytes")]

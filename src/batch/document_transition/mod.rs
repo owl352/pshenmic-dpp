@@ -1,13 +1,14 @@
-use dpp::prelude::{Identifier};
+use dpp::prelude::Identifier;
 use dpp::state_transition::batch_transition::batched_transition::document_transition::{
     DocumentTransition, DocumentTransitionV0Methods,
 };
-use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::{DocumentTransitionActionType, DocumentTransitionActionTypeGetter};
+use dpp::state_transition::batch_transition::batched_transition::document_transition_action_type::DocumentTransitionActionTypeGetter;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::batch::document_transition::transitions::create::DocumentCreateTransitionNAPI;
 use crate::batch::document_transition::transitions::delete::DocumentDeleteTransitionNAPI;
+use crate::batch::document_transition::transitions::index_only_delete::DocumentIndexOnlyDeleteTransitionNAPI;
 use crate::batch::document_transition::transitions::purchase::DocumentPurchaseTransitionNAPI;
 use crate::batch::document_transition::transitions::replace::DocumentReplaceTransitionNAPI;
 use crate::batch::document_transition::transitions::transfer::DocumentTransferTransitionNAPI;
@@ -43,15 +44,7 @@ impl DocumentTransitionNAPI {
 
     #[napi(getter, js_name = "actionTypeNumber")]
     pub fn get_action_type_number(&self) -> u8 {
-        match self.0.action_type() {
-            DocumentTransitionActionType::Create => 0,
-            DocumentTransitionActionType::Replace => 1,
-            DocumentTransitionActionType::Delete => 2,
-            DocumentTransitionActionType::Transfer => 3,
-            DocumentTransitionActionType::Purchase => 4,
-            DocumentTransitionActionType::UpdatePrice => 5,
-            DocumentTransitionActionType::IgnoreWhileBumpingRevision => 6,
-        }
+        BatchTypeNAPI::from(self.0.action_type()).into()
     }
 
     #[napi(getter, js_name = "dataContractId")]
@@ -99,6 +92,21 @@ impl DocumentTransitionNAPI {
     pub fn get_delete_transition(&self) -> Result<DocumentDeleteTransitionNAPI, napi::Error> {
         match self.0.clone() {
             DocumentTransition::Delete(delete) => Ok(DocumentDeleteTransitionNAPI::from(delete)),
+            _ => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "transition type mismatch",
+            )),
+        }
+    }
+
+    #[napi(getter, js_name = "indexOnlyDeleteTransition")]
+    pub fn get_index_only_delete_transition(
+        &self,
+    ) -> Result<DocumentIndexOnlyDeleteTransitionNAPI, napi::Error> {
+        match self.0.clone() {
+            DocumentTransition::IndexOnlyDelete(index_only_delete) => Ok(
+                DocumentIndexOnlyDeleteTransitionNAPI::from(index_only_delete),
+            ),
             _ => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "transition type mismatch",

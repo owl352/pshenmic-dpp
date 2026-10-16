@@ -19,7 +19,8 @@ export class TokenDistributionRulesWASM {
     changeDirectPurchasePricingRules: ChangeControlRulesWASM,
     perpetualDistribution?: TokenPerpetualDistributionWASM,
     preProgrammedDistribution?: TokenPreProgrammedDistributionWASM,
-    newTokensDestinationIdentity?: IdentifierLike
+    newTokensDestinationIdentity?: IdentifierLike,
+    oncePerIdentityDistributionAmount?: bigint
   ) {
     this._rawTokenDistributionRules = new dppProvider.dpp.TokenDistributionRulesNAPI(
       perpetualDistribution?._rawTokenPerpetualDistribution,
@@ -29,8 +30,20 @@ export class TokenDistributionRulesWASM {
       newTokensDestinationIdentityRules._rawChangeControlRules,
       mintingAllowChoosingDestination,
       mintingAllowChoosingDestinationRules?._rawChangeControlRules,
-      changeDirectPurchasePricingRules?._rawChangeControlRules
+      changeDirectPurchasePricingRules?._rawChangeControlRules,
+      oncePerIdentityDistributionAmount?.toString()
     )
+  }
+
+  /** The amount every identity can claim once. Setting it turns the rules into V1 (platform v14+) **/
+  get oncePerIdentityDistributionAmount (): bigint | undefined {
+    const amount = this._rawTokenDistributionRules.oncePerIdentityDistributionAmount
+
+    return amount != null ? BigInt(amount) : undefined
+  }
+
+  set oncePerIdentityDistributionAmount (amount: bigint | undefined | null) {
+    this._rawTokenDistributionRules.oncePerIdentityDistributionAmount = amount?.toString()
   }
 
   get perpetualDistribution (): TokenPerpetualDistributionWASM | undefined {

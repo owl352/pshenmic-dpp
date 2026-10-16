@@ -1,5 +1,6 @@
 pub mod action_goal;
 pub mod batch_type;
+pub mod contract_fee_pot;
 pub mod distribution_type;
 pub mod emergency_action;
 pub mod gas_fees_paid_by;

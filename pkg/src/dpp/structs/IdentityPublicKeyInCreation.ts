@@ -10,7 +10,7 @@ export class IdentityPublicKeyInCreationWASM {
   /** @private **/
   _rawKeyInCreation: IdentityPublicKeyInCreationNAPI
 
-  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: Uint8Array, signature?: Uint8Array, contractBounds?: ContractBoundsWASM) {
+  constructor (id: number, purpose: PurposeLike, securityLevel: SecurityLevelLike, keyType: KeyTypeLike, readOnly: boolean, binaryData: Uint8Array, signature?: Uint8Array, contractBounds?: ContractBoundsWASM, totalBudget?: bigint | number, expiresAt?: bigint | number) {
     this._rawKeyInCreation = new dppProvider.dpp.IdentityPublicKeyInCreationNAPI(
       id,
       valueToDynamicValue(purpose),
@@ -19,7 +19,9 @@ export class IdentityPublicKeyInCreationWASM {
       readOnly,
       binaryData,
       signature,
-      contractBounds?._rawContractBounds
+      contractBounds?._rawContractBounds,
+      totalBudget?.toString(),
+      expiresAt?.toString()
     )
   }
 
@@ -51,6 +53,31 @@ export class IdentityPublicKeyInCreationWASM {
 
   set contractBounds (value: ContractBoundsWASM) {
     this._rawKeyInCreation.contractBounds = value._rawContractBounds
+  }
+
+  get totalBudget (): bigint | undefined {
+    const totalBudget = this._rawKeyInCreation.totalBudget
+
+    return (totalBudget != null) ? BigInt(totalBudget) : undefined
+  }
+
+  /** Setting a budget or an expiry turns the key into a V1 key (platform v14+) **/
+  set totalBudget (totalBudget: bigint | number | undefined | null) {
+    this._rawKeyInCreation.totalBudget = totalBudget?.toString()
+  }
+
+  get expiresAt (): bigint | undefined {
+    const expiresAt = this._rawKeyInCreation.expiresAt
+
+    return (expiresAt != null) ? BigInt(expiresAt) : undefined
+  }
+
+  set expiresAt (expiresAt: bigint | number | undefined | null) {
+    this._rawKeyInCreation.expiresAt = expiresAt?.toString()
+  }
+
+  hasLimits (): boolean {
+    return this._rawKeyInCreation.hasLimits()
   }
 
   get keyId (): number {

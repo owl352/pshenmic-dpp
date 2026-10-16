@@ -6,7 +6,7 @@ use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{self, Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::masternode_vote_transition::MasternodeVoteTransition;
 use dpp::state_transition::masternode_vote_transition::accessors::MasternodeVoteTransitionAccessorsV0;
@@ -206,7 +206,8 @@ impl MasternodeVoteTransitionNAPI {
         let bytes = js_bytes.to_vec();
 
         let rs_transition =
-            MasternodeVoteTransition::deserialize_from_bytes(bytes.as_slice()).with_js_error()?;
+            MasternodeVoteTransition::deserialize_from_bytes_untrusted(bytes.as_slice())
+                .with_js_error()?;
 
         Ok(MasternodeVoteTransitionNAPI(rs_transition))
     }

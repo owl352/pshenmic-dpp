@@ -210,6 +210,44 @@ export class DocumentWASM {
     this._rawDocument.creatorId = prepareIdentifierValue(value)
   }
 
+  get contractVersion (): number | undefined {
+    return this._rawDocument.contractVersion ?? undefined
+  }
+
+  set contractVersion (value: number | undefined) {
+    this._rawDocument.contractVersion = value
+  }
+
+  get moderatedAt (): bigint | undefined {
+    const moderatedAt = this._rawDocument.moderatedAt
+
+    if (moderatedAt != null) {
+      return BigInt(moderatedAt)
+    }
+  }
+
+  set moderatedAt (timestamp: Date | number | bigint | undefined) {
+    if (timestamp instanceof Date) {
+      this._rawDocument.moderatedAt = timestamp.getTime().toString()
+    } else if (timestamp == null) {
+      this._rawDocument.moderatedAt = undefined
+    } else {
+      this._rawDocument.moderatedAt = timestamp.toString()
+    }
+  }
+
+  get moderatedBy (): IdentifierWASM | undefined {
+    const id = this._rawDocument.moderatedBy
+
+    if (id != null) {
+      return IdentifierWASM.createFromRawInstance(id)
+    }
+  }
+
+  set moderatedBy (value: IdentifierLike | undefined) {
+    this._rawDocument.moderatedBy = value != null ? prepareIdentifierValue(value) : undefined
+  }
+
   bytes (dataContract: DataContractWASM, platformVersion?: PlatformVersionLike): Uint8Array {
     return this._rawDocument.bytes(dataContract._rawDataContract, valueToDynamicValue(platformVersion))
   }

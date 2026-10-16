@@ -212,6 +212,36 @@ export class TokenConfigurationWASM {
     this._rawTokenConfiguration.description = value
   }
 
+  get hasShieldedPool (): boolean {
+    return this._rawTokenConfiguration.hasShieldedPool
+  }
+
+  set hasShieldedPool (value: boolean) {
+    this._rawTokenConfiguration.hasShieldedPool = value
+  }
+
+  get isTransferable (): boolean {
+    return this._rawTokenConfiguration.isTransferable
+  }
+
+  set isTransferable (value: boolean) {
+    this._rawTokenConfiguration.isTransferable = value
+  }
+
+  get minimumPoolNotesForOutgoing (): bigint {
+    return BigInt(this._rawTokenConfiguration.minimumPoolNotesForOutgoing)
+  }
+
+  set minimumPoolNotesForOutgoing (value: bigint | undefined) {
+    this._rawTokenConfiguration.minimumPoolNotesForOutgoing = value?.toString()
+  }
+
+  get minimumPoolNotesForOutgoingChangeRules (): ChangeControlRulesWASM | undefined {
+    const rules = this._rawTokenConfiguration.minimumPoolNotesForOutgoingChangeRules
+
+    return rules != null ? ChangeControlRulesWASM.createFromRawInstance(rules) : undefined
+  }
+
   static calculateTokenId (contractId: IdentifierLike, tokenPosition: number): IdentifierWASM {
     return IdentifierWASM.createFromRawInstance(dppProvider.dpp.TokenConfigurationNAPI.calculateTokenId(prepareIdentifierValue(contractId), tokenPosition))
   }

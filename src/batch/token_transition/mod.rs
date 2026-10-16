@@ -2,25 +2,35 @@ use dpp::state_transition::batch_transition::batched_transition::token_transitio
     TokenTransition, TokenTransitionV0Methods,
 };
 use dpp::state_transition::batch_transition::{
-    TokenBurnTransition, TokenClaimTransition, TokenConfigUpdateTransition,
-    TokenDestroyFrozenFundsTransition, TokenDirectPurchaseTransition,
-    TokenEmergencyActionTransition, TokenFreezeTransition, TokenMintTransition,
-    TokenSetPriceForDirectPurchaseTransition, TokenTransferTransition, TokenUnfreezeTransition,
+    TokenBurnFromPoolTransition, TokenBurnTransition, TokenClaimToPoolTransition,
+    TokenClaimTransition, TokenConfigUpdateTransition, TokenDestroyFrozenFundsTransition,
+    TokenDirectPurchaseToPoolTransition, TokenDirectPurchaseTransition,
+    TokenEmergencyActionTransition, TokenFreezeTransition, TokenMintToPoolTransition,
+    TokenMintTransition, TokenSetPriceForDirectPurchaseTransition, TokenShieldTransition,
+    TokenShieldedTransferTransition, TokenTransferTransition, TokenUnfreezeTransition,
+    TokenUnshieldTransition,
 };
-use napi::bindgen_prelude::Either11;
+use napi::bindgen_prelude::Either18;
 use napi_derive::napi;
 
 use crate::batch::token_transition::transitions::config_update::TokenConfigUpdateTransitionNAPI;
 use crate::batch::token_transition::transitions::direct_purchase::TokenDirectPurchaseTransitionNAPI;
 use crate::batch::token_transition::transitions::set_price_for_direct_purchase::TokenSetPriceForDirectPurchaseTransitionNAPI;
 use crate::batch::token_transition::transitions::token_burn::TokenBurnTransitionNAPI;
+use crate::batch::token_transition::transitions::token_burn_from_pool::TokenBurnFromPoolTransitionNAPI;
 use crate::batch::token_transition::transitions::token_claim::TokenClaimTransitionNAPI;
+use crate::batch::token_transition::transitions::token_claim_to_pool::TokenClaimToPoolTransitionNAPI;
 use crate::batch::token_transition::transitions::token_destroy_frozen_funds::TokenDestroyFrozenFundsTransitionNAPI;
+use crate::batch::token_transition::transitions::token_direct_purchase_to_pool::TokenDirectPurchaseToPoolTransitionNAPI;
 use crate::batch::token_transition::transitions::token_emergency_action::TokenEmergencyActionTransitionNAPI;
 use crate::batch::token_transition::transitions::token_freeze::TokenFreezeTransitionNAPI;
 use crate::batch::token_transition::transitions::token_mint::TokenMintTransitionNAPI;
+use crate::batch::token_transition::transitions::token_mint_to_pool::TokenMintToPoolTransitionNAPI;
+use crate::batch::token_transition::transitions::token_shield::TokenShieldTransitionNAPI;
+use crate::batch::token_transition::transitions::token_shielded_transfer::TokenShieldedTransferTransitionNAPI;
 use crate::batch::token_transition::transitions::token_transfer::TokenTransferTransitionNAPI;
 use crate::batch::token_transition::transitions::token_unfreeze::TokenUnFreezeTransitionNAPI;
+use crate::batch::token_transition::transitions::token_unshield::TokenUnshieldTransitionNAPI;
 use crate::dynamic_value::{BigIntString, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 
@@ -46,7 +56,7 @@ impl From<TokenTransitionNAPI> for TokenTransition {
 impl TokenTransitionNAPI {
     #[napi(constructor)]
     pub fn new(
-        js_transition: Either11<
+        js_transition: Either18<
             &TokenConfigUpdateTransitionNAPI,
             &TokenDirectPurchaseTransitionNAPI,
             &TokenSetPriceForDirectPurchaseTransitionNAPI,
@@ -58,28 +68,46 @@ impl TokenTransitionNAPI {
             &TokenMintTransitionNAPI,
             &TokenTransferTransitionNAPI,
             &TokenUnFreezeTransitionNAPI,
+            &TokenShieldTransitionNAPI,
+            &TokenUnshieldTransitionNAPI,
+            &TokenShieldedTransferTransitionNAPI,
+            &TokenMintToPoolTransitionNAPI,
+            &TokenBurnFromPoolTransitionNAPI,
+            &TokenClaimToPoolTransitionNAPI,
+            &TokenDirectPurchaseToPoolTransitionNAPI,
         >,
     ) -> TokenTransitionNAPI {
         let transition = match js_transition {
-            Either11::A(tx) => TokenTransition::from(TokenConfigUpdateTransition::from(tx.clone())),
-            Either11::B(tx) => {
+            Either18::A(tx) => TokenTransition::from(TokenConfigUpdateTransition::from(tx.clone())),
+            Either18::B(tx) => {
                 TokenTransition::from(TokenDirectPurchaseTransition::from(tx.clone()))
             }
-            Either11::C(tx) => {
+            Either18::C(tx) => {
                 TokenTransition::from(TokenSetPriceForDirectPurchaseTransition::from(tx.clone()))
             }
-            Either11::D(tx) => TokenTransition::from(TokenBurnTransition::from(tx.clone())),
-            Either11::E(tx) => TokenTransition::from(TokenClaimTransition::from(tx.clone())),
-            Either11::F(tx) => {
+            Either18::D(tx) => TokenTransition::from(TokenBurnTransition::from(tx.clone())),
+            Either18::E(tx) => TokenTransition::from(TokenClaimTransition::from(tx.clone())),
+            Either18::F(tx) => {
                 TokenTransition::from(TokenDestroyFrozenFundsTransition::from(tx.clone()))
             }
-            Either11::G(tx) => {
+            Either18::G(tx) => {
                 TokenTransition::from(TokenEmergencyActionTransition::from(tx.clone()))
             }
-            Either11::H(tx) => TokenTransition::from(TokenFreezeTransition::from(tx.clone())),
-            Either11::I(tx) => TokenTransition::from(TokenMintTransition::from(tx.clone())),
-            Either11::J(tx) => TokenTransition::from(TokenTransferTransition::from(tx.clone())),
-            Either11::K(tx) => TokenTransition::from(TokenUnfreezeTransition::from(tx.clone())),
+            Either18::H(tx) => TokenTransition::from(TokenFreezeTransition::from(tx.clone())),
+            Either18::I(tx) => TokenTransition::from(TokenMintTransition::from(tx.clone())),
+            Either18::J(tx) => TokenTransition::from(TokenTransferTransition::from(tx.clone())),
+            Either18::K(tx) => TokenTransition::from(TokenUnfreezeTransition::from(tx.clone())),
+            Either18::L(tx) => TokenTransition::from(TokenShieldTransition::from(tx.clone())),
+            Either18::M(tx) => TokenTransition::from(TokenUnshieldTransition::from(tx.clone())),
+            Either18::N(tx) => {
+                TokenTransition::from(TokenShieldedTransferTransition::from(tx.clone()))
+            }
+            Either18::O(tx) => TokenTransition::from(TokenMintToPoolTransition::from(tx.clone())),
+            Either18::P(tx) => TokenTransition::from(TokenBurnFromPoolTransition::from(tx.clone())),
+            Either18::Q(tx) => TokenTransition::from(TokenClaimToPoolTransition::from(tx.clone())),
+            Either18::R(tx) => {
+                TokenTransition::from(TokenDirectPurchaseToPoolTransition::from(tx.clone()))
+            }
         };
 
         TokenTransitionNAPI(transition)
@@ -88,54 +116,87 @@ impl TokenTransitionNAPI {
     #[napi(js_name = "getTransition")]
     pub fn to_transition(
         &self,
-    ) -> Either11<
-        TokenConfigUpdateTransitionNAPI,
-        TokenDirectPurchaseTransitionNAPI,
-        TokenSetPriceForDirectPurchaseTransitionNAPI,
-        TokenBurnTransitionNAPI,
-        TokenClaimTransitionNAPI,
-        TokenDestroyFrozenFundsTransitionNAPI,
-        TokenEmergencyActionTransitionNAPI,
-        TokenFreezeTransitionNAPI,
-        TokenMintTransitionNAPI,
-        TokenTransferTransitionNAPI,
-        TokenUnFreezeTransitionNAPI,
+    ) -> Result<
+        Either18<
+            TokenConfigUpdateTransitionNAPI,
+            TokenDirectPurchaseTransitionNAPI,
+            TokenSetPriceForDirectPurchaseTransitionNAPI,
+            TokenBurnTransitionNAPI,
+            TokenClaimTransitionNAPI,
+            TokenDestroyFrozenFundsTransitionNAPI,
+            TokenEmergencyActionTransitionNAPI,
+            TokenFreezeTransitionNAPI,
+            TokenMintTransitionNAPI,
+            TokenTransferTransitionNAPI,
+            TokenUnFreezeTransitionNAPI,
+            TokenShieldTransitionNAPI,
+            TokenUnshieldTransitionNAPI,
+            TokenShieldedTransferTransitionNAPI,
+            TokenMintToPoolTransitionNAPI,
+            TokenBurnFromPoolTransitionNAPI,
+            TokenClaimToPoolTransitionNAPI,
+            TokenDirectPurchaseToPoolTransitionNAPI,
+        >,
+        napi::Error,
     > {
-        match self.clone().0 {
+        let transition = match self.clone().0 {
             TokenTransition::ConfigUpdate(token_transition) => {
-                Either11::A(TokenConfigUpdateTransitionNAPI::from(token_transition).into())
+                Either18::A(TokenConfigUpdateTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::DirectPurchase(token_transition) => {
-                Either11::B(TokenDirectPurchaseTransitionNAPI::from(token_transition).into())
+                Either18::B(TokenDirectPurchaseTransitionNAPI::from(token_transition).into())
             }
-            TokenTransition::SetPriceForDirectPurchase(token_transition) => Either11::C(
+            TokenTransition::SetPriceForDirectPurchase(token_transition) => Either18::C(
                 TokenSetPriceForDirectPurchaseTransitionNAPI::from(token_transition).into(),
             ),
             TokenTransition::Burn(token_transition) => {
-                Either11::D(TokenBurnTransitionNAPI::from(token_transition).into())
+                Either18::D(TokenBurnTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::Claim(token_transition) => {
-                Either11::E(TokenClaimTransitionNAPI::from(token_transition).into())
+                Either18::E(TokenClaimTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::DestroyFrozenFunds(token_transition) => {
-                Either11::F(TokenDestroyFrozenFundsTransitionNAPI::from(token_transition).into())
+                Either18::F(TokenDestroyFrozenFundsTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::EmergencyAction(token_transition) => {
-                Either11::G(TokenEmergencyActionTransitionNAPI::from(token_transition).into())
+                Either18::G(TokenEmergencyActionTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::Freeze(token_transition) => {
-                Either11::H(TokenFreezeTransitionNAPI::from(token_transition).into())
+                Either18::H(TokenFreezeTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::Mint(token_transition) => {
-                Either11::I(TokenMintTransitionNAPI::from(token_transition).into())
+                Either18::I(TokenMintTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::Transfer(token_transition) => {
-                Either11::J(TokenTransferTransitionNAPI::from(token_transition).into())
+                Either18::J(TokenTransferTransitionNAPI::from(token_transition).into())
             }
             TokenTransition::Unfreeze(token_transition) => {
-                Either11::K(TokenUnFreezeTransitionNAPI::from(token_transition).into())
+                Either18::K(TokenUnFreezeTransitionNAPI::from(token_transition).into())
             }
-        }
+            TokenTransition::Shield(token_transition) => {
+                Either18::L(TokenShieldTransitionNAPI::from(token_transition))
+            }
+            TokenTransition::Unshield(token_transition) => {
+                Either18::M(TokenUnshieldTransitionNAPI::from(token_transition))
+            }
+            TokenTransition::ShieldedTransfer(token_transition) => {
+                Either18::N(TokenShieldedTransferTransitionNAPI::from(token_transition))
+            }
+            TokenTransition::MintToPool(token_transition) => {
+                Either18::O(TokenMintToPoolTransitionNAPI::from(token_transition))
+            }
+            TokenTransition::BurnFromPool(token_transition) => {
+                Either18::P(TokenBurnFromPoolTransitionNAPI::from(token_transition))
+            }
+            TokenTransition::ClaimToPool(token_transition) => {
+                Either18::Q(TokenClaimToPoolTransitionNAPI::from(token_transition))
+            }
+            TokenTransition::DirectPurchaseToPool(token_transition) => Either18::R(
+                TokenDirectPurchaseToPoolTransitionNAPI::from(token_transition),
+            ),
+        };
+
+        Ok(transition)
     }
 
     #[napi(js_name = "getTransitionTypeNumber")]
@@ -152,6 +213,13 @@ impl TokenTransitionNAPI {
             TokenTransition::ConfigUpdate(_) => 8,
             TokenTransition::DirectPurchase(_) => 9,
             TokenTransition::SetPriceForDirectPurchase(_) => 10,
+            TokenTransition::Shield(_) => 11,
+            TokenTransition::Unshield(_) => 12,
+            TokenTransition::ShieldedTransfer(_) => 13,
+            TokenTransition::MintToPool(_) => 14,
+            TokenTransition::BurnFromPool(_) => 15,
+            TokenTransition::ClaimToPool(_) => 16,
+            TokenTransition::DirectPurchaseToPool(_) => 17,
         }
     }
 
@@ -171,6 +239,13 @@ impl TokenTransitionNAPI {
             TokenTransition::SetPriceForDirectPurchase(_) => {
                 "SetPriceForDirectPurchase".to_string()
             }
+            TokenTransition::Shield(_) => "Shield".to_string(),
+            TokenTransition::Unshield(_) => "Unshield".to_string(),
+            TokenTransition::ShieldedTransfer(_) => "ShieldedTransfer".to_string(),
+            TokenTransition::MintToPool(_) => "MintToPool".to_string(),
+            TokenTransition::BurnFromPool(_) => "BurnFromPool".to_string(),
+            TokenTransition::ClaimToPool(_) => "ClaimToPool".to_string(),
+            TokenTransition::DirectPurchaseToPool(_) => "DirectPurchaseToPool".to_string(),
         }
     }
 

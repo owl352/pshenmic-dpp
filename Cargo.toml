@@ -1,14 +1,14 @@
 [package]
 name = "pshenmic-dpp"
 authors = ["owl352 <kokosinca123@gmail.com>"]
-version = "2.0.0"
+version = "2.0.1-dev.1"
 edition = "2024"
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-dpp = { git = "https://github.com/dashpay/platform", tag = "v4.1.0", default-features = false, features = [
+dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.3", default-features = false, features = [
     "identity-value-conversion",
     "identity-serialization",
     "state-transition-signing",
@@ -17,10 +17,10 @@ dpp = { git = "https://github.com/dashpay/platform", tag = "v4.1.0", default-fea
     "data-contract-json-conversion",
     "shielded-client"
 ] }
-drive = { git = "https://github.com/dashpay/platform", tag = "v4.1.0", default-features = false, features = [
+drive = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.3", default-features = false, features = [
     "verify"
 ] }
-grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", tag = "v5.0.1", features = ["client"] }
+grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", rev = "fc7028d83114d86f88222e7ff09fc47ae75360f0", features = ["client"] }
 indexmap = "2.0.2"
 # ZIP-32 AccountId for Orchard key derivation from a seed (matches the version
 # the orchard fork uses, so it unifies to a single crate instance).
@@ -29,12 +29,13 @@ zip32 = "=0.2.1"
 # `#[cfg(has_std)]`, which its build.rs only auto-detects on native. Force the
 # `std` feature on so it compiles for the wasm target too.
 indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"] }
-napi = {version = "3.9.1", features = ["napi3", "serde-json", "async"], default-features = false}
-napi-derive = "3.5.6"
+napi = {version = "=3.11.0", features = ["napi3", "async"], default-features = false}
+napi-derive = "=3.6.0"
 # Multi-output shielded transfers rebuild the Orchard prove/sign pipeline
 # locally (dpp's helper is `pub(crate)`), which needs an `OsRng` from the same
 # rand version orchard is built against.
 rand = "0.8.5"
+serde = "1.0"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 hex = "0.4.3"
 sha2 = "0.10.8"
@@ -45,7 +46,8 @@ futures = "0.3"
 
 
 [build-dependencies]
-napi-build = "2.3.1"
+napi-build = "~2.3.1"
+napi-derive-backend = "=6.0.0"
 
 [profile.release]
 lto = "fat"
@@ -55,3 +57,79 @@ codegen-units = 1
 panic = "abort"
 incremental = false
 debug = false
+
+# The wasm build must stay under Chrome's 8MB main-thread sync-compile limit
+# (see build.cjs), so dependencies optimize for minimal size. The Orchard/Halo 2
+# proving stack keeps opt-level 3, where proving time is spent.
+[profile.release-wasm]
+inherits = "release"
+opt-level = "z"
+
+# Fat LTO optimizes the whole linked module at the root crate's opt-level: at
+# "z" it slows proving ~7% even with the proving crates at 3, at "s" it doesn't
+# (~260KB smaller than "s" everywhere, same proving time).
+[profile.release-wasm.package.pshenmic-dpp]
+opt-level = "s"
+
+[profile.release-wasm.package.halo2_proofs]
+opt-level = 3
+
+[profile.release-wasm.package.halo2_gadgets]
+opt-level = 3
+
+[profile.release-wasm.package.halo2_poseidon]
+opt-level = 3
+
+[profile.release-wasm.package.orchard]
+opt-level = 3
+
+[profile.release-wasm.package.pasta_curves]
+opt-level = 3
+
+[profile.release-wasm.package.ff]
+opt-level = 3
+
+[profile.release-wasm.package.group]
+opt-level = 3
+
+[profile.release-wasm.package.sinsemilla]
+opt-level = 3
+
+[profile.release-wasm.package.reddsa]
+opt-level = 3
+
+[profile.release-wasm.package.blake2b_simd]
+opt-level = 3
+
+[profile.release-wasm.package.rayon]
+opt-level = 3
+
+[profile.release-wasm.package."rayon-core"]
+opt-level = 3
+
+[profile.release-wasm.package.subtle]
+opt-level = 3
+
+[profile.release-wasm.package.bitvec]
+opt-level = 3
+
+[profile.release-wasm.package.incrementalmerkletree]
+opt-level = 3
+
+[profile.release-wasm.package.zcash_note_encryption]
+opt-level = 3
+
+[profile.release-wasm.package."grovedb-commitment-tree"]
+opt-level = 3
+
+[profile.release-wasm.package.chacha20]
+opt-level = 3
+
+[profile.release-wasm.package.chacha20poly1305]
+opt-level = 3
+
+[profile.release-wasm.package.aes]
+opt-level = 3
+
+[profile.release-wasm.package.fpe]
+opt-level = 3

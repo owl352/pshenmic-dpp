@@ -18,26 +18,26 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Zig
-        uses: goto-bus-stop/setup-zig@v2
+        uses: mlugg/setup-zig@v2
         with:
           version: 0.13.0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
           # Default is 'tools platform-tools'; legacy 'tools' was removed from the
           # SDK repository and sdkmanager now fails to find it.
@@ -51,15 +51,18 @@ jobs:
       # /Halo 2 proving stack, which requires nightly + rust-src. Pinned for
       # reproducible, flag-stable artifacts (see WASM_TOOLCHAIN below). Installed
       # first so the stable step below stays the rustup default for native builds.
+      # Must stay on a 1.99 nightly: from 1.100 rustc links crt1-reactor.o itself,
+      # which collides with the copy napi-build 2.3 adds (duplicate `_initialize`).
+      # Newer napi-build detects this but requires emnapi v2.
       - name: Setup Rust nightly (wasm build-std)
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2026-06-17
+          toolchain: nightly-2026-08-15
           targets: wasm32-wasip1-threads
           components: rust-src
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.99
         with:
           targets: wasm32-wasip1-threads, x86_64-unknown-linux-gnu, x86_64-unknown-linux-musl, aarch64-unknown-linux-gnu, aarch64-unknown-linux-musl, aarch64-linux-android, x86_64-linux-android, aarch64-apple-ios-sim, aarch64-apple-darwin, x86_64-apple-darwin, x86_64-pc-windows-msvc, aarch64-pc-windows-msvc
           components: rustfmt, rust-src
@@ -70,7 +73,7 @@ jobs:
       # The Microsoft CRT/SDK headers cargo-xwin downloads for the windows-msvc
       # targets are ~1GB and are not covered by rust-cache.
       - name: Cache xwin CRT/SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/cargo-xwin
           key: ${{ runner.os }}-cargo-xwin
@@ -94,12 +97,12 @@ jobs:
         env:
           RUSTFLAGS: '-C target-feature=-crt-static'
           NATIVE_BUILD_TARGET: x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-gnu,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc,aarch64-pc-windows-msvc
-          WASM_TOOLCHAIN: nightly-2026-06-17
+          WASM_TOOLCHAIN: nightly-2026-08-15
           # Accepts Microsoft's license for the CRT/SDK headers cargo-xwin downloads.
           XWIN_ACCEPT_LICENSE: '1'
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-artifact-dist
           retention-days: 1
@@ -123,23 +126,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Setup QEMU
         if: runner.os == 'Linux' && contains(matrix.settings.target, 'aarch64')
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Install project dependencies
         run: |
           yarn install
 
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-artifact-dist
           path: ./dist
@@ -156,10 +159,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
@@ -171,7 +174,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-artifact-dist
           path: ./dist

@@ -2,7 +2,7 @@ use dpp::platform_value::BinaryData;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::prelude::Identifier;
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::identity_credit_transfer_transition::IdentityCreditTransferTransition;
 use dpp::state_transition::identity_credit_transfer_transition::accessors::IdentityCreditTransferTransitionAccessorsV0;
@@ -91,7 +91,7 @@ impl IdentityCreditTransferNAPI {
         let bytes = js_bytes.to_vec();
 
         let rs_transition =
-            IdentityCreditTransferTransition::deserialize_from_bytes(bytes.as_slice())
+            IdentityCreditTransferTransition::deserialize_from_bytes_untrusted(bytes.as_slice())
                 .with_js_error()?;
 
         Ok(IdentityCreditTransferNAPI(rs_transition))

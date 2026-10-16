@@ -3,7 +3,7 @@ use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::Identifier;
 use dpp::platform_value::string_encoding::Encoding::{Base64, Hex};
 use dpp::platform_value::string_encoding::{decode, encode};
-use dpp::serialization::{PlatformDeserializable, PlatformSerializable, Signable};
+use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable, Signable};
 use dpp::state_transition::StateTransitionEstimatedFeeValidation;
 use dpp::state_transition::StateTransitionHasUserFeeIncrease;
 use dpp::state_transition::identity_credit_withdrawal_transition::IdentityCreditWithdrawalTransition;
@@ -253,7 +253,7 @@ impl IdentityCreditWithdrawalTransitionNAPI {
         let bytes = js_bytes.to_vec();
 
         let rs_transition =
-            IdentityCreditWithdrawalTransition::deserialize_from_bytes(bytes.as_slice())
+            IdentityCreditWithdrawalTransition::deserialize_from_bytes_untrusted(bytes.as_slice())
                 .with_js_error()?;
 
         Ok(IdentityCreditWithdrawalTransitionNAPI(rs_transition))

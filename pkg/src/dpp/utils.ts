@@ -92,3 +92,57 @@ export function preparePlatformAddressValue (address: PlatformAddressLike): Plat
     return new dppProvider.dpp.DynamicValue(address)
   }
 }
+
+const PLAIN_IDENTIFIER_KEYS = new Set(['identityId', 'documentId', 'actionId', 'reasonDocumentId', 'contractGroupId', 'admins'])
+
+/**
+ * Plain moderation / contract group objects carry identifiers as base58 strings or bytes:
+ * the bindings decode them from bytes only, so identifier fields are turned into bytes here
+ */
+export function plainIdentifiersToBytes (value: any, isIdentifier: boolean = false): any {
+  if (isIdentifier && (typeof value === 'string' || value instanceof IdentifierWASM)) {
+    return new IdentifierWASM(value).bytes()
+  } else if (Array.isArray(value)) {
+    return value.map(item => plainIdentifiersToBytes(item, isIdentifier))
+  } else if (value != null && typeof value === 'object' && !(value instanceof Uint8Array)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, plainIdentifiersToBytes(item, PLAIN_IDENTIFIER_KEYS.has(key))])
+    )
+  }
+
+  return value
+}
+
+const PROOF_IDENTIFIER_KEYS = new Set([
+  'contractId', 'identityId', 'documentId', 'actionId', 'reasonDocumentId', 'contractGroupId',
+  'contractGroupIds', 'moderatorId', 'documentOwnerId', 'claimantId', 'proposerId', 'owner',
+  'singleOwner', 'admins'
+])
+const PROOF_BIGINT_KEYS = new Set([
+  'credits', 'balance', 'remainingBudget', 'creditsLeft', 'until', 'removedAt', 'restoredAt',
+  'warnedAt', 'timeMs', 'proposedAt', 'documentLastModifiedAt', 'documentRevision', 'skipped',
+  'count', 'sum', 'avgFixedPoint'
+])
+
+function normalizeProofValue (value: any, key?: string): any {
+  if (value instanceof Uint8Array) {
+    return key != null && PROOF_IDENTIFIER_KEYS.has(key) ? new IdentifierWASM(value) : value
+  } else if (Array.isArray(value)) {
+    return value.map(item => normalizeProofValue(item, key))
+  } else if (value != null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([childKey, item]) => [childKey, normalizeProofValue(item, childKey)]))
+  } else if (key != null && PROOF_BIGINT_KEYS.has(key) && (typeof value === 'number' || typeof value === 'string')) {
+    return BigInt(value)
+  }
+
+  return value
+}
+
+/** A proven value without a dedicated class, with identifiers as IdentifierWASM and credits / timestamps as bigint **/
+export function plainProofValue (dynamicValue: DynamicValue): any {
+  return normalizeProofValue(valueFromDynamicValue(dynamicValue))
+}
+
+export function identifierFromBytes (bytes: Uint8Array): IdentifierWASM {
+  return new IdentifierWASM(bytes)
+}
