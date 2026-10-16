@@ -4,6 +4,7 @@ use dpp::state_transition::batch_transition::batched_transition::DocumentUpdateP
 use dpp::state_transition::batch_transition::document_base_transition::document_base_transition_trait::DocumentBaseTransitionAccessors;
 use napi_derive::napi;
 
+use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_update_price_transition;
@@ -28,6 +29,7 @@ impl DocumentUpdatePriceTransitionNAPI {
         identity_contract_nonce: BigIntString,
         price: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
+        action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
     ) -> Result<DocumentUpdatePriceTransitionNAPI, napi::Error> {
         let rs_document_update_price_transition = generate_update_price_transition(
             document,
@@ -35,6 +37,7 @@ impl DocumentUpdatePriceTransitionNAPI {
             document.get_document_type_name().to_string(),
             price.try_to_u64()?,
             token_payment_info,
+            action_fee_agreement,
         );
 
         Ok(DocumentUpdatePriceTransitionNAPI(

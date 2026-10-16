@@ -1,6 +1,7 @@
 import type { DocumentUpdatePriceTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
+import { DocumentActionFeeAgreementWASM } from '../DocumentActionFeeAgreement.js'
 import { dppProvider } from '../../../provider.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
 import { DocumentTransitionWASM } from '../DocumentTransition.js'
@@ -13,13 +14,15 @@ export class DocumentUpdatePriceTransitionWASM {
     document: DocumentWASM,
     identityContractNonce: bigint,
     price: bigint,
-    tokenPaymentInfo?: TokenPaymentInfoWASM
+    tokenPaymentInfo?: TokenPaymentInfoWASM,
+    actionFeeAgreement?: DocumentActionFeeAgreementWASM
   ) {
     this._rawDocumentUpdatePriceTransition = new dppProvider.dpp.DocumentUpdatePriceTransitionNAPI(
       document._rawDocument,
       identityContractNonce.toString(),
       price.toString(),
-      tokenPaymentInfo?._rawTokenPaymentInfo
+      tokenPaymentInfo?._rawTokenPaymentInfo,
+      actionFeeAgreement?._rawDocumentActionFeeAgreement
     )
   }
 

@@ -16,9 +16,16 @@ import {
   verifyContractTeamActionSignatureProof,
   verifyContractTeamActionSignersProof,
   verifyContractTeamActionsProof,
+  verifyFullIdentityByNonUniquePublicKeyHashProof,
   verifyHavingDocumentsProof,
   verifyIdentityKeysRemainingBudgetsProof,
-  verifyRankedDocumentsProof
+  verifyMostRecentShieldedAnchorProof,
+  verifyRankedDocumentsProof,
+  verifyShieldedAnchorsProof,
+  verifyShieldedEncryptedNotesProof,
+  verifyShieldedNotesCountProof,
+  verifyShieldedNullifiersProof,
+  verifyShieldedPoolStateProof
 } from 'pshenmic-dpp'
 
 const OWNER_ID = 'HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr'
@@ -153,6 +160,43 @@ describe('Platform v5 verify', function () {
         BAD_PROOF, contract,
         { documentTypeName: 'note', select: { function: 'count' }, groupBy: ['message'], having: [{ function: 'count', operator: '>', value: 2 }], limit: 5 }, V14
       )).toThrow('rankedCountable')
+    })
+  })
+
+  describe('shielded pools', function () {
+    // Token pools take the token id as an identifier: base58 or its 32 raw bytes
+    const TOKEN_IDS = [undefined, CONTRACT_ID, new Uint8Array(32).fill(7)]
+
+    test('should reach proof verification for the credits pool and token pools', function () {
+      for (const tokenId of TOKEN_IDS) {
+        expectProofError(() => verifyShieldedPoolStateProof(BAD_PROOF, false, V14, tokenId))
+        expectProofError(() => verifyShieldedNotesCountProof(BAD_PROOF, false, V14, tokenId))
+        expectProofError(() => verifyShieldedAnchorsProof(BAD_PROOF, false, V14, tokenId))
+        expectProofError(() => verifyMostRecentShieldedAnchorProof(BAD_PROOF, false, V14, tokenId))
+        expectProofError(() => verifyShieldedEncryptedNotesProof(BAD_PROOF, 0n, 16, 16, false, V14, tokenId))
+        expectProofError(() => verifyShieldedNullifiersProof(BAD_PROOF, [new Uint8Array(32)], false, V14, tokenId))
+      }
+    })
+
+    test('should reject a malformed token id', function () {
+      const badTokenId = new Uint8Array(31)
+
+      expect(() => verifyShieldedPoolStateProof(BAD_PROOF, false, V14, badTokenId)).toThrow('Identifier must be 32 bytes long')
+      expect(() => verifyShieldedNullifiersProof(BAD_PROOF, [new Uint8Array(32)], false, V14, badTokenId)).toThrow('Identifier must be 32 bytes long')
+    })
+  })
+
+  describe('full identity by non-unique public key hash', function () {
+    const PUBLIC_KEY_HASH = new Uint8Array(20).fill(1)
+
+    test('should reach proof verification', function () {
+      expectProofError(() => verifyFullIdentityByNonUniquePublicKeyHashProof(BAD_PROOF, PUBLIC_KEY_HASH, undefined, V14, V14))
+      expectProofError(() => verifyFullIdentityByNonUniquePublicKeyHashProof(BAD_PROOF, PUBLIC_KEY_HASH, OWNER_ID, V14, V14))
+    })
+
+    test('should reject a malformed public key hash', function () {
+      expect(() => verifyFullIdentityByNonUniquePublicKeyHashProof(BAD_PROOF, new Uint8Array(19), undefined, V14, V14))
+        .toThrow('Expected 20 bytes')
     })
   })
 })

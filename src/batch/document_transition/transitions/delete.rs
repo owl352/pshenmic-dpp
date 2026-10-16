@@ -3,6 +3,7 @@ use dpp::state_transition::batch_transition::document_base_transition::document_
 use dpp::state_transition::batch_transition::DocumentDeleteTransition;
 use napi_derive::napi;
 
+use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_delete_transition;
@@ -26,12 +27,14 @@ impl DocumentDeleteTransitionNAPI {
         document: &DocumentNAPI,
         identity_contract_nonce: BigIntString,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
+        action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
     ) -> Result<DocumentDeleteTransitionNAPI, napi::Error> {
         let rs_delete_transition = generate_delete_transition(
             document,
             identity_contract_nonce.try_to_u64()?,
             document.get_document_type_name().to_string(),
             token_payment_info,
+            action_fee_agreement,
         );
 
         Ok(DocumentDeleteTransitionNAPI(rs_delete_transition))

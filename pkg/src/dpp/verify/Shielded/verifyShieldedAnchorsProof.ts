@@ -1,16 +1,19 @@
 import { dppProvider } from '../../provider.js'
-import { PlatformVersionLike, VerifiedShieldedAnchors } from '../../types.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { IdentifierLike, PlatformVersionLike, VerifiedShieldedAnchors } from '../../types.js'
+import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 
+/** `tokenId` selects that token's shielded pool; without it the credits pool is verified **/
 export function verifyShieldedAnchorsProof (
   proof: Uint8Array,
   verifySubsetOfProof: boolean,
-  platformVersion: PlatformVersionLike
+  platformVersion: PlatformVersionLike,
+  tokenId?: IdentifierLike | null
 ): VerifiedShieldedAnchors {
   const result = dppProvider.dpp.verifyShieldedAnchorsProof(
     proof,
     verifySubsetOfProof,
-    valueToDynamicValue(platformVersion)
+    valueToDynamicValue(platformVersion),
+    tokenId != null ? prepareIdentifierValue(tokenId) : undefined
   )
 
   return {

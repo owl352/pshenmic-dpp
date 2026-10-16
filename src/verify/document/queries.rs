@@ -27,7 +27,8 @@ use drive::query::having::{
 };
 use drive::query::projection::{SelectFunction, SelectProjection};
 use drive::query::{
-    DriveDocumentQuery, InternalClauses, OrderClause, WhereClause, key_array_element_clauses,
+    DriveDocumentQuery, InternalClauses, OrderClause, ResolvedTimeRange, WhereClause,
+    key_array_element_clauses,
 };
 use napi::Either;
 use napi::bindgen_prelude::Uint8Array;
@@ -35,11 +36,14 @@ use napi_derive::napi;
 
 use crate::data_contract::DataContractNAPI;
 use crate::document::DocumentNAPI;
-use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI};
+use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::identifier::IdentifierNAPI;
 use crate::utils::serde_to_js;
 use crate::verify::contract_moderation::DocumentRemovalEntry;
-use crate::verify::document::document::{parse_order_by_index_map, parse_where_clauses};
+use crate::verify::document::document::{
+    parse_order_by_index_map, parse_where_clauses, parse_where_clauses_with_windows,
+    resolve_window_selections,
+};
 use crate::verify::plain::{
     VerifiedProofNAPI, identifier_from_js, platform_version_from_js, verified, verify_error,
 };
@@ -598,6 +602,7 @@ struct AggregateQuery {
     having: Vec<HavingClause>,
     order_by: Vec<OrderClause>,
     where_clauses: Vec<WhereClause>,
+    resolved_time_ranges: Vec<ResolvedTimeRange>,
     pagination: RankedPaginationInputs,
 }
 
@@ -612,16 +617,24 @@ fn aggregate_query(
     js_having: Option<&DynamicValue>,
     limit: Option<u32>,
     offset: Option<u32>,
+    metadata_time_ms: Option<BigIntString>,
     platform_version: &PlatformVersion,
 ) -> Result<AggregateQuery, napi::Error> {
+    let document_type = document_type(contract, document_type_name)?;
+
+    // Window selections are resolved first, against the block time the server used
+    let (mut where_clauses, windows) = parse_where_clauses_with_windows(js_where)?;
+    let resolved_time_ranges = resolve_window_selections(
+        windows,
+        document_type,
+        metadata_time_ms.map(|ms| ms.try_to_u64()).transpose()?,
+        &mut where_clauses,
+    )?;
+
     // Typed-array elements are keyed as the server keys them: one pinned element at most
-    let where_clauses = key_array_element_clauses(
-        parse_where_clauses(js_where)?,
-        document_type(contract, document_type_name)?,
-        false,
-        platform_version,
-    )
-    .map_err(verify_error)?;
+    let where_clauses =
+        key_array_element_clauses(where_clauses, document_type, false, platform_version)
+            .map_err(verify_error)?;
 
     Ok(AggregateQuery {
         select: parse_select(js_select)?,
@@ -629,6 +642,7 @@ fn aggregate_query(
         having: parse_having(js_having)?,
         order_by: order_clauses(js_order_by)?,
         where_clauses,
+        resolved_time_ranges,
         pagination: RankedPaginationInputs {
             limit: limit.filter(|limit| *limit != 0),
             offset,
@@ -693,7 +707,8 @@ struct RankedPageJs<'a> {
 }
 
 /// Verifies a ranked (top-k) query: groups of `groupBy` ranked by `select`'s aggregate in the
-/// order `orderBy` names. Time-range (`IN_TIME_RANGE`) selections are not supported
+/// order `orderBy` names. Window selections (`IN_TIME_RANGE`) resolve against `metadataTimeMs`,
+/// the timeMs of the response metadata
 #[napi(js_name = "verifyRankedDocumentsProof")]
 pub fn verify_ranked_documents_proof(
     proof: Uint8Array,
@@ -706,6 +721,7 @@ pub fn verify_ranked_documents_proof(
     limit: Option<u32>,
     offset: Option<u32>,
     js_platform_version: &DynamicValue,
+    metadata_time_ms: Option<BigIntString>,
 ) -> Result<VerifiedProofNAPI, napi::Error> {
     let platform_version = platform_version_from_js(js_platform_version)?;
     let contract: DataContract = js_contract.clone().into();
@@ -721,6 +737,7 @@ pub fn verify_ranked_documents_proof(
         None,
         limit,
         offset,
+        metadata_time_ms,
         &platform_version,
     )?;
 
@@ -741,7 +758,7 @@ pub fn verify_ranked_documents_proof(
         document_type_name,
         document_type.indexes(),
         &mode,
-        &[],
+        &query.resolved_time_ranges,
         &platform_version,
     )
     .map_err(verify_error)?;
@@ -760,7 +777,8 @@ pub fn verify_ranked_documents_proof(
 }
 
 /// Verifies a having-range query: the groups of `groupBy` whose aggregate falls within the
-/// `having` bounds. Time-range (`IN_TIME_RANGE`) selections are not supported
+/// `having` bounds. Window selections (`IN_TIME_RANGE`) resolve against `metadataTimeMs`,
+/// the timeMs of the response metadata
 #[napi(js_name = "verifyHavingDocumentsProof")]
 pub fn verify_having_documents_proof(
     proof: Uint8Array,
@@ -774,6 +792,7 @@ pub fn verify_having_documents_proof(
     limit: Option<u32>,
     offset: Option<u32>,
     js_platform_version: &DynamicValue,
+    metadata_time_ms: Option<BigIntString>,
 ) -> Result<VerifiedProofNAPI, napi::Error> {
     let platform_version = platform_version_from_js(js_platform_version)?;
     let contract: DataContract = js_contract.clone().into();
@@ -789,6 +808,7 @@ pub fn verify_having_documents_proof(
         Some(js_having),
         limit,
         offset,
+        metadata_time_ms,
         &platform_version,
     )?;
 
@@ -809,7 +829,7 @@ pub fn verify_having_documents_proof(
         document_type_name,
         document_type.indexes(),
         &mode,
-        &[],
+        &query.resolved_time_ranges,
         &platform_version,
     )
     .map_err(verify_error)?;

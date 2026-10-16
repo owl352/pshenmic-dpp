@@ -5,13 +5,14 @@ import { DataContractWASM } from '../../structs/DataContract.js'
 
 /**
  * Verifies a having-range query: the groups of `groupBy` whose aggregate falls within the
- * `having` bounds. Time-range selections are not supported
+ * `having` bounds. `metadataTimeMs` (the timeMs of the response metadata) resolves `IN_TIME_RANGE` selections
  **/
 export function verifyHavingDocumentsProof (
   proof: Uint8Array,
   contract: DataContractWASM,
   query: AggregateDocumentsQuery & { having: HavingClause[] },
-  platformVersion: PlatformVersionLike
+  platformVersion: PlatformVersionLike,
+  metadataTimeMs?: bigint
 ): VerifiedProof<ProvenRankedEntry[]> {
   const result = dppProvider.dpp.verifyHavingDocumentsProof(
     proof,
@@ -24,7 +25,8 @@ export function verifyHavingDocumentsProof (
     valueToDynamicValue(query.having),
     query.limit,
     query.offset,
-    valueToDynamicValue(platformVersion)
+    valueToDynamicValue(platformVersion),
+    metadataTimeMs?.toString()
   )
 
   return {

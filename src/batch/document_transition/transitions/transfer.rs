@@ -4,6 +4,7 @@ use dpp::state_transition::batch_transition::batched_transition::DocumentTransfe
 use dpp::state_transition::batch_transition::document_base_transition::document_base_transition_trait::DocumentBaseTransitionAccessors;
 use napi_derive::napi;
 
+use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_transfer_transition;
@@ -35,6 +36,7 @@ impl DocumentTransferTransitionNAPI {
         identity_contract_nonce: BigIntString,
         js_recipient_owner_id: IdentifierLikeNAPI,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
+        action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
     ) -> Result<DocumentTransferTransitionNAPI, napi::Error> {
         let rs_transfer_transition = generate_transfer_transition(
             document,
@@ -42,6 +44,7 @@ impl DocumentTransferTransitionNAPI {
             document.get_document_type_name().to_string(),
             IdentifierNAPI::try_from(js_recipient_owner_id)?.into(),
             token_payment_info,
+            action_fee_agreement,
         );
 
         Ok(DocumentTransferTransitionNAPI(rs_transfer_transition))

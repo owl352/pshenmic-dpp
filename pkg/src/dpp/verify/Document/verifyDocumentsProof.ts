@@ -4,6 +4,10 @@ import { DocumentWASM } from '../../structs/Document.js'
 import { DataContractWASM } from '../../structs/DataContract.js'
 import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 
+/**
+ * `blockTimeMs` reads history-keeping documents as of that time. `metadataTimeMs` (the timeMs of the
+ * response metadata) resolves `IN_TIME_RANGE` selections
+ **/
 export function verifyDocumentsProof (
   proof: Uint8Array,
   contract: DataContractWASM,
@@ -14,7 +18,8 @@ export function verifyDocumentsProof (
   startAt: IdentifierLike | undefined | null,
   startAtIncluded: boolean,
   blockTimeMs: bigint | undefined | null,
-  platformVersion: PlatformVersionLike
+  platformVersion: PlatformVersionLike,
+  metadataTimeMs?: bigint
 ): VerifiedDocuments {
   const result = dppProvider.dpp.verifyDocumentsProof(
     proof,
@@ -26,7 +31,8 @@ export function verifyDocumentsProof (
     startAt != null ? prepareIdentifierValue(startAt) : undefined,
     startAtIncluded,
     blockTimeMs?.toString(),
-    valueToDynamicValue(platformVersion)
+    valueToDynamicValue(platformVersion),
+    metadataTimeMs?.toString()
   )
 
   return {

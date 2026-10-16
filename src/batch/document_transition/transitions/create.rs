@@ -6,6 +6,7 @@ use dpp::state_transition::batch_transition::DocumentCreateTransition;
 use napi::bindgen_prelude::{Uint8Array};
 use napi_derive::napi;
 
+use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
 use crate::batch::document_base_transition::DocumentBaseTransitionNAPI;
 use crate::batch::document_transition::DocumentTransitionNAPI;
 use crate::batch::generators::generate_create_transition;
@@ -39,6 +40,7 @@ impl DocumentCreateTransitionNAPI {
         identity_contract_nonce: BigIntString,
         prefunded_voting_balance: Option<&PrefundedVotingBalanceNAPI>,
         token_payment_info: Option<&TokenPaymentInfoNAPI>,
+        action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
     ) -> Result<DocumentCreateTransitionNAPI, napi::Error> {
         let rs_create_transition = generate_create_transition(
             document,
@@ -46,6 +48,7 @@ impl DocumentCreateTransitionNAPI {
             document.get_document_type_name().to_string(),
             prefunded_voting_balance,
             token_payment_info,
+            action_fee_agreement,
         );
 
         Ok(DocumentCreateTransitionNAPI(rs_create_transition))

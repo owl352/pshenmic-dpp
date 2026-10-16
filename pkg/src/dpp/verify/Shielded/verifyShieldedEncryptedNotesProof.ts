@@ -1,14 +1,16 @@
 import { dppProvider } from '../../provider.js'
-import { PlatformVersionLike, VerifiedShieldedEncryptedNotes } from '../../types.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { IdentifierLike, PlatformVersionLike, VerifiedShieldedEncryptedNotes } from '../../types.js'
+import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 
+/** `tokenId` selects that token's shielded pool; without it the credits pool is verified **/
 export function verifyShieldedEncryptedNotesProof (
   proof: Uint8Array,
   startIndex: bigint,
   count: number,
   maxElements: number,
   verifySubsetOfProof: boolean,
-  platformVersion: PlatformVersionLike
+  platformVersion: PlatformVersionLike,
+  tokenId?: IdentifierLike | null
 ): VerifiedShieldedEncryptedNotes {
   const result = dppProvider.dpp.verifyShieldedEncryptedNotesProof(
     proof,
@@ -16,7 +18,8 @@ export function verifyShieldedEncryptedNotesProof (
     count,
     maxElements,
     verifySubsetOfProof,
-    valueToDynamicValue(platformVersion)
+    valueToDynamicValue(platformVersion),
+    tokenId != null ? prepareIdentifierValue(tokenId) : undefined
   )
 
   return {

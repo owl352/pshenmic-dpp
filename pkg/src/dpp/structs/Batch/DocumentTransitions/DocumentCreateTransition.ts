@@ -2,6 +2,7 @@ import type { DocumentCreateTransitionNAPI } from '../../../../../binaries/bindi
 import { DocumentWASM } from '../../Document.js'
 import { PrefundedVotingBalanceWASM } from '../PrefundedVotingBalance.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
+import { DocumentActionFeeAgreementWASM } from '../DocumentActionFeeAgreement.js'
 import { dppProvider } from '../../../provider.js'
 import { valueFromDynamicValue, valueToDynamicValue } from '../../../utils.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
@@ -15,13 +16,15 @@ export class DocumentCreateTransitionWASM {
     document: DocumentWASM,
     identityContractNonce: bigint,
     prefundedVotingBalance?: PrefundedVotingBalanceWASM,
-    tokenPaymentInfo?: TokenPaymentInfoWASM
+    tokenPaymentInfo?: TokenPaymentInfoWASM,
+    actionFeeAgreement?: DocumentActionFeeAgreementWASM
   ) {
     this._rawDocumentCreateTransition = new dppProvider.dpp.DocumentCreateTransitionNAPI(
       document._rawDocument,
       identityContractNonce.toString(),
       prefundedVotingBalance?._rawPrefundedVotingBalance,
-      tokenPaymentInfo?._rawTokenPaymentInfo
+      tokenPaymentInfo?._rawTokenPaymentInfo,
+      actionFeeAgreement?._rawDocumentActionFeeAgreement
     )
   }
 

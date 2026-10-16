@@ -2,6 +2,7 @@ import type { DocumentTransferTransitionNAPI } from '../../../../../binaries/bin
 import { DocumentWASM } from '../../Document.js'
 import { IdentifierLike } from '../../../types.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
+import { DocumentActionFeeAgreementWASM } from '../DocumentActionFeeAgreement.js'
 import { dppProvider } from '../../../provider.js'
 import { prepareIdentifierValue } from '../../../utils.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
@@ -16,13 +17,15 @@ export class DocumentTransferTransitionWASM {
     document: DocumentWASM,
     identityContractNonce: bigint,
     recipient: IdentifierLike,
-    tokenPaymentInfo?: TokenPaymentInfoWASM
+    tokenPaymentInfo?: TokenPaymentInfoWASM,
+    actionFeeAgreement?: DocumentActionFeeAgreementWASM
   ) {
     this._rawDocumentTransferTransition = new dppProvider.dpp.DocumentTransferTransitionNAPI(
       document._rawDocument,
       identityContractNonce.toString(),
       prepareIdentifierValue(recipient),
-      tokenPaymentInfo?._rawTokenPaymentInfo
+      tokenPaymentInfo?._rawTokenPaymentInfo,
+      actionFeeAgreement?._rawDocumentActionFeeAgreement
     )
   }
 

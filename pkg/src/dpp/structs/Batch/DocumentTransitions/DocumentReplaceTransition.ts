@@ -1,6 +1,7 @@
 import type { DocumentReplaceTransitionNAPI } from '../../../../../binaries/bindingsTypes.js'
 import { DocumentWASM } from '../../Document.js'
 import { TokenPaymentInfoWASM } from '../TokenPaymentInfo.js'
+import { DocumentActionFeeAgreementWASM } from '../DocumentActionFeeAgreement.js'
 import { dppProvider } from '../../../provider.js'
 import { valueFromDynamicValue, valueToDynamicValue } from '../../../utils.js'
 import { DocumentBaseTransitionWASM } from '../DocumentBaseTransition.js'
@@ -13,12 +14,14 @@ export class DocumentReplaceTransitionWASM {
   constructor (
     document: DocumentWASM,
     identityContractNonce: bigint,
-    tokenPaymentInfo?: TokenPaymentInfoWASM
+    tokenPaymentInfo?: TokenPaymentInfoWASM,
+    actionFeeAgreement?: DocumentActionFeeAgreementWASM
   ) {
     this._rawDocumentReplaceTransition = new dppProvider.dpp.DocumentReplaceTransitionNAPI(
       document._rawDocument,
       identityContractNonce.toString(),
-      tokenPaymentInfo?._rawTokenPaymentInfo
+      tokenPaymentInfo?._rawTokenPaymentInfo,
+      actionFeeAgreement?._rawDocumentActionFeeAgreement
     )
   }
 
