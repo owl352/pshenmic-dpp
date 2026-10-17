@@ -16,7 +16,9 @@ export class DocumentWASM {
     dataContractId: IdentifierLike,
     ownerId: IdentifierLike,
     documentId?: IdentifierLike,
-    creatorId?: IdentifierLike
+    creatorId?: IdentifierLike,
+    identityContractNonce?: bigint,
+    platformVersion?: PlatformVersionLike
   ) {
     this._rawDocument = new dppProvider.dpp.DocumentNAPI(
       valueToDynamicValue(documentContent),
@@ -25,7 +27,9 @@ export class DocumentWASM {
       prepareIdentifierValue(dataContractId),
       prepareIdentifierValue(ownerId),
       documentId != null ? prepareIdentifierValue(documentId) : undefined,
-      creatorId != null ? prepareIdentifierValue(creatorId) : undefined
+      creatorId != null ? prepareIdentifierValue(creatorId) : undefined,
+      identityContractNonce?.toString(),
+      platformVersion != null ? valueToDynamicValue(platformVersion) : undefined
     )
   }
 
@@ -282,14 +286,18 @@ export class DocumentWASM {
     documentTypeName: string,
     ownerId: IdentifierLike,
     dataContractId: IdentifierLike,
-    entropy?: Uint8Array
+    entropy?: Uint8Array,
+    identityContractNonce?: bigint,
+    platformVersion?: PlatformVersionLike
   ): IdentifierWASM {
     return IdentifierWASM.createFromRawInstance(
       dppProvider.dpp.DocumentNAPI.generateId(
         documentTypeName,
         prepareIdentifierValue(ownerId),
         prepareIdentifierValue(dataContractId),
-        entropy
+        entropy,
+        identityContractNonce?.toString(),
+        platformVersion != null ? valueToDynamicValue(platformVersion) : undefined
       )
     )
   }

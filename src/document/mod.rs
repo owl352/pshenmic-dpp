@@ -15,7 +15,7 @@ use crate::data_contract::DataContractNAPI;
 use crate::dynamic_value::{BigIntString, DynamicValue, IdentifierLikeNAPI, TryToU64};
 use crate::enums::platform_version::PlatformVersionNAPI;
 use crate::identifier::IdentifierNAPI;
-use crate::utils::{WithJsError, generate_document_id_v0, with_serde_to_platform_value_map};
+use crate::utils::{WithJsError, with_serde_to_platform_value_map};
 
 #[derive(Clone)]
 #[napi(js_name = "DocumentNAPI")]
@@ -93,38 +93,6 @@ impl From<Document> for DocumentNAPI {
     }
 }
 
-impl DocumentNAPI {
-    pub fn from_batch(
-        document: Document,
-        data_contract_id: Identifier,
-        document_type_name: String,
-        entropy: Option<[u8; 32]>,
-    ) -> Self {
-        DocumentNAPI {
-            id: document.id().into(),
-            owner_id: document.owner_id().into(),
-            revision: document.revision(),
-            data_contract_id: data_contract_id.into(),
-            document_type_name,
-            properties: document.properties().clone(),
-            created_at: document.created_at(),
-            updated_at: document.updated_at(),
-            transferred_at: document.transferred_at(),
-            created_at_block_height: document.created_at_block_height(),
-            updated_at_block_height: document.updated_at_block_height(),
-            transferred_at_block_height: document.transferred_at_block_height(),
-            created_at_core_block_height: document.created_at_core_block_height(),
-            updated_at_core_block_height: document.updated_at_core_block_height(),
-            transferred_at_core_block_height: document.transferred_at_core_block_height(),
-            entropy,
-            creator_id: document.creator_id().map(|id| id.into()),
-            contract_version: document.contract_version(),
-            moderated_at: document.moderated_at(),
-            moderated_by: document.moderated_by().map(|id| id.into()),
-        }
-    }
-}
-
 #[napi]
 impl DocumentNAPI {
     #[napi(constructor)]
@@ -136,7 +104,16 @@ impl DocumentNAPI {
         js_owner_id: IdentifierLikeNAPI,
         js_document_id: Option<IdentifierLikeNAPI>,
         js_creator_id: Option<IdentifierLikeNAPI>,
+        js_identity_contract_nonce: Option<BigIntString>,
+        js_platform_version: Option<&DynamicValue>,
     ) -> Result<DocumentNAPI, napi::Error> {
+        let platform_version = match js_platform_version {
+            Some(version) if !version.is_undefined_or_null() => {
+                PlatformVersionNAPI::try_from(version)?
+            }
+            _ => PlatformVersionNAPI::default(),
+        };
+
         let data_contract_id = IdentifierNAPI::try_from(js_data_contract_id)?;
         let owner_id = IdentifierNAPI::try_from(js_owner_id)?;
         let creator_id = match js_creator_id {
@@ -154,12 +131,18 @@ impl DocumentNAPI {
 
         let document_id: IdentifierNAPI = match js_document_id {
             Some(id) => id.try_into()?,
-            None => generate_document_id_v0(
+            None => Document::generate_document_id(
                 &data_contract_id.clone().into(),
                 &owner_id.clone().into(),
                 js_document_type_name.as_str(),
                 &entropy,
-            )?
+                js_identity_contract_nonce
+                    .map(|nonce| nonce.try_to_u64())
+                    .transpose()?
+                    .unwrap_or(0),
+                &platform_version.into(),
+            )
+            .with_js_error()?
             .into(),
         };
 
@@ -595,9 +578,18 @@ impl DocumentNAPI {
         js_owner_id: IdentifierLikeNAPI,
         js_data_contract_id: IdentifierLikeNAPI,
         opt_entropy: Option<Uint8Array>,
+        js_identity_contract_nonce: Option<BigIntString>,
+        js_platform_version: Option<&DynamicValue>,
     ) -> Result<IdentifierNAPI, napi::Error> {
         let owner_id = IdentifierNAPI::try_from(js_owner_id)?;
         let data_contract_id = IdentifierNAPI::try_from(js_data_contract_id)?;
+
+        let platform_version = match js_platform_version {
+            Some(version) if !version.is_undefined_or_null() => {
+                PlatformVersionNAPI::try_from(version)?
+            }
+            _ => PlatformVersionNAPI::default(),
+        };
 
         let entropy: [u8; 32] = match opt_entropy {
             Some(entropy_vec) => {
@@ -612,25 +604,23 @@ impl DocumentNAPI {
                 .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?,
         };
 
-        let identifier = generate_document_id_v0(
+        Ok(Document::generate_document_id(
             &data_contract_id.into(),
             &owner_id.into(),
             js_document_type_name.as_str(),
             &entropy,
-        );
-
-        match identifier {
-            Ok(identifier) => Ok(identifier.into()),
-            Err(err) => Err(err),
-        }
+            js_identity_contract_nonce
+                .map(|nonce| nonce.try_to_u64())
+                .transpose()?
+                .unwrap_or(0),
+            &platform_version.into(),
+        )
+        .with_js_error()?
+        .into())
     }
 }
 
 impl DocumentNAPI {
-    pub fn rs_get_owner_id(&self) -> Identifier {
-        self.owner_id.clone().into()
-    }
-
     pub fn rs_get_revision(&self) -> Option<Revision> {
         self.revision
     }
