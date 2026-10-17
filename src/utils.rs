@@ -10,9 +10,7 @@ use crate::{
     dynamic_value::TryToU64,
 };
 
-use dpp::{
-    ProtocolError, platform_value::Value, prelude::Identifier, util::hash::hash_double_to_vec,
-};
+use dpp::{ProtocolError, platform_value::Value};
 use napi::Status;
 use napi::bindgen_prelude::Uint8Array;
 
@@ -66,23 +64,6 @@ pub fn with_serde_to_platform_value_map(
         .into_btree_string_map()
         .map_err(ProtocolError::ValueError)
         .with_js_error()
-}
-
-pub fn generate_document_id_v0(
-    contract_id: &Identifier,
-    owner_id: &Identifier,
-    document_type_name: &str,
-    entropy: &[u8],
-) -> Result<Identifier, napi::Error> {
-    let mut buf: Vec<u8> = vec![];
-
-    buf.extend_from_slice(&contract_id.to_buffer());
-    buf.extend_from_slice(&owner_id.to_buffer());
-    buf.extend_from_slice(document_type_name.as_bytes());
-    buf.extend_from_slice(entropy);
-
-    Identifier::from_bytes(&hash_double_to_vec(&buf))
-        .map_err(|e| napi::Error::new(napi::Status::GenericFailure, e.to_string()))
 }
 
 pub fn js_inputs_to_inputs(
