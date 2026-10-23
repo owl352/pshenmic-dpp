@@ -17,6 +17,7 @@ import {
   verifyContractTeamActionSignersProof,
   verifyContractTeamActionsProof,
   verifyFullIdentityByNonUniquePublicKeyHashProof,
+  verifyFullIdentityByNonUniquePublicKeyHashTwoProofs,
   verifyHavingDocumentsProof,
   verifyIdentityKeysRemainingBudgetsProof,
   verifyMostRecentShieldedAnchorProof,
@@ -196,6 +197,20 @@ describe('Platform v5 verify', function () {
 
     test('should reject a malformed public key hash', function () {
       expect(() => verifyFullIdentityByNonUniquePublicKeyHashProof(BAD_PROOF, new Uint8Array(19), undefined, V14, V14))
+        .toThrow('Expected 20 bytes')
+    })
+  })
+
+  describe('full identity by non-unique public key hash (two proofs)', function () {
+    const PUBLIC_KEY_HASH = new Uint8Array(20).fill(1)
+
+    test('should reach proof verification', function () {
+      expectProofError(() => verifyFullIdentityByNonUniquePublicKeyHashTwoProofs(BAD_PROOF, undefined, PUBLIC_KEY_HASH, undefined, V14, V14))
+      expectProofError(() => verifyFullIdentityByNonUniquePublicKeyHashTwoProofs(BAD_PROOF, BAD_PROOF, PUBLIC_KEY_HASH, OWNER_ID, V14, V14))
+    })
+
+    test('should reject a malformed public key hash', function () {
+      expect(() => verifyFullIdentityByNonUniquePublicKeyHashTwoProofs(BAD_PROOF, undefined, new Uint8Array(19), undefined, V14, V14))
         .toThrow('Expected 20 bytes')
     })
   })
