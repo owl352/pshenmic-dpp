@@ -141,6 +141,7 @@ export { verifyStateTransitionResult } from './verify/StateTransition/verifyStat
 export { verifyDocumentsProof } from './verify/Document/verifyDocumentsProof.js'
 export { verifyIdentifierByNonUniquePublicKeyHashProof } from './verify/Identity/verifyIdentifierByNonUniquePublicKeyHashProof.js'
 export { verifyFullIdentityByNonUniquePublicKeyHashProof } from './verify/Identity/verifyFullIdentityByNonUniquePublicKeyHashProof.js'
+export { verifyFullIdentityByNonUniquePublicKeyHashTwoProofs } from './verify/Identity/verifyFullIdentityByNonUniquePublicKeyHashTwoProofs.js'
 export { verifyIdentityBalanceProof } from './verify/Identity/verifyIdentityBalanceProof.js'
 export { verifyIdentityByIdentifierProof } from './verify/Identity/verifyIdentityByIdentifierProof.js'
 export { verifyIdentityByUniqueKeyHashProof } from './verify/Identity/verifyIdentityByUniqueKeyHashProof.js'

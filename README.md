@@ -205,7 +205,8 @@ ___
   `verifyContractTeamActionsProof`, `verifyContractTeamActionSignersProof`, `verifyContractTeamActionSignatureProof`
 - Contested resources: `verifyVotePollVoteStateProof`
 - Identity: `verifyIdentityByIdentifierProof`, `verifyIdentityByUniqueKeyHashProof`,
-  `verifyIdentifierByNonUniquePublicKeyHashProof`, `verifyIdentityBalanceProof`, `verifyIdentityKeysByIdentifierProof`,
+  `verifyIdentifierByNonUniquePublicKeyHashProof`, `verifyFullIdentityByNonUniquePublicKeyHashProof`,
+  `verifyFullIdentityByNonUniquePublicKeyHashTwoProofs`, `verifyIdentityBalanceProof`, `verifyIdentityKeysByIdentifierProof`,
   `verifyIdentityNonceProof`, `verifyIdentityContractNonceProof`, `verifyIdentityKeysRemainingBudgetsProof`
 - Tokens: `verifyTokenBalancesForIdentitiesProof`, `verifyTokensBalancesForIdentityProof`, `verifyTokenContractInfoProof`,
   `verifyTokenDirectPurchasePrices`, `verifyTokenTotalSupplyProof`
