@@ -60,14 +60,12 @@ jobs:
         with:
           tool: wasm-opt
 
-      # The C dependencies need clang for wasm32 and llvm-ar to archive them
-      # (GNU ar can't index wasm objects).
-      - name: Install LLVM for WebAssembly (Linux)
+      # The C dependencies (secp256k1-sys, blst) need clang for wasm32 and
+      # llvm-ar to archive them (GNU ar can't index wasm objects).
+      - name: Install LLVM for WebAssembly
         run: |
           sudo apt-get update
           sudo apt-get install -y clang llvm
-          clang --version
-          llvm-ar --version
 
       - name: Install project dependencies
         run: yarn install --immutable
@@ -76,6 +74,11 @@ jobs:
         run: node build.cjs
         env:
           BUILD_STEPS: wasm,typings
+          # Without a sysroot clang falls back to the host's glibc headers in
+          # /usr/include, which break the wasm C builds ('bits/libc-header-start.h'
+          # not found). An empty one leaves just clang's builtin headers, as on
+          # macOS, which has no /usr/include.
+          CFLAGS_wasm32_wasip1_threads: --sysroot=/nonexistent
 
       - name: Upload wasm and typings
         uses: actions/upload-artifact@v7
