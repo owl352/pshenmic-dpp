@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build:bin": "node build.cjs",
-    "build:ts": "tsc && cp -R pkg/**/*.*.node dist/binaries/ && cp -R pkg/binaries/native dist/binaries/",
+    "build:ts": "tsc && for f in pkg/**/*.*.node; do [ -e \"$f\" ] && cp -R \"$f\" dist/binaries/; done; cp -R pkg/binaries/native dist/binaries/",
     "build:full": "npm run build:bin && npm run build:ts",
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
