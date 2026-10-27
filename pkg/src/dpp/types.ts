@@ -48,6 +48,7 @@ import { IdentityWASM } from './structs/Identity.js'
 import { PartialIdentityWASM } from './structs/PartialIdentity.js'
 import { DocumentWASM } from './structs/Document.js'
 import { VoteWASM } from './structs/MasternodeVote/Vote.js'
+import { VotePollWASM } from './structs/MasternodeVote/VotePoll.js'
 import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.js'
 import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
@@ -265,6 +266,21 @@ export interface ContestedDocumentVotePollQueryExecutionResult {
 export interface VerifiedVoteState {
   rootHash: Uint8Array
   result: ContestedDocumentVotePollQueryExecutionResult
+}
+
+export interface VotePollsByEndDateTimeBound {
+  timeMs: bigint
+  included: boolean
+}
+
+export interface VotePollsAtEndDate {
+  timestampMs: bigint
+  votePolls: VotePollWASM[]
+}
+
+export interface VerifiedVotePollsByEndDate {
+  rootHash: Uint8Array
+  votePolls: VotePollsAtEndDate[]
 }
 
 export interface VerifiedContract {
