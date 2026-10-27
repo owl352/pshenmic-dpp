@@ -203,7 +203,7 @@ ___
 - Contract moderation: `verifyContractModerationStatusProof`, `verifyContractModerationEntriesProof`,
   `verifyContractModerationActionCountsProof`, `verifyContractDocumentRemovalsProof`, `verifyContractFeePotsProof`,
   `verifyContractTeamActionsProof`, `verifyContractTeamActionSignersProof`, `verifyContractTeamActionSignatureProof`
-- Contested resources: `verifyVotePollVoteStateProof`
+- Contested resources: `verifyVotePollVoteStateProof`, `verifyVotePollsByEndDateProof`
 - Identity: `verifyIdentityByIdentifierProof`, `verifyIdentityByUniqueKeyHashProof`,
   `verifyIdentifierByNonUniquePublicKeyHashProof`, `verifyFullIdentityByNonUniquePublicKeyHashProof`,
   `verifyFullIdentityByNonUniquePublicKeyHashTwoProofs`, `verifyIdentityBalanceProof`, `verifyIdentityKeysByIdentifierProof`,

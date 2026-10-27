@@ -26,7 +26,8 @@ import {
   verifyShieldedEncryptedNotesProof,
   verifyShieldedNotesCountProof,
   verifyShieldedNullifiersProof,
-  verifyShieldedPoolStateProof
+  verifyShieldedPoolStateProof,
+  verifyVotePollsByEndDateProof
 } from 'pshenmic-dpp'
 
 const OWNER_ID = 'HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr'
@@ -212,6 +213,16 @@ describe('Platform v5 verify', function () {
     test('should reject a malformed public key hash', function () {
       expect(() => verifyFullIdentityByNonUniquePublicKeyHashTwoProofs(BAD_PROOF, undefined, new Uint8Array(19), undefined, V14, V14))
         .toThrow('Expected 20 bytes')
+    })
+  })
+
+  describe('vote polls by end date', function () {
+    const START = { timeMs: BigInt(1700000000000), included: true }
+    const END = { timeMs: BigInt(1800000000000), included: false }
+
+    test('should reach proof verification', function () {
+      expectProofError(() => verifyVotePollsByEndDateProof(BAD_PROOF, undefined, undefined, undefined, true, V14))
+      expectProofError(() => verifyVotePollsByEndDateProof(BAD_PROOF, START, END, 10, false, V14))
     })
   })
 })
