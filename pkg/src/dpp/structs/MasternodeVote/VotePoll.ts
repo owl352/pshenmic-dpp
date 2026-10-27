@@ -53,6 +53,16 @@ export class VotePollWASM {
     return this._rawVotePollWASM.toString()
   }
 
+  bytes (): Uint8Array {
+    return this._rawVotePollWASM.bytes()
+  }
+
+  static fromBytes(bytes: Uint8Array): VotePollWASM {
+    const instance = dppProvider.dpp.VotePollNAPI.fromBytes(bytes)
+
+    return VotePollWASM.createFromRawInstance(instance)
+  }
+
   static createFromRawInstance (rawInstance: VotePollNAPI): VotePollWASM {
     const instance: VotePollWASM = Object.create(VotePollWASM.prototype)
     instance._rawVotePollWASM = rawInstance

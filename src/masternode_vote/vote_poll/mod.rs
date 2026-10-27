@@ -1,12 +1,15 @@
 use dpp::bincode;
 use dpp::platform_value::Value;
 use dpp::platform_value::string_encoding::encode;
+use dpp::serialization::{PlatformDeserializableTrusted, PlatformSerializable};
 use dpp::voting::vote_polls::VotePoll;
 use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI};
 use crate::identifier::IdentifierNAPI;
+use crate::utils::WithJsError;
 
 #[derive(Clone)]
 #[napi(js_name = "VotePollNAPI")]
@@ -58,9 +61,21 @@ impl VotePollNAPI {
         )))
     }
 
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        Ok(VotePollNAPI(
+            VotePoll::deserialize_from_bytes_trusted(&bytes.to_vec().as_slice()).with_js_error()?,
+        ))
+    }
+
     #[napi(js_name = "toString")]
     pub fn to_string(&self) -> String {
         self.0.to_string()
+    }
+
+    #[napi(js_name = "bytes")]
+    pub fn to_bytes(&self) -> Result<Uint8Array, napi::Error> {
+        Ok(self.0.serialize_to_bytes().with_js_error()?.into())
     }
 
     #[napi(getter, js_name = "contractId")]
