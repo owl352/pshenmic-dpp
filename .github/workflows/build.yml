@@ -14,9 +14,9 @@ jobs:
       # Only the targets the test matrix runs on; publish.yml builds them all.
       native-groups: >-
         [
-          {"name": "darwin", "targets": "aarch64-apple-darwin"},
-          {"name": "linux", "targets": "x86_64-unknown-linux-gnu"},
-          {"name": "windows", "targets": "x86_64-pc-windows-msvc"}
+          {"name": "darwin", "targets": "aarch64-apple-darwin", "os": "macos-latest"},
+          {"name": "linux", "targets": "x86_64-unknown-linux-gnu", "os": "ubuntu-latest"},
+          {"name": "windows", "targets": "x86_64-pc-windows-msvc", "os": "ubuntu-latest"}
         ]
       react-native: false
 

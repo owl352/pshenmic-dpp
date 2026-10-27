@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       native-groups:
-        description: 'JSON array of {"name", "targets"}: one build job per entry, targets comma-separated'
+        description: 'JSON array of {"name", "targets", "os"}: one build job per entry on runner "os", targets comma-separated'
         required: true
         type: string
       react-native:
@@ -23,7 +23,7 @@ env:
 jobs:
   wasm:
     name: Build wasm + typings
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -60,10 +60,14 @@ jobs:
         with:
           tool: wasm-opt
 
-      - name: Install LLVM for WebAssembly (macOS)
+      # The C dependencies need clang for wasm32 and llvm-ar to archive them
+      # (GNU ar can't index wasm objects).
+      - name: Install LLVM for WebAssembly (Linux)
         run: |
-          brew install llvm
-          echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+          sudo apt-get update
+          sudo apt-get install -y clang llvm
+          clang --version
+          llvm-ar --version
 
       - name: Install project dependencies
         run: yarn install --immutable
@@ -85,7 +89,7 @@ jobs:
 
   native:
     name: Build native (${{ matrix.group.name }})
-    runs-on: macos-latest
+    runs-on: ${{ matrix.group.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -121,7 +125,7 @@ jobs:
         if: matrix.group.name == 'windows'
         uses: actions/cache@v6
         with:
-          path: ~/Library/Caches/cargo-xwin
+          path: ${{ runner.os == 'macOS' && '~/Library/Caches/cargo-xwin' || '~/.cache/cargo-xwin' }}
           key: ${{ runner.os }}-cargo-xwin
 
       - name: Install pre-built Rust tools
@@ -131,10 +135,24 @@ jobs:
 
       # Same toolchain environment as before the build was split into jobs
       # (cargo-xwin needs clang-cl from it).
-      - name: Install LLVM
+      - name: Install LLVM (macOS)
+        if: runner.os == 'macOS'
         run: |
           brew install llvm
           echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+
+      # cargo-xwin drives clang-cl, lld-link and llvm-lib. clang and lld pick
+      # their MSVC-compatible mode from the name they're invoked by.
+      - name: Install LLVM for cargo-xwin (Linux)
+        if: runner.os == 'Linux' && matrix.group.name == 'windows'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld llvm
+          sudo ln -sf "$(command -v clang)" /usr/local/bin/clang-cl
+          sudo ln -sf "$(command -v ld.lld)" /usr/local/bin/lld-link
+          clang-cl --version
+          lld-link --version
+          llvm-lib --help > /dev/null
 
       - name: Install project dependencies
         run: yarn install --immutable
