@@ -193,7 +193,7 @@ ___
 
 ### Proof Verification
 - Signatures: `verifySignatureDigest`
-- System: `verifyEpochsInfoProof`, `verifyFinalizedEpochInfosProof`, `verifyTotalCreditsProof`
+- System: `verifyEpochsInfoProof`, `verifyFinalizedEpochInfosProof`, `verifyTotalCreditsProof`, `verifyPathElementsProof`
 - State transitions: `verifyStateTransitionResult`
 - Contracts & documents: `verifyContractProof`, `verifyContractsByRangeProof`, `verifyContractsVersionsProof`,
   `verifyDocumentsProof`, `verifyChainedDocumentsProof`, `verifyCompositeDocumentsProof`, `verifyRankedDocumentsProof`,

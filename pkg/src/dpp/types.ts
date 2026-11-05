@@ -777,6 +777,18 @@ export interface VerifiedAddressesBranchState {
   getAncestor: (leafKey: Uint8Array, minPrivacyTreeCount: bigint) => GroveAncestor | undefined
 }
 
+export interface VerifiedPathElement {
+  key: Uint8Array
+  /** Undefined when the proof shows nothing is stored under `key`. */
+  element?: GroveElement
+}
+
+export interface VerifiedPathElements {
+  rootHash: Uint8Array
+  /** One entry per requested key, in key order. */
+  elements: VerifiedPathElement[]
+}
+
 /* Platform v5 proofs. Identifiers come as IdentifierWASM, credits and timestamps as bigint */
 
 export interface ProvenModerationReason {

@@ -17,7 +17,8 @@ use crate::dynamic_value::BigIntString;
 /// The projection is deliberately lossy: element flags, reference paths, and
 /// the structural parameters of the append-only tree variants (chunk power,
 /// height) are dropped. The address funds tree stores none of those, so what
-/// survives is everything that tree can actually hold.
+/// survives is everything that tree can actually hold; `verifyPathElementsProof`
+/// reuses this shape for arbitrary paths, where the loss can matter.
 #[derive(Clone)]
 #[napi(js_name = "GroveElementNAPI")]
 pub struct GroveElementNAPI {

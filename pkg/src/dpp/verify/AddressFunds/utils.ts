@@ -1,24 +1,27 @@
 import type * as protocol from '../../../../binaries/bindingsTypes.js'
 import {
   GroveAncestor,
+  GroveElement,
   GroveElementEntry,
   GroveElementType,
   GroveElementWrapper,
   GroveLeafInfo
 } from '../../types.js'
 
-export function mapGroveElementEntry (entry: protocol.GroveElementEntryNAPI): GroveElementEntry {
-  const { element } = entry
+export function mapGroveElement (element: protocol.GroveElementNAPI): GroveElement {
+  return {
+    type: element.type as GroveElementType,
+    wrapper: element.wrapper != null ? element.wrapper as GroveElementWrapper : undefined,
+    value: element.value ?? undefined,
+    sum: element.sum != null ? BigInt(element.sum) : undefined,
+    count: element.count != null ? BigInt(element.count) : undefined
+  }
+}
 
+export function mapGroveElementEntry (entry: protocol.GroveElementEntryNAPI): GroveElementEntry {
   return {
     key: entry.key,
-    element: {
-      type: element.type as GroveElementType,
-      wrapper: element.wrapper != null ? element.wrapper as GroveElementWrapper : undefined,
-      value: element.value ?? undefined,
-      sum: element.sum != null ? BigInt(element.sum) : undefined,
-      count: element.count != null ? BigInt(element.count) : undefined
-    }
+    element: mapGroveElement(entry.element)
   }
 }
 
