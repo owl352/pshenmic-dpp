@@ -10,7 +10,7 @@ use crate::{
     },
 };
 
-/// A requested key and the element proven under it, if any.
+/// A requested key and the element proven under it.
 #[napi(js_name = "VerifiedPathElementNAPI")]
 pub struct VerifiedPathElementNAPI {
     pub(crate) key: Vec<u8>,
@@ -24,7 +24,8 @@ impl VerifiedPathElementNAPI {
         self.key.clone().into()
     }
 
-    /// `undefined` when the proof shows nothing is stored under `key`.
+    /// Always set in practice: the raw proof verification only yields existing
+    /// elements. Optional because drive's API types it that way.
     #[napi(getter, js_name = "element")]
     pub fn element(&self) -> Option<GroveElementNAPI> {
         self.element.clone()
@@ -39,7 +40,7 @@ pub struct VerifiedPathElementsNAPI {
 
 #[napi]
 impl VerifiedPathElementsNAPI {
-    /// One entry per proven key, in key order.
+    /// Found elements in key order; keys proven absent are omitted.
     #[napi(getter, js_name = "elements")]
     pub fn elements(&self) -> Vec<VerifiedPathElementNAPI> {
         self.elements

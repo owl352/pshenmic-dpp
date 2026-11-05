@@ -779,13 +779,12 @@ export interface VerifiedAddressesBranchState {
 
 export interface VerifiedPathElement {
   key: Uint8Array
-  /** Undefined when the proof shows nothing is stored under `key`. */
   element?: GroveElement
 }
 
 export interface VerifiedPathElements {
   rootHash: Uint8Array
-  /** One entry per requested key, in key order. */
+  /** Found elements in key order, keys proven absent are omitted. */
   elements: VerifiedPathElement[]
 }
 
