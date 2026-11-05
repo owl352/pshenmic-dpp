@@ -21,6 +21,7 @@ import {
   verifyHavingDocumentsProof,
   verifyIdentityKeysRemainingBudgetsProof,
   verifyMostRecentShieldedAnchorProof,
+  verifyPathElementsProof,
   verifyRankedDocumentsProof,
   verifyShieldedAnchorsProof,
   verifyShieldedEncryptedNotesProof,
@@ -213,6 +214,13 @@ describe('Platform v5 verify', function () {
     test('should reject a malformed public key hash', function () {
       expect(() => verifyFullIdentityByNonUniquePublicKeyHashTwoProofs(BAD_PROOF, undefined, new Uint8Array(19), undefined, V14, V14))
         .toThrow('Expected 20 bytes')
+    })
+  })
+
+  describe('path elements', function () {
+    test('should reach proof verification', function () {
+      expectProofError(() => verifyPathElementsProof(BAD_PROOF, [new Uint8Array([104])], [new Uint8Array([1, 2])], V14))
+      expectProofError(() => verifyPathElementsProof(BAD_PROOF, [], [], V14))
     })
   })
 
