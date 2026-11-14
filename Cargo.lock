@@ -2316,7 +2316,6 @@ dependencies = [
  "async-trait",
  "dpp",
  "drive",
- "futures",
  "grovedb-commitment-tree",
  "hex",
  "indexmap 1.9.3",
