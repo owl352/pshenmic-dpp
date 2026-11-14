@@ -12,6 +12,16 @@ export class InputAddressWASM {
     this._rawInputAddress = new dppProvider.dpp.InputAddressNAPI(preparePlatformAddressValue(address), nonce, credits.toString())
   }
 
+  bytes (): Uint8Array {
+    return this._rawInputAddress.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): InputAddressWASM {
+    return InputAddressWASM.createFromRawInstance(
+      dppProvider.dpp.InputAddressNAPI.fromBytes(bytes)
+    )
+  }
+
   get address (): PlatformAddressWASM {
     return PlatformAddressWASM.createFromRawInstance(this._rawInputAddress.address)
   }

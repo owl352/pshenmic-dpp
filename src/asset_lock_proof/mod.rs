@@ -15,6 +15,7 @@ use crate::{
     identifier::IdentifierNAPI,
     utils::WithJsError,
 };
+use dpp::bincode;
 use dpp::prelude::AssetLockProof;
 use dpp::{ProtocolError, platform_value};
 use napi::{Either, bindgen_prelude::Uint8Array};
@@ -126,6 +127,29 @@ impl AssetLockProofNAPI {
         let identifier = self.0.create_identifier().with_js_error()?;
 
         Ok(identifier.into())
+    }
+
+    /// Consensus bincode encoding of the proof (the domain `Encode` derive),
+    /// used to cross the base <-> shielded instance boundary as bytes.
+    /// Unlike `hex`/`fromHex` this is an exact round-trip.
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        Ok(bincode::encode_to_vec(&self.0, config)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+            .into())
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<AssetLockProofNAPI, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        let (proof, _) =
+            bincode::decode_from_slice_untrusted::<AssetLockProof, _>(&bytes.to_vec(), config)
+                .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+        Ok(AssetLockProofNAPI(proof))
     }
 
     #[napi(js_name = "hex")]

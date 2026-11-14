@@ -136,6 +136,16 @@ export class IdentityPublicKeyInCreationWASM {
     this._rawKeyInCreation.signature = value
   }
 
+  bytes (): Uint8Array {
+    return this._rawKeyInCreation.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): IdentityPublicKeyInCreationWASM {
+    return IdentityPublicKeyInCreationWASM.createFromRawInstance(
+      dppProvider.dpp.IdentityPublicKeyInCreationNAPI.fromBytes(bytes)
+    )
+  }
+
   static createFromRawInstance (rawInstance: IdentityPublicKeyInCreationNAPI): IdentityPublicKeyInCreationWASM {
     const instance: IdentityPublicKeyInCreationWASM = Object.create(IdentityPublicKeyInCreationWASM.prototype)
     instance._rawKeyInCreation = rawInstance
