@@ -6,7 +6,7 @@ export class MerklePathWASM {
   _rawMerklePath: MerklePathNAPI
 
   constructor (position: number, authPath: Uint8Array[]) {
-    this._rawMerklePath = new dppProvider.dpp.MerklePathNAPI(position, authPath)
+    this._rawMerklePath = new dppProvider.shielded.MerklePathNAPI(position, authPath)
   }
 
   get position (): number {

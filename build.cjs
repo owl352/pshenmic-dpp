@@ -420,7 +420,16 @@ function bundle() {
 
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "wasmCreation.d.ts"), typingsForCodegen);
-  fs.writeFileSync(path.join(binariesOutputDir, "shieldedCreation.d.ts"), typingsForCodegen);
+  // shieldedCreation is a loader, not the napi module itself: type its single
+  // export. loadShielded() returns the full (threaded) napi exports object.
+  fs.writeFileSync(
+    path.join(binariesOutputDir, "shieldedCreation.d.ts"),
+    [
+      'import type * as bindings from "./bindingsTypes.js"',
+      'export declare function loadShielded(): typeof bindings & { default: typeof bindings }',
+    ].join("\n") + "\n",
+    "utf8",
+  );
   fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
 }

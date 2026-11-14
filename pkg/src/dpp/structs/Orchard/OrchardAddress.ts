@@ -19,13 +19,13 @@ export class OrchardAddressWASM {
 
   static fromBech32m (bech32m: string): OrchardAddressWASM {
     return OrchardAddressWASM.createFromRawInstance(
-      dppProvider.dpp.OrchardAddressNAPI.fromBech32m(bech32m)
+      dppProvider.shielded.OrchardAddressNAPI.fromBech32m(bech32m)
     )
   }
 
   static fromBytes (bytes: Uint8Array): OrchardAddressWASM {
     return OrchardAddressWASM.createFromRawInstance(
-      dppProvider.dpp.OrchardAddressNAPI.fromBytes(bytes)
+      dppProvider.shielded.OrchardAddressNAPI.fromBytes(bytes)
     )
   }
 
@@ -38,7 +38,7 @@ export class OrchardAddressWASM {
     scope?: ScopeLike
   ): OrchardAddressWASM {
     return OrchardAddressWASM.createFromRawInstance(
-      dppProvider.dpp.OrchardAddressNAPI.fromSeed(
+      dppProvider.shielded.OrchardAddressNAPI.fromSeed(
         seed,
         coinType,
         account,
@@ -58,7 +58,7 @@ export class OrchardAddressWASM {
     scope?: ScopeLike
   ): OrchardAddressWASM {
     return OrchardAddressWASM.createFromRawInstance(
-      dppProvider.dpp.OrchardAddressNAPI.fromFullViewingKey(
+      dppProvider.shielded.OrchardAddressNAPI.fromFullViewingKey(
         fullViewingKey._rawFullViewingKey,
         diversifierIndex,
         scope == null ? undefined : valueToDynamicValue(scope)
@@ -75,7 +75,7 @@ export class OrchardAddressWASM {
     diversifierIndex?: number
   ): OrchardAddressWASM {
     return OrchardAddressWASM.createFromRawInstance(
-      dppProvider.dpp.OrchardAddressNAPI.fromIncomingViewingKey(
+      dppProvider.shielded.OrchardAddressNAPI.fromIncomingViewingKey(
         incomingViewingKey._rawIncomingViewingKey,
         diversifierIndex
       )
@@ -92,5 +92,5 @@ export class OrchardAddressWASM {
 
 /** Derives the sender's Orchard outgoing viewing key (32 bytes) from a BIP-39 seed. */
 export function orchardOvkFromSeed (seed: Uint8Array, coinType: number, account: number): Uint8Array {
-  return dppProvider.dpp.orchardOvkFromSeed(seed, coinType, account)
+  return dppProvider.shielded.orchardOvkFromSeed(seed, coinType, account)
 }

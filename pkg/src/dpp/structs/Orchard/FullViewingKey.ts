@@ -48,14 +48,14 @@ export class FullViewingKeyWASM {
   /** Derives the full viewing key from a BIP-39 seed via ZIP-32 (m/32'/coinType'/account'). */
   static fromSeed (seed: Uint8Array, coinType: number, account: number): FullViewingKeyWASM {
     return FullViewingKeyWASM.createFromRawInstance(
-      dppProvider.dpp.FullViewingKeyNAPI.fromSeed(seed, coinType, account)
+      dppProvider.shielded.FullViewingKeyNAPI.fromSeed(seed, coinType, account)
     )
   }
 
   /** Parses a full viewing key from its 96-byte raw encoding. */
   static fromBytes (bytes: Uint8Array): FullViewingKeyWASM {
     return FullViewingKeyWASM.createFromRawInstance(
-      dppProvider.dpp.FullViewingKeyNAPI.fromBytes(bytes)
+      dppProvider.shielded.FullViewingKeyNAPI.fromBytes(bytes)
     )
   }
 

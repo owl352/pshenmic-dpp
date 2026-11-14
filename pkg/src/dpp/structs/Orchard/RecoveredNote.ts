@@ -40,7 +40,7 @@ export function recoverNotes (
   coinType: number,
   account: number
 ): RecoveredNoteWASM[] {
-  return dppProvider.dpp
+  return dppProvider.shielded
     .recoverNotes(actions.map(a => a._rawSerializedAction), seed, coinType, account)
     .map(RecoveredNoteWASM.createFromRawInstance)
 }

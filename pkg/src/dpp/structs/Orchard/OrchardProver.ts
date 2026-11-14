@@ -5,6 +5,9 @@ import { dppProvider } from '../../provider.js'
  * Reusable Orchard prover holding the Halo 2 proving key. Building it is
  * expensive (~seconds); construct once and reuse. (The `ShieldedBuilderWASM`
  * already builds its own prover internally — this is exposed for standalone use.)
+ *
+ * On the wasm entry, `await initShielded()` once before `init()` (needs
+ * cross-origin isolation in browsers). The native entry needs no init.
  */
 export class OrchardProverWASM {
   /** @private **/
@@ -23,7 +26,7 @@ export class OrchardProverWASM {
 
   async init(): Promise<void>  {
     if (OrchardProverWASM._initPromise == null) {
-      OrchardProverWASM._initPromise = dppProvider.dpp.OrchardProverNAPI.init()
+      OrchardProverWASM._initPromise = dppProvider.shielded.OrchardProverNAPI.init()
         .catch((e: Error) => {
           OrchardProverWASM._initPromise = null
           throw e

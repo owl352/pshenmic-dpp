@@ -16,7 +16,7 @@ export class ShieldedOutputWASM {
   _rawShieldedOutput: ShieldedOutputNAPI
 
   constructor (address: OrchardAddressWASM, amount: bigint, memo: ShieldedMemoWASM) {
-    this._rawShieldedOutput = new dppProvider.dpp.ShieldedOutputNAPI(
+    this._rawShieldedOutput = new dppProvider.shielded.ShieldedOutputNAPI(
       address._rawOrchardAddress,
       amount.toString(),
       memo._rawShieldedMemo

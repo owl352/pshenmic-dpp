@@ -42,7 +42,7 @@ export class IncomingViewingKeyWASM {
     scope?: ScopeLike
   ): IncomingViewingKeyWASM {
     return IncomingViewingKeyWASM.createFromRawInstance(
-      dppProvider.dpp.IncomingViewingKeyNAPI.fromSeed(
+      dppProvider.shielded.IncomingViewingKeyNAPI.fromSeed(
         seed,
         coinType,
         account,
@@ -57,7 +57,7 @@ export class IncomingViewingKeyWASM {
     scope?: ScopeLike
   ): IncomingViewingKeyWASM {
     return IncomingViewingKeyWASM.createFromRawInstance(
-      dppProvider.dpp.IncomingViewingKeyNAPI.fromFullViewingKey(
+      dppProvider.shielded.IncomingViewingKeyNAPI.fromFullViewingKey(
         fullViewingKey._rawFullViewingKey,
         scope == null ? undefined : valueToDynamicValue(scope)
       )
@@ -67,7 +67,7 @@ export class IncomingViewingKeyWASM {
   /** Parses an incoming viewing key from its 64-byte raw encoding. */
   static fromBytes (bytes: Uint8Array): IncomingViewingKeyWASM {
     return IncomingViewingKeyWASM.createFromRawInstance(
-      dppProvider.dpp.IncomingViewingKeyNAPI.fromBytes(bytes)
+      dppProvider.shielded.IncomingViewingKeyNAPI.fromBytes(bytes)
     )
   }
 
