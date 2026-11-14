@@ -16,12 +16,26 @@
  * Exit codes: 0 = A2 viable + instantiation OK, 2 = size gate failed (A1),
  *             1 = build/instantiation error.
  *
- * KNOWN BLOCKER (2026-11-14, both stable 1.99.0 and nightly-2026-08-15):
- * grovedb-commitment-tree@2128ea18 depends on orchard with DEFAULT features
- * (orchard default = circuit + multicore + std), and halo2_proofs 0.3.2
- * compile_error!s on `multicore` for wasm32 without +atomics. The base build
- * therefore cannot compile until the dependency graph stops enabling
- * orchard/multicore (upstream grovedb fix or a patch) — see task-2-report.md.
+ * HISTORY: the 2026-11-14 compile blocker (orchard/multicore pulled into the
+ * base via grovedb-commitment-tree) was fixed by Task 1's smart-A1 feature
+ * gate (commit e1db36b). The base now compiles, but napi-build 2.3.2 has a
+ * non-threaded link quirk: it unconditionally links `libemnapi-basic-mt.a`
+ * (the +atomics archive) and force-exports `emnapi_async_worker_create` /
+ * `emnapi_async_worker_init`, whose objects reference the TLS symbols
+ * `__tls_size` / `__tls_align` that only exist in +atomics builds. Fixed
+ * upstream in napi-build 2.6 (thread-aware archive selection, emnapi v2),
+ * which is a migration out of scope for this spike.
+ *
+ * SPIKE-LOCAL WORKAROUND (no production files touched): before building, we
+ * create target/spike-emnapi-link/libemnapi-basic-mt.a = the NON-threaded
+ * `libemnapi-basic.a` from node_modules/emnapi/lib/wasm32-wasip1 (the variant
+ * emnapi's README documents for avoiding SharedArrayBuffer) plus a stub
+ * object defining the two forced worker exports and
+ * `__wasilibc_futex_wait_atomic_wait` (referenced by wasi_wait.c.obj, absent
+ * from non-threaded wasi-libc). The stubs are never called by the sync-only
+ * base. EMNAPI_LINK_DIR points at that shadow dir. The archive must be
+ * (re)built with llvm-ar: macOS `ar` writes a __.SYMDEF index rust-lld cannot
+ * read ("symbol exported via --export not found").
  */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -32,7 +46,8 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const WASM_PATH = path.join(ROOT, "target/wasm32-wasip1/release-wasm/pshenmic_dpp.wasm");
-const EMNAPI_LINK_DIR = path.join(ROOT, "node_modules/emnapi/lib/wasm32-wasip1");
+const EMNAPI_SRC_DIR = path.join(ROOT, "node_modules/emnapi/lib/wasm32-wasip1");
+const SHADOW_LINK_DIR = path.join(ROOT, "target/spike-emnapi-link");
 const RUSTFLAGS = "-C target-feature=+simd128,+bulk-memory,+mutable-globals";
 const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
 const MB = (bytes) => (bytes / 1024 / 1024).toFixed(2);
@@ -58,17 +73,70 @@ function exportsOf(wasmPath) {
   return WebAssembly.Module.exports(new WebAssembly.Module(fs.readFileSync(wasmPath)));
 }
 
+// Signatures match emnapi src/thread/async_worker_create.c,
+// src/thread/async_worker_init.S and src/wasi_wait.c exactly (wasm-ld checks
+// call-site signatures). None of these is ever called by the sync-only base:
+// they exist so napi-build 2.3.2's unconditional -mt link lines resolve
+// without +atomics/TLS.
+const STUBS_RS = `
+#[no_mangle]
+pub extern "C" fn emnapi_async_worker_create(_directly_spawn: i32, _global_address: *mut u8) -> *mut u8 {
+    core::ptr::null_mut()
+}
+#[no_mangle]
+pub extern "C" fn emnapi_async_worker_init(_arg: *mut u8) {}
+#[no_mangle]
+pub extern "C" fn __wasilibc_futex_wait_atomic_wait(_addr: *mut u8, _op: i32, _val: i32, _max_wait_ns: i64) -> i32 {
+    -1
+}
+`;
+
+function findLlvmAr() {
+  for (const candidate of ["llvm-ar", "/opt/homebrew/opt/llvm/bin/llvm-ar", "/usr/local/opt/llvm/bin/llvm-ar"]) {
+    const res = spawnSync(candidate, ["--version"], { stdio: "ignore" });
+    if (res.status === 0) return candidate;
+  }
+  throw new Error(
+    "llvm-ar not found (PATH, /opt/homebrew/opt/llvm/bin, /usr/local/opt/llvm/bin). " +
+      "macOS `ar` writes a __.SYMDEF archive index rust-lld cannot read; llvm-ar is required.",
+  );
+}
+
+// See the header: shadow `libemnapi-basic-mt.a` with the non-threaded archive
+// + stubs so napi-build 2.3.2's hardcoded -mt link lines work without atomics.
+function prepareShadowLinkDir(toolchain) {
+  fs.mkdirSync(SHADOW_LINK_DIR, { recursive: true });
+  const stubsRs = path.join(SHADOW_LINK_DIR, "stubs.rs");
+  const stubsObj = path.join(SHADOW_LINK_DIR, "stubs.o");
+  const shadowArchive = path.join(SHADOW_LINK_DIR, "libemnapi-basic-mt.a");
+  fs.writeFileSync(stubsRs, STUBS_RS);
+  run("rustc", [
+    "+" + toolchain, "--target", "wasm32-wasip1", "--crate-type", "lib", "--emit=obj",
+    "-C", "target-feature=+simd128,+bulk-memory,+mutable-globals",
+    stubsRs, "-o", stubsObj,
+  ]);
+  // Fresh copy every run: llvm-ar `q` APPENDS, a stale stubs.o would duplicate.
+  fs.copyFileSync(path.join(EMNAPI_SRC_DIR, "libemnapi-basic.a"), shadowArchive);
+  run(findLlvmAr(), ["q", shadowArchive, stubsObj]);
+  return SHADOW_LINK_DIR;
+}
+
 // ---- Step 1: build the non-threaded base ----------------------------------
 let toolchainUsed = null;
 if (!skipBuild) {
+  // wasm-opt runs in place; without a fresh link a re-run would measure
+  // opt(opt(wasm)). Cargo re-links when the output file is missing.
+  fs.rmSync(WASM_PATH, { force: true });
   const failures = [];
   for (const tc of toolchains) {
     try {
       run("rustup", ["target", "add", "wasm32-wasip1", "--toolchain", tc]);
+      const emnapiLinkDir = prepareShadowLinkDir(tc);
+      console.log(`[spike] EMNAPI_LINK_DIR=${emnapiLinkDir} (non-mt archive + stubs, see header)`);
       run(
         "cargo",
         ["+" + tc, "build", "--target", "wasm32-wasip1", "--no-default-features", "--profile", "release-wasm"],
-        { RUSTFLAGS, EMNAPI_LINK_DIR },
+        { RUSTFLAGS, EMNAPI_LINK_DIR: emnapiLinkDir },
       );
       toolchainUsed = tc;
       break;
