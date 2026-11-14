@@ -43,8 +43,7 @@ use crate::{
     asset_lock_proof::AssetLockProofNAPI,
     batch::token_payment_info::shielded_payment::TokenShieldedPaymentNAPI,
     core_script::CoreScriptNAPI,
-    dynamic_value::IdentifierLikeNAPI,
-    dynamic_value::{BigIntString, DynamicValue, PlatformAddressLikeNAPI, TryToU64},
+    dynamic_value::{BigIntString, TryToU64},
     enums::distribution_type::TokenDistributionTypeNAPI,
     enums::{platform_version::PlatformVersionNAPI, pooling::PoolingNAPI},
     group_state_transition_info::GroupStateTransitionInfoNAPI,
@@ -60,7 +59,6 @@ use crate::{
         viewing_key::spending_key_from_seed,
     },
     platform_address::PlatformAddressNAPI,
-    private_key::PrivateKeyNAPI,
     state_transition::StateTransitionNAPI,
     utils::{WithJsError, js_inputs_to_inputs},
 };
@@ -106,25 +104,40 @@ fn parse_sender_ovk(
         .transpose()
 }
 
-fn memo_bytes(js_memo: &ShieldedMemoNAPI) -> [u8; 36] {
-    ShieldedMemo::from(js_memo.clone()).to_bytes()
+/// Parses the memo bytes crossing the boundary into the domain memo bytes.
+fn memo_bytes_from_js(js_memo: Uint8Array) -> Result<[u8; 36], napi::Error> {
+    Ok(ShieldedMemo::from(ShieldedMemoNAPI::from_bytes(js_memo)?).to_bytes())
+}
+
+/// Platform versions cross the boundary as plain numbers; `None` means the
+/// latest version, exactly like the old `Option<PlatformVersionNAPI>`.
+fn parse_platform_version(
+    js_platform_version: Option<u32>,
+) -> Result<PlatformVersion, napi::Error> {
+    Ok(js_platform_version
+        .map(|version| PlatformVersionNAPI::try_from(u64::from(version)))
+        .transpose()?
+        .unwrap_or_default()
+        .into())
 }
 
 fn spendable_notes(js_spends: &[&SpendableNoteNAPI]) -> Vec<SpendableNote> {
     js_spends.iter().map(|spend| spend.to_spendable()).collect()
 }
 
-/// A signer holding the one identity key a token transition is signed with
-fn single_key_signer(
-    js_identity_public_key: &IdentityPublicKeyNAPI,
-    js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+/// A signer holding the one identity key a token transition is signed with:
+/// the identity public key crosses as consensus bytes, the private key as the
+/// raw 32-byte secret.
+fn single_key_signer_from_bytes(
+    js_identity_public_key: Uint8Array,
+    js_private_key: Uint8Array,
 ) -> Result<(IdentityPublicKey, IdentityKeySigner), napi::Error> {
-    let identity_public_key: IdentityPublicKey = js_identity_public_key.clone().into();
-    let secret: [u8; 32] = PrivateKeyNAPI::bytes_from_js_value(js_private_key)?
-        .to_vec()
-        .as_slice()
-        .try_into()
-        .map_err(|_| napi::Error::new(napi::Status::InvalidArg, "private key must be 32 bytes"))?;
+    let identity_public_key: IdentityPublicKey =
+        IdentityPublicKeyNAPI::from_bytes(js_identity_public_key)?.into();
+    let secret: [u8; 32] =
+        js_private_key.to_vec().as_slice().try_into().map_err(|_| {
+            napi::Error::new(napi::Status::InvalidArg, "private key must be 32 bytes")
+        })?;
 
     let mut signer = IdentityKeySigner::default();
     signer.add(identity_public_key.clone(), secret);
@@ -132,18 +145,26 @@ fn single_key_signer(
     Ok((identity_public_key, signer))
 }
 
+/// Identifiers cross the boundary as raw 32 bytes.
+fn parse_identifier(js_identifier: Uint8Array) -> Result<Identifier, napi::Error> {
+    Ok(IdentifierNAPI::from_bytes(js_identifier)?.into())
+}
+
 fn group_info_status(
-    js_using_group_info: Option<&GroupStateTransitionInfoNAPI>,
-) -> Option<GroupStateTransitionInfoStatus> {
-    js_using_group_info.map(|info| {
-        let info: GroupStateTransitionInfo = info.clone().into();
-        match info.action_is_proposer {
-            true => GroupStateTransitionInfoStatus::GroupStateTransitionInfoProposer(
-                info.group_contract_position,
-            ),
-            false => GroupStateTransitionInfoStatus::GroupStateTransitionInfoOtherSigner(info),
-        }
-    })
+    js_using_group_info: Option<Uint8Array>,
+) -> Result<Option<GroupStateTransitionInfoStatus>, napi::Error> {
+    js_using_group_info
+        .map(|info| {
+            let info: GroupStateTransitionInfo =
+                GroupStateTransitionInfoNAPI::from_bytes(info)?.into();
+            Ok(match info.action_is_proposer {
+                true => GroupStateTransitionInfoStatus::GroupStateTransitionInfoProposer(
+                    info.group_contract_position,
+                ),
+                false => GroupStateTransitionInfoStatus::GroupStateTransitionInfoOtherSigner(info),
+            })
+        })
+        .transpose()
 }
 
 /// The token a token pool transition acts on
@@ -155,16 +176,18 @@ struct TokenTarget {
 }
 
 impl TokenTarget {
-    fn from_js(
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+    /// The token a token pool transition acts on; identifiers cross the
+    /// boundary as raw 32 bytes.
+    fn from_js_bytes(
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         token_contract_position: u16,
     ) -> Result<Self, napi::Error> {
         Ok(TokenTarget {
-            token_id: IdentifierNAPI::try_from(js_token_id)?.into(),
-            owner_id: IdentifierNAPI::try_from(js_owner_id)?.into(),
-            data_contract_id: IdentifierNAPI::try_from(js_data_contract_id)?.into(),
+            token_id: parse_identifier(js_token_id)?,
+            owner_id: parse_identifier(js_owner_id)?,
+            data_contract_id: parse_identifier(js_data_contract_id)?,
             token_contract_position,
         })
     }
@@ -209,44 +232,33 @@ impl ShieldedBuilderNAPI {
         env: &'env Env,
         js_recipient: &OrchardAddressNAPI,
         js_shield_amount: BigIntString,
-        js_asset_lock_proof: &AssetLockProofNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
-        js_memo: &ShieldedMemoNAPI,
+        js_asset_lock_proof: Uint8Array,
+        js_private_key: Uint8Array,
+        js_memo: Uint8Array,
         js_dummy_outputs: u32,
         js_sender_ovk: Option<Uint8Array>,
-        js_surplus_output: Option<PlatformAddressLikeNAPI>,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
+        js_surplus_output: Option<Uint8Array>,
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
         let shield_amount = js_shield_amount.try_to_u64()?;
 
         let recipient: OrchardAddress = js_recipient.into();
 
-        let asset_lock_proof: AssetLockProof = js_asset_lock_proof.clone().into();
+        let asset_lock_proof: AssetLockProof =
+            AssetLockProofNAPI::from_bytes(js_asset_lock_proof)?.into();
 
-        let memo: ShieldedMemo = js_memo.clone().into();
+        let memo = memo_bytes_from_js(js_memo)?;
 
-        let sender_ovk: Option<OutgoingViewingKey> = match js_sender_ovk {
-            Some(ovk) => {
-                if ovk.len() != 32 {
-                    return Err(napi::Error::new(
-                        napi::Status::InvalidArg,
-                        "sender_ovk must be 32 bytes length",
-                    ));
-                }
-                let bytes: [u8; 32] = ovk.to_vec().as_slice().try_into().unwrap();
-                Some(OutgoingViewingKey::from(bytes))
-            }
-            None => None,
-        };
+        let sender_ovk: Option<OutgoingViewingKey> = parse_sender_ovk(js_sender_ovk)?;
 
         let surplus_output: Option<PlatformAddress> = js_surplus_output
-            .map(PlatformAddressNAPI::try_from)
+            .map(PlatformAddressNAPI::from_bytes)
             .transpose()?
             .map(Into::into);
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
-        let private_key = PrivateKeyNAPI::bytes_from_js_value(js_private_key)?.to_vec();
+        let private_key = js_private_key.to_vec();
 
         let prover = self.proover.shared();
 
@@ -259,7 +271,7 @@ impl ShieldedBuilderNAPI {
                     asset_lock_proof,
                     private_key.as_slice(),
                     &prover,
-                    memo.to_bytes(),
+                    memo,
                     sender_ovk,
                     surplus_output,
                     js_dummy_outputs as usize,
@@ -267,7 +279,7 @@ impl ShieldedBuilderNAPI {
                 )
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -295,24 +307,28 @@ impl ShieldedBuilderNAPI {
         env: &'env Env,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_withdrawal_amount: BigIntString,
-        js_output_script: &CoreScriptNAPI,
+        js_output_script: Uint8Array,
         js_core_fee_per_byte: u32,
-        js_pooling: &DynamicValue,
+        js_pooling: Either<String, u32>,
         js_change_address: &OrchardAddressNAPI,
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let withdrawal_amount = js_withdrawal_amount.try_to_u64()?;
 
         let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
 
-        let output_script = js_output_script.clone().into();
+        let output_script = CoreScriptNAPI::from_bytes(js_output_script).into();
 
-        let pooling = PoolingNAPI::try_from(js_pooling)?.into();
+        let pooling = match js_pooling {
+            Either::A(text) => PoolingNAPI::try_from(text),
+            Either::B(number) => PoolingNAPI::try_from(u64::from(number)),
+        }?
+        .into();
 
         let change_address: OrchardAddress = js_change_address.into();
 
@@ -329,9 +345,9 @@ impl ShieldedBuilderNAPI {
             napi::Error::new(napi::Status::InvalidArg, "anchor is not a valid value")
         })?;
 
-        let memo: ShieldedMemo = js_memo.clone().into();
+        let memo = memo_bytes_from_js(js_memo)?;
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
         let prover = self.proover.shared();
 
@@ -349,15 +365,12 @@ impl ShieldedBuilderNAPI {
                     &ask,
                     anchor,
                     &prover,
-                    memo.to_bytes(),
+                    memo,
                     &platform_version,
                 )
                 .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -385,22 +398,22 @@ impl ShieldedBuilderNAPI {
         &self,
         env: &'env Env,
         js_spends: Vec<&SpendableNoteNAPI>,
-        js_output_address: PlatformAddressLikeNAPI,
+        js_output_address: Uint8Array,
         js_unshield_amount: BigIntString,
         js_change_address: &OrchardAddressNAPI,
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let unshield_amount = js_unshield_amount.try_to_u64()?;
 
         let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
 
         let output_address: PlatformAddress =
-            PlatformAddressNAPI::try_from(js_output_address)?.into();
+            PlatformAddressNAPI::from_bytes(js_output_address)?.into();
 
         let change_address: OrchardAddress = js_change_address.into();
 
@@ -417,9 +430,9 @@ impl ShieldedBuilderNAPI {
             napi::Error::new(napi::Status::InvalidArg, "anchor is not a valid value")
         })?;
 
-        let memo: ShieldedMemo = js_memo.clone().into();
+        let memo = memo_bytes_from_js(js_memo)?;
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
         let prover = self.proover.shared();
 
@@ -435,15 +448,12 @@ impl ShieldedBuilderNAPI {
                     &ask,
                     anchor,
                     &prover,
-                    memo.to_bytes(),
+                    memo,
                     &platform_version,
                 )
                 .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -477,8 +487,8 @@ impl ShieldedBuilderNAPI {
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let transfer_amount = js_transfer_amount.try_to_u64()?;
 
@@ -500,9 +510,9 @@ impl ShieldedBuilderNAPI {
             napi::Error::new(napi::Status::InvalidArg, "anchor is not a valid value")
         })?;
 
-        let memo: ShieldedMemo = js_memo.clone().into();
+        let memo = memo_bytes_from_js(js_memo)?;
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
         let prover = self.proover.shared();
 
@@ -518,15 +528,12 @@ impl ShieldedBuilderNAPI {
                     &ask,
                     anchor,
                     &prover,
-                    memo.to_bytes(),
+                    memo,
                     &platform_version,
                 )
                 .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -565,7 +572,7 @@ impl ShieldedBuilderNAPI {
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let spends: Vec<_> = js_spends.iter().map(|s| s.to_spendable()).collect();
 
@@ -586,7 +593,7 @@ impl ShieldedBuilderNAPI {
             napi::Error::new(napi::Status::InvalidArg, "anchor is not a valid value")
         })?;
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
         let prover = self.proover.shared();
 
@@ -604,10 +611,7 @@ impl ShieldedBuilderNAPI {
                     &platform_version,
                 )?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -615,8 +619,8 @@ impl ShieldedBuilderNAPI {
     /// Builds a `Shield` state transition (transparent platform addresses -> pool).
     ///
     /// A deposit: it does NOT spend pool notes (no witness/anchor needed), but it
-    /// does sign the transparent input witnesses, so you pass the `PrivateKeyNAPI`
-    /// for every input address. Fees are deducted from the inputs per `fee_strategy`.
+    /// does sign the transparent input witnesses, so you pass the raw private key
+    /// bytes for every input address. Fees are deducted from the inputs per `fee_strategy`.
     ///
     /// - `recipient` - Orchard address that receives the shielded note
     /// - `shield_amount` - amount of credits to shield
@@ -634,44 +638,40 @@ impl ShieldedBuilderNAPI {
         env: &'env Env,
         js_recipient: &OrchardAddressNAPI,
         js_shield_amount: BigIntString,
-        js_inputs: Vec<&InputAddressNAPI>,
-        js_private_keys: Vec<&PrivateKeyNAPI>,
-        js_fee_strategy: Vec<&AddressFundsFeeStrategyStepNAPI>,
+        js_inputs: Vec<Uint8Array>,
+        js_private_keys: Vec<Uint8Array>,
+        js_fee_strategy: Vec<Uint8Array>,
         js_user_fee_increase: u16,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_sender_ovk: Option<Uint8Array>,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
         let shield_amount = js_shield_amount.try_to_u64()?;
 
         let recipient: OrchardAddress = js_recipient.into();
 
-        let inputs = js_inputs_to_inputs(js_inputs)?;
+        let input_refs = js_inputs
+            .into_iter()
+            .map(InputAddressNAPI::from_bytes)
+            .collect::<Result<Vec<_>, _>>()?;
+        let inputs = js_inputs_to_inputs(input_refs.iter().collect())?;
 
         let fee_strategy: Vec<AddressFundsFeeStrategyStep> = js_fee_strategy
             .into_iter()
-            .map(|step| step.clone().into())
-            .collect();
+            .map(|step| {
+                Ok::<AddressFundsFeeStrategyStep, napi::Error>(
+                    AddressFundsFeeStrategyStepNAPI::from_bytes(step)?.into(),
+                )
+            })
+            .collect::<Result<Vec<_>, _>>()?;
 
         let signer = AddressKeySigner::from_private_keys(&js_private_keys)?;
 
-        let sender_ovk: Option<OutgoingViewingKey> = match js_sender_ovk {
-            Some(ovk) => {
-                if ovk.len() != 32 {
-                    return Err(napi::Error::new(
-                        napi::Status::InvalidArg,
-                        "sender_ovk must be 32 bytes length",
-                    ));
-                }
-                let bytes: [u8; 32] = ovk.to_vec().as_slice().try_into().unwrap();
-                Some(OutgoingViewingKey::from(bytes))
-            }
-            None => None,
-        };
+        let sender_ovk: Option<OutgoingViewingKey> = parse_sender_ovk(js_sender_ovk)?;
 
-        let memo: ShieldedMemo = js_memo.clone().into();
+        let memo = memo_bytes_from_js(js_memo)?;
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
         let prover = self.proover.shared();
 
@@ -686,14 +686,14 @@ impl ShieldedBuilderNAPI {
                     &signer,
                     js_user_fee_increase,
                     &prover,
-                    memo.to_bytes(),
+                    memo,
                     sender_ovk,
                     &platform_version,
                 )
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -719,18 +719,18 @@ impl ShieldedBuilderNAPI {
     pub fn identity_create_from_shielded_pool<'env>(
         &self,
         env: &'env Env,
-        js_public_keys: Vec<&IdentityPublicKeyInCreationNAPI>,
-        js_private_keys: Vec<&PrivateKeyNAPI>,
+        js_public_keys: Vec<Uint8Array>,
+        js_private_keys: Vec<Uint8Array>,
         js_denomination: BigIntString,
-        js_send_to_address_on_creation_failure: PlatformAddressLikeNAPI,
+        js_send_to_address_on_creation_failure: Uint8Array,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_change_address: &OrchardAddressNAPI,
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, IdentityCreateFromShieldedPoolResultNAPI>, napi::Error> {
         if js_public_keys.len() != js_private_keys.len() {
             return Err(napi::Error::new(
@@ -746,24 +746,20 @@ impl ShieldedBuilderNAPI {
         let mut public_keys: Vec<(IdentityPublicKey, IdentityPublicKeyInCreation)> = Vec::new();
         let mut signer = IdentityKeySigner::default();
         for (pk, key) in js_public_keys.into_iter().zip(js_private_keys.into_iter()) {
+            let pk = IdentityPublicKeyInCreationNAPI::from_bytes(pk)?;
             let in_creation: IdentityPublicKeyInCreation = pk.clone().into();
             let identity_public_key: IdentityPublicKey = pk.clone().into();
 
-            let secret: [u8; 32] =
-                key.get_bytes()
-                    .to_vec()
-                    .as_slice()
-                    .try_into()
-                    .map_err(|_| {
-                        napi::Error::new(napi::Status::InvalidArg, "private key must be 32 bytes")
-                    })?;
+            let secret: [u8; 32] = key.to_vec().as_slice().try_into().map_err(|_| {
+                napi::Error::new(napi::Status::InvalidArg, "private key must be 32 bytes")
+            })?;
             signer.add(identity_public_key.clone(), secret);
 
             public_keys.push((identity_public_key, in_creation));
         }
 
         let send_to_address: PlatformAddress =
-            PlatformAddressNAPI::try_from(js_send_to_address_on_creation_failure)?.into();
+            PlatformAddressNAPI::from_bytes(js_send_to_address_on_creation_failure)?.into();
 
         let spends = js_spends.iter().map(|s| s.to_spendable()).collect();
 
@@ -782,9 +778,9 @@ impl ShieldedBuilderNAPI {
             napi::Error::new(napi::Status::InvalidArg, "anchor is not a valid value")
         })?;
 
-        let memo: ShieldedMemo = js_memo.clone().into();
+        let memo = memo_bytes_from_js(js_memo)?;
 
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
 
         let prover = self.proover.shared();
 
@@ -802,13 +798,15 @@ impl ShieldedBuilderNAPI {
                     anchor,
                     &prover,
                     &signer,
-                    memo.to_bytes(),
+                    memo,
                     &platform_version,
                 )
                 .await
                 .with_js_error()?;
 
-                Ok(IdentityCreateFromShieldedPoolResultNAPI(result))
+                Ok(IdentityCreateFromShieldedPoolResultNAPI::from_build_result(
+                    result,
+                )?)
             }),
         )
     }
@@ -820,25 +818,25 @@ impl ShieldedBuilderNAPI {
     pub fn shield_from_identity<'env>(
         &self,
         env: &'env Env,
-        js_identity: &IdentityNAPI,
+        js_identity: Uint8Array,
         js_recipient: &OrchardAddressNAPI,
         js_shield_amount: BigIntString,
         js_nonce: BigIntString,
-        js_signing_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_signing_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_user_fee_increase: u16,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_sender_ovk: Option<Uint8Array>,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let identity: Identity = js_identity.clone().into();
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let identity: Identity = IdentityNAPI::from_bytes(js_identity)?.into();
         let recipient: OrchardAddress = js_recipient.into();
         let shield_amount = js_shield_amount.try_to_u64()?;
         let nonce = js_nonce.try_to_u64()?;
-        let (signing_key, signer) = single_key_signer(js_signing_key, js_private_key)?;
-        let memo = memo_bytes(js_memo);
+        let (signing_key, signer) = single_key_signer_from_bytes(js_signing_key, js_private_key)?;
+        let memo = memo_bytes_from_js(js_memo)?;
         let sender_ovk = parse_sender_ovk(js_sender_ovk)?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -860,7 +858,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -873,24 +871,24 @@ impl ShieldedBuilderNAPI {
         &self,
         env: &'env Env,
         js_spends: Vec<&SpendableNoteNAPI>,
-        js_identity_id: IdentifierLikeNAPI,
+        js_identity_id: Uint8Array,
         js_top_up_amount: BigIntString,
         js_change_address: &OrchardAddressNAPI,
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
         let spends = spendable_notes(&js_spends);
-        let identity_id: Identifier = IdentifierNAPI::try_from(js_identity_id)?.into();
+        let identity_id: Identifier = parse_identifier(js_identity_id)?;
         let top_up_amount = js_top_up_amount.try_to_u64()?;
         let change_address: OrchardAddress = js_change_address.into();
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
         let anchor = parse_anchor(&js_anchor)?;
-        let memo = memo_bytes(js_memo);
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let memo = memo_bytes_from_js(js_memo)?;
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -910,10 +908,7 @@ impl ShieldedBuilderNAPI {
                 )
                 .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -925,10 +920,10 @@ impl ShieldedBuilderNAPI {
     pub fn document_token_payment<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
-        js_document_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
+        js_document_id: Uint8Array,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_amount: BigIntString,
         js_change_address: &OrchardAddressNAPI,
@@ -936,18 +931,18 @@ impl ShieldedBuilderNAPI {
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, TokenShieldedPaymentNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(js_token_id, js_owner_id, js_data_contract_id, 0)?;
-        let document_id: Identifier = IdentifierNAPI::try_from(js_document_id)?.into();
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(js_token_id, js_owner_id, js_data_contract_id, 0)?;
+        let document_id: Identifier = parse_identifier(js_document_id)?;
         let spends = spendable_notes(&js_spends);
         let amount = js_amount.try_to_u64()?;
         let change_address: OrchardAddress = js_change_address.into();
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
         let anchor = parse_anchor(&js_anchor)?;
-        let memo = memo_bytes(js_memo);
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let memo = memo_bytes_from_js(js_memo)?;
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -970,7 +965,7 @@ impl ShieldedBuilderNAPI {
                 )
                 .with_js_error()?;
 
-                Ok(TokenShieldedPaymentNAPI::from(payment))
+                Ok(TokenShieldedPaymentNAPI::from(payment).bytes()?)
             }),
         )
     }
@@ -982,21 +977,21 @@ impl ShieldedBuilderNAPI {
     pub fn token_shield<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_recipient: &OrchardAddressNAPI,
         js_amount: BigIntString,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_sender_ovk: Option<Uint8Array>,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
@@ -1004,12 +999,12 @@ impl ShieldedBuilderNAPI {
         )?;
         let recipient: OrchardAddress = js_recipient.into();
         let amount = js_amount.try_to_u64()?;
-        let memo = memo_bytes(js_memo);
+        let memo = memo_bytes_from_js(js_memo)?;
         let sender_ovk = parse_sender_ovk(js_sender_ovk)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1034,7 +1029,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1046,42 +1041,42 @@ impl ShieldedBuilderNAPI {
     pub fn token_unshield<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_spends: Vec<&SpendableNoteNAPI>,
-        js_recipient_id: IdentifierLikeNAPI,
+        js_recipient_id: Uint8Array,
         js_amount: BigIntString,
         js_change_address: &OrchardAddressNAPI,
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_memo: Uint8Array,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
             js_token_contract_position,
         )?;
         let spends = spendable_notes(&js_spends);
-        let recipient_id: Identifier = IdentifierNAPI::try_from(js_recipient_id)?.into();
+        let recipient_id: Identifier = parse_identifier(js_recipient_id)?;
         let amount = js_amount.try_to_u64()?;
         let change_address: OrchardAddress = js_change_address.into();
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
         let anchor = parse_anchor(&js_anchor)?;
-        let memo = memo_bytes(js_memo);
+        let memo = memo_bytes_from_js(js_memo)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1110,7 +1105,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1122,9 +1117,9 @@ impl ShieldedBuilderNAPI {
     pub fn token_shielded_transfer<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_recipient: &OrchardAddressNAPI,
@@ -1134,14 +1129,14 @@ impl ShieldedBuilderNAPI {
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_memo: Uint8Array,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
@@ -1153,11 +1148,11 @@ impl ShieldedBuilderNAPI {
         let change_address: OrchardAddress = js_change_address.into();
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
         let anchor = parse_anchor(&js_anchor)?;
-        let memo = memo_bytes(js_memo);
+        let memo = memo_bytes_from_js(js_memo)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1186,7 +1181,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1199,23 +1194,23 @@ impl ShieldedBuilderNAPI {
     pub fn token_mint_to_pool<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_recipient: &OrchardAddressNAPI,
         js_amount: BigIntString,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_sender_ovk: Option<Uint8Array>,
         js_public_note: Option<String>,
-        js_using_group_info: Option<&GroupStateTransitionInfoNAPI>,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_using_group_info: Option<Uint8Array>,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
@@ -1223,13 +1218,13 @@ impl ShieldedBuilderNAPI {
         )?;
         let recipient: OrchardAddress = js_recipient.into();
         let amount = js_amount.try_to_u64()?;
-        let memo = memo_bytes(js_memo);
+        let memo = memo_bytes_from_js(js_memo)?;
         let sender_ovk = parse_sender_ovk(js_sender_ovk)?;
-        let using_group_info = group_info_status(js_using_group_info);
+        let using_group_info = group_info_status(js_using_group_info)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1256,7 +1251,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1269,9 +1264,9 @@ impl ShieldedBuilderNAPI {
     pub fn token_burn_from_pool<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_spends: Vec<&SpendableNoteNAPI>,
         js_amount: BigIntString,
@@ -1280,16 +1275,16 @@ impl ShieldedBuilderNAPI {
         js_coin_type: u32,
         js_account: u32,
         js_anchor: Uint8Array,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_public_note: Option<String>,
-        js_using_group_info: Option<&GroupStateTransitionInfoNAPI>,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_using_group_info: Option<Uint8Array>,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
@@ -1300,12 +1295,12 @@ impl ShieldedBuilderNAPI {
         let change_address: OrchardAddress = js_change_address.into();
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
         let anchor = parse_anchor(&js_anchor)?;
-        let memo = memo_bytes(js_memo);
-        let using_group_info = group_info_status(js_using_group_info);
+        let memo = memo_bytes_from_js(js_memo)?;
+        let using_group_info = group_info_status(js_using_group_info)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1335,7 +1330,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1347,24 +1342,24 @@ impl ShieldedBuilderNAPI {
     pub fn token_claim_to_pool<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_recipient: &OrchardAddressNAPI,
         js_amount: BigIntString,
-        js_distribution_type: &DynamicValue,
+        js_distribution_type: Either<String, u32>,
         js_claim_up_to: Option<BigIntString>,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_sender_ovk: Option<Uint8Array>,
         js_public_note: Option<String>,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
@@ -1372,14 +1367,18 @@ impl ShieldedBuilderNAPI {
         )?;
         let recipient: OrchardAddress = js_recipient.into();
         let amount = js_amount.try_to_u64()?;
-        let distribution_type = TokenDistributionTypeNAPI::try_from(js_distribution_type)?.into();
+        let distribution_type = match js_distribution_type {
+            Either::A(text) => TokenDistributionTypeNAPI::try_from(text),
+            Either::B(number) => TokenDistributionTypeNAPI::try_from(u64::from(number)),
+        }?
+        .into();
         let claim_up_to = js_claim_up_to.map(|v| v.try_to_u64()).transpose()?;
-        let memo = memo_bytes(js_memo);
+        let memo = memo_bytes_from_js(js_memo)?;
         let sender_ovk = parse_sender_ovk(js_sender_ovk)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1407,7 +1406,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1420,22 +1419,22 @@ impl ShieldedBuilderNAPI {
     pub fn token_direct_purchase_to_pool<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_owner_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_owner_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_recipient: &OrchardAddressNAPI,
         js_token_count: BigIntString,
         js_total_agreed_price: BigIntString,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
         js_sender_ovk: Option<Uint8Array>,
-        js_identity_public_key: &IdentityPublicKeyNAPI,
-        js_private_key: Either<&DynamicValue, &PrivateKeyNAPI>,
+        js_identity_public_key: Uint8Array,
+        js_private_key: Uint8Array,
         js_identity_contract_nonce: BigIntString,
         js_user_fee_increase: u16,
-        js_platform_version: Option<PlatformVersionNAPI>,
-    ) -> Result<PromiseRaw<'env, StateTransitionNAPI>, napi::Error> {
-        let token = TokenTarget::from_js(
+        js_platform_version: Option<u32>,
+    ) -> Result<PromiseRaw<'env, Uint8Array>, napi::Error> {
+        let token = TokenTarget::from_js_bytes(
             js_token_id,
             js_owner_id,
             js_data_contract_id,
@@ -1444,12 +1443,12 @@ impl ShieldedBuilderNAPI {
         let recipient: OrchardAddress = js_recipient.into();
         let token_count = js_token_count.try_to_u64()?;
         let total_agreed_price = js_total_agreed_price.try_to_u64()?;
-        let memo = memo_bytes(js_memo);
+        let memo = memo_bytes_from_js(js_memo)?;
         let sender_ovk = parse_sender_ovk(js_sender_ovk)?;
         let (identity_public_key, signer) =
-            single_key_signer(js_identity_public_key, js_private_key)?;
+            single_key_signer_from_bytes(js_identity_public_key, js_private_key)?;
         let identity_contract_nonce = js_identity_contract_nonce.try_to_u64()?;
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1475,7 +1474,7 @@ impl ShieldedBuilderNAPI {
                 .await
                 .with_js_error()?;
 
-                Ok(StateTransitionNAPI::from(state_transition))
+                Ok(StateTransitionNAPI::from(state_transition).to_bytes()?)
             }),
         )
     }
@@ -1489,8 +1488,8 @@ impl ShieldedBuilderNAPI {
     pub fn token_shielded_transfer_with_shielded_fee<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_token_spends: Vec<&SpendableNoteNAPI>,
         js_token_change_address: &OrchardAddressNAPI,
@@ -1503,11 +1502,11 @@ impl ShieldedBuilderNAPI {
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
-        let token_id: Identifier = IdentifierNAPI::try_from(js_token_id)?.into();
-        let data_contract_id: Identifier = IdentifierNAPI::try_from(js_data_contract_id)?.into();
+        let token_id: Identifier = parse_identifier(js_token_id)?;
+        let data_contract_id: Identifier = parse_identifier(js_data_contract_id)?;
         let token_spends = spendable_notes(&js_token_spends);
         let token_change_address: OrchardAddress = js_token_change_address.into();
         let token_anchor = parse_anchor(&js_token_anchor)?;
@@ -1517,8 +1516,8 @@ impl ShieldedBuilderNAPI {
         let fee_change_address: OrchardAddress = js_fee_change_address.into();
         let fee_anchor = parse_anchor(&js_fee_anchor)?;
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
-        let memo = memo_bytes(js_memo);
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let memo = memo_bytes_from_js(js_memo)?;
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1551,10 +1550,7 @@ impl ShieldedBuilderNAPI {
                     )
                     .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -1567,13 +1563,13 @@ impl ShieldedBuilderNAPI {
     pub fn token_unshield_with_shielded_fee<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_token_spends: Vec<&SpendableNoteNAPI>,
         js_token_change_address: &OrchardAddressNAPI,
         js_token_anchor: Uint8Array,
-        js_recipient_id: IdentifierLikeNAPI,
+        js_recipient_id: Uint8Array,
         js_amount: BigIntString,
         js_fee_spends: Vec<&SpendableNoteNAPI>,
         js_fee_change_address: &OrchardAddressNAPI,
@@ -1581,22 +1577,22 @@ impl ShieldedBuilderNAPI {
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
-        let token_id: Identifier = IdentifierNAPI::try_from(js_token_id)?.into();
-        let data_contract_id: Identifier = IdentifierNAPI::try_from(js_data_contract_id)?.into();
+        let token_id: Identifier = parse_identifier(js_token_id)?;
+        let data_contract_id: Identifier = parse_identifier(js_data_contract_id)?;
         let token_spends = spendable_notes(&js_token_spends);
         let token_change_address: OrchardAddress = js_token_change_address.into();
         let token_anchor = parse_anchor(&js_token_anchor)?;
-        let recipient_id: Identifier = IdentifierNAPI::try_from(js_recipient_id)?.into();
+        let recipient_id: Identifier = parse_identifier(js_recipient_id)?;
         let amount = js_amount.try_to_u64()?;
         let fee_spends = spendable_notes(&js_fee_spends);
         let fee_change_address: OrchardAddress = js_fee_change_address.into();
         let fee_anchor = parse_anchor(&js_fee_anchor)?;
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
-        let memo = memo_bytes(js_memo);
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let memo = memo_bytes_from_js(js_memo)?;
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1628,10 +1624,7 @@ impl ShieldedBuilderNAPI {
                 )
                 .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -1645,8 +1638,8 @@ impl ShieldedBuilderNAPI {
     pub fn token_purchase_from_shielded_pool<'env>(
         &self,
         env: &'env Env,
-        js_token_id: IdentifierLikeNAPI,
-        js_data_contract_id: IdentifierLikeNAPI,
+        js_token_id: Uint8Array,
+        js_data_contract_id: Uint8Array,
         js_token_contract_position: u16,
         js_recipient: &OrchardAddressNAPI,
         js_token_count: BigIntString,
@@ -1657,11 +1650,11 @@ impl ShieldedBuilderNAPI {
         js_seed: Uint8Array,
         js_coin_type: u32,
         js_account: u32,
-        js_memo: &ShieldedMemoNAPI,
-        js_platform_version: Option<PlatformVersionNAPI>,
+        js_memo: Uint8Array,
+        js_platform_version: Option<u32>,
     ) -> Result<PromiseRaw<'env, ShieldedWithdrawalResultNAPI>, napi::Error> {
-        let token_id: Identifier = IdentifierNAPI::try_from(js_token_id)?.into();
-        let data_contract_id: Identifier = IdentifierNAPI::try_from(js_data_contract_id)?.into();
+        let token_id: Identifier = parse_identifier(js_token_id)?;
+        let data_contract_id: Identifier = parse_identifier(js_data_contract_id)?;
         let recipient: OrchardAddress = js_recipient.into();
         let token_count = js_token_count.try_to_u64()?;
         let total_agreed_price = js_total_agreed_price.try_to_u64()?;
@@ -1669,8 +1662,8 @@ impl ShieldedBuilderNAPI {
         let fee_change_address: OrchardAddress = js_fee_change_address.into();
         let fee_anchor = parse_anchor(&js_fee_anchor)?;
         let (fvk, ask) = spend_authority_from_seed(js_seed.as_ref(), js_coin_type, js_account)?;
-        let memo = memo_bytes(js_memo);
-        let platform_version: PlatformVersion = js_platform_version.unwrap_or_default().into();
+        let memo = memo_bytes_from_js(js_memo)?;
+        let platform_version: PlatformVersion = parse_platform_version(js_platform_version)?;
         let prover = self.proover.shared();
 
         spawn_proving(
@@ -1697,10 +1690,7 @@ impl ShieldedBuilderNAPI {
                 )
                 .with_js_error()?;
 
-                Ok(ShieldedWithdrawalResultNAPI {
-                    state_transition,
-                    fee,
-                })
+                Ok(ShieldedWithdrawalResultNAPI::new(state_transition, fee)?)
             }),
         )
     }
@@ -1709,74 +1699,64 @@ impl ShieldedBuilderNAPI {
 /// Result of [`ShieldedBuilderNAPI::identity_create_from_shielded_pool`]: the new
 /// identity's keys (with proof-of-possession signatures), the proven Orchard
 /// bundle fields, the derived identity id, and the client-predicted fee.
-#[napi(js_name = "IdentityCreateFromShieldedPoolResultNAPI")]
-pub struct IdentityCreateFromShieldedPoolResultNAPI(IdentityCreateFromShieldedPoolBuildResult);
+///
+/// Crosses the base <-> shielded instance boundary as a plain object: keys and
+/// actions are consensus bytes, the identity id is raw 32 bytes, and the JS
+/// wrapper re-wraps them into base classes.
+#[napi(object, js_name = "IdentityCreateFromShieldedPoolResultNAPI")]
+pub struct IdentityCreateFromShieldedPoolResultNAPI {
+    pub public_keys: Vec<Uint8Array>,
+    pub identity_id: Uint8Array,
+    pub predicted_fee: BigIntString,
+    pub actions: Vec<Uint8Array>,
+    pub anchor: Uint8Array,
+    pub proof: Uint8Array,
+    pub bindings_signature: Uint8Array,
+}
 
-#[napi]
 impl IdentityCreateFromShieldedPoolResultNAPI {
-    #[napi(getter, js_name = "publicKeys")]
-    pub fn public_keys(&self) -> Vec<IdentityPublicKeyInCreationNAPI> {
-        self.0
-            .public_keys
-            .iter()
-            .map(|pk| pk.clone().into())
-            .collect()
-    }
-
-    #[napi(getter, js_name = "identityId")]
-    pub fn identity_id(&self) -> IdentifierNAPI {
-        self.0.identity_id.into()
-    }
-
-    #[napi(getter, js_name = "predictedFee")]
-    pub fn predicted_fee(&self) -> BigIntString {
-        BigIntString::from_u64(self.0.predicted_fee)
-    }
-
-    #[napi(getter, js_name = "actions")]
-    pub fn actions(&self) -> Vec<SerializedActionNAPI> {
-        self.0
-            .bundle
-            .actions
-            .iter()
-            .map(|a| a.clone().into())
-            .collect()
-    }
-
-    #[napi(getter, js_name = "anchor")]
-    pub fn anchor(&self) -> Uint8Array {
-        Uint8Array::from(self.0.bundle.anchor.to_vec())
-    }
-
-    #[napi(getter, js_name = "proof")]
-    pub fn proof(&self) -> Uint8Array {
-        Uint8Array::from(self.0.bundle.proof.clone())
-    }
-
-    #[napi(getter, js_name = "bindingsSignature")]
-    pub fn bindings_signature(&self) -> Uint8Array {
-        Uint8Array::from(self.0.bundle.binding_signature.to_vec())
+    fn from_build_result(
+        result: IdentityCreateFromShieldedPoolBuildResult,
+    ) -> Result<Self, napi::Error> {
+        Ok(IdentityCreateFromShieldedPoolResultNAPI {
+            public_keys: result
+                .public_keys
+                .iter()
+                .map(|pk| IdentityPublicKeyInCreationNAPI::from(pk.clone()).bytes())
+                .collect::<Result<Vec<_>, _>>()?,
+            identity_id: IdentifierNAPI::from(result.identity_id).bytes(),
+            predicted_fee: BigIntString::from_u64(result.predicted_fee),
+            actions: result
+                .bundle
+                .actions
+                .iter()
+                .map(|a| SerializedActionNAPI::from(a.clone()).bytes())
+                .collect::<Result<Vec<_>, _>>()?,
+            anchor: result.bundle.anchor.to_vec().into(),
+            proof: result.bundle.proof.clone().into(),
+            bindings_signature: result.bundle.binding_signature.to_vec().into(),
+        })
     }
 }
 
 /// Result of a proving shielded spend builder ([`ShieldedBuilderNAPI::shielded_withdrawal`],
 /// [`ShieldedBuilderNAPI::unshield`], [`ShieldedBuilderNAPI::shielded_transfer`]): the
 /// proven state transition plus the shielded fee (credits) consensus charges for it.
-#[napi(js_name = "ShieldedWithdrawalResultNAPI")]
+///
+/// Crosses the base <-> shielded instance boundary as a plain object: the
+/// transition is consensus bytes and the JS wrapper re-wraps it into a base
+/// `StateTransitionWASM`.
+#[napi(object, js_name = "ShieldedWithdrawalResultNAPI")]
 pub struct ShieldedWithdrawalResultNAPI {
-    state_transition: StateTransition,
-    fee: u64,
+    pub state_transition: Uint8Array,
+    pub fee: BigIntString,
 }
 
-#[napi]
 impl ShieldedWithdrawalResultNAPI {
-    #[napi(getter, js_name = "stateTransition")]
-    pub fn state_transition(&self) -> StateTransitionNAPI {
-        StateTransitionNAPI::from(self.state_transition.clone())
-    }
-
-    #[napi(getter, js_name = "fee")]
-    pub fn fee(&self) -> BigIntString {
-        BigIntString::from_u64(self.fee)
+    fn new(state_transition: StateTransition, fee: u64) -> Result<Self, napi::Error> {
+        Ok(ShieldedWithdrawalResultNAPI {
+            state_transition: StateTransitionNAPI::from(state_transition).to_bytes()?,
+            fee: BigIntString::from_u64(fee),
+        })
     }
 }

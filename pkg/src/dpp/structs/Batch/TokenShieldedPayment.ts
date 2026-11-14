@@ -23,6 +23,16 @@ export class TokenShieldedPaymentWASM {
     )
   }
 
+  bytes (): Uint8Array {
+    return this._rawTokenShieldedPayment.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): TokenShieldedPaymentWASM {
+    return TokenShieldedPaymentWASM.createFromRawInstance(
+      dppProvider.dpp.TokenShieldedPaymentNAPI.fromBytes(bytes)
+    )
+  }
+
   get amount (): bigint {
     return BigInt(this._rawTokenShieldedPayment.amount)
   }

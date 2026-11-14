@@ -19,7 +19,8 @@ import {
   SerializedActionWASM,
   ShieldedMemoWASM,
   ShieldedTransferTransitionWASM,
-  StateTransitionWASM
+  StateTransitionWASM,
+  TokenShieldedPaymentWASM
 } from 'pshenmic-dpp'
 
 // Bytes round-trips for the classes that cross the base <-> shielded boundary
@@ -136,6 +137,40 @@ describe('boundary bytes round-trips', function () {
       expect(roundTripped.bytes()).toEqual(proof.bytes())
       expect(roundTripped.getLockType()).toEqual(proof.getLockType())
     })
+
+    test('fromBytes(bytes()).bytes() equals bytes() (instant)', function () {
+      // Minimal classic transaction: version 1, type 0, one input (empty
+      // scriptSig), no outputs, locktime 0 — consensus wire format.
+      const transaction = new Uint8Array([
+        0x01, 0x00, // version
+        0x00, 0x00, // classic type
+        0x01, // one input
+        ...new Uint8Array(32).fill(0x11), // prevout txid
+        0x00, 0x00, 0x00, 0x00, // prevout index
+        0x00, // empty scriptSig
+        0xff, 0xff, 0xff, 0xff, // sequence
+        0x00, // no outputs
+        0x00, 0x00, 0x00, 0x00 // locktime
+      ])
+      // InstantLock: version, inputs (the locked outpoint), txid, cyclehash,
+      // 96-byte BLS signature — consensus wire format.
+      const instantLock = new Uint8Array([
+        0x01, // version
+        0x01, // one input
+        ...new Uint8Array(32).fill(0x11), // outpoint txid
+        0x00, 0x00, 0x00, 0x00, // outpoint index
+        ...new Uint8Array(32).fill(0x22), // txid
+        ...new Uint8Array(32).fill(0x33), // cyclehash
+        ...new Uint8Array(96).fill(0x44) // BLS signature
+      ])
+      const proof = AssetLockProofWASM.createInstantAssetLockProof(instantLock, transaction, 0)
+
+      const roundTripped = AssetLockProofWASM.fromBytes(proof.bytes())
+
+      expect(roundTripped.bytes()).toEqual(proof.bytes())
+      expect(roundTripped.getLockType()).toEqual('Instant')
+      expect(roundTripped.getInstantLockProof().outputIndex).toEqual(0)
+    })
   })
 
   describe('CoreScript (already present)', function () {
@@ -158,6 +193,21 @@ describe('boundary bytes round-trips', function () {
       expect(roundTripped.address.bytes()).toEqual(input.address.bytes())
       expect(roundTripped.nonce).toEqual(7)
       expect(roundTripped.credits).toEqual(BigInt(1_000_000))
+    })
+
+    test('fromBytes(bytes()).bytes() equals bytes() (P2SH address)', function () {
+      const addressBytes = new Uint8Array(21)
+      addressBytes[0] = 0x01 // P2SH
+      addressBytes.set(bytes(20, 0x08), 1)
+      const input = new InputAddressWASM(PlatformAddressWASM.fromBytes(addressBytes), 3, BigInt(500))
+
+      const roundTripped = InputAddressWASM.fromBytes(input.bytes())
+
+      expect(roundTripped.bytes()).toEqual(input.bytes())
+      expect(roundTripped.address.isP2SH()).toEqual(true)
+      expect(roundTripped.address.bytes()).toEqual(input.address.bytes())
+      expect(roundTripped.nonce).toEqual(3)
+      expect(roundTripped.credits).toEqual(BigInt(500))
     })
   })
 
@@ -284,6 +334,24 @@ describe('boundary bytes round-trips', function () {
       expect(roundTripped.encryptedNote).toEqual(action.encryptedNote)
       expect(roundTripped.cvNet).toEqual(action.cvNet)
       expect(roundTripped.spendAuthSig).toEqual(action.spendAuthSig)
+    })
+  })
+
+  describe('TokenShieldedPayment', function () {
+    test('fromBytes(bytes()).bytes() equals bytes()', function () {
+      const payment = new TokenShieldedPaymentWASM(
+        BigInt(10), [createTestAction()], bytes(32, 0x10), bytes(192, 0x11), bytes(64, 0x12)
+      )
+
+      const roundTripped = TokenShieldedPaymentWASM.fromBytes(payment.bytes())
+
+      expect(roundTripped.bytes()).toEqual(payment.bytes())
+      expect(roundTripped.amount).toEqual(BigInt(10))
+      expect(roundTripped.actions.length).toEqual(1)
+      expect(roundTripped.actions[0].bytes()).toEqual(payment.actions[0].bytes())
+      expect(roundTripped.anchor).toEqual(payment.anchor)
+      expect(roundTripped.proof).toEqual(payment.proof)
+      expect(roundTripped.bindingsSignature).toEqual(payment.bindingsSignature)
     })
   })
 })
