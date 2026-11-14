@@ -29,6 +29,7 @@ impl From<SpendableNoteNAPI> for SpendableNote {
     }
 }
 
+#[cfg(feature = "proving")]
 impl SpendableNoteNAPI {
     pub(crate) fn to_spendable(&self) -> SpendableNote {
         self.clone().0

@@ -1,7 +1,6 @@
-use dpp::{
-    address_funds::OrchardAddress,
-    shielded::{MEMO_SIZE, ShieldedMemo},
-};
+#[cfg(feature = "proving")]
+use dpp::shielded::MEMO_SIZE;
+use dpp::{address_funds::OrchardAddress, shielded::ShieldedMemo};
 use napi_derive::napi;
 
 use crate::{
@@ -24,6 +23,7 @@ pub struct ShieldedOutputNAPI {
     memo: ShieldedMemo,
 }
 
+#[cfg(feature = "proving")]
 impl ShieldedOutputNAPI {
     /// The output in the form the Orchard builder consumes.
     pub(crate) fn to_parts(&self) -> (OrchardAddress, u64, [u8; MEMO_SIZE]) {

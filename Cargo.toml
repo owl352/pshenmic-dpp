@@ -7,6 +7,10 @@ edition = "2024"
 [lib]
 crate-type = ["cdylib", "lib"]
 
+[features]
+default = ["proving"]
+proving = []
+
 [dependencies]
 dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", default-features = false, features = [
     "identity-value-conversion",
