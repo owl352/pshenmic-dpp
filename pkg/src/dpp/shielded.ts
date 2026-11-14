@@ -32,7 +32,15 @@ export function initShielded (): Promise<void> {
   }
   if (initPromise == null) {
     initPromise = (async () => {
-      const { loadShielded } = await import('../../binaries/shieldedCreation.cjs')
+      const mod = await import('../../binaries/shieldedCreation.cjs')
+      // CJS interop: Node's cjs-module-lexer exposes `loadShielded` as a named
+      // export, but browser bundlers (esbuild/webpack) cannot statically detect
+      // it — shieldedCreation.cjs assigns module.exports conditionally (worker
+      // branch vs main branch) — so they only provide `default`. Accept both.
+      const loadShielded = mod.loadShielded ?? mod.default?.loadShielded
+      if (typeof loadShielded !== 'function') {
+        throw new Error('shieldedCreation module did not export loadShielded()')
+      }
       dppProvider.setShielded(loadShielded())
     })().catch((e) => {
       initPromise = null
