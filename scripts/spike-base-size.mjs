@@ -12,6 +12,8 @@
  *   --toolchain   pin the toolchain (default: try `stable`, then the pinned
  *                 nightly-2026-08-15 fallback; no -Z build-std, no atomics)
  *   --skip-build  reuse the existing target/wasm32-wasip1/release-wasm wasm
+ *                 as FINAL: it must be the optimized output of a previous
+ *                 full run; wasm-opt is skipped and its size IS the measurement
  *
  * Exit codes: 0 = A2 viable + instantiation OK, 2 = size gate failed (A1),
  *             1 = build/instantiation error.
@@ -170,17 +172,26 @@ if (!hasInitialize) {
 }
 
 // ---- Steps 2-3: wasm-opt + measure + decision gate -------------------------
+// --skip-build reuses the artifact from a prior full run, which wasm-opt has
+// ALREADY optimized in place. Treat it as final: do NOT re-run wasm-opt (that
+// would measure opt(opt(wasm)) and mislabel the optimized size as "before").
 const sizeBefore = fs.statSync(WASM_PATH).size;
-run("bash", [path.join(ROOT, "scripts/wasm-opt.sh")], { OUTPUT_FILE: WASM_PATH });
+if (!skipBuild) {
+  run("bash", [path.join(ROOT, "scripts/wasm-opt.sh")], { OUTPUT_FILE: WASM_PATH });
+}
 const sizeAfter = fs.statSync(WASM_PATH).size;
 const exportsAfter = exportsOf(WASM_PATH);
 const hasInitializeAfter = exportsAfter.some((e) => e.name === "_initialize");
 
 console.log("\n========== MEASUREMENT ==========");
 console.log(`wasm: ${WASM_PATH}`);
-console.log(`size BEFORE wasm-opt: ${MB(sizeBefore)} MB (${sizeBefore} bytes)`);
-console.log(`size AFTER  wasm-opt: ${MB(sizeAfter)} MB (${sizeAfter} bytes)`);
-console.log(`_initialize present after opt: ${hasInitializeAfter ? "YES" : "NO"}`);
+if (skipBuild) {
+  console.log(`size (reused artifact, final; wasm-opt skipped): ${MB(sizeAfter)} MB (${sizeAfter} bytes)`);
+} else {
+  console.log(`size BEFORE wasm-opt: ${MB(sizeBefore)} MB (${sizeBefore} bytes)`);
+  console.log(`size AFTER  wasm-opt: ${MB(sizeAfter)} MB (${sizeAfter} bytes)`);
+}
+console.log(`_initialize present ${skipBuild ? "(reused artifact)" : "after opt"}: ${hasInitializeAfter ? "YES" : "NO"}`);
 const a2Viable = sizeAfter < CHROME_SYNC_COMPILE_LIMIT && hasInitializeAfter;
 console.log(
   a2Viable
