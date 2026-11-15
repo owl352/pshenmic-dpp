@@ -20,6 +20,11 @@ const isRelease = buildProfile === "release";
 // Release wasm builds use the size-optimized `release-wasm` profile (Cargo.toml)
 // to stay under Chrome's 8MB sync-compile limit.
 const wasmProfile = isRelease ? "release-wasm" : buildProfile;
+// Chrome refuses to sync-compile wasm larger than 8MB on the main thread.
+// BOTH binaries are sync-compiled there: the base at import time, the shielded
+// at initShielded() time (instantiateNapiModuleSync). The shielded load is off
+// the import path, but the same limit applies.
+const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
 // Toolchain used only for the SHIELDED wasm build (needs nightly `-Z build-std`
 // to rebuild std with atomics for the Orchard/Halo 2 proving stack). Pinnable so
 // published artifacts are reproducible and immune to nightly flag churn.
@@ -174,17 +179,15 @@ async function buildBaseWasm() {
   }
   console.log(`base wasm toolchain: ${toolchainUsed}`);
 
-  assertInitializeExport(targetWasmFile);
+  assertInitializeExport(targetWasmFile, "base");
 
   console.log("Running wasm-opt (base)");
   await execTask(wasmOptScript, {
     env: { ...process.env, OUTPUT_FILE: targetWasmFile.toString() },
   });
 
-  // Chrome refuses to sync-compile wasm larger than 8MB on the main thread,
-  // and the base is instantiated synchronously at import time. The shielded
-  // binary is exempt: it is compiled on demand (async), off the import path.
-  const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
+  // The base is instantiated synchronously at import time, so it must stay
+  // under Chrome's main-thread sync-compile limit (see the constant above).
   const wasmSize = fs.statSync(targetWasmFile).size;
   if (wasmSize >= CHROME_SYNC_COMPILE_LIMIT) {
     throw new Error(
@@ -243,15 +246,24 @@ async function buildShieldedWasm() {
     }
   );
 
-  assertInitializeExport(targetWasmFile);
+  assertInitializeExport(targetWasmFile, "shielded");
 
   console.log("Running wasm-opt (shielded)");
   await execTask(wasmOptScript, {
     env: { ...process.env, OUTPUT_FILE: targetWasmFile.toString() },
   });
-  // No 8MB gate here: the shielded module is async-compiled on demand, not
-  // sync-loaded at import (the gate applies to the base only).
+  // The shielded module is compiled on demand (initShielded()), but still
+  // SYNCHRONOUSLY on the main thread (instantiateNapiModuleSync), so Chrome's
+  // 8MB sync-compile limit applies here too — just off the import path. Guard
+  // it so growth fails the build instead of breaking initShielded() in the
+  // browser (headroom was ~0.22MB at 7.78MB when the guard was added).
   const wasmSize = fs.statSync(targetWasmFile).size;
+  if (wasmSize >= CHROME_SYNC_COMPILE_LIMIT) {
+    throw new Error(
+      `shielded wasm binary is ${(wasmSize / 1024 / 1024).toFixed(2)}MB — over Chrome's ` +
+      "8MB main-thread sync-compile limit; initShielded() would fail in the browser.",
+    );
+  }
   console.log(`shielded wasm size after wasm-opt: ${(wasmSize / 1024 / 1024).toFixed(2)}MB`);
 
   const wasmOutputDir = path.join(binariesOutputDir, "wasm");
@@ -267,14 +279,15 @@ async function buildShieldedWasm() {
 // Without `_initialize` emnapi never runs the module's constructors and the
 // import deadlocks (see build.rs). Fail here instead of shipping a wasm that
 // hangs. Checked BEFORE wasm-opt so a bad link is reported against the
-// linker's output, not the optimizer's.
-function assertInitializeExport(targetWasmFile) {
+// linker's output, not the optimizer's. `label` distinguishes base vs shielded
+// (both binaries share the same file name).
+function assertInitializeExport(targetWasmFile, label) {
   const wasmExports = WebAssembly.Module.exports(
     new WebAssembly.Module(fs.readFileSync(targetWasmFile)),
   );
   if (!wasmExports.some((e) => e.name === "_initialize")) {
     throw new Error(
-      `${path.basename(targetWasmFile)} does not export \`_initialize\`: crt1-reactor.o was not linked`,
+      `${label} wasm (${path.basename(targetWasmFile)}) does not export \`_initialize\`: crt1-reactor.o was not linked`,
     );
   }
 }

@@ -33,22 +33,30 @@ jobs:
         with:
           node-version: 24.x
 
-      # The wasm build rebuilds std with atomics (-Z build-std) for the Orchard
-      # /Halo 2 proving stack, which requires nightly + rust-src. Pinned for
-      # reproducible, flag-stable artifacts (see WASM_TOOLCHAIN above). Installed
-      # first so the stable step below stays the rustup default (typings build).
-      # Must stay on a 1.99 nightly: from 1.100 rustc links crt1-reactor.o itself,
-      # which collides with the copy napi-build 2.3 adds (duplicate `_initialize`).
-      # Newer napi-build detects this but requires emnapi v2.
-      - name: Setup Rust nightly (wasm build-std)
+      # The SHIELDED wasm build rebuilds std with atomics (-Z build-std) for the
+      # Orchard/Halo 2 proving stack, which requires nightly + rust-src. Pinned
+      # for reproducible, flag-stable artifacts (see WASM_TOOLCHAIN above).
+      # Installed first so the stable step below stays the rustup default
+      # (typings build). Must stay on a 1.99 nightly: from 1.100 rustc links
+      # crt1-reactor.o itself, which collides with the copy napi-build 2.3 adds
+      # (duplicate `_initialize`). Newer napi-build detects this but requires
+      # emnapi v2.
+      - name: Setup Rust nightly (shielded wasm build-std)
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly-2026-08-15
           targets: wasm32-wasip1-threads
           components: rust-src
 
+      # Stable also builds the BASE wasm (wasm32-wasip1, non-threaded,
+      # --no-default-features): no build-std/atomics needed. The target is
+      # installed here and BASE_WASM_TOOLCHAIN below pins build.cjs to this
+      # toolchain, so it never auto-installs a floating `+stable` (1.100+ would
+      # hit the same duplicate `_initialize` issue as the nightly above).
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@1.99
+        with:
+          targets: wasm32-wasip1
 
       - name: Cache Rust dependencies
         uses: swatinem/rust-cache@v2
@@ -61,7 +69,9 @@ jobs:
           tool: wasm-opt
 
       # The C dependencies (secp256k1-sys, blst) need clang for wasm32 and
-      # llvm-ar to archive them (GNU ar can't index wasm objects).
+      # llvm-ar to archive them (GNU ar can't index wasm objects). The `llvm`
+      # package provides llvm-ar, also required by the BASE build's non-threaded
+      # emnapi link archive (utils/prepareEmnapiBaseLink.mjs).
       - name: Install LLVM for WebAssembly
         run: |
           sudo apt-get update
@@ -70,15 +80,23 @@ jobs:
       - name: Install project dependencies
         run: yarn install --immutable
 
+      # Builds BOTH wasm binaries: base (wasm32-wasip1, stable,
+      # --no-default-features, non-threaded emnapi link) and shielded
+      # (wasm32-wasip1-threads, nightly, proving on), plus the napi typings.
       - name: Build wasm and typings
         run: node build.cjs
         env:
           BUILD_STEPS: wasm,typings
+          # Pin the base build to the stable toolchain installed above (no
+          # floating `+stable` auto-install; see the Setup Rust comment).
+          BASE_WASM_TOOLCHAIN: 1.99
           # Without a sysroot clang falls back to the host's glibc headers in
           # /usr/include, which break the wasm C builds ('bits/libc-header-start.h'
           # not found). An empty one leaves just clang's builtin headers, as on
-          # macOS, which has no /usr/include.
+          # macOS, which has no /usr/include. Needed for BOTH wasm targets: the
+          # base compiles the same C dependencies (secp256k1-sys, blst).
           CFLAGS_wasm32_wasip1_threads: --sysroot=/nonexistent
+          CFLAGS_wasm32_wasip1: --sysroot=/nonexistent
 
       - name: Upload wasm and typings
         uses: actions/upload-artifact@v7

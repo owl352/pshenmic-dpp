@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "2.0.1-dev.6",
+  "version": "3.0.0-dev.0",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
@@ -52,6 +52,7 @@
     "babel": "^6.23.0",
     "babel-jest": "^30.2.0",
     "core-js": "^3.41.0",
+    "emnapi": "1.11.3",
     "esbuild": "^0.27.4",
     "ferric-cli": "0.3.9",
     "jest": "^30.2.0",

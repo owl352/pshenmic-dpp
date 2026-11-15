@@ -21,7 +21,7 @@ ___
 
 | Entry point | Environment | Targets |
 |---|---|---|
-| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1-threads` (via emnapi) |
+| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1` base + `wasm32-wasip1-threads` shielded, loaded on demand (via emnapi) |
 | `pshenmic-dpp/native` (`node`) | Node.js | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl`, `x86_64-apple-darwin`, `aarch64-apple-darwin`, `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc` |
 | `react-native` | React Native (via `react-native-node-api`) | `aarch64-linux-android`, `x86_64-linux-android`, `aarch64-apple-ios-sim` |
 
@@ -33,6 +33,73 @@ import { IdentifierWASM } from 'pshenmic-dpp'
 const identifier = IdentifierWASM.fromBase58('ckBqfQe7LU7vwrwXopyCB4n5phZShjA16BGhNGpsD5U')
 console.log(identifier.hex())
 ```
+
+___
+## Shielded proving / cross-origin isolation
+
+The browser build ships **two wasm binaries**:
+
+- **base** (`wasm32-wasip1`, non-threaded) — loaded synchronously at import.
+  All core APIs (identifiers, identities, contracts, documents, transitions,
+  proof verification, ...) work in any browser context, **without**
+  cross-origin isolation.
+- **shielded** (`wasm32-wasip1-threads`) — the Orchard/Halo 2 proving stack.
+  Loaded **on demand** by `initShielded()`; it needs `SharedArrayBuffer` and
+  wasm thread workers, i.e. cross-origin isolation in browsers. Its bytes are
+  never fetched or compiled until `initShielded()` runs.
+
+### Connect-only sites (no proving)
+
+Drop the `Cross-Origin-Opener-Policy` / `Cross-Origin-Embedder-Policy` headers
+entirely. The base module loads synchronously at import and cross-origin popup
+references (e.g. wallet-extension connection popups) keep working — this is the
+[_dash-platform-extension#219_](https://github.com/dashpay/dash-platform-extension/issues/219)
+fix. Proving APIs remain unavailable until `initShielded()` succeeds.
+
+### Proving sites
+
+Serve the page with:
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+Only `COOP: same-origin` (with a compatible COEP) grants `crossOriginIsolated`
+and `SharedArrayBuffer`. `COOP: same-origin-allow-popups` does **not** —
+verified in Chrome, Firefox and the HTML spec — so it cannot be used for
+proving pages.
+
+**Platform constraint:** `COOP: same-origin` severs the opener's reference to
+cross-origin popups: `popup.closed` reads `true` while the popup is still open,
+and `window.opener` becomes `null` inside the popup. A proving page therefore
+cannot drive a cross-origin wallet popup through `window.open` references. If
+you need both proving and wallet popups, use extension messaging or run the
+wallet flow in a non-isolated popup context.
+
+### Usage
+
+```ts
+import { initShielded, ShieldedBuilderWASM } from 'pshenmic-dpp'
+
+// Before ANY shielded/proving API in the browser. Idempotent: concurrent and
+// repeated calls share one load. On Node.js / React Native it is a no-op.
+await initShielded()
+
+const builder = new ShieldedBuilderWASM()
+await builder.init()
+// ... shielded/proving APIs are now available
+```
+
+Without cross-origin isolation `initShielded()` rejects with a
+`SharedArrayBuffer` error; until it resolves, shielded classes throw
+`The shielded (proving) module has not been loaded. Call initShielded() first.`
+A failed load can be retried — the next `initShielded()` call fetches again.
+
+> **Breaking change (major version) for proving consumers:** you must now
+> `await initShielded()` before using any shielded/proving API and serve the
+> isolation headers above. Previously the threaded module was loaded at import
+> time. Connect-only consumers are unaffected: no headers, no init call.
 
 ___
 ## Current features
@@ -91,6 +158,8 @@ ___
   - `IdentityTopUpFromAddressesTransitionWASM`
 
 ### Shielded Pool (Orchard)
+In browsers these require `await initShielded()` first — see
+[Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
 - `OrchardAddressWASM`, `orchardOvkFromSeed`
 - `FullViewingKeyWASM`
 - `IncomingViewingKeyWASM`

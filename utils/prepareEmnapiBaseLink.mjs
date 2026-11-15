@@ -62,8 +62,8 @@ pub extern "C" fn __wasilibc_futex_wait_atomic_wait(_addr: *mut u8, _op: i32, _v
 // Must match the base build's RUSTFLAGS target features (build.cjs).
 export const BASE_TARGET_FEATURES = "+simd128,+bulk-memory,+mutable-globals";
 
-function run(cmd, args, cwd) {
-  const res = spawnSync(cmd, args, { cwd, stdio: ["ignore", "inherit", "inherit"] });
+function run(cmd, args, cwd, env) {
+  const res = spawnSync(cmd, args, { cwd, env, stdio: ["ignore", "inherit", "inherit"] });
   if (res.error) {
     throw new Error(`failed to spawn ${cmd}: ${res.error.message}`);
   }
@@ -84,7 +84,8 @@ function findLlvmAr() {
   throw new Error(
     "llvm-ar not found (PATH, /opt/homebrew/opt/llvm/bin, /usr/local/opt/llvm/bin). " +
       "macOS `ar` writes a __.SYMDEF archive index rust-lld cannot read; llvm-ar is required " +
-      "to build the non-threaded emnapi link archive (utils/prepareEmnapiBaseLink.mjs).",
+      "to build the non-threaded emnapi link archive (utils/prepareEmnapiBaseLink.mjs). " +
+      "Install LLVM: `apt-get install llvm` (Linux CI) or `brew install llvm` (macOS).",
   );
 }
 
@@ -115,6 +116,12 @@ export function prepareEmnapiBaseLink({ toolchain, linkDir, emnapiLibDir, rootDi
   const shadowArchive = path.join(linkDir, "libemnapi-basic-mt.a");
 
   fs.writeFileSync(stubsRs, STUBS_RS);
+  // Hermetic stub build: rustc itself does not consume RUSTFLAGS (cargo does),
+  // but strip any ambient value so CI flags (e.g. `-C target-feature=-crt-static`)
+  // can never leak into the stub object. The target features are pinned on the
+  // command line and must match the base build's RUSTFLAGS (build.cjs).
+  const stubEnv = { ...process.env };
+  delete stubEnv.RUSTFLAGS;
   run(
     "rustc",
     [
@@ -127,6 +134,7 @@ export function prepareEmnapiBaseLink({ toolchain, linkDir, emnapiLibDir, rootDi
       "-o", stubsObj,
     ],
     root,
+    stubEnv,
   );
 
   // Fresh copy every run: llvm-ar `q` APPENDS, so a stale archive would
