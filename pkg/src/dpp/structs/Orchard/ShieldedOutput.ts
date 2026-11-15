@@ -16,10 +16,12 @@ export class ShieldedOutputWASM {
   _rawShieldedOutput: ShieldedOutputNAPI
 
   constructor (address: OrchardAddressWASM, amount: bigint, memo: ShieldedMemoWASM) {
+    // The memo is base-kept: it crosses into the shielded instance as bytes,
+    // never as a wrapped napi object (per-Env wrap maps don't share).
     this._rawShieldedOutput = new dppProvider.shielded.ShieldedOutputNAPI(
       address._rawOrchardAddress,
       amount.toString(),
-      memo._rawShieldedMemo
+      memo.toBytes()
     )
   }
 
@@ -40,11 +42,13 @@ export class ShieldedOutputWASM {
   }
 
   get memo (): ShieldedMemoWASM {
-    return ShieldedMemoWASM.createFromRawInstance(this._rawShieldedOutput.memo)
+    // The getter returns bytes from the shielded instance; re-wrap them into
+    // a base-typed memo so the result never carries a shielded-instance raw.
+    return ShieldedMemoWASM.fromBytes(this._rawShieldedOutput.memo)
   }
 
   set memo (value: ShieldedMemoWASM) {
-    this._rawShieldedOutput.memo = value._rawShieldedMemo
+    this._rawShieldedOutput.memo = value.toBytes()
   }
 
   static createFromRawInstance (rawInstance: ShieldedOutputNAPI): ShieldedOutputWASM {

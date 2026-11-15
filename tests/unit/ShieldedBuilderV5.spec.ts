@@ -21,7 +21,8 @@ import {
   TokenShieldedPaymentWASM,
   TokenShieldedTransferWithShieldedFeeTransitionWASM,
   TokenTransitionWASM,
-  TokenUnshieldWithShieldedFeeTransitionWASM
+  TokenUnshieldWithShieldedFeeTransitionWASM,
+  initShielded
 } from 'pshenmic-dpp'
 
 const SEED = new Uint8Array(64)
@@ -64,6 +65,12 @@ function tokenTransitionOf (stateTransition: StateTransitionWASM): TokenTransiti
   const batch = BatchTransitionWASM.fromStateTransition(StateTransitionWASM.fromBytes(stateTransition.bytes()))
   return batch.transitions[0].toTransition() as TokenTransitionWASM
 }
+
+// Entry-agnostic: no-op on the native addon, loads the shielded module on the
+// wasm entry (where the proving classes live behind initShielded()).
+beforeAll(async function () {
+  await initShielded()
+})
 
 describe('ShieldedBuilder v5', function () {
   const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)

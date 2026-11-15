@@ -1,6 +1,8 @@
-#[cfg(feature = "proving")]
-use dpp::shielded::MEMO_SIZE;
-use dpp::{address_funds::OrchardAddress, shielded::ShieldedMemo};
+use dpp::{
+    address_funds::OrchardAddress,
+    shielded::{MEMO_SIZE, ShieldedMemo},
+};
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::{
@@ -23,7 +25,6 @@ pub struct ShieldedOutputNAPI {
     memo: ShieldedMemo,
 }
 
-#[cfg(feature = "proving")]
 impl ShieldedOutputNAPI {
     /// The output in the form the Orchard builder consumes.
     pub(crate) fn to_parts(&self) -> (OrchardAddress, u64, [u8; MEMO_SIZE]) {
@@ -33,16 +34,19 @@ impl ShieldedOutputNAPI {
 
 #[napi]
 impl ShieldedOutputNAPI {
+    /// The memo crosses the base <-> shielded instance boundary as bytes:
+    /// `ShieldedMemoNAPI` is base-kept, so its wrapped napi object cannot be
+    /// recovered from this (shielded) instance's per-Env wrap map.
     #[napi(constructor)]
     pub fn new(
         js_address: &OrchardAddressNAPI,
         js_amount: BigIntString,
-        js_memo: &ShieldedMemoNAPI,
+        js_memo: Uint8Array,
     ) -> Result<Self, napi::Error> {
         Ok(ShieldedOutputNAPI {
             address: js_address.into(),
             amount: js_amount.try_to_u64()?,
-            memo: js_memo.clone().into(),
+            memo: ShieldedMemoNAPI::from_bytes(js_memo)?.into(),
         })
     }
 
@@ -68,13 +72,18 @@ impl ShieldedOutputNAPI {
         Ok(())
     }
 
+    /// The memo as bytes, so the JS wrapper can re-wrap it into a base-typed
+    /// `ShieldedMemoWASM` (a shielded-instance raw would leak across the
+    /// boundary).
     #[napi(getter, js_name = "memo")]
-    pub fn memo(&self) -> ShieldedMemoNAPI {
-        self.memo.clone().into()
+    pub fn memo(&self) -> Uint8Array {
+        self.memo.to_bytes().into()
     }
 
     #[napi(setter, js_name = "memo")]
-    pub fn set_memo(&mut self, js_memo: &ShieldedMemoNAPI) {
-        self.memo = js_memo.clone().into();
+    pub fn set_memo(&mut self, js_memo: Uint8Array) -> Result<(), napi::Error> {
+        self.memo = ShieldedMemoNAPI::from_bytes(js_memo)?.into();
+
+        Ok(())
     }
 }

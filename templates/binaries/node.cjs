@@ -49,8 +49,10 @@ function getTarget() {
 // The native addon can be unusable even on a supported platform: the binary may
 // be missing from the package, built for another libc/arch, or fail to link
 // against a system dependency (e.g. the VC++ runtime on Windows). None of that
-// should be fatal — WebAssembly is a complete fallback, so any load failure
-// degrades to it instead of taking the whole import down.
+// should be fatal — any load failure degrades to the base WebAssembly module
+// instead of taking the whole import down. The base carries no proving
+// classes; initShielded() loads the threaded shielded wasm on demand in that
+// case (see src/native.ts).
 function loadNative() {
   const target = getTarget();
   if (target === null) {

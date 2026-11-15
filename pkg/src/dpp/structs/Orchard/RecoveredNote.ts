@@ -40,7 +40,9 @@ export function recoverNotes (
   coinType: number,
   account: number
 ): RecoveredNoteWASM[] {
+  // Actions are base-kept: they cross into the shielded instance as consensus
+  // bytes, never as wrapped napi objects (per-Env wrap maps don't share).
   return dppProvider.shielded
-    .recoverNotes(actions.map(a => a._rawSerializedAction), seed, coinType, account)
+    .recoverNotes(actions.map(a => a.bytes()), seed, coinType, account)
     .map(RecoveredNoteWASM.createFromRawInstance)
 }

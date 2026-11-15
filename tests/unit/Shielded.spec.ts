@@ -15,8 +15,15 @@ import {
   PrivateKeyWASM,
   PlatformAddressWASM,
   ShieldTransitionWASM,
-  StateTransitionWASM
+  StateTransitionWASM,
+  initShielded
 } from 'pshenmic-dpp'
+
+// Entry-agnostic: no-op on the native addon, loads the shielded module on the
+// wasm entry (where the proving classes live behind initShielded()).
+beforeAll(async function () {
+  await initShielded()
+})
 
 // Deterministic 64-byte BIP-39-style seed. Orchard derives via ZIP-32
 // (m/32'/coinType'/account'), so any 64 bytes is a valid seed for derivation.
