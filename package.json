@@ -5,6 +5,9 @@
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
   "type": "module",
+  "workspaces": [
+    "packages/orchard"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/owl352/pshenmic-dpp.git"
