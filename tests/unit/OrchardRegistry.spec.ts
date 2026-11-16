@@ -17,4 +17,17 @@ describe('pshenmic-orchard registration', function () {
     delete (globalThis as Record<symbol, unknown>)[REGISTRY_KEY]
     await expect(initShielded()).rejects.toThrow(/pshenmic-orchard/)
   })
+
+  test('initShielded() retry succeeds once orchard is registered (failure clears the cache)', async function () {
+    // The realistic flow: init called too early (orchard absent) -> rejects and
+    // clears the cached promise -> orchard imported -> init called again -> loads.
+    delete (globalThis as Record<symbol, unknown>)[REGISTRY_KEY]
+    await expect(initShielded()).rejects.toThrow(/pshenmic-orchard/)
+
+    // Fresh module so the registration side-effect re-runs after the delete.
+    jest.isolateModules(() => {
+      require('../../packages/orchard/src/index.cjs')
+    })
+    await expect(initShielded()).resolves.toBeUndefined()
+  }, 120000)
 })
