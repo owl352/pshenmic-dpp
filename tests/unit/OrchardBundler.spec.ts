@@ -4,7 +4,9 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
-const ROOT = path.resolve(__dirname, '../..')
+// jest runs from the repo root; process.cwd() works in both CJS and native-ESM
+// jest modes (__dirname / import.meta are mode-specific).
+const ROOT = process.cwd()
 
 // Proves the orchard discovery mechanism survives a real bundler: esbuild
 // renames/mangles module identifiers, yet dpp still finds orchard's loader
