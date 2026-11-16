@@ -37,16 +37,18 @@ console.log(identifier.hex())
 ___
 ## Shielded proving / cross-origin isolation
 
-The browser build ships **two wasm binaries**:
+The browser build ships as **two packages**:
 
-- **base** (`wasm32-wasip1`, non-threaded) — loaded synchronously at import.
-  All core APIs (identifiers, identities, contracts, documents, transitions,
-  proof verification, ...) work in any browser context, **without**
-  cross-origin isolation.
-- **shielded** (`wasm32-wasip1-threads`) — the Orchard/Halo 2 proving stack.
-  Loaded **on demand** by `initShielded()`; it needs `SharedArrayBuffer` and
-  wasm thread workers, i.e. cross-origin isolation in browsers. Its bytes are
-  never fetched or compiled until `initShielded()` runs.
+- **`pshenmic-dpp`** — the base (`wasm32-wasip1`, non-threaded), loaded
+  synchronously at import. All core APIs (identifiers, identities, contracts,
+  documents, transitions, proof verification, ...) work in any browser context,
+  **without** cross-origin isolation.
+- **`pshenmic-orchard`** *(optional)* — the Orchard/Halo 2 proving stack
+  (`wasm32-wasip1-threads`). Importing it once registers its loader on a global
+  symbol; `initShielded()` then discovers it (no module-name lookup, so it
+  survives bundler renaming). It needs `SharedArrayBuffer` and wasm thread
+  workers, i.e. cross-origin isolation in browsers. Its wasm is never compiled
+  until `initShielded()` runs.
 
 ### Connect-only sites (no proving)
 
@@ -79,7 +81,12 @@ wallet flow in a non-isolated popup context.
 
 ### Usage
 
+```sh
+npm i pshenmic-dpp pshenmic-orchard
+```
+
 ```ts
+import 'pshenmic-orchard' // registers the proving loader (once, anywhere)
 import { initShielded, ShieldedBuilderWASM } from 'pshenmic-dpp'
 
 // Before ANY shielded/proving API in the browser. Idempotent: concurrent and
@@ -92,14 +99,16 @@ await builder.init()
 ```
 
 Without cross-origin isolation `initShielded()` rejects with a
-`SharedArrayBuffer` error; until it resolves, shielded classes throw
+`SharedArrayBuffer` error; without `pshenmic-orchard` imported it rejects asking
+you to install/import it. Until it resolves, shielded classes throw
 `The shielded (proving) module has not been loaded. Call initShielded() first.`
-A failed load can be retried — the next `initShielded()` call fetches again.
+A failed load can be retried — the next `initShielded()` call loads again.
 
-> **Breaking change (major version) for proving consumers:** you must now
-> `await initShielded()` before using any shielded/proving API and serve the
-> isolation headers above. Previously the threaded module was loaded at import
-> time. Connect-only consumers are unaffected: no headers, no init call.
+> **Breaking change (major version) for proving consumers:** install
+> `pshenmic-orchard`, import it once, and `await initShielded()` before using any
+> shielded/proving API, and serve the isolation headers above. Previously the
+> threaded module shipped inside `pshenmic-dpp` and loaded at import time.
+> Connect-only consumers are unaffected: no extra package, no headers, no init.
 
 ___
 ## Current features

@@ -56,6 +56,12 @@ jobs:
           name: build-artifact-dist
           path: ./dist
 
+      - name: Download orchard build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifact-orchard
+          path: packages/orchard
+
       - name: Run tests
         run: yarn test
 
@@ -94,13 +100,21 @@ jobs:
           name: build-artifact-dist
           path: ./dist
 
-      - name: Publish package to NPM
+      - name: Download orchard build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifact-orchard
+          path: packages/orchard
+
+      - name: Publish packages to NPM
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+-([a-zA-Z0-9]+).*/\1/')
-            npm publish --tag "$TAG" --provenance --access public
           else
+            TAG=latest
             echo "LATEST=true" >> $GITHUB_ENV
-            npm publish --tag latest --provenance --access public
           fi
+          npm publish --tag "$TAG" --provenance --access public
+          # The optional proving engine publishes as its own package, same tag.
+          (cd packages/orchard && npm publish --tag "$TAG" --provenance --access public)

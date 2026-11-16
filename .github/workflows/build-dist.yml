@@ -108,6 +108,16 @@ jobs:
             pkg/binaries/wasm
             pkg/binaries/pshenmic_dpp.d.ts
 
+      # The shielded wasm + worker bundle ship in the separate pshenmic-orchard
+      # package (build.cjs routes them to packages/orchard/binaries/wasm).
+      - name: Upload orchard wasm binaries
+        uses: actions/upload-artifact@v7
+        with:
+          name: bin-orchard-wasm
+          retention-days: 1
+          if-no-files-found: error
+          path: packages/orchard/binaries
+
   native:
     name: Build native (${{ matrix.group.name }})
     runs-on: ${{ matrix.group.os }}
@@ -285,6 +295,12 @@ jobs:
           name: bin-wasm
           path: pkg/binaries
 
+      - name: Download orchard wasm binaries
+        uses: actions/download-artifact@v8
+        with:
+          name: bin-orchard-wasm
+          path: packages/orchard/binaries
+
       - name: Download native binaries
         uses: actions/download-artifact@v8
         with:
@@ -312,3 +328,14 @@ jobs:
           name: build-artifact-dist
           retention-days: 1
           path: ./dist
+
+      # The orchard package (dist + shielded binaries) publishes separately.
+      - name: Upload orchard build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-artifact-orchard
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            packages/orchard/dist
+            packages/orchard/binaries

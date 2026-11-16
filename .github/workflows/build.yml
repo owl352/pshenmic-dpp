@@ -59,6 +59,12 @@ jobs:
           name: build-artifact-dist
           path: ./dist
 
+      - name: Download orchard build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: build-artifact-orchard
+          path: packages/orchard
+
       - name: Run tests
         run: yarn test
 
