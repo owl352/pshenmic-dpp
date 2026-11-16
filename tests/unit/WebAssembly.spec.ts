@@ -1,3 +1,4 @@
+import "pshenmic-orchard";
 import * as dpp from "pshenmic-dpp/wasm";
 import {IdentifierWASM, initShielded, ShieldedBuilderWASM} from "pshenmic-dpp/wasm";
 

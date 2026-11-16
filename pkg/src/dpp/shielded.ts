@@ -1,4 +1,5 @@
 import { dppProvider } from './provider.js'
+import type { DashPlatformProtocol } from './types.js'
 
 /**
  * On-demand loader for the shielded (threaded Orchard/Halo 2 proving) wasm
@@ -32,16 +33,19 @@ export function initShielded (): Promise<void> {
   }
   if (initPromise == null) {
     initPromise = (async () => {
-      const mod = await import('../../binaries/shieldedCreation.cjs')
-      // CJS interop: Node's cjs-module-lexer exposes `loadShielded` as a named
-      // export, but browser bundlers (esbuild/webpack) cannot statically detect
-      // it — shieldedCreation.cjs assigns module.exports conditionally (worker
-      // branch vs main branch) — so they only provide `default`. Accept both.
-      const loadShielded = mod.loadShielded ?? mod.default?.loadShielded
-      if (typeof loadShielded !== 'function') {
-        throw new Error('shieldedCreation module did not export loadShielded()')
+      // pshenmic-orchard registers its loader on this cross-realm global symbol
+      // when imported. Discovering it by symbol (not by module name) survives
+      // bundler renaming and duplicate dpp copies in a bundle.
+      const registry = (globalThis as Record<symbol, { loadShielded?: () => DashPlatformProtocol }>)[
+        Symbol.for('pshenmic-dpp.shielded')
+      ]
+      if (typeof registry?.loadShielded !== 'function') {
+        throw new Error(
+          'Shielded proving requires the pshenmic-orchard package. Install it and import it once ' +
+          "(import 'pshenmic-orchard'), then call initShielded()."
+        )
       }
-      dppProvider.setShielded(loadShielded())
+      dppProvider.setShielded(registry.loadShielded())
     })().catch((e) => {
       initPromise = null
       throw e

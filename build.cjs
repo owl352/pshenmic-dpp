@@ -42,6 +42,10 @@ const binariesOutputDir =
   process.env.BIN_OUTPUT_DIR ?? path.join(__dirname, "pkg", "binaries");
 const templatesOutputDir =
   process.env.JS_OUTPUT_DIR ?? path.join(__dirname, "pkg");
+// The shielded (proving) wasm + worker bundle ship in the separate
+// pshenmic-orchard package, not in dpp's binaries.
+const orchardDir = path.join(__dirname, "packages", "orchard");
+const orchardWasmOutputDir = path.join(orchardDir, "binaries", "wasm");
 
 const specificTarget = process.env.NATIVE_BUILD_TARGET;
 // BUILD_STEPS selects what to build, so CI can run the slow parts as parallel
@@ -266,14 +270,13 @@ async function buildShieldedWasm() {
   }
   console.log(`shielded wasm size after wasm-opt: ${(wasmSize / 1024 / 1024).toFixed(2)}MB`);
 
-  const wasmOutputDir = path.join(binariesOutputDir, "wasm");
-  if (!fs.existsSync(wasmOutputDir)) {
-    fs.mkdirSync(wasmOutputDir, { recursive: true });
+  if (!fs.existsSync(orchardWasmOutputDir)) {
+    fs.mkdirSync(orchardWasmOutputDir, { recursive: true });
   }
 
-  await convertBinary(targetWasmFile, path.join(wasmOutputDir, "shieldedBytes.cjs"));
+  await convertBinary(targetWasmFile, path.join(orchardWasmOutputDir, "shieldedBytes.cjs"));
 
-  buildWorkerBundle(path.join(wasmOutputDir, "workerBundle.cjs"));
+  buildWorkerBundle(path.join(orchardWasmOutputDir, "workerBundle.cjs"));
 }
 
 // Without `_initialize` emnapi never runs the module's constructors and the
@@ -393,6 +396,9 @@ function bundle() {
   console.log("Copying templates");
   fs.cpSync("./templates", templatesOutputDir, { recursive: true });
 
+  console.log("Building pshenmic-orchard dist");
+  fs.cpSync(path.join(orchardDir, "src"), path.join(orchardDir, "dist"), { recursive: true });
+
   console.log("Patching exports and typings...");
   const wasmTypesPath = path.join(binariesOutputDir, `${binName}.d.ts`);
   // A previous bundle replaces the napi typings with a re-export.
@@ -433,16 +439,6 @@ function bundle() {
 
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "wasmCreation.d.ts"), typingsForCodegen);
-  // shieldedCreation is a loader, not the napi module itself: type its single
-  // export. loadShielded() returns the full (threaded) napi exports object.
-  fs.writeFileSync(
-    path.join(binariesOutputDir, "shieldedCreation.d.ts"),
-    [
-      'import type * as bindings from "./bindingsTypes.js"',
-      'export declare function loadShielded(): typeof bindings & { default: typeof bindings }',
-    ].join("\n") + "\n",
-    "utf8",
-  );
   fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
 }

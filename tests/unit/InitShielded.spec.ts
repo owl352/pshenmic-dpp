@@ -1,3 +1,4 @@
+import 'pshenmic-orchard'
 import {
   initShielded,
   IdentifierWASM,

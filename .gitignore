@@ -6,6 +6,8 @@
 pkg/binaries
 pkg/utils
 /dist/*
+packages/orchard/dist
+packages/orchard/binaries
 package-lock.json
 yarn.lock
 node_modules
