@@ -1,3 +1,4 @@
+use dpp::bincode;
 use dpp::shielded::SerializedAction;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -72,6 +73,28 @@ impl SerializedActionNAPI {
             cv_net: js_cv_net.to_vec().try_into().unwrap(),
             spend_auth_sig: js_spend_auth_sig.to_vec().try_into().unwrap(),
         }))
+    }
+
+    /// Consensus bincode encoding of the action (the domain `Encode` derive),
+    /// used to cross the base <-> shielded instance boundary as bytes.
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        Ok(bincode::encode_to_vec(&self.0, config)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+            .into())
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        let (action, _) =
+            bincode::decode_from_slice_untrusted::<SerializedAction, _>(&bytes.to_vec(), config)
+                .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+        Ok(Self(action))
     }
 
     #[napi(getter, js_name = "nullifier")]

@@ -1,4 +1,4 @@
-use dpp::shielded::{MEMO_PAYLOAD_SIZE, ShieldedMemo};
+use dpp::shielded::{MEMO_PAYLOAD_SIZE, MEMO_SIZE, ShieldedMemo};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
@@ -66,5 +66,20 @@ impl ShieldedMemoNAPI {
     #[napi(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Uint8Array {
         self.0.to_bytes().clone().into()
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        let fixed: [u8; MEMO_SIZE] = bytes.to_vec().as_slice().try_into().map_err(|_| {
+            napi::Error::new(
+                napi::Status::InvalidArg,
+                format!(
+                    "ShieldedMemo bytes must be exactly {MEMO_SIZE} bytes, got {}",
+                    bytes.len()
+                ),
+            )
+        })?;
+
+        Ok(ShieldedMemoNAPI(ShieldedMemo::from_bytes(&fixed)))
     }
 }

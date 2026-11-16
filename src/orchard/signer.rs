@@ -4,18 +4,21 @@ use async_trait::async_trait;
 use dpp::{
     ProtocolError,
     address_funds::{AddressWitness, PlatformAddress},
-    dashcore::signer,
+    dashcore::{
+        hashes::{Hash, hash160},
+        secp256k1::{PublicKey, Secp256k1, SecretKey},
+        signer,
+    },
     identity::{
         IdentityPublicKey, KeyType, identity_public_key::accessors::v0::IdentityPublicKeyGettersV0,
         signer::Signer,
     },
     platform_value::BinaryData,
 };
-
-use crate::private_key::PrivateKeyNAPI;
+use napi::bindgen_prelude::Uint8Array;
 
 /// A minimal [`Signer<PlatformAddress>`] backed by raw P2PKH private keys,
-/// keyed by the 20-byte public-key hash. Built from the `PrivateKeyNAPI`s the
+/// keyed by the 20-byte public-key hash. Built from the raw 32-byte secrets the
 /// caller supplies for the transparent inputs being spent by a `Shield`.
 #[derive(Debug, Default)]
 pub struct AddressKeySigner {
@@ -23,29 +26,27 @@ pub struct AddressKeySigner {
 }
 
 impl AddressKeySigner {
-    /// Builds a signer from the given private keys. Each key is registered under
-    /// the hash160 of its public key (the P2PKH address hash).
-    pub fn from_private_keys(private_keys: &[&PrivateKeyNAPI]) -> Result<Self, napi::Error> {
+    /// Builds a signer from the given raw private keys. Each key is registered
+    /// under the hash160 of its compressed public key (the P2PKH address hash) —
+    /// the same hash `PrivateKeyNAPI::get_public_key_hash` produces, derived
+    /// here without a network (which only affects WIF encoding, not signing).
+    pub fn from_private_keys(private_keys: &[Uint8Array]) -> Result<Self, napi::Error> {
         let mut keys = BTreeMap::new();
+        let secp = Secp256k1::new();
 
         for pk in private_keys {
-            let hash_hex = pk.get_public_key_hash();
-            let hash_vec = hex::decode(&hash_hex).map_err(|e| {
-                napi::Error::new(
-                    napi::Status::GenericFailure,
-                    format!("invalid public key hash: {e}"),
-                )
-            })?;
-            let hash: [u8; 20] = hash_vec.as_slice().try_into().map_err(|_| {
-                napi::Error::new(
-                    napi::Status::GenericFailure,
-                    "public key hash must be 20 bytes",
-                )
-            })?;
-
-            let secret: [u8; 32] = pk.get_bytes().to_vec().as_slice().try_into().map_err(|_| {
+            let secret: [u8; 32] = pk.to_vec().as_slice().try_into().map_err(|_| {
                 napi::Error::new(napi::Status::InvalidArg, "private key must be 32 bytes")
             })?;
+
+            let secret_key = SecretKey::from_slice(&secret).map_err(|e| {
+                napi::Error::new(
+                    napi::Status::InvalidArg,
+                    format!("invalid private key: {e}"),
+                )
+            })?;
+            let public_key = PublicKey::from_secret_key(&secp, &secret_key);
+            let hash: [u8; 20] = hash160::Hash::hash(&public_key.serialize()).to_byte_array();
 
             keys.insert(hash, secret);
         }

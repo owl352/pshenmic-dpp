@@ -19,8 +19,15 @@ import {
   SecurityLevel,
   KeyType,
   PlatformVersionWASM,
-  StateTransitionWASM
+  StateTransitionWASM,
+  initShielded
 } from 'pshenmic-dpp'
+
+// Entry-agnostic: no-op on the native addon, loads the shielded module on the
+// wasm entry (where the proving classes live behind initShielded()).
+beforeAll(async function () {
+  await initShielded()
+})
 
 function randomBytes (length: number): Uint8Array {
   const bytes = new Uint8Array(length)

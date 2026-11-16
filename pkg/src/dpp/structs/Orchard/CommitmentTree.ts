@@ -7,7 +7,7 @@ export class CommitmentTreeWASM {
   _rawCommitmentTree: CommitmentTreeNAPI
 
   constructor (maxCheckpoints?: number) {
-    this._rawCommitmentTree = new dppProvider.dpp.CommitmentTreeNAPI(maxCheckpoints)
+    this._rawCommitmentTree = new dppProvider.shielded.CommitmentTreeNAPI(maxCheckpoints)
   }
 
   /** Appends a note commitment (cmx). `marked` = spendable (can be witnessed). */

@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "2.0.1-dev.6",
+  "version": "3.0.0-dev.0",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
@@ -16,6 +16,7 @@
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
     "test": "jest",
+    "test:e2e": "node tests/e2e/isolation.spec.mjs",
     "docs": "typedoc",
     "lint:rust": "cargo fmt",
     "lint:src": "ts-standard --fix ./pkg/src",
@@ -51,11 +52,14 @@
     "babel": "^6.23.0",
     "babel-jest": "^30.2.0",
     "core-js": "^3.41.0",
+    "emnapi": "1.11.3",
+    "esbuild": "^0.27.4",
     "ferric-cli": "0.3.9",
     "jest": "^30.2.0",
     "mocha": "^11.1.0",
     "node-addon-api": "^8.5.0",
     "path": "^0.12.7",
+    "playwright": "^1.65.1",
     "toml": "^3.0.0",
     "ts-morph": "^26.0.0",
     "ts-standard": "^12.0.2",
@@ -65,8 +69,8 @@
     "wasm-opt": "^1.4.0"
   },
   "dependencies": {
-    "@emnapi/core": "1.9.0",
-    "@emnapi/runtime": "1.9.0",
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
     "@tybys/wasm-util": "^0.10.1",
     "fflate": "^0.8.3"
   }

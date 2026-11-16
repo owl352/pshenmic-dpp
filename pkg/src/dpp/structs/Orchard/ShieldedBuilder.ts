@@ -1,7 +1,7 @@
 import type { PlatformVersionNAPI, ShieldedBuilderNAPI } from '../../../../binaries/bindingsTypes.js'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike, PlatformAddressLike, PoolingLike, TokenDistributionLike } from '../../types.js'
-import { prepareIdentifierValue, preparePlatformAddressValue, valueToDynamicValue } from '../../utils.js'
+import { IdentifierWASM } from '../Identifier.js'
 import { IdentityWASM } from '../Identity.js'
 import { IdentityPublicKeyWASM } from '../IdentityPublicKey.js'
 import { GroupStateTransitionInfoWASM } from '../GroupStateTransitionInfo.js'
@@ -12,6 +12,7 @@ import { SpendableNoteWASM } from './SpendableNote.js'
 import { ShieldedWithdrawalResultWASM } from './ShieldedWithdrawalResult.js'
 import { ShieldedOutputWASM } from './ShieldedOutput.js'
 import { AssetLockProofWASM } from '../AssetLockProof/AssetLockProof.js'
+import { PlatformAddressWASM } from '../PlatformAddress/PlatformAddress.js'
 import { PrivateKeyWASM } from '../PrivateKey.js'
 import { CoreScriptWASM } from '../CoreScript.js'
 import { StateTransitionWASM } from '../StateTransition.js'
@@ -23,6 +24,10 @@ import { IdentityCreateFromShieldedPoolResultWASM } from './IdentityCreateFromSh
 /**
  * Builds and proves shielded (Orchard) state transitions. Construction builds
  * the Halo 2 proving key (~seconds), so create one instance and reuse it.
+ *
+ * On the wasm entry the proving classes live in a separate on-demand module:
+ * `await initShielded()` once before `init()` (needs cross-origin isolation in
+ * browsers). The native entry needs no init.
  *
  * Deposits (`shield`, `shieldFromAssetLock`) don't need pool notes. Spends
  * (`shieldedWithdrawal`, `unshield`, `shieldedTransfer`) need a `SpendableNote`
@@ -46,7 +51,7 @@ export class ShieldedBuilderWASM {
 
   async init(): Promise<void> {
     if (ShieldedBuilderWASM._initPromise == null) {
-      ShieldedBuilderWASM._initPromise = dppProvider.dpp.ShieldedBuilderNAPI.init()
+      ShieldedBuilderWASM._initPromise = dppProvider.shielded.ShieldedBuilderNAPI.init()
         .catch((e: Error) => {
           ShieldedBuilderWASM._initPromise = null
           throw e
@@ -67,16 +72,16 @@ export class ShieldedBuilderWASM {
     surplusOutput?: PlatformAddressLike,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.shieldFromAssetLock(
         recipient._rawOrchardAddress,
         shieldAmount.toString(),
-        assetLockProof._rawAssetLockProof,
-        privateKey._rawPrivateKey,
-        memo._rawShieldedMemo,
+        assetLockProof.bytes(),
+        privateKey.bytes(),
+        memo.toBytes(),
         dummyOutputs,
         senderOvk,
-        surplusOutput != null ? preparePlatformAddressValue(surplusOutput) : undefined,
+        surplusOutput != null ? new PlatformAddressWASM(surplusOutput).bytes() : undefined,
         platformVersion
       )
     )
@@ -94,15 +99,15 @@ export class ShieldedBuilderWASM {
     senderOvk?: Uint8Array,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.shield(
         recipient._rawOrchardAddress,
         shieldAmount.toString(),
-        inputs.map(i => i._rawInputAddress),
-        privateKeys.map(k => k._rawPrivateKey),
-        feeStrategy.map(s => s._rawAddressFundsFeeStrategyStep),
+        inputs.map(i => i.bytes()),
+        privateKeys.map(k => k.bytes()),
+        feeStrategy.map(s => s.bytes()),
         userFeeIncrease,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         senderOvk,
         platformVersion
       )
@@ -128,15 +133,15 @@ export class ShieldedBuilderWASM {
       await this._rawShieldedBuilder.shieldedWithdrawal(
         spends.map(s => s._rawSpendableNote),
         withdrawalAmount.toString(),
-        outputScript._rawCoreScript,
+        outputScript.bytes(),
         coreFeePerByte,
-        valueToDynamicValue(pooling),
+        pooling,
         changeAddress._rawOrchardAddress,
         seed,
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -158,14 +163,14 @@ export class ShieldedBuilderWASM {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.unshield(
         spends.map(s => s._rawSpendableNote),
-        preparePlatformAddressValue(outputAddress),
+        new PlatformAddressWASM(outputAddress).bytes(),
         unshieldAmount.toString(),
         changeAddress._rawOrchardAddress,
         seed,
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -194,7 +199,7 @@ export class ShieldedBuilderWASM {
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -256,17 +261,17 @@ export class ShieldedBuilderWASM {
   ): Promise<IdentityCreateFromShieldedPoolResultWASM> {
     return IdentityCreateFromShieldedPoolResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.identityCreateFromShieldedPool(
-        publicKeys.map(k => k._rawKeyInCreation),
-        privateKeys.map(k => k._rawPrivateKey),
+        publicKeys.map(k => k.bytes()),
+        privateKeys.map(k => k.bytes()),
         denomination.toString(),
-        preparePlatformAddressValue(sendToAddressOnCreationFailure),
+        new PlatformAddressWASM(sendToAddressOnCreationFailure).bytes(),
         spends.map(s => s._rawSpendableNote),
         changeAddress._rawOrchardAddress,
         seed,
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -285,16 +290,16 @@ export class ShieldedBuilderWASM {
     senderOvk?: Uint8Array,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.shieldFromIdentity(
-        identity._rawIdentity,
+        identity.bytes(),
         recipient._rawOrchardAddress,
         shieldAmount.toString(),
         nonce.toString(),
-        signingKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        signingKey.bytes(),
+        privateKey.bytes(),
         userFeeIncrease,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         senderOvk,
         platformVersion
       )
@@ -317,14 +322,14 @@ export class ShieldedBuilderWASM {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.identityTopUpFromShieldedPool(
         spends.map(s => s._rawSpendableNote),
-        prepareIdentifierValue(identityId),
+        new IdentifierWASM(identityId).bytes(),
         topUpAmount.toString(),
         changeAddress._rawOrchardAddress,
         seed,
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -349,12 +354,12 @@ export class ShieldedBuilderWASM {
     memo: ShieldedMemoWASM,
     platformVersion?: PlatformVersionNAPI
   ): Promise<TokenShieldedPaymentWASM> {
-    return TokenShieldedPaymentWASM.createFromRawInstance(
+    return TokenShieldedPaymentWASM.fromBytes(
       await this._rawShieldedBuilder.documentTokenPayment(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
-        prepareIdentifierValue(documentId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
+        new IdentifierWASM(documentId).bytes(),
         spends.map(s => s._rawSpendableNote),
         amount.toString(),
         changeAddress._rawOrchardAddress,
@@ -362,7 +367,7 @@ export class ShieldedBuilderWASM {
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -384,18 +389,18 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenShield(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         recipient._rawOrchardAddress,
         amount.toString(),
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         senderOvk,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -424,23 +429,23 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenUnshield(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         spends.map(s => s._rawSpendableNote),
-        prepareIdentifierValue(recipientId),
+        new IdentifierWASM(recipientId).bytes(),
         amount.toString(),
         changeAddress._rawOrchardAddress,
         seed,
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        memo.toBytes(),
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -469,11 +474,11 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenShieldedTransfer(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         spends.map(s => s._rawSpendableNote),
         recipient._rawOrchardAddress,
@@ -483,9 +488,9 @@ export class ShieldedBuilderWASM {
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        memo.toBytes(),
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -511,20 +516,20 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenMintToPool(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         recipient._rawOrchardAddress,
         amount.toString(),
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         senderOvk,
         publicNote,
-        usingGroupInfo?._rawGroupStateTransitionInfo,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        usingGroupInfo?.bytes(),
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -554,11 +559,11 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenBurnFromPool(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         spends.map(s => s._rawSpendableNote),
         amount.toString(),
@@ -567,11 +572,11 @@ export class ShieldedBuilderWASM {
         coinType,
         account,
         anchor,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         publicNote,
-        usingGroupInfo?._rawGroupStateTransitionInfo,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        usingGroupInfo?.bytes(),
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -598,21 +603,21 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenClaimToPool(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         recipient._rawOrchardAddress,
         amount.toString(),
-        valueToDynamicValue(distributionType),
+        distributionType,
         claimUpTo?.toString(),
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         senderOvk,
         publicNote,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -637,19 +642,19 @@ export class ShieldedBuilderWASM {
     userFeeIncrease: number,
     platformVersion?: PlatformVersionNAPI
   ): Promise<StateTransitionWASM> {
-    return StateTransitionWASM.createFromRawInstance(
+    return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.tokenDirectPurchaseToPool(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(ownerId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(ownerId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         recipient._rawOrchardAddress,
         tokenCount.toString(),
         totalAgreedPrice.toString(),
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         senderOvk,
-        identityPublicKey._rawIdentityPublicKey,
-        privateKey._rawPrivateKey,
+        identityPublicKey.bytes(),
+        privateKey.bytes(),
         identityContractNonce.toString(),
         userFeeIncrease,
         platformVersion
@@ -682,8 +687,8 @@ export class ShieldedBuilderWASM {
   ): Promise<ShieldedWithdrawalResultWASM> {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.tokenShieldedTransferWithShieldedFee(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         tokenSpends.map(s => s._rawSpendableNote),
         tokenChangeAddress._rawOrchardAddress,
@@ -696,7 +701,7 @@ export class ShieldedBuilderWASM {
         seed,
         coinType,
         account,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -726,13 +731,13 @@ export class ShieldedBuilderWASM {
   ): Promise<ShieldedWithdrawalResultWASM> {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.tokenUnshieldWithShieldedFee(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         tokenSpends.map(s => s._rawSpendableNote),
         tokenChangeAddress._rawOrchardAddress,
         tokenAnchor,
-        prepareIdentifierValue(recipientId),
+        new IdentifierWASM(recipientId).bytes(),
         amount.toString(),
         feeSpends.map(s => s._rawSpendableNote),
         feeChangeAddress._rawOrchardAddress,
@@ -740,7 +745,7 @@ export class ShieldedBuilderWASM {
         seed,
         coinType,
         account,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )
@@ -769,8 +774,8 @@ export class ShieldedBuilderWASM {
   ): Promise<ShieldedWithdrawalResultWASM> {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.tokenPurchaseFromShieldedPool(
-        prepareIdentifierValue(tokenId),
-        prepareIdentifierValue(dataContractId),
+        new IdentifierWASM(tokenId).bytes(),
+        new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         recipient._rawOrchardAddress,
         tokenCount.toString(),
@@ -781,7 +786,7 @@ export class ShieldedBuilderWASM {
         seed,
         coinType,
         account,
-        memo._rawShieldedMemo,
+        memo.toBytes(),
         platformVersion
       )
     )

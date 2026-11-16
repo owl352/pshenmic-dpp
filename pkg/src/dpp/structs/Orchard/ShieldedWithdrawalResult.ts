@@ -7,7 +7,7 @@ export class ShieldedWithdrawalResultWASM {
   _rawShieldedWithdrawalResult: ShieldedWithdrawalResultNAPI
 
   get stateTransition (): StateTransitionWASM {
-    return StateTransitionWASM.createFromRawInstance(this._rawShieldedWithdrawalResult.stateTransition)
+    return StateTransitionWASM.fromBytes(this._rawShieldedWithdrawalResult.stateTransition)
   }
 
   /** The fixed shielded fee (credits) consensus charges for the spend. */

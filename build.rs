@@ -7,7 +7,10 @@ use std::{
 fn main() {
     napi_build::setup();
 
-    if env::var("TARGET").as_deref() == Ok("wasm32-wasip1-threads") {
+    if matches!(
+        env::var("TARGET").as_deref(),
+        Ok("wasm32-wasip1-threads" | "wasm32-wasip1")
+    ) {
         link_reactor_crt();
     }
 }

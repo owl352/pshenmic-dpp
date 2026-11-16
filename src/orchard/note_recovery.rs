@@ -50,9 +50,13 @@ impl RecoveredNoteNAPI {
 /// entry carries the action `index` (use it as the leaf position when building
 /// the spend witness) and the recovered [`NoteNAPI`] (value, rho, rseed,
 /// address) — everything needed to spend it.
+///
+/// Actions cross the base <-> shielded instance boundary as consensus bytes:
+/// `SerializedActionNAPI` is base-kept, so its wrapped napi object cannot be
+/// recovered from this (shielded) instance's per-Env wrap map.
 #[napi(js_name = "recoverNotes")]
 pub fn recover_notes(
-    js_actions: Vec<&SerializedActionNAPI>,
+    js_actions: Vec<Uint8Array>,
     js_seed: Uint8Array,
     js_coin_type: u32,
     js_account: u32,
@@ -63,7 +67,7 @@ pub fn recover_notes(
     let mut recovered = Vec::new();
 
     for (index, js_action) in js_actions.into_iter().enumerate() {
-        let action: SerializedAction = js_action.clone().into();
+        let action: SerializedAction = SerializedActionNAPI::from_bytes(js_action)?.into();
 
         // encrypted_note layout: epk(32) || enc_ciphertext(104) || out_ciphertext(80).
         // Compact decryption needs epk + the first COMPACT_NOTE_SIZE (52) bytes

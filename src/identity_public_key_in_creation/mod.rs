@@ -1,3 +1,4 @@
+use dpp::bincode;
 use dpp::identity::IdentityPublicKey;
 use dpp::identity::contract_bounds::ContractBounds;
 use dpp::platform_value::BinaryData;
@@ -87,6 +88,30 @@ impl IdentityPublicKeyInCreationNAPI {
     #[napi(js_name = toIdentityPublicKey)]
     pub fn to_identity_public_key(&self) -> IdentityPublicKeyNAPI {
         IdentityPublicKey::from(&self.0).into()
+    }
+
+    /// Consensus bincode encoding of the key (the domain `Encode` derive),
+    /// used to cross the base <-> shielded instance boundary as bytes.
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        Ok(bincode::encode_to_vec(&self.0, config)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+            .into())
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        let (key, _) = bincode::decode_from_slice_untrusted::<IdentityPublicKeyInCreation, _>(
+            &bytes.to_vec(),
+            config,
+        )
+        .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+        Ok(Self(key))
     }
 
     #[napi(getter, js_name = "totalBudget")]

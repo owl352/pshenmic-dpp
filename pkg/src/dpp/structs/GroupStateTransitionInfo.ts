@@ -12,6 +12,16 @@ export class GroupStateTransitionInfoWASM {
     this._rawGroupStateTransitionInfo = new dppProvider.dpp.GroupStateTransitionInfoNAPI(groupContractPosition, prepareIdentifierValue(actionId), actionIsProposer)
   }
 
+  bytes (): Uint8Array {
+    return this._rawGroupStateTransitionInfo.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): GroupStateTransitionInfoWASM {
+    return GroupStateTransitionInfoWASM.createFromRawInstance(
+      dppProvider.dpp.GroupStateTransitionInfoNAPI.fromBytes(bytes)
+    )
+  }
+
   get groupContractPosition (): number {
     return this._rawGroupStateTransitionInfo.groupContractPosition
   }

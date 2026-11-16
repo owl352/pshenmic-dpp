@@ -1,11 +1,27 @@
 [package]
 name = "pshenmic-dpp"
 authors = ["owl352 <kokosinca123@gmail.com>"]
-version = "2.0.1-dev.6"
+version = "3.0.0-dev.0"
 edition = "2024"
 
 [lib]
 crate-type = ["cdylib", "lib"]
+
+[features]
+default = ["proving"]
+# The Orchard proving stack is optional: grovedb-commitment-tree (directly and
+# via dpp/shielded-client) pulls orchard's default `multicore` feature, which
+# cannot compile on non-threaded wasm32. The base build
+# (--no-default-features) must cut BOTH entry points or feature unification
+# re-adds the subtree.
+proving = [
+    "dpp/shielded-client",
+    "dep:grovedb-commitment-tree",
+    "dep:zip32",
+    "dep:indexmap1",
+    "dep:rand",
+    "dep:async-trait",
+]
 
 [dependencies]
 dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", default-features = false, features = [
@@ -14,35 +30,33 @@ dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", defaul
     "state-transition-signing",
     "platform-value",
     "document-json-conversion",
-    "data-contract-json-conversion",
-    "shielded-client"
+    "data-contract-json-conversion"
 ] }
 drive = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", default-features = false, features = [
     "verify"
 ] }
-grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", rev = "2128ea18f9b1c2f9502f99967b1b1c6485c91f8b", features = ["client"] }
+grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", rev = "2128ea18f9b1c2f9502f99967b1b1c6485c91f8b", features = ["client"], optional = true }
 indexmap = "2.0.2"
 # ZIP-32 AccountId for Orchard key derivation from a seed (matches the version
 # the orchard fork uses, so it unifies to a single crate instance).
-zip32 = "=0.2.1"
+zip32 = { version = "=0.2.1", optional = true }
 # halo2_proofs pins indexmap 1.x and gates RandomState/`IndexMap::new()` behind
 # `#[cfg(has_std)]`, which its build.rs only auto-detects on native. Force the
 # `std` feature on so it compiles for the wasm target too.
-indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"] }
+indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"], optional = true }
 napi = {version = "=3.11.0", features = ["napi3", "async"], default-features = false}
 napi-derive = "=3.6.0"
 # Multi-output shielded transfers rebuild the Orchard prove/sign pipeline
 # locally (dpp's helper is `pub(crate)`), which needs an `OsRng` from the same
 # rand version orchard is built against.
-rand = "0.8.5"
+rand = { version = "0.8.5", optional = true }
 serde = "1.0"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 hex = "0.4.3"
 sha2 = "0.10.8"
-# Used by the transparent Shield builder: a private-key-backed `Signer` impl
-# (async-trait) driven synchronously from the napi boundary (futures block_on).
-async-trait = "0.1"
-futures = "0.3"
+# Used by the shielded signer: private-key-backed `Signer` impls (async-trait)
+# consumed by the Orchard builder.
+async-trait = { version = "0.1", optional = true }
 
 
 [build-dependencies]

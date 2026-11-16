@@ -23,6 +23,16 @@ export class SerializedActionWASM {
     )
   }
 
+  bytes (): Uint8Array {
+    return this._rawSerializedAction.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): SerializedActionWASM {
+    return SerializedActionWASM.createFromRawInstance(
+      dppProvider.dpp.SerializedActionNAPI.fromBytes(bytes)
+    )
+  }
+
   get nullifier (): Uint8Array {
     return this._rawSerializedAction.nullifier
   }

@@ -22,6 +22,16 @@ export class AddressWitnessWASM {
     )
   }
 
+  bytes (): Uint8Array {
+    return this._rawWitness.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): AddressWitnessWASM {
+    return AddressWitnessWASM.createFromRawInstance(
+      dppProvider.dpp.AddressWitnessNAPI.fromBytes(bytes)
+    )
+  }
+
   getType (): string {
     return this._rawWitness.getType()
   }

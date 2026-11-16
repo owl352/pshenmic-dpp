@@ -1,4 +1,6 @@
 use dpp::address_funds::AddressFundsFeeStrategyStep;
+use dpp::bincode;
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 #[derive(Clone)]
@@ -27,6 +29,30 @@ impl AddressFundsFeeStrategyStepNAPI {
     #[napi(js_name = "ReduceOutput")]
     pub fn reduce_output(output: u16) -> AddressFundsFeeStrategyStepNAPI {
         AddressFundsFeeStrategyStepNAPI(AddressFundsFeeStrategyStep::ReduceOutput(output))
+    }
+
+    /// Consensus bincode encoding of the step (the domain `Encode` derive),
+    /// used to cross the base <-> shielded instance boundary as bytes.
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        Ok(bincode::encode_to_vec(&self.0, config)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+            .into())
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        let (step, _) = bincode::decode_from_slice_untrusted::<AddressFundsFeeStrategyStep, _>(
+            &bytes.to_vec(),
+            config,
+        )
+        .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+        Ok(Self(step))
     }
 
     #[napi(js_name = "getValue")]

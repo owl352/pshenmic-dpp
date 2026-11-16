@@ -1,4 +1,6 @@
+use dpp::bincode;
 use dpp::group::GroupStateTransitionInfo;
+use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::{dynamic_value::IdentifierLikeNAPI, identifier::IdentifierNAPI};
@@ -32,6 +34,30 @@ impl GroupStateTransitionInfoNAPI {
             action_id: IdentifierNAPI::try_from(action_id)?.into(),
             action_is_proposer,
         }))
+    }
+
+    /// Consensus bincode encoding of the info (the domain `Encode` derive),
+    /// used to cross the base <-> shielded instance boundary as bytes.
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        Ok(bincode::encode_to_vec(&self.0, config)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+            .into())
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        let (info, _) = bincode::decode_from_slice_untrusted::<GroupStateTransitionInfo, _>(
+            &bytes.to_vec(),
+            config,
+        )
+        .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+        Ok(Self(info))
     }
 
     #[napi(setter, js_name = "groupContractPosition")]

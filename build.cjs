@@ -6,6 +6,10 @@ const fs = require("fs");
 const { convertBinary } = require("./utils/convertBinary.mjs");
 const { buildWorkerBundle } = require("./utils/buildWorkerBundle.mjs");
 const {
+  prepareEmnapiBaseLink,
+  BASE_TARGET_FEATURES,
+} = require("./utils/prepareEmnapiBaseLink.mjs");
+const {
   getStructsForEsmExport,
 } = require("./utils/getStructsForEsmExport.mjs");
 const { name: moduleName } = require("./package.json");
@@ -16,10 +20,22 @@ const isRelease = buildProfile === "release";
 // Release wasm builds use the size-optimized `release-wasm` profile (Cargo.toml)
 // to stay under Chrome's 8MB sync-compile limit.
 const wasmProfile = isRelease ? "release-wasm" : buildProfile;
-// Toolchain used only for the wasm build (needs nightly `-Z build-std` to
-// rebuild std with atomics for the Orchard/Halo 2 proving stack). Pinnable so
+// Chrome refuses to sync-compile wasm larger than 8MB on the main thread.
+// BOTH binaries are sync-compiled there: the base at import time, the shielded
+// at initShielded() time (instantiateNapiModuleSync). The shielded load is off
+// the import path, but the same limit applies.
+const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
+// Toolchain used only for the SHIELDED wasm build (needs nightly `-Z build-std`
+// to rebuild std with atomics for the Orchard/Halo 2 proving stack). Pinnable so
 // published artifacts are reproducible and immune to nightly flag churn.
 const wasmToolchain = process.env.WASM_TOOLCHAIN ?? "nightly";
+// The BASE wasm is non-threaded: no build-std/atomics/tokio_unstable needed, so
+// it builds on stable. Fall back to the pinned nightly-2026-08-15 (still no
+// build-std/atomics) if stable ever fails; BASE_WASM_TOOLCHAIN pins a single
+// toolchain for reproducibility.
+const baseWasmToolchains = process.env.BASE_WASM_TOOLCHAIN
+  ? [process.env.BASE_WASM_TOOLCHAIN]
+  : ["stable", "nightly-2026-08-15"];
 const wasmOptScript =
   process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, "scripts/wasm-opt.sh");
 const binariesOutputDir =
@@ -30,7 +46,14 @@ const templatesOutputDir =
 const specificTarget = process.env.NATIVE_BUILD_TARGET;
 // BUILD_STEPS selects what to build, so CI can run the slow parts as parallel
 // jobs and assemble the package afterwards. Default: everything.
-//   wasm          wasm32-wasip1-threads binary -> binaries/wasm
+//   wasm          BOTH wasm binaries -> binaries/wasm:
+//                   base:     wasm32-wasip1 (non-threaded, --no-default-features,
+//                             stable) -> baseBytes.cjs. Sync-loaded at import
+//                             without cross-origin isolation; MUST stay < 8MB
+//                             (Chrome main-thread sync-compile limit).
+//                   shielded: wasm32-wasip1-threads (nightly, proving on) ->
+//                             shieldedBytes.cjs + workerBundle.cjs. Loaded on
+//                             demand via initShielded() (shared memory/workers).
 //   native        NATIVE_BUILD_TARGET bins -> binaries/native/<target>
 //   react-native  ferric-cli Android/iOS bins (+ napi typings)
 //   typings       napi typings only (what react-native also generates)
@@ -58,11 +81,21 @@ const nativeTargets = specificTarget
     "aarch64-pc-windows-msvc",
   ];
 
+// Threaded emnapi archives for the shielded build.
 const emnapi = path.join(
   require.resolve("emnapi"),
   "..",
   "lib",
   "wasm32-wasi-threads",
+);
+// Non-threaded emnapi variant for the base build. napi-build 2.3.2 hardcodes
+// the +atomics `-mt` archive name, so the base links against a generated
+// shadow of this dir's libemnapi-basic.a (utils/prepareEmnapiBaseLink.mjs).
+const emnapiBase = path.join(
+  require.resolve("emnapi"),
+  "..",
+  "lib",
+  "wasm32-wasip1",
 );
 
 const cargoTomlPath = path.join(__dirname, "Cargo.toml");
@@ -85,10 +118,104 @@ async function main() {
 }
 
 async function buildWasm() {
-  console.log("--- Building WASM (wasm32-wasip1-threads) ---");
+  await buildBaseWasm();
+  await buildShieldedWasm();
+}
+
+// The base is the non-threaded binary the browser entry sync-loads at import
+// time WITHOUT cross-origin isolation (dash-platform-extension#219): no
+// atomics, no SharedArrayBuffer, no workers, proving feature OFF.
+async function buildBaseWasm() {
+  console.log("--- Building base WASM (wasm32-wasip1, non-threaded) ---");
+  const targetWasmFile = path.join(
+    __dirname, "target", "wasm32-wasip1", wasmProfile, `${binName}.wasm`
+  );
+  const wasmOutputDir = path.join(binariesOutputDir, "wasm");
+
+  // wasm-opt rewrites the artifact in place; force a fresh link so a rebuild
+  // never measures/ship opt(opt(wasm)). Cargo re-links when the output is
+  // missing (compile cache is untouched).
+  fs.rmSync(targetWasmFile, { force: true });
+
+  // Stable first; pinned nightly fallback WITHOUT build-std/atomics/
+  // tokio_unstable (the base needs none of them). RUSTFLAGS is set explicitly
+  // so it wins over any inherited RUSTFLAGS (e.g. CI's `-crt-static`);
+  // .cargo/config.toml's atomics flags are scoped to the -threads target only.
+  const failures = [];
+  let toolchainUsed = null;
+  for (const tc of baseWasmToolchains) {
+    try {
+      await execTask(`rustup target add wasm32-wasip1 --toolchain ${tc}`, {
+        env: { ...process.env },
+      });
+      // napi-build 2.3.2 hardcodes the +atomics emnapi archive, which cannot
+      // link without TLS; generate the non-threaded shadow archive + stubs.
+      const emnapiLinkDir = prepareEmnapiBaseLink({
+        toolchain: tc,
+        linkDir: path.join(__dirname, "target", "emnapi-base-link"),
+        emnapiLibDir: emnapiBase,
+        rootDir: __dirname,
+      });
+      await execTask(
+        `cargo +${tc} build --target wasm32-wasip1 --no-default-features ${isRelease ? `--profile ${wasmProfile}` : ""}`,
+        {
+          env: {
+            ...process.env,
+            EMNAPI_LINK_DIR: emnapiLinkDir,
+            RUSTFLAGS: `-C target-feature=${BASE_TARGET_FEATURES}`,
+          },
+          maxBuffer: 1024 * 1024 * 50,
+        }
+      );
+      toolchainUsed = tc;
+      break;
+    } catch (error) {
+      failures.push(`${tc}: ${error.message}`);
+      console.error(`base wasm build with ${tc} failed:\n${error.stderr ?? error.message}`);
+    }
+  }
+  if (toolchainUsed === null) {
+    throw new Error(`base wasm build failed on all toolchains:\n${failures.join("\n")}`);
+  }
+  console.log(`base wasm toolchain: ${toolchainUsed}`);
+
+  assertInitializeExport(targetWasmFile, "base");
+
+  console.log("Running wasm-opt (base)");
+  await execTask(wasmOptScript, {
+    env: { ...process.env, OUTPUT_FILE: targetWasmFile.toString() },
+  });
+
+  // The base is instantiated synchronously at import time, so it must stay
+  // under Chrome's main-thread sync-compile limit (see the constant above).
+  const wasmSize = fs.statSync(targetWasmFile).size;
+  if (wasmSize >= CHROME_SYNC_COMPILE_LIMIT) {
+    throw new Error(
+      `base wasm binary is ${(wasmSize / 1024 / 1024).toFixed(2)}MB — over Chrome's ` +
+      "8MB main-thread sync-compile limit; the browser build would break at import time.",
+    );
+  }
+  console.log(`base wasm size after wasm-opt: ${(wasmSize / 1024 / 1024).toFixed(2)}MB`);
+
+  if (!fs.existsSync(wasmOutputDir)) {
+    fs.mkdirSync(wasmOutputDir, { recursive: true });
+  }
+  // Pre-split single-binary output; drop it so stale bytes never ship.
+  fs.rmSync(path.join(wasmOutputDir, "wasmBytes.cjs"), { force: true });
+
+  await convertBinary(targetWasmFile, path.join(wasmOutputDir, "baseBytes.cjs"));
+}
+
+// The shielded binary carries the Orchard/Halo 2 proving stack: wasm
+// threads/atomics, shared memory, workers. Loaded on demand via initShielded().
+async function buildShieldedWasm() {
+  console.log("--- Building shielded WASM (wasm32-wasip1-threads) ---");
   const targetWasmFile = path.join(
     __dirname, "target", "wasm32-wasip1-threads", wasmProfile, `${binName}.wasm`
   );
+
+  // Fresh link before wasm-opt (see buildBaseWasm): never opt(opt(wasm)).
+  fs.rmSync(targetWasmFile, { force: true });
 
   // The shielded (Orchard/Halo 2) proving stack needs wasm threads/atomics,
   // which require rebuilding std with atomics: nightly + `-Z build-std`.
@@ -115,44 +242,54 @@ async function buildWasm() {
         RUSTFLAGS:
           "-C target-feature=+atomics,+simd128,+bulk-memory,+mutable-globals -Z unstable-options -C panic=immediate-abort --cfg tokio_unstable",
       },
+      maxBuffer: 1024 * 1024 * 50,
     }
   );
 
-  // Without `_initialize` emnapi never runs the module's constructors and the
-  // import deadlocks once the tokio runtime spawns its first thread (see
-  // build.rs). Fail here instead of shipping a wasm that hangs.
-  const wasmExports = WebAssembly.Module.exports(
-    new WebAssembly.Module(fs.readFileSync(targetWasmFile)),
-  );
-  if (!wasmExports.some((e) => e.name === "_initialize")) {
-    throw new Error("wasm does not export `_initialize`: crt1-reactor.o was not linked");
-  }
+  assertInitializeExport(targetWasmFile, "shielded");
 
-  console.log("Running wasm-opt");
+  console.log("Running wasm-opt (shielded)");
   await execTask(wasmOptScript, {
     env: { ...process.env, OUTPUT_FILE: targetWasmFile.toString() },
   });
-
-  // Chrome refuses to sync-compile wasm larger than 8MB on the main thread,
-  // and the browser entry instantiates synchronously at import time.
-  const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
+  // The shielded module is compiled on demand (initShielded()), but still
+  // SYNCHRONOUSLY on the main thread (instantiateNapiModuleSync), so Chrome's
+  // 8MB sync-compile limit applies here too — just off the import path. Guard
+  // it so growth fails the build instead of breaking initShielded() in the
+  // browser (headroom was ~0.22MB at 7.78MB when the guard was added).
   const wasmSize = fs.statSync(targetWasmFile).size;
   if (wasmSize >= CHROME_SYNC_COMPILE_LIMIT) {
     throw new Error(
-      `wasm binary is ${(wasmSize / 1024 / 1024).toFixed(2)}MB — over Chrome's ` +
-      "8MB main-thread sync-compile limit; the browser build would break at import time.",
+      `shielded wasm binary is ${(wasmSize / 1024 / 1024).toFixed(2)}MB — over Chrome's ` +
+      "8MB main-thread sync-compile limit; initShielded() would fail in the browser.",
     );
   }
-  console.log(`wasm size after wasm-opt: ${(wasmSize / 1024 / 1024).toFixed(2)}MB`);
+  console.log(`shielded wasm size after wasm-opt: ${(wasmSize / 1024 / 1024).toFixed(2)}MB`);
 
   const wasmOutputDir = path.join(binariesOutputDir, "wasm");
   if (!fs.existsSync(wasmOutputDir)) {
     fs.mkdirSync(wasmOutputDir, { recursive: true });
   }
 
-  await convertBinary(targetWasmFile, path.join(wasmOutputDir, "wasmBytes.cjs"));
+  await convertBinary(targetWasmFile, path.join(wasmOutputDir, "shieldedBytes.cjs"));
 
   buildWorkerBundle(path.join(wasmOutputDir, "workerBundle.cjs"));
+}
+
+// Without `_initialize` emnapi never runs the module's constructors and the
+// import deadlocks (see build.rs). Fail here instead of shipping a wasm that
+// hangs. Checked BEFORE wasm-opt so a bad link is reported against the
+// linker's output, not the optimizer's. `label` distinguishes base vs shielded
+// (both binaries share the same file name).
+function assertInitializeExport(targetWasmFile, label) {
+  const wasmExports = WebAssembly.Module.exports(
+    new WebAssembly.Module(fs.readFileSync(targetWasmFile)),
+  );
+  if (!wasmExports.some((e) => e.name === "_initialize")) {
+    throw new Error(
+      `${label} wasm (${path.basename(targetWasmFile)}) does not export \`_initialize\`: crt1-reactor.o was not linked`,
+    );
+  }
 }
 
 async function buildNative() {
@@ -296,6 +433,16 @@ function bundle() {
 
   fs.writeFileSync(path.join(binariesOutputDir, "wasm.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, "wasmCreation.d.ts"), typingsForCodegen);
+  // shieldedCreation is a loader, not the napi module itself: type its single
+  // export. loadShielded() returns the full (threaded) napi exports object.
+  fs.writeFileSync(
+    path.join(binariesOutputDir, "shieldedCreation.d.ts"),
+    [
+      'import type * as bindings from "./bindingsTypes.js"',
+      'export declare function loadShielded(): typeof bindings & { default: typeof bindings }',
+    ].join("\n") + "\n",
+    "utf8",
+  );
   fs.writeFileSync(path.join(binariesOutputDir, "node.d.ts"), typingsForCodegen);
   fs.writeFileSync(path.join(binariesOutputDir, `${binName}.d.ts`), typingsForCodegen);
 }

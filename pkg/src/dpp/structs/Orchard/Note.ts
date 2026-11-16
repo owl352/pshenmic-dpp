@@ -7,7 +7,7 @@ export class NoteWASM {
   _rawNote: NoteNAPI
 
   constructor (address: OrchardAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array) {
-    this._rawNote = new dppProvider.dpp.NoteNAPI(
+    this._rawNote = new dppProvider.shielded.NoteNAPI(
       address._rawOrchardAddress,
       value.toString(),
       rho,

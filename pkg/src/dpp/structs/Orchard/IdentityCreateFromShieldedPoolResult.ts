@@ -14,12 +14,12 @@ export class IdentityCreateFromShieldedPoolResultWASM {
 
   get publicKeys (): IdentityPublicKeyInCreationWASM[] {
     return this._rawIdentityCreateFromShieldedPoolResult.publicKeys.map(
-      IdentityPublicKeyInCreationWASM.createFromRawInstance
+      IdentityPublicKeyInCreationWASM.fromBytes
     )
   }
 
   get identityId (): IdentifierWASM {
-    return new IdentifierWASM(this._rawIdentityCreateFromShieldedPoolResult.identityId)
+    return IdentifierWASM.fromBytes(this._rawIdentityCreateFromShieldedPoolResult.identityId)
   }
 
   get predictedFee (): bigint {
@@ -27,7 +27,7 @@ export class IdentityCreateFromShieldedPoolResultWASM {
   }
 
   get actions (): SerializedActionWASM[] {
-    return this._rawIdentityCreateFromShieldedPoolResult.actions.map(SerializedActionWASM.createFromRawInstance)
+    return this._rawIdentityCreateFromShieldedPoolResult.actions.map(SerializedActionWASM.fromBytes)
   }
 
   get anchor (): Uint8Array {

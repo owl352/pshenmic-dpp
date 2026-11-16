@@ -58,6 +58,14 @@ export class AssetLockProofWASM {
     return AssetLockProofWASM.createFromRawInstance(dppProvider.dpp.AssetLockProofNAPI.fromHex(value))
   }
 
+  bytes (): Uint8Array {
+    return this._rawAssetLockProof.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): AssetLockProofWASM {
+    return AssetLockProofWASM.createFromRawInstance(dppProvider.dpp.AssetLockProofNAPI.fromBytes(bytes))
+  }
+
   static createFromRawInstance (rawInstance: AssetLockProofNAPI): AssetLockProofWASM {
     const instance: AssetLockProofWASM = Object.create(AssetLockProofWASM.prototype)
     instance._rawAssetLockProof = rawInstance

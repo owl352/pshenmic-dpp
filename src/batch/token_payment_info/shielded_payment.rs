@@ -1,3 +1,4 @@
+use dpp::bincode;
 use dpp::tokens::token_payment_info::v1::TokenShieldedPayment;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -40,6 +41,32 @@ impl TokenShieldedPaymentNAPI {
             proof: js_proof.to_vec(),
             binding_signature: js_bytes_to_binding_signature(js_binding_signature)?,
         }))
+    }
+
+    /// Consensus bincode encoding of the payment (the domain `Encode` derive),
+    /// used to cross the base <-> shielded instance boundary as bytes:
+    /// `documentTokenPayment` proves it in the shielded instance, the base
+    /// instance re-wraps it into `TokenPaymentInfo.shieldedPayment`.
+    #[napi(js_name = "bytes")]
+    pub fn bytes(&self) -> Result<Uint8Array, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        Ok(bincode::encode_to_vec(&self.0, config)
+            .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+            .into())
+    }
+
+    #[napi(js_name = "fromBytes")]
+    pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
+        let config = bincode::config::standard().with_big_endian();
+
+        let (payment, _) = bincode::decode_from_slice_untrusted::<TokenShieldedPayment, _>(
+            &bytes.to_vec(),
+            config,
+        )
+        .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
+
+        Ok(Self(payment))
     }
 
     #[napi(getter, js_name = "amount")]

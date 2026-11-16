@@ -1,5 +1,5 @@
 import * as dpp from "pshenmic-dpp/wasm";
-import {IdentifierWASM, ShieldedBuilderWASM} from "pshenmic-dpp/wasm";
+import {IdentifierWASM, initShielded, ShieldedBuilderWASM} from "pshenmic-dpp/wasm";
 
 let identifierBytes: Uint8Array;
 
@@ -48,6 +48,12 @@ describe("dpp", function () {
   })
 
   describe('shielded init', function () {
+    // The base wasm (loaded at import) has no proving classes: the threaded
+    // shielded module is loaded on demand via initShielded() (SAB-gated).
+    beforeAll(async function () {
+      await initShielded();
+    });
+
     // init() builds the Halo 2 proving key on a single wasm thread; on 4-vCPU CI
     // runners it competes with the native proving suites (ShieldedBuilderV5)
     // jest runs in parallel, which pushes it past the 40s default.

@@ -31,6 +31,12 @@ export class ShieldedMemoWASM {
     )
   }
 
+  static fromBytes (bytes: Uint8Array): ShieldedMemoWASM {
+    return ShieldedMemoWASM.createFromRawInstance(
+      dppProvider.dpp.ShieldedMemoNAPI.fromBytes(bytes)
+    )
+  }
+
   static createFromRawInstance (rawInstance: ShieldedMemoNAPI): ShieldedMemoWASM {
     const instance: ShieldedMemoWASM = Object.create(ShieldedMemoWASM.prototype)
     instance._rawShieldedMemo = rawInstance

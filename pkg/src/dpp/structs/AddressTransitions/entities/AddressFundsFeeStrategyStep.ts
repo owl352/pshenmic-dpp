@@ -9,6 +9,16 @@ export class AddressFundsFeeStrategyStepWASM {
     this._rawAddressFundsFeeStrategyStep = addressFundsFeeStrategyStep
   }
 
+  bytes (): Uint8Array {
+    return this._rawAddressFundsFeeStrategyStep.bytes()
+  }
+
+  static fromBytes (bytes: Uint8Array): AddressFundsFeeStrategyStepWASM {
+    return AddressFundsFeeStrategyStepWASM.createFromRawInstance(
+      dppProvider.dpp.AddressFundsFeeStrategyStepNAPI.fromBytes(bytes)
+    )
+  }
+
   getValue (): number {
     return this._rawAddressFundsFeeStrategyStep.getValue()
   }

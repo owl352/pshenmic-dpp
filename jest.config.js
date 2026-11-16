@@ -1,5 +1,7 @@
 export default {
   modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  // Browser e2e (playwright) runs via `npm run test:e2e`, not jest.
+  testPathIgnorePatterns: ['<rootDir>/tests/e2e/'],
   moduleNameMapper: {
     '^(\\.\\.?\\/.+)\\.js$': '$1'
   },

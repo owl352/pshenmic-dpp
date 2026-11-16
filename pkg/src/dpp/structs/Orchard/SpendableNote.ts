@@ -8,7 +8,7 @@ export class SpendableNoteWASM {
   _rawSpendableNote: SpendableNoteNAPI
 
   constructor (note: NoteWASM, merklePath: MerklePathWASM) {
-    this._rawSpendableNote = new dppProvider.dpp.SpendableNoteNAPI(
+    this._rawSpendableNote = new dppProvider.shielded.SpendableNoteNAPI(
       note._rawNote,
       merklePath._rawMerklePath
     )
