@@ -53,12 +53,22 @@ const nodeBuiltinStub = {
   }
 }
 
-// Bundle the dist entry in memory. Returns a Map urlPath -> { content, type }
-// plus the entry/shielded chunk paths (the shielded chunk is the dynamic-import
-// target that contains shieldedCreation.cjs).
+// Bundle the dist entry PLUS the optional pshenmic-orchard package in memory.
+// The page entry imports orchard (which registers its loader on the global
+// symbol Symbol.for('pshenmic-dpp.shielded')) and re-exports dpp. initShielded()
+// then discovers orchard by symbol — no module-name resolution, so this survives
+// esbuild's renaming/chunking. Returns a Map urlPath -> { content, type } plus
+// the entry chunk path. The shielded WASM is compiled lazily inside
+// loadShielded() (initShielded), not at import — laziness is observed via the
+// instrumented WebAssembly.Module compile sizes, not a separate chunk fetch.
 export async function buildBundle () {
   const result = await build({
-    entryPoints: [path.join(ROOT, 'dist/src/wasm.js')],
+    stdin: {
+      contents: `import ${JSON.stringify(path.join(ROOT, 'packages/orchard/dist/index.cjs'))};
+export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};`,
+      resolveDir: ROOT,
+      loader: 'js'
+    },
     bundle: true,
     platform: 'browser',
     format: 'esm',
@@ -73,22 +83,17 @@ export async function buildBundle () {
 
   const files = new Map()
   let entryPath = null
-  let shieldedPath = null
   for (const file of result.outputFiles) {
     const urlPath = '/' + path.basename(file.path)
     files.set(urlPath, { content: file.contents, type: 'text/javascript' })
   }
   for (const [name, out] of Object.entries(result.metafile.outputs)) {
-    const urlPath = '/' + path.basename(name)
-    if (out.entryPoint === 'dist/src/wasm.js') entryPath = urlPath
-    if (Object.keys(out.inputs).some((i) => i.includes('shieldedCreation.cjs'))) {
-      shieldedPath = urlPath
-    }
+    if (out.entryPoint === '<stdin>') entryPath = '/' + path.basename(name)
   }
-  if (entryPath == null || shieldedPath == null) {
-    throw new Error('e2e bundle: could not identify entry / shielded chunk in esbuild metafile')
+  if (entryPath == null) {
+    throw new Error('e2e bundle: could not identify entry chunk in esbuild metafile')
   }
-  return { files, entryPath, shieldedPath, metafile: result.metafile }
+  return { files, entryPath, metafile: result.metafile }
 }
 
 function pageHtml (entryPath) {
@@ -156,8 +161,7 @@ const POPUP_HTML = `<!doctype html>
 // a CROSS-ORIGIN popup target (same host, different port = different origin).
 export async function startE2EServer ({ port = 0, host = '127.0.0.1' } = {}) {
   const bundle = await buildBundle()
-  const requests = [] // { path, status, at } — every request, for lazy/retry asserts
-  let failNextShielded = false
+  const requests = [] // { path, status, at } — every request, for lazy asserts
 
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost')
@@ -168,10 +172,6 @@ export async function startE2EServer ({ port = 0, host = '127.0.0.1' } = {}) {
       res.end(body)
     }
 
-    if (pathname === '/__control/fail-shielded-once') {
-      failNextShielded = true
-      return send(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' }, 'armed')
-    }
     if (pathname === '/__requests') {
       return send(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
         JSON.stringify(requests))
@@ -191,10 +191,6 @@ export async function startE2EServer ({ port = 0, host = '127.0.0.1' } = {}) {
     }
     const file = bundle.files.get(pathname)
     if (file != null) {
-      if (pathname === bundle.shieldedPath && failNextShielded) {
-        failNextShielded = false
-        return send(500, { 'Content-Type': 'text/plain' }, 'simulated shielded chunk load failure (once)')
-      }
       return send(200, {
         'Content-Type': file.type,
         'Cache-Control': 'no-store',
@@ -219,7 +215,6 @@ export async function startE2EServer ({ port = 0, host = '127.0.0.1' } = {}) {
     requests,
     pageUrl: (profile) => `${origin}/?profile=${profile}`,
     popupUrl: `${origin}/popup.html`,
-    failNextShieldedOnce: () => { failNextShielded = true },
     close: () => new Promise((resolve) => server.close(resolve))
   }
 }
@@ -231,7 +226,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const popupTarget = await startE2EServer({ port: port + 1 })
   console.log(`main:          ${main.origin}/?profile=none|same-origin|allow-popups`)
   console.log(`popup target:  ${popupTarget.popupUrl} (cross-origin)`)
-  console.log(`shielded chunk: ${main.bundle.shieldedPath}`)
   console.log('Ctrl-C to stop')
   process.on('SIGINT', async () => {
     await Promise.all([main.close(), popupTarget.close()])

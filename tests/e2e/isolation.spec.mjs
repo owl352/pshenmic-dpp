@@ -61,10 +61,11 @@ const unhex = (s) => new Uint8Array(s.match(/../g).map((h) => parseInt(h, 16)))
 // test asserts which module was compiled from these.
 const { decode } = require(path.join(ROOT, 'dist/utils/base122.cjs'))
 const { decompressSync } = require('fflate')
-const moduleSize = (name) =>
-  decompressSync(new Uint8Array(decode(require(path.join(ROOT, `dist/binaries/wasm/${name}.cjs`)).bytes))).length
-const BASE_SIZE = moduleSize('baseBytes')
-const SHIELDED_SIZE = moduleSize('shieldedBytes')
+const moduleSize = (p) =>
+  decompressSync(new Uint8Array(decode(require(p).bytes))).length
+const BASE_SIZE = moduleSize(path.join(ROOT, 'dist/binaries/wasm/baseBytes.cjs'))
+// The shielded bytes ship in the separate pshenmic-orchard package.
+const SHIELDED_SIZE = moduleSize(path.join(ROOT, 'packages/orchard/binaries/wasm/shieldedBytes.cjs'))
 
 // Builds the same shieldFromAssetLock transition as the Task 4 baseline,
 // in-page, and returns JSON-serializable deterministic fields + full bytes.
@@ -171,8 +172,6 @@ async function main () {
     await page.waitForTimeout(300) // let the COOP browsing-context-group swap settle
     return popup
   }
-  const shieldedRequests = () => srv.requests.filter((r) => r.path === srv.bundle.shieldedPath)
-
   try {
     // ------------------------------------------------------------------ (a)
     await run('(a) no headers: base works without isolation, initShielded rejects, proving gated', async () => {
@@ -208,7 +207,6 @@ async function main () {
       assert.match(r.builderErr, /initShielded/)
       assert.match(r.addrErr, /initShielded/)
       assert.deepEqual(r.compiles, [BASE_SIZE]) // only the base module compiled
-      assert.equal(shieldedRequests().length, 0) // shielded chunk never even fetched
       await page.close()
     })
 
@@ -314,16 +312,14 @@ async function main () {
     })
 
     // ------------------------------------------------------------------ (d)
-    await run('(d) lazy: base import neither fetches nor compiles shielded; initShielded does both, once', async () => {
+    await run('(d) lazy: base import does not compile shielded; initShielded compiles it, once', async () => {
       const page = await openPage('same-origin')
-      const reqsBefore = shieldedRequests().length
       const atImport = await page.evaluate(() => ({
         compiles: window.__wasmCompiles, workers: window.__workers.length
       }))
       assert.ok(atImport.compiles.includes(BASE_SIZE), 'base compiled at import')
       assert.ok(!atImport.compiles.includes(SHIELDED_SIZE), 'shielded NOT compiled at import')
       assert.equal(atImport.workers, 0, 'no workers at import')
-      assert.equal(shieldedRequests().length, reqsBefore, 'shielded chunk NOT fetched at import')
       const r = await page.evaluate(async () => {
         const dpp = window.__dpp
         const p1 = dpp.initShielded()
@@ -333,37 +329,12 @@ async function main () {
       })
       assert.equal(r.samePromise, true, 'concurrent/repeated initShielded shares one promise')
       assert.ok(r.compiles.includes(SHIELDED_SIZE), 'shielded compiled after initShielded')
-      assert.equal(shieldedRequests().length - reqsBefore, 1, 'shielded chunk fetched exactly once')
       await page.close()
     })
 
-    // ------------------------------------------------------------------ (e)
-    await run('(e) failure->retry: shielded chunk 500s once, initShielded rejects, retry succeeds (cache cleared)', async () => {
-      const page = await openPage('same-origin')
-      const reqsBefore = shieldedRequests().length
-      srv.failNextShieldedOnce()
-      const r = await page.evaluate(async () => {
-        const dpp = window.__dpp
-        const p1 = dpp.initShielded()
-        let err1 = null
-        try { await p1 } catch (e) { err1 = String((e && e.message) || e) }
-        const p2 = dpp.initShielded()
-        let err2 = null
-        try { await p2 } catch (e) { err2 = String((e && e.message) || e) }
-        let addrOk = false
-        try { dpp.OrchardAddressWASM.fromSeed(new Uint8Array(64).fill(7), 1, 0); addrOk = true } catch (e) {}
-        return { err1, err2, samePromise: p1 === p2, addrOk }
-      })
-      assert.ok(r.err1 != null, 'first initShielded must reject when the chunk fails to load')
-      assert.equal(r.err2, null, `retry must succeed, got: ${r.err2}`)
-      assert.equal(r.samePromise, false, 'failed promise must be cleared from the cache')
-      assert.equal(r.addrOk, true, 'shielded classes usable after retry')
-      const reqs = shieldedRequests().slice(reqsBefore)
-      assert.equal(reqs.length, 2, 'shielded chunk fetched twice (fail then retry)')
-      assert.deepEqual(reqs.map((x) => x.status), [500, 200])
-      console.log(`      first load rejected: ${r.err1.slice(0, 90)}...`)
-      await page.close()
-    })
+    // (e) failure->retry moved to the Node suite (InitShielded.spec.ts): with the
+    // registry model initShielded() loads orchard synchronously (no network chunk
+    // to fail), so the cache-clear/retry path is exercised there, not via a 500.
 
     // ------------------------------------------- Firefox cross-browser check
     // The COOP/popup mechanism is spec-defined; verify Firefox agrees on the
