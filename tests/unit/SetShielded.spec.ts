@@ -1,13 +1,13 @@
-// Explicit orchard injection: the consumer imports orchard's loadShielded and
-// hands dpp the instance via setShielded(). Both imports are static, so this is
-// bundler-renaming robust — no global registry is involved.
+// Explicit shielded-module injection: the consumer imports pshenmic-orchard's
+// loadShielded and hands dpp the instance via setShielded(). Both imports are
+// static, so this is bundler-renaming robust — no global registry is involved.
 import { loadShielded } from 'pshenmic-orchard'
 import { setShielded, OrchardAddressWASM, ShieldedBuilderWASM } from 'pshenmic-dpp/wasm'
 
 const SEED = new Uint8Array(64).fill(7)
 
-describe('setShielded (explicit orchard injection)', function () {
-  test('orchard exports loadShielded as a function', function () {
+describe('setShielded (explicit shielded-module injection)', function () {
+  test('pshenmic-orchard exports loadShielded as a function', function () {
     expect(typeof loadShielded).toBe('function')
   })
 
@@ -20,7 +20,7 @@ describe('setShielded (explicit orchard injection)', function () {
     expect(builder).toBeDefined()
   }, 120000)
 
-  test('setShielded rejects a value that is not the orchard instance', function () {
+  test('setShielded rejects a value that is not the shielded module instance', function () {
     expect(() => setShielded(null as never)).toThrow(/loadShielded/)
     expect(() => setShielded(42 as never)).toThrow(/loadShielded/)
   })

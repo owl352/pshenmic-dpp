@@ -1,5 +1,5 @@
 import type * as protocol from '../../binaries/bindingsTypes.js'
-import type * as orchardProtocol from 'pshenmic-orchard/bindingsTypes'
+import type * as shieldedProtocol from 'pshenmic-orchard/bindingsTypes'
 import {
   ActionGoal, AssetLockProofType, GasFeesPaidByWASM,
   KeyType,
@@ -55,7 +55,7 @@ import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.j
 export type DashPlatformProtocol = typeof protocol
 /** The proving (Orchard/Halo 2) NAPI surface, provided by pshenmic-orchard via
  * setShielded(loadShielded()). dpp itself carries no proving code. */
-export type OrchardProtocol = typeof import('pshenmic-orchard/bindingsTypes')
+export type ShieldedProtocol = typeof import('pshenmic-orchard/bindingsTypes')
 export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM
 export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM
 
@@ -71,7 +71,7 @@ export type TokenEmergencyActionLike = TokenEmergencyActionWASM | keyof typeof T
 export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType | Lowercase<keyof typeof AssetLockProofType>
 export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>
 export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>
-export type ScopeLike = orchardProtocol.ScopeNAPI | keyof typeof orchardProtocol.ScopeNAPI | Lowercase<keyof typeof orchardProtocol.ScopeNAPI>
+export type ScopeLike = shieldedProtocol.ScopeNAPI | keyof typeof shieldedProtocol.ScopeNAPI | Lowercase<keyof typeof shieldedProtocol.ScopeNAPI>
 export type ContractFeePotLike = ContractFeePot | keyof typeof ContractFeePot | Lowercase<keyof typeof ContractFeePot>
 export type BatchTypeLike = BatchType | keyof typeof BatchType | Lowercase<keyof typeof BatchType>
 
