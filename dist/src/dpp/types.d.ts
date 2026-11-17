@@ -42,7 +42,7 @@ import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.j
 export type DashPlatformProtocol = typeof protocol;
 /** The proving (Orchard/Halo 2) NAPI surface, provided by pshenmic-orchard via
  * setShielded(loadShielded()). dpp itself carries no proving code. */
-export type OrchardProtocol = typeof orchardProtocol;
+export type OrchardProtocol = typeof import('pshenmic-orchard/bindingsTypes');
 export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM;
 export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM;
 export type KeyTypeLike = KeyType | keyof typeof KeyType | Lowercase<keyof typeof KeyType>;
