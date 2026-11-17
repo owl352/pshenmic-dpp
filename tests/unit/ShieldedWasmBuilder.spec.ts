@@ -15,7 +15,7 @@ import {
   InputAddressWASM,
   KeyType,
   NoteWASM,
-  OrchardAddressWASM,
+  ShieldedAddressWASM,
   OutPointWASM,
   PlatformAddressWASM,
   PoolingWASM,
@@ -39,7 +39,7 @@ import {
   TokenUnshieldWithShieldedFeeTransitionWASM,
   UnshieldTransitionWASM,
   setShielded,
-  orchardOvkFromSeed
+  shieldedOvkFromSeed
 } from 'pshenmic-dpp/wasm'
 
 // Every builder method that crosses the base <-> shielded instance boundary,
@@ -77,7 +77,7 @@ interface Pool {
 }
 
 function poolWithNote (value: bigint, rseedByte: number): Pool {
-  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+  const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
   const rho = new Uint8Array(32)
   rho[0] = 1
   const note = new NoteWASM(address, value, rho, new Uint8Array(32).fill(rseedByte))
@@ -111,7 +111,7 @@ function expectByteRoundTrip (st: StateTransitionWASM): void {
 
 describe('ShieldedBuilder cross-boundary (wasm entry)', function () {
   let builder: ShieldedBuilderWASM
-  let address: OrchardAddressWASM
+  let address: ShieldedAddressWASM
   let memo: ShieldedMemoWASM
   let privateKey: PrivateKeyWASM
   let authKey: IdentityPublicKeyWASM
@@ -130,7 +130,7 @@ describe('ShieldedBuilder cross-boundary (wasm entry)', function () {
     setShielded(loadShielded())
     builder = new ShieldedBuilderWASM()
     await builder.init()
-    address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+    address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     privateKey = PrivateKeyWASM.fromWIF(WIF)
     authKey = key(1, Purpose.AUTHENTICATION, SecurityLevel.CRITICAL)
@@ -166,7 +166,7 @@ describe('ShieldedBuilder cross-boundary (wasm entry)', function () {
   }, PROVING_TIMEOUT)
 
   test('shield (transparent -> pool)', async function () {
-    const senderOvk = orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
+    const senderOvk = shieldedOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
     const inputAddress = platformAddressFromPrivateKey(privateKey)
     const input = new InputAddressWASM(inputAddress, 0, DASH / 2n)
 

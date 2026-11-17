@@ -3,16 +3,16 @@
 import { loadShielded } from 'pshenmic-orchard'
 import {
   ShieldedMemoWASM,
-  OrchardAddressWASM,
+  ShieldedAddressWASM,
   FullViewingKeyWASM,
   IncomingViewingKeyWASM,
-  orchardOvkFromSeed,
+  shieldedOvkFromSeed,
   NoteWASM,
   MerklePathWASM,
   SpendableNoteWASM,
   CommitmentTreeWASM,
   ShieldedBuilderWASM,
-  OrchardProverWASM,
+  ShieldedProverWASM,
   InputAddressWASM,
   AddressFundsFeeStrategyStepWASM,
   PrivateKeyWASM,
@@ -53,7 +53,7 @@ function hexToBytes (hex: string): Uint8Array {
 // A canonical Orchard note: rho is a valid Pallas base-field element (value 1),
 // rseed is non-degenerate. Produces a valid commitment (cmx) the tree accepts.
 function createTestNote (value: bigint = 1000n): NoteWASM {
-  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+  const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
   const rho = new Uint8Array(32)
   rho[0] = 1
   const rseed = new Uint8Array(32).fill(0x42)
@@ -143,15 +143,15 @@ describe('ShieldedMemo', function () {
 describe('OrchardAddress', function () {
   describe('fromSeed', function () {
     test('should derive an address from a seed', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(address).toBeInstanceOf(OrchardAddressWASM)
+      expect(address).toBeInstanceOf(ShieldedAddressWASM)
       expect(address.bytes().length).toEqual(43)
     })
 
     test('should be deterministic for the same seed', function () {
-      const a = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
-      const b = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const a = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const b = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
       expect(a.bytes()).toEqual(b.bytes())
     })
@@ -159,24 +159,24 @@ describe('OrchardAddress', function () {
 
   describe('serialization', function () {
     test('should roundtrip through bytes', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
-      const restored = OrchardAddressWASM.fromBytes(address.bytes())
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const restored = ShieldedAddressWASM.fromBytes(address.bytes())
 
       expect(restored.bytes()).toEqual(address.bytes())
     })
 
     test('should roundtrip through bech32m', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const bech32m = address.toBech32m('testnet')
-      const restored = OrchardAddressWASM.fromBech32m(bech32m)
+      const restored = ShieldedAddressWASM.fromBech32m(bech32m)
 
       expect(restored.bytes()).toEqual(address.bytes())
     })
   })
 
-  describe('orchardOvkFromSeed', function () {
+  describe('shieldedOvkFromSeed', function () {
     test('should derive a 32-byte outgoing viewing key', function () {
-      const ovk = orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const ovk = shieldedOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
 
       expect(ovk.length).toEqual(32)
     })
@@ -186,28 +186,28 @@ describe('OrchardAddress', function () {
     test('should match the address derived from the same seed', function () {
       const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(OrchardAddressWASM.fromFullViewingKey(fvk).bytes())
-        .toEqual(OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+      expect(ShieldedAddressWASM.fromFullViewingKey(fvk).bytes())
+        .toEqual(ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
     })
 
     test('should derive a different address per diversifier index', function () {
       const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(OrchardAddressWASM.fromFullViewingKey(fvk, 1).bytes())
-        .not.toEqual(OrchardAddressWASM.fromFullViewingKey(fvk, 0).bytes())
+      expect(ShieldedAddressWASM.fromFullViewingKey(fvk, 1).bytes())
+        .not.toEqual(ShieldedAddressWASM.fromFullViewingKey(fvk, 0).bytes())
     })
 
     test('should derive a different address per scope', function () {
       const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'internal').bytes())
-        .not.toEqual(OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'external').bytes())
+      expect(ShieldedAddressWASM.fromFullViewingKey(fvk, 0, 'internal').bytes())
+        .not.toEqual(ShieldedAddressWASM.fromFullViewingKey(fvk, 0, 'external').bytes())
     })
 
     test('should reject an unknown scope', function () {
       const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(() => OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'nope' as any)).toThrow()
+      expect(() => ShieldedAddressWASM.fromFullViewingKey(fvk, 0, 'nope' as any)).toThrow()
     })
   })
 
@@ -215,15 +215,15 @@ describe('OrchardAddress', function () {
     test('should match the address derived from the same seed', function () {
       const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(OrchardAddressWASM.fromIncomingViewingKey(ivk).bytes())
-        .toEqual(OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
+      expect(ShieldedAddressWASM.fromIncomingViewingKey(ivk).bytes())
+        .toEqual(ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT).bytes())
     })
 
     test('should derive a different address per diversifier index', function () {
       const ivk = IncomingViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(OrchardAddressWASM.fromIncomingViewingKey(ivk, 7).bytes())
-        .not.toEqual(OrchardAddressWASM.fromIncomingViewingKey(ivk, 0).bytes())
+      expect(ShieldedAddressWASM.fromIncomingViewingKey(ivk, 7).bytes())
+        .not.toEqual(ShieldedAddressWASM.fromIncomingViewingKey(ivk, 0).bytes())
     })
   })
 
@@ -231,8 +231,8 @@ describe('OrchardAddress', function () {
     test('should derive the internal-scope address', function () {
       const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT, 0, 'internal').bytes())
-        .toEqual(OrchardAddressWASM.fromFullViewingKey(fvk, 0, 'internal').bytes())
+      expect(ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT, 0, 'internal').bytes())
+        .toEqual(ShieldedAddressWASM.fromFullViewingKey(fvk, 0, 'internal').bytes())
     })
   })
 })
@@ -274,10 +274,10 @@ describe('FullViewingKey', function () {
   })
 
   describe('toOvk', function () {
-    test('should match orchardOvkFromSeed for the external scope', function () {
+    test('should match shieldedOvkFromSeed for the external scope', function () {
       const fvk = FullViewingKeyWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
 
-      expect(fvk.toOvk()).toEqual(orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT))
+      expect(fvk.toOvk()).toEqual(shieldedOvkFromSeed(SEED, COIN_TYPE, ACCOUNT))
       expect(fvk.toOvk('internal')).not.toEqual(fvk.toOvk('external'))
     })
   })
@@ -366,7 +366,7 @@ describe('Note', function () {
     })
 
     test('should reject an invalid rho', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const invalidRho = new Uint8Array(32).fill(0xff) // not a canonical field element
       const rseed = new Uint8Array(32).fill(0x42)
 
@@ -378,7 +378,7 @@ describe('Note', function () {
     test('should return all fields', function () {
       const note = createTestNote(1234n)
 
-      expect(note.address).toBeInstanceOf(OrchardAddressWASM)
+      expect(note.address).toBeInstanceOf(ShieldedAddressWASM)
       expect(note.value).toEqual(1234n)
       expect(note.rho.length).toEqual(32)
       expect(note.rseed.length).toEqual(32)
@@ -506,13 +506,13 @@ describe('SpendableNote', function () {
   })
 })
 
-describe('OrchardProver', function () {
+describe('ShieldedProver', function () {
   // Initializing the prover builds the Halo 2 proving key (~seconds).
   test('should construct a prover', async function () {
-    const prover = new OrchardProverWASM()
+    const prover = new ShieldedProverWASM()
     await prover.init()
 
-    expect(prover).toBeInstanceOf(OrchardProverWASM)
+    expect(prover).toBeInstanceOf(ShieldedProverWASM)
   }, 30000)
 })
 
@@ -534,8 +534,8 @@ describe('ShieldedBuilder', function () {
 
   describe('shield (transparent -> pool deposit)', function () {
     test('should build and prove a shield transition', async function () {
-      const recipient = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
-      const senderOvk = orchardOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const recipient = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const senderOvk = shieldedOvkFromSeed(SEED, COIN_TYPE, ACCOUNT)
 
       const privateKey = PrivateKeyWASM.fromWIF(WIF)
       const inputAddress = platformAddressFromPrivateKey(privateKey)

@@ -11,7 +11,7 @@ import {
   IdentityWASM,
   KeyType,
   NoteWASM,
-  OrchardAddressWASM,
+  ShieldedAddressWASM,
   PrivateKeyWASM,
   Purpose,
   SecurityLevel,
@@ -47,7 +47,7 @@ interface Pool {
 
 /** A pool holding one note of `value` owned by the seed account, witnessed against its anchor **/
 function poolWithNote (value: bigint, rseedByte: number): Pool {
-  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+  const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
   const rho = new Uint8Array(32)
   rho[0] = 1
   const note = new NoteWASM(address, value, rho, new Uint8Array(32).fill(rseedByte))
@@ -79,14 +79,14 @@ describe('ShieldedBuilder v5', function () {
   // Fixtures are created AFTER setShielded() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves.
-  let address: OrchardAddressWASM
+  let address: ShieldedAddressWASM
   let memo: ShieldedMemoWASM
   // token batch transitions must be signed with a critical key
   const authKey = key(1, Purpose.AUTHENTICATION, SecurityLevel.CRITICAL)
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+    address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()
     await builder.init()

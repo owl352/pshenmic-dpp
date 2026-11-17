@@ -174,7 +174,7 @@ ___
 These proving classes are provided by the separate `pshenmic-orchard` package.
 Call `setShielded(loadShielded())` first (the browser wasm path needs isolation) — see
 [Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
-- `OrchardAddressWASM`, `orchardOvkFromSeed`
+- `ShieldedAddressWASM`, `shieldedOvkFromSeed`
 - `FullViewingKeyWASM`
 - `IncomingViewingKeyWASM`
 - `NoteWASM`
@@ -184,7 +184,7 @@ Call `setShielded(loadShielded())` first (the browser wasm path needs isolation)
 - `ShieldedOutputWASM`
 - `MerklePathWASM`
 - `CommitmentTreeWASM`
-- `OrchardProverWASM`
+- `ShieldedProverWASM`
 - `ShieldedBuilderWASM`
 - `ShieldedWithdrawalResultWASM`
 - `IdentityCreateFromShieldedPoolResultWASM`

@@ -72,8 +72,8 @@ describe("dpp", function () {
       const seed = new Uint8Array(64).fill(7);
 
       // created BEFORE init — must stay usable by the proving call
-      const recipient = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0);
-      const senderOvk = dpp.orchardOvkFromSeed(seed, 1, 0);
+      const recipient = dpp.ShieldedAddressWASM.fromSeed(seed, 1, 0);
+      const senderOvk = dpp.shieldedOvkFromSeed(seed, 1, 0);
       const privateKey = dpp.PrivateKeyWASM.fromWIF('cUy4wbim4y9NDwC24omx8oWY5WqfmjSU2gdcZtTXza2xDCAkQXRP');
       const outPoint = new dpp.OutPointWASM('79af4b339ddfee8c9b6d08d74155373c6ef547cda5e65473a254b9b0f8533f0c', 0);
       const assetLockProof = dpp.AssetLockProofWASM.createChainAssetLockProof(1499737, outPoint);

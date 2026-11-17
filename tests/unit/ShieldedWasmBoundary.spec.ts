@@ -2,7 +2,7 @@ import { loadShielded } from 'pshenmic-orchard'
 import {
   CommitmentTreeWASM,
   NoteWASM,
-  OrchardAddressWASM,
+  ShieldedAddressWASM,
   RecoveredNoteWASM,
   SerializedActionWASM,
   ShieldedBuilderWASM,
@@ -31,7 +31,7 @@ const PROVING_TIMEOUT = 120000
 
 /** A pool holding one note of `value` owned by the seed account, witnessed against its anchor **/
 function poolWithNote (value: bigint, rseedByte: number): { spends: SpendableNoteWASM[], anchor: Uint8Array } {
-  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+  const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
   const rho = new Uint8Array(32)
   rho[0] = 1
   const note = new NoteWASM(address, value, rho, new Uint8Array(32).fill(rseedByte))
@@ -54,7 +54,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
 
   describe('ShieldedOutputWASM (memo crosses as bytes)', function () {
     test('constructor accepts a base-instance memo and getters round-trip', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const memo = ShieldedMemoWASM.fromString('wasm boundary')
 
       // Before the fix this threw: "Failed to recover `ShieldedMemoNAPI` type
@@ -69,7 +69,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
     })
 
     test('memo getter result is base-typed and re-crosses the boundary', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const output = new ShieldedOutputWASM(address, BigInt(5), ShieldedMemoWASM.empty())
 
       // The getter must re-wrap via fromBytes (base instance), not hand out a
@@ -80,7 +80,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
     })
 
     test('setters cross as bytes too', function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const output = new ShieldedOutputWASM(address, BigInt(1), ShieldedMemoWASM.empty())
 
       const newMemo = ShieldedMemoWASM.fromString('replaced')
@@ -88,7 +88,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
       expect(output.memo.toString()).toEqual('replaced')
       expect(output.memo.toBytes()).toEqual(newMemo.toBytes())
 
-      const newAddress = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT, 1)
+      const newAddress = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT, 1)
       output.address = newAddress
       expect(output.address.bytes()).toEqual(newAddress.bytes())
 
@@ -116,7 +116,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
 
   describe('shieldedTransferMulti end-to-end on the wasm split', function () {
     test('proves a multi-output transfer and recovers its notes', async function () {
-      const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+      const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
       const pool = poolWithNote(BigInt(100_000_000_000), 0x61)
       const outputs = [
         new ShieldedOutputWASM(address, BigInt(1_000_000), ShieldedMemoWASM.fromString('first')),

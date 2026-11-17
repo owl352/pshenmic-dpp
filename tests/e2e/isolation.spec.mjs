@@ -78,7 +78,7 @@ async function buildTransitionInPage () {
   const seed = new Uint8Array(window.__inputs.seed)
   const builder = new dpp.ShieldedBuilderWASM()
   await builder.init()
-  const recipient = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0)
+  const recipient = dpp.ShieldedAddressWASM.fromSeed(seed, 1, 0)
   const privateKey = dpp.PrivateKeyWASM.fromWIF(window.__inputs.wif)
   const outPoint = new dpp.OutPointWASM(window.__inputs.txid, 0)
   const assetLockProof = dpp.AssetLockProofWASM.createChainAssetLockProof(window.__inputs.coreHeight, outPoint)
@@ -109,7 +109,7 @@ async function buildTransitionNative () {
   const seed = new Uint8Array(SEED)
   const builder = new native.ShieldedBuilderWASM()
   await builder.init()
-  const recipient = native.OrchardAddressWASM.fromSeed(seed, 1, 0)
+  const recipient = native.ShieldedAddressWASM.fromSeed(seed, 1, 0)
   const privateKey = native.PrivateKeyWASM.fromWIF(WIF)
   const outPoint = new native.OutPointWASM(TXID, 0)
   const assetLockProof = native.AssetLockProofWASM.createChainAssetLockProof(CORE_HEIGHT, outPoint)
@@ -191,7 +191,7 @@ async function main () {
         let builderErr = null
         try { await new dpp.ShieldedBuilderWASM().init() } catch (e) { builderErr = String(e) }
         let addrErr = null
-        try { dpp.OrchardAddressWASM.fromSeed(new Uint8Array(64).fill(7), 1, 0) } catch (e) { addrErr = String(e) }
+        try { dpp.ShieldedAddressWASM.fromSeed(new Uint8Array(64).fill(7), 1, 0) } catch (e) { addrErr = String(e) }
         return {
           isolated: crossOriginIsolated,
           sab: typeof SharedArrayBuffer,

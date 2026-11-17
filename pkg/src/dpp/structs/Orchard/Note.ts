@@ -1,26 +1,26 @@
 import type { NoteNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
-import { OrchardAddressWASM } from './OrchardAddress.js'
+import { ShieldedAddressWASM } from './ShieldedAddress.js'
 
 export class NoteWASM {
   /** @private **/
   _rawNote: NoteNAPI
 
-  constructor (address: OrchardAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array) {
+  constructor (address: ShieldedAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array) {
     this._rawNote = new dppProvider.shielded.NoteNAPI(
-      address._rawOrchardAddress,
+      address._rawShieldedAddress,
       value.toString(),
       rho,
       rseed
     )
   }
 
-  get address (): OrchardAddressWASM {
-    return OrchardAddressWASM.createFromRawInstance(this._rawNote.address)
+  get address (): ShieldedAddressWASM {
+    return ShieldedAddressWASM.createFromRawInstance(this._rawNote.address)
   }
 
-  set address (value: OrchardAddressWASM) {
-    this._rawNote.address = value._rawOrchardAddress
+  set address (value: ShieldedAddressWASM) {
+    this._rawNote.address = value._rawShieldedAddress
   }
 
   get value (): bigint {

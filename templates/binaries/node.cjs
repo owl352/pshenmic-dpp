@@ -51,8 +51,8 @@ function getTarget() {
 // against a system dependency (e.g. the VC++ runtime on Windows). None of that
 // should be fatal — any load failure degrades to the base WebAssembly module
 // instead of taking the whole import down. The base carries no proving
-// classes; initShielded() loads the threaded shielded wasm on demand in that
-// case (see src/native.ts).
+// classes; setShielded(loadShielded()) provides the proving module on demand in
+// that case (see src/native.ts).
 function loadNative() {
   const target = getTarget();
   if (target === null) {

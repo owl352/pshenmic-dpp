@@ -70,7 +70,7 @@ import { loadShielded } from ${JSON.stringify(ORCHARD_ENTRY)};
 const seed = new Uint8Array(64).fill(7);
 try {
   dpp.setShielded(loadShielded());
-  const address = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0);
+  const address = dpp.ShieldedAddressWASM.fromSeed(seed, 1, 0);
   console.log('LOAD_OK:' + address.bytes().length);
 } catch (e) { console.error('LOAD_FAIL:' + ((e && e.message) || e)); process.exit(1); }
 `, path.join(outdir, 'single'))
@@ -97,9 +97,9 @@ const toHex = (b) => Array.from(b).map((x) => x.toString(16).padStart(2, '0')).j
 try {
   dpp1.setShielded(loadShielded());
   dpp2.setShielded(loadShielded());
-  if (dpp1.OrchardAddressWASM === dpp2.OrchardAddressWASM) throw new Error('copies are not distinct instances');
-  const a1 = dpp1.OrchardAddressWASM.fromSeed(seed, 1, 0);
-  const a2 = dpp2.OrchardAddressWASM.fromSeed(seed, 1, 0);
+  if (dpp1.ShieldedAddressWASM === dpp2.ShieldedAddressWASM) throw new Error('copies are not distinct instances');
+  const a1 = dpp1.ShieldedAddressWASM.fromSeed(seed, 1, 0);
+  const a2 = dpp2.ShieldedAddressWASM.fromSeed(seed, 1, 0);
   if (toHex(a1.bytes()) !== toHex(a2.bytes())) throw new Error('copies disagree on address bytes');
   console.log('TWOCOPY_OK');
 } catch (e) { console.error('TWOCOPY_FAIL:' + ((e && e.message) || e)); process.exit(1); }

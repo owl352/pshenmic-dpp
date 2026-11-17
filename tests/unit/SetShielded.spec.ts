@@ -2,7 +2,7 @@
 // loadShielded and hands dpp the instance via setShielded(). Both imports are
 // static, so this is bundler-renaming robust — no global registry is involved.
 import { loadShielded } from 'pshenmic-orchard'
-import { setShielded, OrchardAddressWASM, ShieldedBuilderWASM } from 'pshenmic-dpp/wasm'
+import { setShielded, ShieldedAddressWASM, ShieldedBuilderWASM } from 'pshenmic-dpp/wasm'
 
 const SEED = new Uint8Array(64).fill(7)
 
@@ -13,7 +13,7 @@ describe('setShielded (explicit shielded-module injection)', function () {
 
   test('setShielded(loadShielded()) enables the shielded classes', async function () {
     setShielded(loadShielded())
-    const address = OrchardAddressWASM.fromSeed(SEED, 1, 0)
+    const address = ShieldedAddressWASM.fromSeed(SEED, 1, 0)
     expect(address.bytes().length).toBe(43)
     const builder = new ShieldedBuilderWASM()
     await builder.init()
