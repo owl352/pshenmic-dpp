@@ -1,4 +1,4 @@
-import type { CommitmentTreeNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { CommitmentTreeNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { MerklePathWASM } from './MerklePath.js'
 

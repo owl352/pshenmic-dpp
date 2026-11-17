@@ -1,3 +1,6 @@
+// Registers the orchard loader on the global symbol so initShielded() can
+// load the proving module (dpp itself is base-only on every entry now).
+import 'pshenmic-orchard'
 import {
   ShieldedMemoWASM,
   OrchardAddressWASM,
@@ -19,8 +22,8 @@ import {
   initShielded
 } from 'pshenmic-dpp'
 
-// Entry-agnostic: no-op on the native addon, loads the shielded module on the
-// wasm entry (where the proving classes live behind initShielded()).
+// dpp is base-only on every entry: the proving classes live in the separate
+// pshenmic-orchard module, loaded on demand via initShielded().
 beforeAll(async function () {
   await initShielded()
 })

@@ -1,19 +1,19 @@
 import { dppProvider } from './provider.js'
-import type { DashPlatformProtocol } from './types.js'
+import type { OrchardProtocol } from './types.js'
 
 /**
- * On-demand loader for the shielded (threaded Orchard/Halo 2 proving) wasm
- * module — the wasm entry's counterpart to the native addon, which carries
- * every class in one instance.
+ * On-demand loader for the shielded (Orchard/Halo 2 proving) module from the
+ * separate pshenmic-orchard package. orchard's loadShielded() prefers its native
+ * Node-API addon on Node (~3x faster proving) and falls back to the threaded
+ * wasm module in browsers or when the addon is unavailable for the platform.
  *
  * The base module loads at import WITHOUT cross-origin isolation
- * (dash-platform-extension#219). Proving needs shared memory and wasm thread
- * workers, so the shielded bytes are only decoded/compiled here, on first
- * use, and the result is installed as `dppProvider.shielded`.
+ * (dash-platform-extension#219). The proving module is only loaded here, on
+ * first use, and installed as `dppProvider.shielded`. The wasm path needs
+ * shared memory + wasm thread workers (cross-origin isolation in browsers).
  *
  * Idempotent: the load promise is cached, so concurrent/repeated calls share
- * one module instance (one 64MB shared memory + worker pool). Cleared on
- * failure so a failed init can be retried.
+ * one module instance. Cleared on failure so a failed init can be retried.
  */
 let initPromise: Promise<void> | null = null
 
@@ -36,7 +36,7 @@ export function initShielded (): Promise<void> {
       // pshenmic-orchard registers its loader on this cross-realm global symbol
       // when imported. Discovering it by symbol (not by module name) survives
       // bundler renaming and duplicate dpp copies in a bundle.
-      const registry = (globalThis as Record<symbol, { loadShielded?: () => DashPlatformProtocol }>)[
+      const registry = (globalThis as Record<symbol, { loadShielded?: () => OrchardProtocol }>)[
         Symbol.for('pshenmic-dpp.shielded')
       ]
       if (typeof registry?.loadShielded !== 'function') {

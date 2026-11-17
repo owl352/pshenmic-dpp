@@ -11,7 +11,6 @@ export {
   PoolingNAPI as PoolingWASM,
   GasFeesPaidByNAPI as GasFeesPaidByWASM,
   VoteStateResultTypeNAPI as VoteStateResultType,
-  ScopeNAPI as ScopeWASM,
   ContractFeePotNAPI as ContractFeePot,
   BatchTypeNAPI as BatchType
 } from '../../binaries/bindingsTypes.js'

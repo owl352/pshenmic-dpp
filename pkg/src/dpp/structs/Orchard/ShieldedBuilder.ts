@@ -1,4 +1,5 @@
-import type { PlatformVersionNAPI, ShieldedBuilderNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { ShieldedBuilderNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike, PlatformAddressLike, PoolingLike, TokenDistributionLike } from '../../types.js'
 import { IdentifierWASM } from '../Identifier.js'

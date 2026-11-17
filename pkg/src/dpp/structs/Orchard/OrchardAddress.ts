@@ -1,7 +1,7 @@
-import type { OrchardAddressNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { OrchardAddressNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { NetworkLike, ScopeLike } from '../../types.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { valueToShieldedDynamicValue } from '../../utils.js'
 import { FullViewingKeyWASM } from './FullViewingKey.js'
 import { IncomingViewingKeyWASM } from './IncomingViewingKey.js'
 
@@ -10,7 +10,7 @@ export class OrchardAddressWASM {
   _rawOrchardAddress: OrchardAddressNAPI
 
   toBech32m (network: NetworkLike): string {
-    return this._rawOrchardAddress.toBech32m(valueToDynamicValue(network))
+    return this._rawOrchardAddress.toBech32m(valueToShieldedDynamicValue(network))
   }
 
   bytes (): Uint8Array {
@@ -43,7 +43,7 @@ export class OrchardAddressWASM {
         coinType,
         account,
         diversifierIndex,
-        scope == null ? undefined : valueToDynamicValue(scope)
+        scope == null ? undefined : valueToShieldedDynamicValue(scope)
       )
     )
   }
@@ -61,7 +61,7 @@ export class OrchardAddressWASM {
       dppProvider.shielded.OrchardAddressNAPI.fromFullViewingKey(
         fullViewingKey._rawFullViewingKey,
         diversifierIndex,
-        scope == null ? undefined : valueToDynamicValue(scope)
+        scope == null ? undefined : valueToShieldedDynamicValue(scope)
       )
     )
   }

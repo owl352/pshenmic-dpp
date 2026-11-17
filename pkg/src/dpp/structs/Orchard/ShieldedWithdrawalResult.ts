@@ -1,4 +1,4 @@
-import type { ShieldedWithdrawalResultNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { ShieldedWithdrawalResultNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { StateTransitionWASM } from '../StateTransition.js'
 
 /** Result of a proving shielded spend (withdrawal / unshield / transfer). */

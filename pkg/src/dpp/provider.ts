@@ -1,9 +1,9 @@
-import { DashPlatformProtocol } from '../dpp/types.js'
+import { DashPlatformProtocol, OrchardProtocol } from '../dpp/types.js'
 
 class DppProvider {
   private static instance?: DppProvider
   private _dpp: DashPlatformProtocol | null = null
-  private _shielded: DashPlatformProtocol | null = null
+  private _shielded: OrchardProtocol | null = null
 
   private constructor () {}
 
@@ -25,16 +25,16 @@ class DppProvider {
     return this._dpp
   }
 
-  setShielded (shielded: DashPlatformProtocol): void {
+  setShielded (shielded: OrchardProtocol): void {
     this._shielded = shielded
   }
 
   /**
-   * The shielded (threaded Orchard/Halo 2 proving) module. On the wasm entry
-   * it is loaded on demand by initShielded(); the native entry sets it at
-   * import (the addon carries every class in one instance).
+   * The shielded (threaded Orchard/Halo 2 proving) module, provided by the
+   * separate pshenmic-orchard package and loaded on demand by initShielded().
+   * dpp itself carries no proving code.
    */
-  get shielded (): DashPlatformProtocol {
+  get shielded (): OrchardProtocol {
     if (this._shielded == null) {
       throw new Error('The shielded (proving) module has not been loaded. Call initShielded() first.')
     }

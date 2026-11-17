@@ -1,4 +1,4 @@
-import type { NoteNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { NoteNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { OrchardAddressWASM } from './OrchardAddress.js'
 

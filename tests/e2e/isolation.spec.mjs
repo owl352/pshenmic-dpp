@@ -39,6 +39,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium, firefox } from 'playwright'
 import { startE2EServer } from '../../scripts/e2e-server.mjs'
+// dpp is base-only: register the orchard loader before the native baseline
+// calls initShielded() (plain Node resolves the symlinked devDependency).
+import 'pshenmic-orchard'
 import * as native from '../../dist/src/native.js'
 
 const require = createRequire(import.meta.url)
@@ -65,7 +68,7 @@ const moduleSize = (p) =>
   decompressSync(new Uint8Array(decode(require(p).bytes))).length
 const BASE_SIZE = moduleSize(path.join(ROOT, 'dist/binaries/wasm/baseBytes.cjs'))
 // The shielded bytes ship in the separate pshenmic-orchard package.
-const SHIELDED_SIZE = moduleSize(path.join(ROOT, 'packages/orchard/binaries/wasm/shieldedBytes.cjs'))
+const SHIELDED_SIZE = moduleSize(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/binaries/wasm/shieldedBytes.cjs'))
 
 // Builds the same shieldFromAssetLock transition as the Task 4 baseline,
 // in-page, and returns JSON-serializable deterministic fields + full bytes.
@@ -99,8 +102,10 @@ async function buildTransitionInPage () {
   }
 }
 
-// Same build on the native addon (the regression oracle).
+// Same build on the native entry (the regression oracle). dpp is base-only,
+// so the proving module is loaded from pshenmic-orchard via initShielded().
 async function buildTransitionNative () {
+  await native.initShielded()
   const seed = new Uint8Array(SEED)
   const builder = new native.ShieldedBuilderWASM()
   await builder.init()

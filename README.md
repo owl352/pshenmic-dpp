@@ -21,7 +21,7 @@ ___
 
 | Entry point | Environment | Targets |
 |---|---|---|
-| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1` base + `wasm32-wasip1-threads` shielded, loaded on demand (via emnapi) |
+| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1` base, loaded synchronously at import (via emnapi). Shielded proving is the separate `pshenmic-orchard` package. |
 | `pshenmic-dpp/native` (`node`) | Node.js | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl`, `x86_64-apple-darwin`, `aarch64-apple-darwin`, `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc` |
 | `react-native` | React Native (via `react-native-node-api`) | `aarch64-linux-android`, `x86_64-linux-android`, `aarch64-apple-ios-sim` |
 
@@ -42,13 +42,16 @@ The browser build ships as **two packages**:
 - **`pshenmic-dpp`** — the base (`wasm32-wasip1`, non-threaded), loaded
   synchronously at import. All core APIs (identifiers, identities, contracts,
   documents, transitions, proof verification, ...) work in any browser context,
-  **without** cross-origin isolation.
-- **`pshenmic-orchard`** *(optional)* — the Orchard/Halo 2 proving stack
-  (`wasm32-wasip1-threads`). Importing it once registers its loader on a global
-  symbol; `initShielded()` then discovers it (no module-name lookup, so it
-  survives bundler renaming). It needs `SharedArrayBuffer` and wasm thread
-  workers, i.e. cross-origin isolation in browsers. Its wasm is never compiled
-  until `initShielded()` runs.
+  **without** cross-origin isolation. dpp itself contains no proving code.
+- **`pshenmic-orchard`** *(optional)* — the Orchard/Halo 2 proving stack, shipped
+  entirely by the separate
+  [`pshenmic-orchard`](https://github.com/owl352/pshenmic-orchard) package/repo as
+  **native Node-API addons** (preferred on Node, ~3x faster proving) plus a
+  threaded wasm module (`wasm32-wasip1-threads`) for browsers / fallback.
+  Importing it once registers its loader on a global symbol; `initShielded()`
+  then discovers it (no module-name lookup, so it survives bundler renaming).
+  The wasm path needs `SharedArrayBuffer` and wasm thread workers, i.e.
+  cross-origin isolation in browsers. Nothing is loaded until `initShielded()` runs.
 
 ### Connect-only sites (no proving)
 
@@ -89,8 +92,9 @@ npm i pshenmic-dpp pshenmic-orchard
 import 'pshenmic-orchard' // registers the proving loader (once, anywhere)
 import { initShielded, ShieldedBuilderWASM } from 'pshenmic-dpp'
 
-// Before ANY shielded/proving API in the browser. Idempotent: concurrent and
-// repeated calls share one load. On Node.js / React Native it is a no-op.
+// Before ANY shielded/proving API. Idempotent: concurrent and repeated calls
+// share one load. On Node it loads orchard's native addon (wasm fallback);
+// in the browser it loads the threaded wasm (needs the isolation headers below).
 await initShielded()
 
 const builder = new ShieldedBuilderWASM()
@@ -167,6 +171,7 @@ ___
   - `IdentityTopUpFromAddressesTransitionWASM`
 
 ### Shielded Pool (Orchard)
+These proving classes are provided by the separate `pshenmic-orchard` package.
 In browsers these require `await initShielded()` first — see
 [Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
 - `OrchardAddressWASM`, `orchardOvkFromSeed`

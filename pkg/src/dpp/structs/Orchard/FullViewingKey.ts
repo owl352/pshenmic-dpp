@@ -1,7 +1,7 @@
-import type { FullViewingKeyNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { FullViewingKeyNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { ScopeLike } from '../../types.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { valueToShieldedDynamicValue } from '../../utils.js'
 import { IncomingViewingKeyWASM } from './IncomingViewingKey.js'
 import { OrchardAddressWASM } from './OrchardAddress.js'
 
@@ -21,13 +21,13 @@ export class FullViewingKeyWASM {
   /** Derives the incoming viewing key for the given scope (default External). */
   toIvk (scope?: ScopeLike): IncomingViewingKeyWASM {
     return IncomingViewingKeyWASM.createFromRawInstance(
-      this._rawFullViewingKey.toIvk(scope == null ? undefined : valueToDynamicValue(scope))
+      this._rawFullViewingKey.toIvk(scope == null ? undefined : valueToShieldedDynamicValue(scope))
     )
   }
 
   /** Derives the 32-byte outgoing viewing key for the given scope (default External). */
   toOvk (scope?: ScopeLike): Uint8Array {
-    return this._rawFullViewingKey.toOvk(scope == null ? undefined : valueToDynamicValue(scope))
+    return this._rawFullViewingKey.toOvk(scope == null ? undefined : valueToShieldedDynamicValue(scope))
   }
 
   /** The payment address at `diversifierIndex` (default 0) for `scope` (default External). */
@@ -35,7 +35,7 @@ export class FullViewingKeyWASM {
     return OrchardAddressWASM.createFromRawInstance(
       this._rawFullViewingKey.address(
         diversifierIndex,
-        scope == null ? undefined : valueToDynamicValue(scope)
+        scope == null ? undefined : valueToShieldedDynamicValue(scope)
       )
     )
   }

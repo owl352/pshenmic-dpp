@@ -1,4 +1,4 @@
-import type { RecoveredNoteNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { RecoveredNoteNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { NoteWASM } from './Note.js'
 import { SerializedActionWASM } from '../ShieldedTransitions/SerializedAction.js'

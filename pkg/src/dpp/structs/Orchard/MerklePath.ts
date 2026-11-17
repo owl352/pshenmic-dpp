@@ -1,4 +1,4 @@
-import type { MerklePathNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { MerklePathNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 
 export class MerklePathWASM {

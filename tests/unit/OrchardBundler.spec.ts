@@ -33,6 +33,11 @@ async function runBundle (contents, outdir) {
     target: ['node22'],
     outdir,
     outExtension: { '.js': '.cjs' },
+    // Native Node-API addons are never bundled (a bundler cannot inline a .node
+    // binary); orchard's loader requires one dynamically and falls back to wasm
+    // when it is absent — exactly the browser-bundle path. Externalize them so
+    // esbuild does not try to parse the binary as JS.
+    external: ['*.node'],
     // The two-copy test bundles dpp copies placed in /tmp; resolve their bare
     // npm imports (@emnapi, wasm-util) from the repo's node_modules.
     nodePaths: [path.join(ROOT, 'node_modules')],
@@ -60,7 +65,7 @@ describe('orchard discovery under a bundler', function () {
   test('bundled dpp discovers orchard and loads a shielded class (renaming-robust)', async function () {
     const run = await runBundle(`
 import * as dpp from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};
-import ${JSON.stringify(path.join(ROOT, 'packages/orchard/dist/index.cjs'))};
+import ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
 const seed = new Uint8Array(64).fill(7);
 (async () => {
   try {
@@ -90,7 +95,7 @@ const seed = new Uint8Array(64).fill(7);
     const run = await runBundle(`
 import * as dpp1 from ${JSON.stringify(path.join(copyA, 'src/wasm.js'))};
 import * as dpp2 from ${JSON.stringify(path.join(copyB, 'src/wasm.js'))};
-import ${JSON.stringify(path.join(ROOT, 'packages/orchard/dist/index.cjs'))};
+import ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
 const seed = new Uint8Array(${SEED_HEX.match(/../g).map((h) => parseInt(h, 16))});
 const toHex = (b) => Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('');
 (async () => {

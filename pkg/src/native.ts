@@ -1,30 +1,19 @@
 // @ts-ignore
 import protocol from '../binaries/node.cjs'
 import { dppProvider } from './dpp/provider.js'
-import { initShielded as initShieldedWasm } from './dpp/shielded.js'
+import { initShielded as initShieldedOrchard } from './dpp/shielded.js'
 
 // @ts-ignore
 dppProvider.setDpp(protocol)
-// The native addon carries the proving classes in the same instance, so the
-// shielded slot points at it too. When node.cjs falls back to the BASE wasm
-// (addon missing/unusable), the proving classes are absent: leave the slot
-// unset so initShielded() can load the threaded shielded module on demand
-// instead of pointing the shielded slot at a base-only module.
-if (protocol.ShieldedBuilderNAPI != null) {
-  // @ts-ignore
-  dppProvider.setShielded(protocol)
-}
 
 /**
- * No-op when the native addon carries the proving classes. On the base-wasm
- * fallback it delegates to the wasm on-demand loader, so proving still works.
+ * dpp carries no proving code: the shielded (Orchard/Halo 2) module is the
+ * separate pshenmic-orchard package, loaded on demand (import 'pshenmic-orchard'
+ * first). On Node, orchard prefers its native Node-API addon (~3x faster
+ * proving); the threaded wasm is the fallback / browser path.
  */
 export async function initShielded (): Promise<void> {
-  if (protocol.ShieldedBuilderNAPI != null) {
-    // native module is loaded synchronously at import
-    return
-  }
-  await initShieldedWasm()
+  await initShieldedOrchard()
 }
 
 export * from './dpp/enums.js'

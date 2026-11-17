@@ -1,4 +1,4 @@
-import type { ShieldedOutputNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { ShieldedOutputNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { OrchardAddressWASM } from './OrchardAddress.js'
 import { ShieldedMemoWASM } from './ShieldedMemo.js'

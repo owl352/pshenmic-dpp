@@ -1,14 +1,17 @@
 import * as protocol from '../binaries/pshenmic_dpp.js'
 import { dppProvider } from './dpp/provider.js'
+import { initShielded as initShieldedOrchard } from './dpp/shielded.js'
 
 dppProvider.setDpp(protocol)
-// The react-native addon carries the proving classes in the same instance, so
-// the shielded slot points at it too — no separate on-demand load is needed.
-dppProvider.setShielded(protocol)
 
-/** No-op on react-native: the addon already includes the proving classes. */
+/**
+ * dpp carries no proving code: the shielded (Orchard/Halo 2) module is the
+ * separate pshenmic-orchard package, loaded on demand via initShielded().
+ * React Native uses orchard's threaded wasm (its native addon targets desktop
+ * platforms); the RN runtime must provide SharedArrayBuffer + wasm thread workers.
+ */
 export async function initShielded (): Promise<void> {
-  // native module is loaded synchronously at import
+  await initShieldedOrchard()
 }
 
 export * from './dpp/enums.js'

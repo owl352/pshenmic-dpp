@@ -60,6 +60,7 @@
     "node-addon-api": "^8.5.0",
     "path": "^0.12.7",
     "playwright": "^1.65.1",
+    "pshenmic-orchard": "file:../pshenmic-orchard",
     "toml": "^3.0.0",
     "ts-morph": "^26.0.0",
     "ts-standard": "^12.0.2",

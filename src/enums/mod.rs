@@ -11,7 +11,5 @@ pub mod network;
 pub mod platform_version;
 pub mod pooling;
 pub mod purpose;
-#[cfg(feature = "proving")]
-pub mod scope;
 pub mod security_level;
 pub mod vote_state_result_type;

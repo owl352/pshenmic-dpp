@@ -1,7 +1,9 @@
 import { initShielded } from 'pshenmic-dpp/wasm'
 
 const REGISTRY_KEY = Symbol.for('pshenmic-dpp.shielded')
-const ORCHARD_ENTRY = '../../packages/orchard/src/index.cjs'
+// The separate pshenmic-orchard package (jest moduleNameMapper resolves the
+// bare name to node_modules/pshenmic-orchard/dist/src/index.cjs in both modes).
+const ORCHARD_ENTRY = 'pshenmic-orchard'
 
 type Registered = { loadShielded?: () => unknown }
 const registry = (): Registered | undefined =>

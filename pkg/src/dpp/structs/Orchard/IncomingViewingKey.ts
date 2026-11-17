@@ -1,7 +1,7 @@
-import type { IncomingViewingKeyNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { IncomingViewingKeyNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { ScopeLike } from '../../types.js'
-import { valueToDynamicValue } from '../../utils.js'
+import { valueToShieldedDynamicValue } from '../../utils.js'
 import { FullViewingKeyWASM } from './FullViewingKey.js'
 import { OrchardAddressWASM } from './OrchardAddress.js'
 
@@ -46,7 +46,7 @@ export class IncomingViewingKeyWASM {
         seed,
         coinType,
         account,
-        scope == null ? undefined : valueToDynamicValue(scope)
+        scope == null ? undefined : valueToShieldedDynamicValue(scope)
       )
     )
   }
@@ -59,7 +59,7 @@ export class IncomingViewingKeyWASM {
     return IncomingViewingKeyWASM.createFromRawInstance(
       dppProvider.shielded.IncomingViewingKeyNAPI.fromFullViewingKey(
         fullViewingKey._rawFullViewingKey,
-        scope == null ? undefined : valueToDynamicValue(scope)
+        scope == null ? undefined : valueToShieldedDynamicValue(scope)
       )
     )
   }

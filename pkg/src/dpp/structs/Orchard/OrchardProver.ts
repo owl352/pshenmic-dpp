@@ -1,4 +1,4 @@
-import type { OrchardProverNAPI } from '../../../../binaries/bindingsTypes.js'
+import type { OrchardProverNAPI } from 'pshenmic-orchard/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 
 /**

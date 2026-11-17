@@ -39,8 +39,9 @@ export const PROFILES = {
   }
 }
 
-// Node-only builtin referenced (guarded by isNode) in shieldedCreation.cjs.
-// In the browser bundle it is dead code; stub it so esbuild can resolve it.
+// Node-only builtin referenced (guarded by isNode) in pshenmic-orchard's
+// loader.cjs. In the browser bundle it is dead code; stub it so esbuild can
+// resolve it.
 const nodeBuiltinStub = {
   name: 'node-builtin-stub',
   setup (b) {
@@ -64,7 +65,7 @@ const nodeBuiltinStub = {
 export async function buildBundle () {
   const result = await build({
     stdin: {
-      contents: `import ${JSON.stringify(path.join(ROOT, 'packages/orchard/dist/index.cjs'))};
+      contents: `import ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
 export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};`,
       resolveDir: ROOT,
       loader: 'js'
