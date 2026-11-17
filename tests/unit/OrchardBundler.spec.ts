@@ -8,11 +8,11 @@ import path from 'node:path'
 // jest modes (__dirname / import.meta are mode-specific).
 const ROOT = process.cwd()
 
-// Proves the orchard discovery mechanism survives a real bundler: esbuild
-// renames/mangles module identifiers, yet dpp still finds orchard's loader
-// because registration uses the cross-realm global symbol
-// Symbol.for('pshenmic-dpp.shielded'), not a module name. The bundled output is
-// executed NATIVELY in a child node process (SharedArrayBuffer available).
+// Proves explicit orchard injection survives a real bundler: esbuild
+// renames/mangles module identifiers, yet the consumer's STATIC imports of
+// orchard's loadShielded and dpp's setShielded still resolve and wire together
+// (no global registry, no module-name lookup). The bundled output is executed
+// NATIVELY in a child node process (SharedArrayBuffer available).
 //
 // SCOPE: these tests exercise module load + a SYNC shielded class (fromSeed).
 // Async proving (builder.init(), which spawns wasm thread workers) under a NODE
@@ -23,6 +23,7 @@ const ROOT = process.cwd()
 // self-contained Node worker (eval + workerBundle source) is the follow-up fix.
 
 const SEED_HEX = '07'.repeat(64)
+const ORCHARD_ENTRY = path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs')
 
 async function runBundle (contents, outdir) {
   const result = await build({
@@ -51,7 +52,7 @@ async function runBundle (contents, outdir) {
   return run
 }
 
-describe('orchard discovery under a bundler', function () {
+describe('explicit orchard injection under a bundler', function () {
   let outdir
 
   beforeAll(function () {
@@ -62,30 +63,25 @@ describe('orchard discovery under a bundler', function () {
     fs.rmSync(outdir, { recursive: true, force: true })
   })
 
-  test('bundled dpp discovers orchard and loads a shielded class (renaming-robust)', async function () {
+  test('bundled dpp + orchard wire via setShielded(loadShielded()) (renaming-robust)', async function () {
     const run = await runBundle(`
 import * as dpp from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};
-import ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
+import { loadShielded } from ${JSON.stringify(ORCHARD_ENTRY)};
 const seed = new Uint8Array(64).fill(7);
-(async () => {
-  try {
-    await dpp.initShielded();
-    const address = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0);
-    const registered = globalThis[Symbol.for('pshenmic-dpp.shielded')];
-    if (typeof registered?.loadShielded !== 'function') throw new Error('loader not registered');
-    console.log('LOAD_OK:' + address.bytes().length);
-  } catch (e) { console.error('LOAD_FAIL:' + ((e && e.message) || e)); process.exit(1); }
-})();
+try {
+  dpp.setShielded(loadShielded());
+  const address = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0);
+  console.log('LOAD_OK:' + address.bytes().length);
+} catch (e) { console.error('LOAD_FAIL:' + ((e && e.message) || e)); process.exit(1); }
 `, path.join(outdir, 'single'))
     expect(run.stdout).toContain('LOAD_OK:')
     expect(run.status).toBe(0)
   }, 120000)
 
-  test('two physical dpp copies in one bundle both discover orchard (duplicate-copy safe)', async function () {
+  test('two physical dpp copies in one bundle both inject the same orchard (duplicate-copy safe)', async function () {
     // Two distinct copies of the built dpp (as a consumer bundling duplicate
-    // versions would have), each importing the SAME orchard. Both must discover
-    // the one registered loader via the global symbol and agree on output, while
-    // remaining distinct module instances.
+    // versions would have), each injecting the SAME orchard loadShielded. Both
+    // must agree on output while remaining distinct module instances.
     const copyA = path.join(outdir, 'dppA')
     const copyB = path.join(outdir, 'dppB')
     const filter = (src) => !src.includes(`${path.sep}native`)
@@ -95,20 +91,18 @@ const seed = new Uint8Array(64).fill(7);
     const run = await runBundle(`
 import * as dpp1 from ${JSON.stringify(path.join(copyA, 'src/wasm.js'))};
 import * as dpp2 from ${JSON.stringify(path.join(copyB, 'src/wasm.js'))};
-import ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
+import { loadShielded } from ${JSON.stringify(ORCHARD_ENTRY)};
 const seed = new Uint8Array(${SEED_HEX.match(/../g).map((h) => parseInt(h, 16))});
 const toHex = (b) => Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('');
-(async () => {
-  try {
-    await dpp1.initShielded();
-    await dpp2.initShielded();
-    if (dpp1.OrchardAddressWASM === dpp2.OrchardAddressWASM) throw new Error('copies are not distinct instances');
-    const a1 = dpp1.OrchardAddressWASM.fromSeed(seed, 1, 0);
-    const a2 = dpp2.OrchardAddressWASM.fromSeed(seed, 1, 0);
-    if (toHex(a1.bytes()) !== toHex(a2.bytes())) throw new Error('copies disagree on address bytes');
-    console.log('TWOCOPY_OK');
-  } catch (e) { console.error('TWOCOPY_FAIL:' + ((e && e.message) || e)); process.exit(1); }
-})();
+try {
+  dpp1.setShielded(loadShielded());
+  dpp2.setShielded(loadShielded());
+  if (dpp1.OrchardAddressWASM === dpp2.OrchardAddressWASM) throw new Error('copies are not distinct instances');
+  const a1 = dpp1.OrchardAddressWASM.fromSeed(seed, 1, 0);
+  const a2 = dpp2.OrchardAddressWASM.fromSeed(seed, 1, 0);
+  if (toHex(a1.bytes()) !== toHex(a2.bytes())) throw new Error('copies disagree on address bytes');
+  console.log('TWOCOPY_OK');
+} catch (e) { console.error('TWOCOPY_FAIL:' + ((e && e.message) || e)); process.exit(1); }
 `, path.join(outdir, 'twocopy'))
     expect(run.stdout).toContain('TWOCOPY_OK')
     expect(run.status).toBe(0)

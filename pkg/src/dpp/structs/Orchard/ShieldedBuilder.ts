@@ -26,9 +26,9 @@ import { IdentityCreateFromShieldedPoolResultWASM } from './IdentityCreateFromSh
  * Builds and proves shielded (Orchard) state transitions. Construction builds
  * the Halo 2 proving key (~seconds), so create one instance and reuse it.
  *
- * On the wasm entry the proving classes live in a separate on-demand module:
- * `await initShielded()` once before `init()` (needs cross-origin isolation in
- * browsers). The native entry needs no init.
+ * The proving classes live in the separate pshenmic-orchard module: call
+ * `setShielded(loadShielded())` once before `init()` (the browser wasm path needs
+ * cross-origin isolation; Node uses the native addon).
  *
  * Deposits (`shield`, `shieldFromAssetLock`) don't need pool notes. Spends
  * (`shieldedWithdrawal`, `unshield`, `shieldedTransfer`) need a `SpendableNote`

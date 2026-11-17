@@ -23,7 +23,7 @@ import {
 } from 'pshenmic-dpp'
 
 // BASE-only suite: SerializedAction + the shielded transitions are kept in the
-// base module on every entry, so no orchard import / initShielded() is needed.
+// base module on every entry, so no orchard import / setShielded() is needed.
 
 function randomBytes (length: number): Uint8Array {
   const bytes = new Uint8Array(length)

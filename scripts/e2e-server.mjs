@@ -7,9 +7,9 @@
 //   ?profile=same-origin   -> COOP: same-origin            + COEP: require-corp
 //   ?profile=allow-popups  -> COOP: same-origin-allow-popups + COEP: require-corp
 //
-// Code splitting keeps the threaded shielded module in its own chunk, fetched
-// only when initShielded() runs its dynamic import — so tests can assert lazy
-// loading from the request log and from instrumented WebAssembly.Module sizes.
+// The threaded shielded module is bundled but compiled lazily inside
+// loadShielded() (not at import) — so tests can assert lazy loading from the
+// instrumented WebAssembly.Module compile sizes.
 //
 // The served page instruments WebAssembly.Module (compiled byte sizes) and
 // Worker (spawn count), exposes the SDK namespace as window.__dpp, and has a
@@ -55,18 +55,19 @@ const nodeBuiltinStub = {
 }
 
 // Bundle the dist entry PLUS the optional pshenmic-orchard package in memory.
-// The page entry imports orchard (which registers its loader on the global
-// symbol Symbol.for('pshenmic-dpp.shielded')) and re-exports dpp. initShielded()
-// then discovers orchard by symbol — no module-name resolution, so this survives
-// esbuild's renaming/chunking. Returns a Map urlPath -> { content, type } plus
-// the entry chunk path. The shielded WASM is compiled lazily inside
-// loadShielded() (initShielded), not at import — laziness is observed via the
-// instrumented WebAssembly.Module compile sizes, not a separate chunk fetch.
+// The page entry imports orchard's loadShielded and re-exports it alongside dpp,
+// so the test wires them explicitly via dpp.setShielded(loadShielded()). Both
+// imports are static, so this survives esbuild's renaming/chunking (no global
+// registry). Returns a Map urlPath -> { content, type } plus the entry chunk
+// path. The shielded WASM is compiled lazily inside loadShielded(), not at
+// import — laziness is observed via the instrumented WebAssembly.Module compile
+// sizes, not a separate chunk fetch.
 export async function buildBundle () {
   const result = await build({
     stdin: {
-      contents: `import ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
-export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};`,
+      contents: `import { loadShielded } from ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
+export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};
+export { loadShielded };`,
       resolveDir: ROOT,
       loader: 'js'
     },
@@ -75,6 +76,10 @@ export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};`,
     format: 'esm',
     splitting: true,
     target: ['chrome120'],
+    // Native Node-API addons cannot run in a browser bundle; orchard's loader
+    // requires one dynamically and falls back to wasm. Externalize them so
+    // esbuild does not try to parse the .node binary as JS.
+    external: ['*.node'],
     outdir: 'e2e-bundle', // virtual; write:false keeps everything in memory
     write: false,
     metafile: true,

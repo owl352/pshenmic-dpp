@@ -1,6 +1,6 @@
-// Registers the orchard loader on the global symbol so initShielded() can
-// load the proving module (dpp itself is base-only on every entry now).
-import 'pshenmic-orchard'
+// Imports orchard's loadShielded and provides the proving module to dpp
+// explicitly via setShielded() (dpp itself is base-only on every entry).
+import { loadShielded } from 'pshenmic-orchard'
 import {
   BatchTransitionWASM,
   CommitmentTreeWASM,
@@ -25,7 +25,7 @@ import {
   TokenShieldedTransferWithShieldedFeeTransitionWASM,
   TokenTransitionWASM,
   TokenUnshieldWithShieldedFeeTransitionWASM,
-  initShielded
+  setShielded
 } from 'pshenmic-dpp'
 
 const SEED = new Uint8Array(64)
@@ -70,13 +70,13 @@ function tokenTransitionOf (stateTransition: StateTransitionWASM): TokenTransiti
 }
 
 // dpp is base-only on every entry: the proving classes live in the separate
-// pshenmic-orchard module, loaded on demand via initShielded().
+// pshenmic-orchard module, provided explicitly via setShielded(loadShielded()).
 beforeAll(async function () {
-  await initShielded()
+  setShielded(loadShielded())
 })
 
 describe('ShieldedBuilder v5', function () {
-  // Fixtures are created AFTER initShielded() — never at collection time —
+  // Fixtures are created AFTER setShielded() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves.
   let address: OrchardAddressWASM

@@ -1,6 +1,6 @@
-// Registers the orchard loader on the global symbol so initShielded() can
-// load the proving module (dpp itself is base-only on every entry now).
-import 'pshenmic-orchard'
+// Imports orchard's loadShielded and provides the proving module to dpp
+// explicitly via setShielded() (dpp itself is base-only on every entry).
+import { loadShielded } from 'pshenmic-orchard'
 import {
   AssetLockProofWASM,
   CommitmentTreeWASM,
@@ -25,7 +25,7 @@ import {
   SpendableNoteWASM,
   StateTransitionWASM,
   UnshieldTransitionWASM,
-  initShielded
+  setShielded
 } from 'pshenmic-dpp'
 
 // Builder methods whose only other coverage is the wasm entry (WebAssembly.spec)
@@ -74,7 +74,7 @@ function expectByteRoundTrip (st: StateTransitionWASM): void {
 }
 
 describe('ShieldedBuilder boundary', function () {
-  // Fixtures are created AFTER initShielded() — never at collection time —
+  // Fixtures are created AFTER setShielded() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves. beforeAll (not top-level await) keeps both jest modes working.
   let address: OrchardAddressWASM
@@ -82,7 +82,7 @@ describe('ShieldedBuilder boundary', function () {
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    await initShielded()
+    setShielded(loadShielded())
     address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()

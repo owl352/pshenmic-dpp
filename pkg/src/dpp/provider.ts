@@ -29,14 +29,18 @@ class DppProvider {
     this._shielded = shielded
   }
 
+  get hasShielded (): boolean {
+    return this._shielded != null
+  }
+
   /**
-   * The shielded (threaded Orchard/Halo 2 proving) module, provided by the
-   * separate pshenmic-orchard package and loaded on demand by initShielded().
-   * dpp itself carries no proving code.
+   * The shielded (Orchard/Halo 2 proving) module from the separate
+   * pshenmic-orchard package, provided explicitly by the consumer via
+   * setShielded(loadShielded()). dpp itself carries no proving code.
    */
   get shielded (): OrchardProtocol {
     if (this._shielded == null) {
-      throw new Error('The shielded (proving) module has not been loaded. Call initShielded() first.')
+      throw new Error('The shielded (proving) module has not been loaded. Call setShielded(loadShielded()) first.')
     }
     return this._shielded
   }

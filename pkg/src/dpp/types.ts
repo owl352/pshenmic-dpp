@@ -53,8 +53,8 @@ import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.j
 import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
 export type DashPlatformProtocol = typeof protocol
-/** The proving (Orchard/Halo 2) NAPI surface, provided by pshenmic-orchard and
- * loaded on demand via initShielded(). dpp itself carries no proving code. */
+/** The proving (Orchard/Halo 2) NAPI surface, provided by pshenmic-orchard via
+ * setShielded(loadShielded()). dpp itself carries no proving code. */
 export type OrchardProtocol = typeof orchardProtocol
 export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM
 export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM

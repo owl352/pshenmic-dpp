@@ -1,4 +1,4 @@
-import 'pshenmic-orchard'
+import { loadShielded } from 'pshenmic-orchard'
 import {
   CommitmentTreeWASM,
   NoteWASM,
@@ -10,7 +10,7 @@ import {
   ShieldedOutputWASM,
   ShieldedTransferTransitionWASM,
   SpendableNoteWASM,
-  initShielded,
+  setShielded,
   recoverNotes
 } from 'pshenmic-dpp/wasm'
 
@@ -20,7 +20,7 @@ import {
 // into the SHIELDED instance (and vice versa). Everything crossing the boundary
 // must be BYTES. The native suites (ShieldedBuilderBoundary etc.) resolve to the
 // single-instance addon and are blind to this — these tests run through
-// pshenmic-dpp/wasm after initShielded(), i.e. against the actual split.
+// pshenmic-dpp/wasm after setShielded(), i.e. against the actual split.
 
 const SEED = new Uint8Array(64)
 for (let i = 0; i < 64; i++) SEED[i] = (i * 7 + 1) & 0xff
@@ -47,7 +47,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    await initShielded()
+    setShielded(loadShielded())
     builder = new ShieldedBuilderWASM()
     await builder.init()
   }, PROVING_TIMEOUT)

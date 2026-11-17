@@ -6,8 +6,8 @@ import { dppProvider } from '../../provider.js'
  * expensive (~seconds); construct once and reuse. (The `ShieldedBuilderWASM`
  * already builds its own prover internally — this is exposed for standalone use.)
  *
- * On the wasm entry, `await initShielded()` once before `init()` (needs
- * cross-origin isolation in browsers). The native entry needs no init.
+ * Call `setShielded(loadShielded())` once before `init()` (the browser wasm path
+ * needs cross-origin isolation; Node uses the native addon).
  */
 export class OrchardProverWASM {
   /** @private **/

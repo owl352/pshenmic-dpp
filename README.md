@@ -47,11 +47,11 @@ The browser build ships as **two packages**:
   entirely by the separate
   [`pshenmic-orchard`](https://github.com/owl352/pshenmic-orchard) package/repo as
   **native Node-API addons** (preferred on Node, ~3x faster proving) plus a
-  threaded wasm module (`wasm32-wasip1-threads`) for browsers / fallback.
-  Importing it once registers its loader on a global symbol; `initShielded()`
-  then discovers it (no module-name lookup, so it survives bundler renaming).
+  threaded wasm module (`wasm32-wasip1-threads`) for browsers / fallback. The
+  consumer provides its instance to dpp explicitly via `setShielded(loadShielded())`;
+  both imports are static, so this survives bundler renaming (no global registry).
   The wasm path needs `SharedArrayBuffer` and wasm thread workers, i.e.
-  cross-origin isolation in browsers. Nothing is loaded until `initShielded()` runs.
+  cross-origin isolation in browsers. Nothing is loaded until `setShielded()` runs.
 
 ### Connect-only sites (no proving)
 
@@ -59,7 +59,7 @@ Drop the `Cross-Origin-Opener-Policy` / `Cross-Origin-Embedder-Policy` headers
 entirely. The base module loads synchronously at import and cross-origin popup
 references (e.g. wallet-extension connection popups) keep working — this is the
 [_dash-platform-extension#219_](https://github.com/dashpay/dash-platform-extension/issues/219)
-fix. Proving APIs remain unavailable until `initShielded()` succeeds.
+fix. Proving APIs remain unavailable until `setShielded(loadShielded())` is called.
 
 ### Proving sites
 
@@ -89,30 +89,30 @@ npm i pshenmic-dpp pshenmic-orchard
 ```
 
 ```ts
-import 'pshenmic-orchard' // registers the proving loader (once, anywhere)
-import { initShielded, ShieldedBuilderWASM } from 'pshenmic-dpp'
+import { loadShielded } from 'pshenmic-orchard'
+import { setShielded, ShieldedBuilderWASM } from 'pshenmic-dpp'
 
-// Before ANY shielded/proving API. Idempotent: concurrent and repeated calls
-// share one load. On Node it loads orchard's native addon (wasm fallback);
-// in the browser it loads the threaded wasm (needs the isolation headers below).
-await initShielded()
+// Provide the orchard proving instance explicitly. Both imports are static, so
+// this survives bundler renaming with no global registry involved. On Node
+// loadShielded() uses orchard's native addon (wasm fallback); in the browser it
+// loads the threaded wasm (needs the isolation headers below).
+setShielded(loadShielded())
 
 const builder = new ShieldedBuilderWASM()
 await builder.init()
 // ... shielded/proving APIs are now available
 ```
 
-Without cross-origin isolation `initShielded()` rejects with a
-`SharedArrayBuffer` error; without `pshenmic-orchard` imported it rejects asking
-you to install/import it. Until it resolves, shielded classes throw
-`The shielded (proving) module has not been loaded. Call initShielded() first.`
-A failed load can be retried — the next `initShielded()` call loads again.
+Without cross-origin isolation the wasm `loadShielded()` fails with a
+`SharedArrayBuffer` error (the native addon on Node does not need it). Until
+`setShielded(loadShielded())` is called, shielded classes throw
+`The shielded (proving) module has not been loaded. Call setShielded(loadShielded()) first.`
 
 > **Breaking change (major version) for proving consumers:** install
-> `pshenmic-orchard`, import it once, and `await initShielded()` before using any
-> shielded/proving API, and serve the isolation headers above. Previously the
-> threaded module shipped inside `pshenmic-dpp` and loaded at import time.
-> Connect-only consumers are unaffected: no extra package, no headers, no init.
+> `pshenmic-orchard` and call `setShielded(loadShielded())` before using any
+> shielded/proving API, and serve the isolation headers above (browser wasm path).
+> Previously the threaded module shipped inside `pshenmic-dpp` and loaded at
+> import time. Connect-only consumers are unaffected: no extra package, no headers.
 
 ___
 ## Current features
@@ -172,7 +172,7 @@ ___
 
 ### Shielded Pool (Orchard)
 These proving classes are provided by the separate `pshenmic-orchard` package.
-In browsers these require `await initShielded()` first — see
+Call `setShielded(loadShielded())` first (the browser wasm path needs isolation) — see
 [Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
 - `OrchardAddressWASM`, `orchardOvkFromSeed`
 - `FullViewingKeyWASM`

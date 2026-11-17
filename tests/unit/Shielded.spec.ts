@@ -1,6 +1,6 @@
-// Registers the orchard loader on the global symbol so initShielded() can
-// load the proving module (dpp itself is base-only on every entry now).
-import 'pshenmic-orchard'
+// Imports orchard's loadShielded and provides the proving module to dpp
+// explicitly via setShielded() (dpp itself is base-only on every entry).
+import { loadShielded } from 'pshenmic-orchard'
 import {
   ShieldedMemoWASM,
   OrchardAddressWASM,
@@ -19,13 +19,13 @@ import {
   PlatformAddressWASM,
   ShieldTransitionWASM,
   StateTransitionWASM,
-  initShielded
+  setShielded
 } from 'pshenmic-dpp'
 
 // dpp is base-only on every entry: the proving classes live in the separate
-// pshenmic-orchard module, loaded on demand via initShielded().
+// pshenmic-orchard module, provided explicitly via setShielded(loadShielded()).
 beforeAll(async function () {
-  await initShielded()
+  setShielded(loadShielded())
 })
 
 // Deterministic 64-byte BIP-39-style seed. Orchard derives via ZIP-32
