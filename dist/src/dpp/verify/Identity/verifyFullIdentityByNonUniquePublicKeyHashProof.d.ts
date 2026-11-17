@@ -1,0 +1,3 @@
+import { IdentifierLike, PlatformVersionLike, VerifiedFullIdentityByNonUniquePublicKeyHash } from '../../types.js';
+/** Verifies the single v5 `getIdentityByNonUniquePublicKeyHash` proof and returns the full identity. `queryPlatformVersion` is the version the node built the query with (the response's protocol version) **/
+export declare function verifyFullIdentityByNonUniquePublicKeyHashProof(proof: Uint8Array, publicKeyHash: Uint8Array, after: IdentifierLike | undefined | null, queryPlatformVersion: PlatformVersionLike, platformVersion: PlatformVersionLike): VerifiedFullIdentityByNonUniquePublicKeyHash;

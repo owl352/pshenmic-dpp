@@ -1,0 +1,20 @@
+import { dppProvider } from '../../provider.js';
+import { plainProofValue, prepareIdentifierValue, valueToDynamicValue } from '../../utils.js';
+import { IdentifierWASM } from '../../structs/Identifier.js';
+function removalsSelectionToPlain(selection) {
+    if ('documentIds' in selection) {
+        return { documentIds: selection.documentIds.map(id => new IdentifierWASM(id).bytes()) };
+    }
+    return {
+        startAfter: selection.startAfter != null ? new IdentifierWASM(selection.startAfter).bytes() : undefined,
+        limit: selection.limit
+    };
+}
+/** The records moderators' document deletions left under a contract, for one document type **/
+export function verifyContractDocumentRemovalsProof(proof, contractId, documentTypeName, selection, verifySubsetOfProof, platformVersion) {
+    const result = dppProvider.dpp.verifyContractDocumentRemovalsProof(proof, prepareIdentifierValue(contractId), documentTypeName, valueToDynamicValue(removalsSelectionToPlain(selection)), verifySubsetOfProof, valueToDynamicValue(platformVersion));
+    return {
+        rootHash: result.rootHash,
+        value: plainProofValue(result.value)
+    };
+}

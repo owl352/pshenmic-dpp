@@ -5,7 +5,7 @@
 /auto-docs
 pkg/binaries
 pkg/utils
-/dist/*
+#/dist/*
 packages/orchard/dist
 packages/orchard/binaries
 package-lock.json

@@ -1,0 +1,883 @@
+import type * as protocol from '../../binaries/bindingsTypes.js';
+import type * as orchardProtocol from 'pshenmic-orchard/bindingsTypes';
+import { ActionGoal, AssetLockProofType, GasFeesPaidByWASM, KeyType, NetworkWASM, PlatformVersionWASM, PoolingWASM, Purpose, SecurityLevel, TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType, ContractFeePot, BatchType } from './enums.js';
+import { IdentifierWASM } from './structs/Identifier.js';
+import { languageCodes } from './constants.js';
+import { DistributionFunctionWASM } from './structs/TokenConfiguration/DistributionFunction.js';
+import { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfiguration.js';
+import { GroupWASM } from './structs/TokenConfiguration/Group.js';
+import { DocumentCreateTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentCreateTransition.js';
+import { DocumentDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentDeleteTransition.js';
+import { DocumentIndexOnlyDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentIndexOnlyDeleteTransition.js';
+import { DocumentPurchaseTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentPurchaseTransition.js';
+import { DocumentReplaceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentReplaceTransition.js';
+import { DocumentTransferTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentTransferTransition.js';
+import { DocumentUpdatePriceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentUpdatePriceTransition.js';
+import { TokenConfigUpdateTransitionWASM } from './structs/Batch/TokenTransitions/TokenConfigUpdateTransition.js';
+import { TokenDirectPurchaseTransitionWASM } from './structs/Batch/TokenTransitions/TokenDirectPurchaseTransition.js';
+import { TokenSetPriceForDirectPurchaseTransitionWASM } from './structs/Batch/TokenTransitions/TokenSetPriceForDirectPurchaseTransition.js';
+import { TokenBurnTransitionWASM } from './structs/Batch/TokenTransitions/TokenBurnTransition.js';
+import { TokenClaimTransitionWASM } from './structs/Batch/TokenTransitions/TokenClaimTransition.js';
+import { TokenUnFreezeTransitionWASM } from './structs/Batch/TokenTransitions/TokenUnFreezeTransition.js';
+import { TokenShieldTransitionWASM } from './structs/Batch/TokenTransitions/TokenShieldTransition.js';
+import { TokenUnshieldTransitionWASM } from './structs/Batch/TokenTransitions/TokenUnshieldTransition.js';
+import { TokenShieldedTransferTransitionWASM } from './structs/Batch/TokenTransitions/TokenShieldedTransferTransition.js';
+import { TokenMintToPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenMintToPoolTransition.js';
+import { TokenBurnFromPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenBurnFromPoolTransition.js';
+import { TokenClaimToPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenClaimToPoolTransition.js';
+import { TokenDirectPurchaseToPoolTransitionWASM } from './structs/Batch/TokenTransitions/TokenDirectPurchaseToPoolTransition.js';
+import { TokenTransferTransitionWASM } from './structs/Batch/TokenTransitions/TokenTransferTransition.js';
+import { TokenMintTransitionWASM } from './structs/Batch/TokenTransitions/TokenMintTransition.js';
+import { TokenFreezeTransitionWASM } from './structs/Batch/TokenTransitions/TokenFreezeTransition.js';
+import { TokenEmergencyActionTransitionWASM } from './structs/Batch/TokenTransitions/TokenEmergencyActionTransition.js';
+import { TokenDestroyFrozenFundsTransitionWASM } from './structs/Batch/TokenTransitions/TokenDestroyFrozenFundsTransition.js';
+import { DataContractWASM } from './structs/DataContract.js';
+import { IdentityWASM } from './structs/Identity.js';
+import { PartialIdentityWASM } from './structs/PartialIdentity.js';
+import { DocumentWASM } from './structs/Document.js';
+import { VoteWASM } from './structs/MasternodeVote/Vote.js';
+import { VotePollWASM } from './structs/MasternodeVote/VotePoll.js';
+import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.js';
+import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js';
+export type DashPlatformProtocol = typeof protocol;
+/** The proving (Orchard/Halo 2) NAPI surface, provided by pshenmic-orchard via
+ * setShielded(loadShielded()). dpp itself carries no proving code. */
+export type OrchardProtocol = typeof orchardProtocol;
+export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM;
+export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM;
+export type KeyTypeLike = KeyType | keyof typeof KeyType | Lowercase<keyof typeof KeyType>;
+export type NetworkLike = NetworkWASM | keyof typeof NetworkWASM | Lowercase<keyof typeof NetworkWASM>;
+export type SecurityLevelLike = SecurityLevel | keyof typeof SecurityLevel | Lowercase<keyof typeof SecurityLevel>;
+export type PlatformVersionLike = PlatformVersionWASM | Lowercase<keyof typeof PlatformVersionWASM>;
+export type PurposeLike = Purpose | keyof typeof Purpose | Lowercase<keyof typeof Purpose>;
+export type ActionGoalLike = ActionGoal | keyof typeof ActionGoal | Lowercase<keyof typeof ActionGoal>;
+export type GasFeesPaidByLike = GasFeesPaidByWASM | keyof typeof GasFeesPaidByWASM | Lowercase<keyof typeof GasFeesPaidByWASM>;
+export type TokenDistributionLike = TokenDistributionType | keyof typeof TokenDistributionType | Lowercase<keyof typeof TokenDistributionType>;
+export type TokenEmergencyActionLike = TokenEmergencyActionWASM | keyof typeof TokenEmergencyActionWASM | Lowercase<keyof typeof TokenEmergencyActionWASM>;
+export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType | Lowercase<keyof typeof AssetLockProofType>;
+export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>;
+export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>;
+export type ScopeLike = orchardProtocol.ScopeNAPI | keyof typeof orchardProtocol.ScopeNAPI | Lowercase<keyof typeof orchardProtocol.ScopeNAPI>;
+export type ContractFeePotLike = ContractFeePot | keyof typeof ContractFeePot | Lowercase<keyof typeof ContractFeePot>;
+export type BatchTypeLike = BatchType | keyof typeof BatchType | Lowercase<keyof typeof BatchType>;
+/** Identifiers inside plain moderation and contract group objects: base58 string or 32 bytes **/
+export type PlainIdentifier = string | Uint8Array;
+export interface ContractModerationReason {
+    code?: number | null;
+    text: string;
+    documents?: Array<{
+        documentTypeName: string;
+        documentId: PlainIdentifier;
+    }>;
+    reasonDocumentId?: PlainIdentifier;
+}
+export type ContractUserModerationAction = {
+    $type: 'ban';
+    identityId: PlainIdentifier;
+    reason: ContractModerationReason;
+} | {
+    $type: 'unban';
+    identityId: PlainIdentifier;
+} | {
+    $type: 'suspend';
+    identityId: PlainIdentifier;
+    until: number | bigint;
+    reason: ContractModerationReason;
+} | {
+    $type: 'unsuspend';
+    identityId: PlainIdentifier;
+} | {
+    $type: 'warn';
+    identityId: PlainIdentifier;
+    reason: ContractModerationReason;
+} | {
+    $type: 'clearWarnings';
+    identityId: PlainIdentifier;
+} | {
+    $type: 'deleteDocument';
+    documentTypeName: string;
+    documentId: PlainIdentifier;
+    reason: ContractModerationReason;
+} | {
+    $type: 'restoreDocument';
+    documentTypeName: string;
+    document: Uint8Array;
+} | {
+    $type: 'changeDocumentFields';
+    documentTypeName: string;
+    documentId: PlainIdentifier;
+    fields: Record<string, any>;
+    reason: ContractModerationReason;
+} | {
+    $type: 'deleteSettledDocument';
+    documentTypeName: string;
+    documentId: PlainIdentifier;
+    reason: ContractModerationReason;
+} | {
+    $type: 'approveTeamAction';
+    actionId: PlainIdentifier;
+};
+export interface ContractGroupRegistration {
+    admins?: PlainIdentifier[];
+    name?: string | null;
+    description?: string | null;
+}
+export interface ContractGroupMembership {
+    contractGroupId: PlainIdentifier;
+    member: 'contract' | {
+        documentType: string;
+    } | {
+        token: number;
+    };
+}
+export type AddressWitnessP2PKH = protocol.AddressWitnessP2pkhNAPI;
+export type AddressWitnessP2SH = protocol.AddressWitnessP2shNAPI;
+export type TokenConfigurationLocalizationJson = protocol.TokenConfigurationLocalizationJsonNAPI;
+export type DistributionFixedAmount = protocol.DistributionFixedAmountNAPI;
+export type DistributionRandom = protocol.DistributionRandomNAPI;
+export type DistributionStepDecreasingAmount = protocol.DistributionStepDecreasingAmountNAPI;
+export interface DistributionStepwiseStep {
+    step: bigint;
+    amount: bigint;
+}
+export type DistributionStepwise = DistributionStepwiseStep[];
+export type DistributionLinear = protocol.DistributionLinearNAPI;
+export type DistributionPolynomial = protocol.DistributionPolynomialNAPI;
+export type DistributionExponential = protocol.DistributionExponentialNAPI;
+export type DistributionLogarithmic = protocol.DistributionLogarithmicNAPI;
+export type DistributionInvertedLogarithmic = protocol.DistributionInvertedLogarithmicNAPI;
+export interface RewardDistribution {
+    interval: bigint | number;
+    function: DistributionFunctionWASM;
+    distributionType: 'BlockBasedDistribution' | 'TimeBasedDistribution' | 'EpochBasedDistribution';
+}
+export type ISO639_CODES = typeof languageCodes[number];
+export interface DataContractTokens {
+    position: number;
+    tokenConfiguration: TokenConfigurationWASM;
+}
+export interface DataContractGroups {
+    position: number;
+    group: GroupWASM;
+}
+export type DocumentTransitionLike = DocumentCreateTransitionWASM | DocumentDeleteTransitionWASM | DocumentIndexOnlyDeleteTransitionWASM | DocumentPurchaseTransitionWASM | DocumentReplaceTransitionWASM | DocumentTransferTransitionWASM | DocumentUpdatePriceTransitionWASM;
+export type TokenTransitionLike = TokenConfigUpdateTransitionWASM | TokenDirectPurchaseTransitionWASM | TokenSetPriceForDirectPurchaseTransitionWASM | TokenBurnTransitionWASM | TokenClaimTransitionWASM | TokenDestroyFrozenFundsTransitionWASM | TokenEmergencyActionTransitionWASM | TokenFreezeTransitionWASM | TokenMintTransitionWASM | TokenTransferTransitionWASM | TokenUnFreezeTransitionWASM | TokenShieldTransitionWASM | TokenUnshieldTransitionWASM | TokenShieldedTransferTransitionWASM | TokenMintToPoolTransitionWASM | TokenBurnFromPoolTransitionWASM | TokenClaimToPoolTransitionWASM | TokenDirectPurchaseToPoolTransitionWASM;
+export interface ExtendedEpochInfo {
+    index: number;
+    firstBlockTime: bigint;
+    firstBlockHeight: bigint;
+    firstCoreBlockHeight: number;
+    feeMultiplierPermille: bigint;
+    protocolVersion: number;
+}
+export interface FinalizedEpochInfo {
+    epochIndex: number;
+    firstBlockTime: Date;
+    firstBlockHeight: bigint;
+    totalBlocksInEpoch: bigint;
+    firstCoreBlockHeight: number;
+    nextEpochStartCoreBlockHeight: number;
+    totalProcessingFees: bigint;
+    totalDistributedStorageFees: bigint;
+    totalCreatedStorageFees: bigint;
+    coreBlockRewards: bigint;
+    blockProposers: Array<{
+        proposer: IdentifierWASM;
+        count: bigint;
+    }>;
+    feeMultiplierPermille: bigint;
+    protocolVersion: number;
+}
+export interface VerifiedEpochsInfo {
+    rootHash: Uint8Array;
+    epochsInfo: ExtendedEpochInfo[];
+}
+export interface VerifiedFinalizedEpochsInfo {
+    rootHash: Uint8Array;
+    epochInfos: FinalizedEpochInfo[];
+}
+export interface VerifiedTotalCredits {
+    rootHash: Uint8Array;
+    totalCredits: bigint;
+}
+export interface StartAt {
+    startIdentifier: IdentifierLike;
+    startIdentifierIncluded: boolean;
+}
+export type Winner = undefined | NoWinner | LockedWinner | WonByIdentityWinner;
+export type WinnerType = 'NoWinner' | 'Locked' | 'WonByIdentity';
+export interface NoWinner {
+    type: WinnerType;
+    blockInfo: BlockInfo;
+}
+export interface LockedWinner {
+    type: WinnerType;
+    blockInfo: BlockInfo;
+}
+export interface WonByIdentityWinner {
+    type: WinnerType;
+    identityId: Uint8Array;
+    blockInfo: BlockInfo;
+}
+export interface BlockInfo {
+    height: bigint;
+    coreHeight: number;
+    timeMs: bigint;
+    epoch?: number;
+}
+export interface ContenderWithSerializedDocument {
+    identityId: IdentifierWASM;
+    serializedDocument?: Uint8Array;
+    voteTally?: number;
+}
+export interface ContestedDocumentVotePollQueryExecutionResult {
+    contenders: ContenderWithSerializedDocument[];
+    lockedVoteTally?: number;
+    abstainingVoteTally?: number;
+    winner?: Winner;
+    skipped: number;
+}
+export interface VerifiedVoteState {
+    rootHash: Uint8Array;
+    result: ContestedDocumentVotePollQueryExecutionResult;
+}
+export interface VotePollsByEndDateTimeBound {
+    timeMs: bigint;
+    included: boolean;
+}
+export interface VotePollsAtEndDate {
+    timestampMs: bigint;
+    votePolls: VotePollWASM[];
+}
+export interface VerifiedVotePollsByEndDate {
+    rootHash: Uint8Array;
+    votePolls: VotePollsAtEndDate[];
+}
+export interface VerifiedContract {
+    rootHash: Uint8Array;
+    dataContract?: DataContractWASM;
+}
+export interface IdentityTokenInfo {
+    frozen: boolean;
+}
+export interface TokenStatus {
+    paused: boolean;
+}
+export interface VerifiedIdentityBalance {
+    balance: bigint;
+    id: IdentifierWASM;
+}
+export interface VerifiedIdentityTokenInfo {
+    tokenId: IdentifierWASM;
+    identityTokenInfo: IdentityTokenInfo;
+}
+export interface VerifiedTokenPricingSchedule {
+    tokenId: IdentifierWASM;
+    pricingSchedule?: TokenPricingScheduleWASM;
+}
+export interface VerifiedBalanceTransfer {
+    sender: PartialIdentityWASM;
+    recipient: PartialIdentityWASM;
+}
+export interface VerifiedDocument {
+    id: IdentifierWASM;
+    document?: DocumentWASM;
+}
+export interface VerifiedTokenGroupActionWithDocument {
+    groupSumPower: number;
+    document?: DocumentWASM;
+}
+export interface VerifiedTokenGroupActionWithTokenBalance {
+    groupSumPower: number;
+    groupActionStatus: string;
+    amount?: bigint;
+}
+export interface VerifiedTokenGroupActionWithTokenIdentityInfo {
+    groupSumPower: number;
+    groupActionStatus: string;
+    identityTokenInfo?: IdentityTokenInfo;
+}
+export interface VerifiedTokenGroupActionWithTokenPricingSchedule {
+    groupSumPower: number;
+    groupActionStatus: string;
+    pricingSchedule?: TokenPricingScheduleWASM;
+}
+export interface VerifiedPlatformAddressInfo {
+    address?: PlatformAddressWASM;
+    nonce?: number;
+    balance?: bigint;
+}
+export interface VerifiedIdentityFullWithAddressInfos {
+    identity: IdentityWASM;
+    infos: VerifiedPlatformAddressInfo[];
+}
+export interface VerifiedIdentityWithAddressInfos {
+    identity: PartialIdentityWASM;
+    infos: VerifiedPlatformAddressInfo[];
+}
+export interface AssetLockValue {
+    initialCreditValue: bigint;
+    txOutScript: Uint8Array;
+    remainingCreditValue: bigint;
+    usedTags: Uint8Array[];
+}
+export type StoredAssetLockInfoType = 'FullyConsumed' | 'PartiallyConsumed' | 'NotPresent';
+export interface StoredAssetLockInfo {
+    type: StoredAssetLockInfoType;
+    value?: AssetLockValue;
+}
+export type ShieldedNullifier = [Uint8Array, boolean];
+export interface VerifiedShieldedNullifiersWithAddressInfos {
+    nullifiers: ShieldedNullifier[];
+    infos: VerifiedPlatformAddressInfo[];
+}
+export interface VerifiedShieldedNullifiersWithWithdrawalDocument {
+    nullifiers: ShieldedNullifier[];
+    documents: VerifiedDocument[];
+}
+export interface VerifiedAssetLockConsumedWithAddressInfos {
+    storedAssetLockInfo: StoredAssetLockInfo;
+    infos: VerifiedPlatformAddressInfo[];
+}
+export interface VerifiedIdentityWithShieldedNullifiers {
+    identity: IdentityWASM;
+    nullifiers: ShieldedNullifier[];
+}
+export type VerifiedStateTransitionResultVariants = DataContractWASM | VerifiedExtendedStateTransitionResult | IdentityWASM | IdentifierWASM | VerifiedIdentityBalance | VerifiedIdentityTokenInfo | VerifiedTokenPricingSchedule | TokenStatus | VerifiedIdentityBalance[] | PartialIdentityWASM | VerifiedBalanceTransfer | VerifiedDocument[] | DocumentWASM | VerifiedTokenGroupActionWithDocument | VerifiedTokenGroupActionWithTokenBalance | VerifiedTokenGroupActionWithTokenIdentityInfo | VerifiedTokenGroupActionWithTokenPricingSchedule | VoteWASM | VerifiedPlatformAddressInfo[] | VerifiedIdentityFullWithAddressInfos | VerifiedIdentityWithAddressInfos | StoredAssetLockInfo | ShieldedNullifier[] | VerifiedShieldedNullifiersWithAddressInfos | VerifiedShieldedNullifiersWithWithdrawalDocument | VerifiedAssetLockConsumedWithAddressInfos | VerifiedIdentityWithShieldedNullifiers;
+export type VerifiedStateTransitionResultVariantsRAW = protocol.DataContractNAPI | protocol.DynamicValue | protocol.IdentityNAPI | protocol.IdentifierNAPI | protocol.VerifiedIdentityBalanceNAPI | protocol.VerifiedIdentityTokenInfoNAPI | protocol.VerifiedTokenPricingScheduleNAPI | protocol.TokenStatusNAPI | protocol.VerifiedIdentityBalanceNAPI[] | protocol.PartialIdentityNAPI | protocol.VerifiedBalanceTransferNAPI | protocol.VerifiedDocumentNAPI[] | protocol.DocumentNAPI | protocol.VerifiedTokenGroupActionWithDocumentNAPI | protocol.VerifiedTokenGroupActionWithTokenBalanceNAPI | protocol.VerifiedTokenGroupActionWithTokenIdentityInfoNAPI | protocol.VerifiedTokenGroupActionWithTokenPricingScheduleNAPI | protocol.VoteNAPI | protocol.PlatformAddressInfoNAPI[] | protocol.VerifiedIdentityFullWithAddressInfosNAPI | protocol.VerifiedIdentityWithAddressInfosNAPI | protocol.StoredAssetLockInfoNAPI | Array<[Uint8Array, boolean]> | [Array<[Uint8Array, boolean]>, protocol.PlatformAddressInfoNAPI[]] | [Array<[Uint8Array, boolean]>, protocol.VerifiedDocumentNAPI[]] | [protocol.StoredAssetLockInfoNAPI, protocol.PlatformAddressInfoNAPI[]] | [protocol.IdentityNAPI, Array<[Uint8Array, boolean]>];
+export interface VerifiedStateTransitionResult {
+    rootHash: Uint8Array;
+    result: VerifiedStateTransitionResultVariants;
+    /**
+     * Whether the proof binds the execution of this specific state transition.
+     * When false, the result is a height-pinned snapshot of the state the
+     * transition affects, not evidence that the transition executed.
+     */
+    isExecutionProved: boolean;
+    /**
+     * The owner's credit balance after the transition executed, as a snapshot at
+     * the proof's block. Only proofs of owned, fee-paying transitions carry it
+     * (from protocol v14).
+     */
+    ownerBalance?: bigint;
+}
+export type WhereOperator = '=' | '==' | '>' | '>=' | '<' | '<=' | 'Between' | 'between' | 'BetweenExcludeBounds' | 'betweenExcludeBounds' | 'betweenexcludebounds' | 'between_exclude_bounds' | 'BetweenExcludeLeft' | 'betweenExcludeLeft' | 'betweenexcludeleft' | 'between_exclude_left' | 'BetweenExcludeRight' | 'betweenExcludeRight' | 'betweenexcluderight' | 'between_exclude_right' | 'In' | 'in' | 'StartsWith' | 'startsWith' | 'startswith' | 'starts_with' | 'Contains' | 'contains' | 'ContainsAny' | 'containsAny' | 'containsany' | 'contains_any';
+/**
+ * The window of a contract `timeRange` grid an `IN_TIME_RANGE` clause selects: the freshest started
+ * window, the oldest one still active, or the one starting at a millisecond timestamp on the grid.
+ * A field bucketed by several grids needs the `grid` (as the contract declares it, in seconds)
+ **/
+export type TimeRangeSelection = 'newest' | 'oldest' | bigint | {
+    selector?: 'newest' | 'oldest' | 'byStart';
+    startMs?: bigint | number;
+    grid?: {
+        rangeSeconds: bigint | number;
+        stepSeconds: bigint | number;
+        phaseSeconds?: bigint | number;
+    };
+};
+/** The window of a contract `integerRange` grid an `IN_INTEGER_RANGE` clause selects, by its start **/
+export type IntegerRangeSelection = bigint | number | {
+    start: bigint | number;
+    grid?: {
+        range: bigint | number;
+        step: bigint | number;
+        phase?: bigint | number;
+    };
+};
+export type WhereClause = [field: string, operator: WhereOperator, value: unknown] | [field: string, operator: 'IN_TIME_RANGE' | 'inTimeRange' | 'in_time_range', selection: TimeRangeSelection] | [field: string, operator: 'IN_INTEGER_RANGE' | 'inIntegerRange' | 'in_integer_range', selection: IntegerRangeSelection];
+export interface VerifiedDocuments {
+    rootHash: Uint8Array;
+    documents: DocumentWASM[];
+}
+export interface VerifiedIdentifierByNonUniquePublicKeyHash {
+    rootHash: Uint8Array;
+    identifier?: IdentifierWASM;
+}
+export interface VerifiedFullIdentityByNonUniquePublicKeyHash {
+    rootHash: Uint8Array;
+    identity?: IdentityWASM;
+}
+export interface VerifiedIdentityBalanceRootHash {
+    rootHash: Uint8Array;
+    balance?: bigint;
+}
+export interface VerifiedIdentityByIdentifier {
+    rootHash: Uint8Array;
+    identity?: IdentityWASM;
+}
+export interface VerifiedIdentityByUniqueKeyHash {
+    rootHash: Uint8Array;
+    identity?: IdentityWASM;
+}
+export interface VerifiedIdentityContractNonce {
+    rootHash: Uint8Array;
+    contractNonce?: bigint;
+}
+export interface VerifiedIdentityKeysByIdentifier {
+    rootHash: Uint8Array;
+    identity?: PartialIdentityWASM;
+}
+export interface VerifiedIdentityNonce {
+    rootHash: Uint8Array;
+    nonce?: bigint;
+}
+export interface IdentityTokenBalance {
+    balance: bigint;
+    id: IdentifierWASM;
+}
+export interface IdentityTokenBalanceOptional {
+    balance?: bigint;
+    id: IdentifierWASM;
+}
+export interface VerifiedTokenBalancesForIdentities {
+    rootHash: Uint8Array;
+    balances: IdentityTokenBalanceOptional[];
+}
+export interface TokenContractInfo {
+    contractId: IdentifierWASM;
+    tokenContractPosition: number;
+}
+export interface VerifiedTokenContractInfo {
+    rootHash: Uint8Array;
+    contractInfo?: TokenContractInfo;
+}
+export interface VerifiedTokenDirectPurchasePrices {
+    rootHash: Uint8Array;
+    prices: VerifiedTokenPricingSchedule[];
+}
+export interface TotalSingleTokenBalance {
+    tokenSupply: bigint;
+    aggregatedTokenAccountBalances: bigint;
+}
+export interface VerifiedTokenTotalSupply {
+    rootHash: Uint8Array;
+    totalBalance: TotalSingleTokenBalance;
+}
+export interface VerifiedTokensBalancesForIdentity {
+    rootHash: Uint8Array;
+    balances: IdentityTokenBalanceOptional[];
+}
+export type VerifiedPlatformAddressInfoWithRootHash = VerifiedPlatformAddressInfo & {
+    rootHash: Uint8Array;
+};
+export interface VerifiedPlatformAddressesInfosWithRootHash {
+    rootHash: Uint8Array;
+    infos: VerifiedPlatformAddressInfo[];
+}
+export interface VerifiedShieldedEncryptedNote {
+    cmx: Uint8Array;
+    nullifier: Uint8Array;
+    cvNet: Uint8Array;
+    encryptedNote: Uint8Array;
+}
+export interface VerifiedShieldedEncryptedNotes {
+    rootHash: Uint8Array;
+    notes: VerifiedShieldedEncryptedNote[];
+    totalCount: bigint;
+}
+export interface VerifiedShieldedAnchors {
+    rootHash: Uint8Array;
+    anchors: Uint8Array[];
+}
+export interface VerifiedMostRecentShieldedAnchor {
+    rootHash: Uint8Array;
+    anchor?: Uint8Array;
+}
+export interface VerifiedShieldedPoolState {
+    rootHash: Uint8Array;
+    totalBalance?: bigint;
+}
+export interface VerifiedShieldedNotesCount {
+    rootHash: Uint8Array;
+    count?: bigint;
+}
+export interface VerifiedShieldedNullifier {
+    nullifier: Uint8Array;
+    isSpent: boolean;
+}
+export interface VerifiedShieldedNullifiers {
+    rootHash: Uint8Array;
+    nullifiers: VerifiedShieldedNullifier[];
+}
+export type AddressBalanceOperation = 'setCredits' | 'addToCredits';
+export interface AddressBalanceChange {
+    address: PlatformAddressWASM;
+    /** `setCredits` means `credits` is the new balance, `addToCredits` means it is the delta. */
+    operation: AddressBalanceOperation;
+    credits: bigint;
+}
+export interface BlockAddressBalanceChanges {
+    blockHeight: bigint;
+    changes: AddressBalanceChange[];
+}
+export interface VerifiedRecentAddressBalanceChanges {
+    rootHash: Uint8Array;
+    blocks: BlockAddressBalanceChanges[];
+}
+export type CompactedAddressBalanceOperation = 'setCredits' | 'addToCreditsOperations';
+export interface BlockHeightCredit {
+    blockHeight: bigint;
+    credits: bigint;
+}
+export interface CompactedAddressBalanceChange {
+    address: PlatformAddressWASM;
+    operation: CompactedAddressBalanceOperation;
+    /** Populated when `operation` is `setCredits`. */
+    setCredits?: bigint;
+    /** Populated when `operation` is `addToCreditsOperations`, otherwise empty. */
+    addToCreditsOperations: BlockHeightCredit[];
+}
+export interface CompactedBlockAddressBalanceChanges {
+    startBlockHeight: bigint;
+    endBlockHeight: bigint;
+    changes: CompactedAddressBalanceChange[];
+}
+export interface VerifiedRecentCompactedAddressBalanceChanges {
+    rootHash: Uint8Array;
+    ranges: CompactedBlockAddressBalanceChanges[];
+}
+export type GroveElementType = 'Item' | 'ItemWithSumItem' | 'SumItem' | 'Reference' | 'ReferenceWithSumItem' | 'Tree' | 'SumTree' | 'BigSumTree' | 'ProvableSumTree' | 'CountTree' | 'ProvableCountTree' | 'CountSumTree' | 'ProvableCountSumTree' | 'ProvableCountProvableSumTree' | 'CommitmentTree' | 'MmrTree' | 'BulkAppendTree' | 'DenseAppendOnlyFixedSizeTree';
+export type GroveElementWrapper = 'NonCounted' | 'NotSummed' | 'NotCountedOrSummed';
+export interface GroveElement {
+    type: GroveElementType;
+    /** Set when the element opts out of its parent's aggregates; `type` still describes the wrapped element. */
+    wrapper?: GroveElementWrapper;
+    /** An item's payload, or a subtree's root key. Absent for empty subtrees. */
+    value?: Uint8Array;
+    sum?: bigint;
+    count?: bigint;
+}
+export interface GroveElementEntry {
+    key: Uint8Array;
+    element: GroveElement;
+}
+export interface GroveLeafInfo {
+    key: Uint8Array;
+    /** Pass as `expectedRootHash` when verifying this key's branch proof. */
+    hash: Uint8Array;
+    count?: bigint;
+}
+export interface GroveAncestor {
+    levelsUp: number;
+    count: bigint;
+    key: Uint8Array;
+    hash: Uint8Array;
+}
+export interface VerifiedAddressesTrunkState {
+    rootHash: Uint8Array;
+    elements: GroveElementEntry[];
+    /** Subtrees the trunk stops at. Empty when the whole tree fit in the trunk. */
+    leafKeys: GroveLeafInfo[];
+    chunkDepths: number[];
+    maxTreeDepth: number;
+    /** Which truncated subtree would hold `key`, or undefined if it is already in `elements`. */
+    traceKeyToLeaf: (key: Uint8Array) => GroveLeafInfo | undefined;
+    getAncestor: (leafKey: Uint8Array, minPrivacyTreeCount: bigint) => GroveAncestor | undefined;
+}
+export interface VerifiedAddressesBranchState {
+    elements: GroveElementEntry[];
+    leafKeys: GroveLeafInfo[];
+    branchRootHash: Uint8Array;
+    traceKeyToLeaf: (key: Uint8Array) => GroveLeafInfo | undefined;
+    getAncestor: (leafKey: Uint8Array, minPrivacyTreeCount: bigint) => GroveAncestor | undefined;
+}
+export interface VerifiedPathElement {
+    key: Uint8Array;
+    element?: GroveElement;
+}
+export interface VerifiedPathElements {
+    rootHash: Uint8Array;
+    /** Found elements in key order, keys proven absent are omitted. */
+    elements: VerifiedPathElement[];
+}
+export interface ProvenModerationReason {
+    code?: number | null;
+    text: string;
+    documents?: Array<{
+        documentTypeName: string;
+        documentId: IdentifierWASM;
+    }>;
+    reasonDocumentId?: IdentifierWASM;
+}
+export interface ProvenContractWarning {
+    warnedAt: bigint;
+    reason: ProvenModerationReason;
+}
+export type ProvenModerationListStatus = {
+    list: 'banlist';
+    ban: {
+        reason: ProvenModerationReason;
+    } | null;
+} | {
+    list: 'suspensions';
+    suspension: {
+        until: bigint;
+        reason: ProvenModerationReason;
+    } | null;
+} | {
+    list: 'warnings';
+    warnings: ProvenContractWarning[];
+};
+export interface ProvenDocumentRemoval {
+    documentOwnerId: IdentifierWASM;
+    moderatorId: IdentifierWASM;
+    reason: ProvenModerationReason;
+    removedAt: bigint;
+    documentHash: Uint8Array;
+    restoration: {
+        moderatorId: IdentifierWASM;
+        restoredAt: bigint;
+    } | null;
+    keptFields?: Uint8Array;
+}
+export interface ProvenDocumentRemovalEntry {
+    documentId: IdentifierWASM;
+    removal: ProvenDocumentRemoval;
+}
+export interface ProvenFeePotLastClaim {
+    epochIndex: number;
+    timeMs: bigint;
+    claimantId: IdentifierWASM;
+}
+export type GroupActionStatusName = 'actionActive' | 'actionClosed';
+/** Case-insensitive name or 0 (active) / 1 (closed) **/
+export type GroupActionStatusLike = GroupActionStatusName | 'ActionActive' | 'ActionClosed' | 0 | 1;
+export type VerifiedExtendedStateTransitionResult = {
+    $type: 'contractModerationListStatuses';
+    contractId: IdentifierWASM;
+    identityId: IdentifierWASM;
+    statuses: ProvenModerationListStatus[];
+} | {
+    $type: 'contractFeeClaim';
+    contractId: IdentifierWASM;
+    pot: 'owner' | 'moderators';
+    lastClaim: ProvenFeePotLastClaim;
+    creditsLeft: bigint;
+    paidBalances: Array<{
+        identityId: IdentifierWASM;
+        balance: bigint;
+    }>;
+} | {
+    $type: 'contractDocumentRemoval';
+    contractId: IdentifierWASM;
+    documentTypeName: string;
+    documentId: IdentifierWASM;
+    removal: ProvenDocumentRemoval;
+} | {
+    $type: 'contractTeamActionSignature';
+    contractId: IdentifierWASM;
+    actionId: IdentifierWASM;
+    status: GroupActionStatusName;
+} | {
+    $type: 'tokenGroupActionWithShieldedNullifiers';
+    groupPower: number;
+    status: GroupActionStatusName;
+    nullifiers: Array<{
+        nullifier: Uint8Array;
+        spent: boolean;
+    }>;
+};
+export interface VerifiedProof<T> {
+    rootHash: Uint8Array;
+    value: T;
+}
+export interface ProvenKeyRemainingBudget {
+    keyId: number;
+    remainingBudget: bigint | null;
+}
+export interface VerifiedContractsByRange {
+    rootHash: Uint8Array;
+    contracts: Array<{
+        id: IdentifierWASM;
+        dataContract?: DataContractWASM;
+    }>;
+}
+export interface ProvenContractVersion {
+    contractId: IdentifierWASM;
+    version: number | null;
+}
+export interface ProvenContractGroupInfo {
+    $formatVersion: '0';
+    owner: {
+        singleOwner: IdentifierWASM;
+    } | {
+        ownerAndAdmins: {
+            owner: IdentifierWASM;
+            admins: IdentifierWASM[];
+        };
+    };
+    name?: string | null;
+    description?: string | null;
+}
+export type ContractGroupMembersQuery = {
+    kind: 'contracts';
+    startAfter?: IdentifierLike;
+} | {
+    kind: 'documentTypes';
+    startAfter?: [IdentifierLike, string];
+} | {
+    kind: 'tokens';
+    startAfter?: [IdentifierLike, number];
+};
+export type ProvenContractGroupMembers = {
+    kind: 'contracts';
+    members: IdentifierWASM[];
+} | {
+    kind: 'documentTypes';
+    members: Array<[IdentifierWASM, string]>;
+} | {
+    kind: 'tokens';
+    members: Array<[IdentifierWASM, number]>;
+};
+export interface ProvenContractGroupMemberships {
+    contract: IdentifierWASM[];
+    documentTypes: Record<string, IdentifierWASM[]>;
+    tokens: Array<{
+        tokenContractPosition: number;
+        contractGroupIds: IdentifierWASM[];
+    }>;
+}
+export type ContractDocumentRemovalsSelection = {
+    documentIds: IdentifierLike[];
+} | {
+    startAfter?: IdentifierLike;
+    limit: number;
+};
+export interface ProvenContractFeePots {
+    owner: {
+        credits: bigint;
+        lastClaim: ProvenFeePotLastClaim | null;
+    };
+    moderators: {
+        credits: bigint;
+        lastClaim: ProvenFeePotLastClaim | null;
+    };
+}
+export type ContractModerationListName = 'banlist' | 'suspensions' | 'warnings';
+export interface ProvenModeratorActionCount {
+    moderatorId: IdentifierWASM;
+    actionCount: number;
+}
+export interface ProvenModerationEntry {
+    identityId: IdentifierWASM;
+    until: bigint | null;
+    reason: ProvenModerationReason;
+    warnings: ProvenContractWarning[];
+}
+export interface ProvenContractTeamAction {
+    actionId: IdentifierWASM;
+    action: {
+        proposerId: IdentifierWASM;
+        proposedAt: bigint;
+        event: {
+            $type: 'deleteSettledDocument';
+            documentTypeName: string;
+            documentId: IdentifierWASM;
+            documentLastModifiedAt: bigint;
+            documentRevision: bigint | null;
+            reason: ProvenModerationReason;
+        };
+    };
+    approvalCount: number;
+}
+export interface DocumentsQuery {
+    documentTypeName: string;
+    where?: WhereClause[];
+    orderBy?: string[][];
+    limit?: number;
+    startAt?: IdentifierLike;
+    startAtIncluded?: boolean;
+}
+export interface VerifiedChainedDocuments {
+    rootHash: Uint8Array;
+    innerDocuments: DocumentWASM[];
+    outerDocuments: DocumentWASM[];
+    missingOuterIds: IdentifierWASM[];
+    removedOuterDocuments: ProvenDocumentRemovalEntry[];
+}
+export interface CompositeSubQuery {
+    /** Defaults to the page's contract **/
+    dataContract?: DataContractWASM;
+    documentTypeName: string;
+    kind?: 'documents' | 'count';
+    where?: WhereClause[];
+    orderBy?: string[][];
+    limit?: number;
+    binding?: {
+        source: 'page' | number;
+        sourceProperty: string;
+        field: string;
+    };
+}
+export interface ProvenSplitCount {
+    inKey: Uint8Array | null;
+    key: Uint8Array;
+    count: bigint | null;
+}
+export interface VerifiedCompositeSubResult {
+    documents?: DocumentWASM[];
+    counts?: ProvenSplitCount[];
+    missingIds: IdentifierWASM[];
+    removals: ProvenDocumentRemovalEntry[];
+}
+export interface VerifiedCompositeDocuments {
+    rootHash: Uint8Array;
+    pageDocuments: DocumentWASM[];
+    subResults: VerifiedCompositeSubResult[];
+}
+export interface AggregateSelect {
+    function: 'count' | 'sum' | 'avg' | 'min' | 'max';
+    field?: string;
+}
+export interface HavingClause {
+    function: 'count' | 'sum' | 'avg';
+    field?: string;
+    operator: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'between' | 'betweenExcludeBounds' | 'betweenExcludeLeft' | 'betweenExcludeRight' | 'in';
+    value: any;
+}
+export interface AggregateDocumentsQuery {
+    documentTypeName: string;
+    select: AggregateSelect;
+    groupBy: string[];
+    where?: WhereClause[];
+    orderBy?: string[][];
+    limit?: number;
+    offset?: number;
+}
+/** A count / sum / average query; `groupBy` splits the result per `In` and/or range group **/
+export interface AggregateProofQuery {
+    documentTypeName: string;
+    where?: WhereClause[];
+    orderBy?: string[][];
+    groupBy?: string[];
+    limit?: number;
+}
+export interface ProvenAggregateEntry {
+    /** The serialized `In` value of the group, when grouped by an `In` **/
+    inKey: Uint8Array | null;
+    /** The serialized index value of the group, empty for a total **/
+    key: Uint8Array;
+    count?: bigint;
+    sum?: bigint;
+}
+export interface ProvenAggregate {
+    /** The proof primitive the query resolved to, as drive picks it **/
+    mode: 'primaryKeyTree' | 'pointLookup' | 'aggregate' | 'distinct' | 'carrierAggregate';
+    entries: ProvenAggregateEntry[];
+}
+export interface ProvenRankedEntry {
+    /** The serialized index value of the group **/
+    key: Uint8Array;
+    inKey: Uint8Array | null;
+    /** One of them, per the selected aggregate; `avgFixedPoint` is scaled by 10^19 **/
+    value: {
+        count?: bigint;
+        sum?: bigint;
+        avgFixedPoint?: bigint;
+    };
+}
+export interface ProvenRankedPage {
+    skipped: bigint;
+    entries: ProvenRankedEntry[];
+}

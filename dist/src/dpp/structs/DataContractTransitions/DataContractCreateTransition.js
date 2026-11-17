@@ -1,0 +1,78 @@
+import { DataContractWASM } from '../DataContract.js';
+import { dppProvider } from '../../provider.js';
+import { plainIdentifiersToBytes, valueFromDynamicValue, valueToDynamicValue } from '../../utils.js';
+import { IdentifierWASM } from '../Identifier.js';
+import { StateTransitionWASM } from '../StateTransition.js';
+export class DataContractCreateTransitionWASM {
+    /** @private **/
+    _rawDataContractCreateTransition;
+    constructor(dataContract, identityNonce, platformVersion) {
+        this._rawDataContractCreateTransition = new dppProvider.dpp.DataContractCreateTransitionNAPI(dataContract._rawDataContract, identityNonce.toString(), valueToDynamicValue(platformVersion));
+    }
+    get featureVersion() {
+        return this._rawDataContractCreateTransition.featureVersion;
+    }
+    get contractGroup() {
+        const contractGroup = this._rawDataContractCreateTransition.contractGroup;
+        return contractGroup != null ? valueFromDynamicValue(contractGroup, true) : undefined;
+    }
+    /** Registering a contract group turns the transition into V1 (platform v14+) **/
+    set contractGroup(value) {
+        this._rawDataContractCreateTransition.contractGroup = value != null ? valueToDynamicValue(plainIdentifiersToBytes(value)) : undefined;
+    }
+    /** The id of the group this transition registers **/
+    get contractGroupId() {
+        const id = this._rawDataContractCreateTransition.contractGroupId;
+        return id != null ? IdentifierWASM.createFromRawInstance(id) : undefined;
+    }
+    get contractGroupMemberships() {
+        return valueFromDynamicValue(this._rawDataContractCreateTransition.contractGroupMemberships, true);
+    }
+    set contractGroupMemberships(value) {
+        this._rawDataContractCreateTransition.contractGroupMemberships = valueToDynamicValue(plainIdentifiersToBytes(value));
+    }
+    get identityNonce() {
+        return BigInt(this._rawDataContractCreateTransition.identityNonce);
+    }
+    verifyProtocolVersion(protocolVersion) {
+        return this._rawDataContractCreateTransition.verifyProtocolVersion(protocolVersion);
+    }
+    setDataContract(dataContract, platformVersion) {
+        this._rawDataContractCreateTransition.setDataContract(dataContract._rawDataContract, valueToDynamicValue(platformVersion));
+    }
+    getDataContract(platformVersion, fullValidation) {
+        return DataContractWASM.createFromRawInstance(this._rawDataContractCreateTransition.getDataContract(valueToDynamicValue(platformVersion), fullValidation));
+    }
+    calculateMinRequiredFee(platformVersion) {
+        return BigInt(this._rawDataContractCreateTransition.calculateMinRequiredFee(platformVersion));
+    }
+    bytes() {
+        return this._rawDataContractCreateTransition.bytes();
+    }
+    hex() {
+        return this._rawDataContractCreateTransition.hex();
+    }
+    base64() {
+        return this._rawDataContractCreateTransition.base64();
+    }
+    toStateTransition() {
+        return StateTransitionWASM.createFromRawInstance(this._rawDataContractCreateTransition.toStateTransition());
+    }
+    static fromBytes(bytes) {
+        return DataContractCreateTransitionWASM.createFromRawInstance(dppProvider.dpp.DataContractCreateTransitionNAPI.fromBytes(bytes));
+    }
+    static fromHex(hex) {
+        return DataContractCreateTransitionWASM.createFromRawInstance(dppProvider.dpp.DataContractCreateTransitionNAPI.fromHex(hex));
+    }
+    static fromBase64(base64) {
+        return DataContractCreateTransitionWASM.createFromRawInstance(dppProvider.dpp.DataContractCreateTransitionNAPI.fromBase64(base64));
+    }
+    static fromStateTransition(stateTransition) {
+        return DataContractCreateTransitionWASM.createFromRawInstance(dppProvider.dpp.DataContractCreateTransitionNAPI.fromStateTransition(stateTransition._rawStateTransition));
+    }
+    static createFromRawInstance(rawInstance) {
+        const instance = Object.create(DataContractCreateTransitionWASM.prototype);
+        instance._rawDataContractCreateTransition = rawInstance;
+        return instance;
+    }
+}
