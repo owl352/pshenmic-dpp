@@ -169,7 +169,7 @@ export { verifyCompositeDocumentsProof } from './verify/Document/verifyComposite
 export { verifyRankedDocumentsProof } from './verify/Document/verifyRankedDocumentsProof.js';
 export { verifyHavingDocumentsProof } from './verify/Document/verifyHavingDocumentsProof.js';
 export { verifyDocumentsCountProof, verifyDocumentsSumProof, verifyDocumentsAverageProof } from './verify/Document/verifyDocumentsAggregateProof.js';
-export { ShieldedAddressWASM, shieldedOvkFromSeed } from './structs/Orchard/ShieldedAddress.js';
+export { OrchardAddressWASM, orchardOvkFromSeed } from './structs/Orchard/OrchardAddress.js';
 export { FullViewingKeyWASM } from './structs/Orchard/FullViewingKey.js';
 export { IncomingViewingKeyWASM } from './structs/Orchard/IncomingViewingKey.js';
 export { ShieldedMemoWASM } from './structs/Orchard/ShieldedMemo.js';
@@ -178,7 +178,7 @@ export { MerklePathWASM } from './structs/Orchard/MerklePath.js';
 export { SpendableNoteWASM } from './structs/Orchard/SpendableNote.js';
 export { ShieldedOutputWASM } from './structs/Orchard/ShieldedOutput.js';
 export { CommitmentTreeWASM } from './structs/Orchard/CommitmentTree.js';
-export { ShieldedProverWASM } from './structs/Orchard/ShieldedProver.js';
+export { OrchardProverWASM } from './structs/Orchard/OrchardProver.js';
 export { ShieldedWithdrawalResultWASM } from './structs/Orchard/ShieldedWithdrawalResult.js';
 export { RecoveredNoteWASM, recoverNotes } from './structs/Orchard/RecoveredNote.js';
 export { ShieldedBuilderWASM } from './structs/Orchard/ShieldedBuilder.js';

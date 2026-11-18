@@ -1,7 +1,7 @@
 import { dppProvider } from '../../provider.js';
 import { valueToShieldedDynamicValue } from '../../utils.js';
 import { IncomingViewingKeyWASM } from './IncomingViewingKey.js';
-import { ShieldedAddressWASM } from './ShieldedAddress.js';
+import { OrchardAddressWASM } from './OrchardAddress.js';
 /**
  * An Orchard full viewing key: it detects both incoming and outgoing notes and
  * computes their nullifiers (so it sees the full balance), but cannot spend.
@@ -23,11 +23,11 @@ export class FullViewingKeyWASM {
     }
     /** The payment address at `diversifierIndex` (default 0) for `scope` (default External). */
     address(diversifierIndex, scope) {
-        return ShieldedAddressWASM.createFromRawInstance(this._rawFullViewingKey.address(diversifierIndex, scope == null ? undefined : valueToShieldedDynamicValue(scope)));
+        return OrchardAddressWASM.createFromRawInstance(this._rawFullViewingKey.address(diversifierIndex, scope == null ? undefined : valueToShieldedDynamicValue(scope)));
     }
     /** The scope `address` was derived under, or null if it does not belong to this key. */
     scopeForAddress(address) {
-        return this._rawFullViewingKey.scopeForAddress(address._rawShieldedAddress);
+        return this._rawFullViewingKey.scopeForAddress(address._rawOrchardAddress);
     }
     /** Derives the full viewing key from a BIP-39 seed via ZIP-32 (m/32'/coinType'/account'). */
     static fromSeed(seed, coinType, account) {

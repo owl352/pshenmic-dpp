@@ -1,16 +1,16 @@
 import { dppProvider } from '../../provider.js';
-import { ShieldedAddressWASM } from './ShieldedAddress.js';
+import { OrchardAddressWASM } from './OrchardAddress.js';
 export class NoteWASM {
     /** @private **/
     _rawNote;
     constructor(address, value, rho, rseed) {
-        this._rawNote = new dppProvider.shielded.NoteNAPI(address._rawShieldedAddress, value.toString(), rho, rseed);
+        this._rawNote = new dppProvider.shielded.NoteNAPI(address._rawOrchardAddress, value.toString(), rho, rseed);
     }
     get address() {
-        return ShieldedAddressWASM.createFromRawInstance(this._rawNote.address);
+        return OrchardAddressWASM.createFromRawInstance(this._rawNote.address);
     }
     set address(value) {
-        this._rawNote.address = value._rawShieldedAddress;
+        this._rawNote.address = value._rawOrchardAddress;
     }
     get value() {
         return BigInt(this._rawNote.value);

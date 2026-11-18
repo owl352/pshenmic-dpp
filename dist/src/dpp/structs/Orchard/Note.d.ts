@@ -1,11 +1,11 @@
 import type { NoteNAPI } from 'dash-platform-shielded/bindingsTypes';
-import { ShieldedAddressWASM } from './ShieldedAddress.js';
+import { OrchardAddressWASM } from './OrchardAddress.js';
 export declare class NoteWASM {
     /** @private **/
     _rawNote: NoteNAPI;
-    constructor(address: ShieldedAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array);
-    get address(): ShieldedAddressWASM;
-    set address(value: ShieldedAddressWASM);
+    constructor(address: OrchardAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array);
+    get address(): OrchardAddressWASM;
+    set address(value: OrchardAddressWASM);
     get value(): bigint;
     set value(value: bigint);
     get rho(): Uint8Array;
