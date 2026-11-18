@@ -1,4 +1,4 @@
-import type { CommitmentTreeNAPI } from 'pshenmic-orchard/bindingsTypes';
+import type { CommitmentTreeNAPI } from 'dash-platform-shielded/bindingsTypes';
 import { MerklePathWASM } from './MerklePath.js';
 export declare class CommitmentTreeWASM {
     /** @private **/

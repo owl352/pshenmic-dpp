@@ -1,4 +1,4 @@
-import type { ShieldedWithdrawalResultNAPI } from 'pshenmic-orchard/bindingsTypes';
+import type { ShieldedWithdrawalResultNAPI } from 'dash-platform-shielded/bindingsTypes';
 import { StateTransitionWASM } from '../StateTransition.js';
 /** Result of a proving shielded spend (withdrawal / unshield / transfer). */
 export declare class ShieldedWithdrawalResultWASM {

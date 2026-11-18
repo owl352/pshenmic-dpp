@@ -1,5 +1,5 @@
-import type { ShieldedOutputNAPI } from 'pshenmic-orchard/bindingsTypes';
-import { OrchardAddressWASM } from './OrchardAddress.js';
+import type { ShieldedOutputNAPI } from 'dash-platform-shielded/bindingsTypes';
+import { ShieldedAddressWASM } from './ShieldedAddress.js';
 import { ShieldedMemoWASM } from './ShieldedMemo.js';
 /**
  * One output of a multi-output shielded transfer (`shieldedTransferMulti`):
@@ -12,9 +12,9 @@ import { ShieldedMemoWASM } from './ShieldedMemo.js';
 export declare class ShieldedOutputWASM {
     /** @private **/
     _rawShieldedOutput: ShieldedOutputNAPI;
-    constructor(address: OrchardAddressWASM, amount: bigint, memo: ShieldedMemoWASM);
-    get address(): OrchardAddressWASM;
-    set address(value: OrchardAddressWASM);
+    constructor(address: ShieldedAddressWASM, amount: bigint, memo: ShieldedMemoWASM);
+    get address(): ShieldedAddressWASM;
+    set address(value: ShieldedAddressWASM);
     get amount(): bigint;
     set amount(value: bigint);
     get memo(): ShieldedMemoWASM;

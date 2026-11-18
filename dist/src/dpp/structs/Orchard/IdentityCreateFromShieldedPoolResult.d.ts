@@ -1,4 +1,4 @@
-import type { IdentityCreateFromShieldedPoolResultNAPI } from 'pshenmic-orchard/bindingsTypes';
+import type { IdentityCreateFromShieldedPoolResultNAPI } from 'dash-platform-shielded/bindingsTypes';
 import { IdentifierWASM } from '../Identifier.js';
 import { IdentityPublicKeyInCreationWASM } from '../IdentityPublicKeyInCreation.js';
 import { SerializedActionWASM } from '../ShieldedTransitions/SerializedAction.js';

@@ -3,8 +3,8 @@
 // workers, no reuseWorker. Loads WITHOUT cross-origin isolation /
 // SharedArrayBuffer (dash-platform-extension#219): data classes only, the
 // proving feature is compiled out (--no-default-features). The threaded
-// proving module lives in shieldedCreation.cjs (loadShielded()), loaded on
-// demand via initShielded() — never at import time.
+// proving module lives in shieldedCreation.cjs and is provided by the consumer
+// via setShielded(shielded) (or dash-platform-shielded/lazy + loadShielded()).
 const { WASI } = require('@tybys/wasm-util');
 const { getDefaultContext } = require('@emnapi/runtime');
 const { instantiateNapiModuleSync } = require('@emnapi/core');

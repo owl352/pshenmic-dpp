@@ -7,9 +7,9 @@ export function valueToDynamicValue(value) {
 }
 /**
  * Same conversion as valueToDynamicValue, but wraps with the SHIELDED
- * (pshenmic-orchard) instance's DynamicValue. Wrapped napi objects cannot
+ * (dash-platform-shielded) instance's DynamicValue. Wrapped napi objects cannot
  * cross the base <-> shielded instance boundary, so arguments destined for
- * orchard methods (scope, network) must be wrapped by orchard's own
+ * shielded methods (scope, network) must be wrapped by the module's own
  * DynamicValue — ported with the identical JS surface for exactly this.
  */
 export function valueToShieldedDynamicValue(value) {

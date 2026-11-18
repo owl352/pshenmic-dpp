@@ -1,6 +1,6 @@
 import { dppProvider } from '../../provider.js';
 import { valueToShieldedDynamicValue } from '../../utils.js';
-import { OrchardAddressWASM } from './OrchardAddress.js';
+import { ShieldedAddressWASM } from './ShieldedAddress.js';
 /**
  * An Orchard incoming viewing key: it detects and decrypts notes sent to you,
  * but cannot see outgoing notes, tell when a note is spent, or spend it — safe
@@ -15,11 +15,11 @@ export class IncomingViewingKeyWASM {
     }
     /** The payment address at `diversifierIndex` (default 0); scope is fixed by the key. */
     address(diversifierIndex) {
-        return OrchardAddressWASM.createFromRawInstance(this._rawIncomingViewingKey.address(diversifierIndex));
+        return ShieldedAddressWASM.createFromRawInstance(this._rawIncomingViewingKey.address(diversifierIndex));
     }
     /** The diversifier index `address` was derived at, or null if it is not from this key. */
     diversifierIndex(address) {
-        return this._rawIncomingViewingKey.diversifierIndex(address._rawOrchardAddress);
+        return this._rawIncomingViewingKey.diversifierIndex(address._rawShieldedAddress);
     }
     /**
      * Derives the incoming viewing key from a BIP-39 seed via ZIP-32

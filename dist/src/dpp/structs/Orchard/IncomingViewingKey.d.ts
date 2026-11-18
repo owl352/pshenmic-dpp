@@ -1,7 +1,7 @@
-import type { IncomingViewingKeyNAPI } from 'pshenmic-orchard/bindingsTypes';
+import type { IncomingViewingKeyNAPI } from 'dash-platform-shielded/bindingsTypes';
 import { ScopeLike } from '../../types.js';
 import { FullViewingKeyWASM } from './FullViewingKey.js';
-import { OrchardAddressWASM } from './OrchardAddress.js';
+import { ShieldedAddressWASM } from './ShieldedAddress.js';
 /**
  * An Orchard incoming viewing key: it detects and decrypts notes sent to you,
  * but cannot see outgoing notes, tell when a note is spent, or spend it — safe
@@ -13,9 +13,9 @@ export declare class IncomingViewingKeyWASM {
     /** The 64-byte raw encoding of this key (dk || ivk). */
     bytes(): Uint8Array;
     /** The payment address at `diversifierIndex` (default 0); scope is fixed by the key. */
-    address(diversifierIndex?: number): OrchardAddressWASM;
+    address(diversifierIndex?: number): ShieldedAddressWASM;
     /** The diversifier index `address` was derived at, or null if it is not from this key. */
-    diversifierIndex(address: OrchardAddressWASM): number | null;
+    diversifierIndex(address: ShieldedAddressWASM): number | null;
     /**
      * Derives the incoming viewing key from a BIP-39 seed via ZIP-32
      * (m/32'/coinType'/account') for the given scope (default External).

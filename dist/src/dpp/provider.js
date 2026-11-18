@@ -26,12 +26,12 @@ class DppProvider {
     }
     /**
      * The shielded (Orchard/Halo 2 proving) module from the separate
-     * pshenmic-orchard package, provided explicitly by the consumer via
-     * setShielded(loadShielded()). dpp itself carries no proving code.
+     * dash-platform-shielded package, provided explicitly by the consumer via
+     * setShielded(shielded). dpp itself carries no proving code.
      */
     get shielded() {
         if (this._shielded == null) {
-            throw new Error('The shielded (proving) module has not been loaded. Call setShielded(loadShielded()) first.');
+            throw new Error('The shielded (proving) module has not been loaded. Call setShielded(shielded) first.');
         }
         return this._shielded;
     }

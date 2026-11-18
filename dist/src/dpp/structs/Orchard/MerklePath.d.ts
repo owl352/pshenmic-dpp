@@ -1,4 +1,4 @@
-import type { MerklePathNAPI } from 'pshenmic-orchard/bindingsTypes';
+import type { MerklePathNAPI } from 'dash-platform-shielded/bindingsTypes';
 export declare class MerklePathWASM {
     /** @private **/
     _rawMerklePath: MerklePathNAPI;

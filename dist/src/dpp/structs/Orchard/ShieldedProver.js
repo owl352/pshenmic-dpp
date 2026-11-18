@@ -1,15 +1,16 @@
 import { dppProvider } from '../../provider.js';
 /**
- * Reusable Orchard prover holding the Halo 2 proving key. Building it is
+ * Reusable shielded prover holding the Halo 2 proving key. Building it is
  * expensive (~seconds); construct once and reuse. (The `ShieldedBuilderWASM`
  * already builds its own prover internally — this is exposed for standalone use.)
  *
- * Call `setShielded(loadShielded())` once before `init()` (the browser wasm path
- * needs cross-origin isolation; Node uses the native addon).
+ * Call `setShielded(shielded)` once before `init()` (the default orchard entry is
+ * eager; the browser wasm path needs cross-origin isolation, Node uses the
+ * native addon).
  */
-export class OrchardProverWASM {
+export class ShieldedProverWASM {
     /** @private **/
-    _rawOrchardProver;
+    _rawShieldedProver;
     /**
      * The proving key is deterministic and expensive (~10s), so it's built
      * once per process and shared by every prover instance. Cleared on
@@ -20,18 +21,18 @@ export class OrchardProverWASM {
         // empty
     }
     async init() {
-        if (OrchardProverWASM._initPromise == null) {
-            OrchardProverWASM._initPromise = dppProvider.shielded.OrchardProverNAPI.init()
+        if (ShieldedProverWASM._initPromise == null) {
+            ShieldedProverWASM._initPromise = dppProvider.shielded.ShieldedProverNAPI.init()
                 .catch((e) => {
-                OrchardProverWASM._initPromise = null;
+                ShieldedProverWASM._initPromise = null;
                 throw e;
             });
         }
-        this._rawOrchardProver = await OrchardProverWASM._initPromise;
+        this._rawShieldedProver = await ShieldedProverWASM._initPromise;
     }
     static createFromRawInstance(rawInstance) {
-        const instance = Object.create(OrchardProverWASM.prototype);
-        instance._rawOrchardProver = rawInstance;
+        const instance = Object.create(ShieldedProverWASM.prototype);
+        instance._rawShieldedProver = rawInstance;
         return instance;
     }
 }

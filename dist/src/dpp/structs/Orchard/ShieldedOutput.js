@@ -1,5 +1,5 @@
 import { dppProvider } from '../../provider.js';
-import { OrchardAddressWASM } from './OrchardAddress.js';
+import { ShieldedAddressWASM } from './ShieldedAddress.js';
 import { ShieldedMemoWASM } from './ShieldedMemo.js';
 /**
  * One output of a multi-output shielded transfer (`shieldedTransferMulti`):
@@ -15,13 +15,13 @@ export class ShieldedOutputWASM {
     constructor(address, amount, memo) {
         // The memo is base-kept: it crosses into the shielded instance as bytes,
         // never as a wrapped napi object (per-Env wrap maps don't share).
-        this._rawShieldedOutput = new dppProvider.shielded.ShieldedOutputNAPI(address._rawOrchardAddress, amount.toString(), memo.toBytes());
+        this._rawShieldedOutput = new dppProvider.shielded.ShieldedOutputNAPI(address._rawShieldedAddress, amount.toString(), memo.toBytes());
     }
     get address() {
-        return OrchardAddressWASM.createFromRawInstance(this._rawShieldedOutput.address);
+        return ShieldedAddressWASM.createFromRawInstance(this._rawShieldedOutput.address);
     }
     set address(value) {
-        this._rawShieldedOutput.address = value._rawOrchardAddress;
+        this._rawShieldedOutput.address = value._rawShieldedAddress;
     }
     get amount() {
         return BigInt(this._rawShieldedOutput.amount);
