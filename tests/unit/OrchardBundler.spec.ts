@@ -8,9 +8,9 @@ import path from 'node:path'
 // jest modes (__dirname / import.meta are mode-specific).
 const ROOT = process.cwd()
 
-// Proves explicit shielded-module injection survives a real bundler: esbuild
+// Proves explicit orchard injection survives a real bundler: esbuild
 // renames/mangles module identifiers, yet the consumer's STATIC import of
-// the shielded module and dpp's setShielded still resolve and wire together
+// the orchard module and dpp's setShielded still resolve and wire together
 // (no global registry, no module-name lookup). The bundled output is executed
 // NATIVELY in a child node process (SharedArrayBuffer available).
 //
@@ -23,7 +23,7 @@ const ROOT = process.cwd()
 // self-contained Node worker (eval + workerBundle source) is the follow-up fix.
 
 const SEED_HEX = '07'.repeat(64)
-const SHIELDED_ENTRY = path.join(ROOT, 'node_modules/dash-platform-shielded/dist/src/index.cjs')
+const ORCHARD_ENTRY = path.join(ROOT, 'node_modules/dash-platform-shielded/dist/src/index.cjs')
 
 async function runBundle (contents, outdir) {
   const result = await build({
@@ -52,25 +52,25 @@ async function runBundle (contents, outdir) {
   return run
 }
 
-describe('explicit shielded-module injection under a bundler', function () {
+describe('explicit orchard injection under a bundler', function () {
   let outdir
 
   beforeAll(function () {
-    outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'shielded-bundler-'))
+    outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'orchard-bundler-'))
   })
 
   afterAll(function () {
     fs.rmSync(outdir, { recursive: true, force: true })
   })
 
-  test('bundled dpp + shielded module wire via setShielded(shielded) (renaming-robust)', async function () {
+  test('bundled dpp + orchard wire via setShielded(shielded) (renaming-robust)', async function () {
     const run = await runBundle(`
 import * as dpp from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};
-import shielded from ${JSON.stringify(SHIELDED_ENTRY)};
+import shielded from ${JSON.stringify(ORCHARD_ENTRY)};
 const seed = new Uint8Array(64).fill(7);
 try {
   dpp.setShielded(shielded);
-  const address = dpp.ShieldedAddressWASM.fromSeed(seed, 1, 0);
+  const address = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0);
   console.log('LOAD_OK:' + address.bytes().length);
 } catch (e) { console.error('LOAD_FAIL:' + ((e && e.message) || e)); process.exit(1); }
 `, path.join(outdir, 'single'))
@@ -78,9 +78,9 @@ try {
     expect(run.status).toBe(0)
   }, 120000)
 
-  test('two physical dpp copies in one bundle both inject the same shielded module (duplicate-copy safe)', async function () {
+  test('two physical dpp copies in one bundle both inject the same orchard (duplicate-copy safe)', async function () {
     // Two distinct copies of the built dpp (as a consumer bundling duplicate
-    // versions would have), each injecting the SAME shielded module. Both
+    // versions would have), each injecting the SAME orchard module. Both
     // must agree on output while remaining distinct module instances.
     const copyA = path.join(outdir, 'dppA')
     const copyB = path.join(outdir, 'dppB')
@@ -91,15 +91,15 @@ try {
     const run = await runBundle(`
 import * as dpp1 from ${JSON.stringify(path.join(copyA, 'src/wasm.js'))};
 import * as dpp2 from ${JSON.stringify(path.join(copyB, 'src/wasm.js'))};
-import shielded from ${JSON.stringify(SHIELDED_ENTRY)};
+import shielded from ${JSON.stringify(ORCHARD_ENTRY)};
 const seed = new Uint8Array(${SEED_HEX.match(/../g).map((h) => parseInt(h, 16))});
 const toHex = (b) => Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join('');
 try {
   dpp1.setShielded(shielded);
   dpp2.setShielded(shielded);
-  if (dpp1.ShieldedAddressWASM === dpp2.ShieldedAddressWASM) throw new Error('copies are not distinct instances');
-  const a1 = dpp1.ShieldedAddressWASM.fromSeed(seed, 1, 0);
-  const a2 = dpp2.ShieldedAddressWASM.fromSeed(seed, 1, 0);
+  if (dpp1.OrchardAddressWASM === dpp2.OrchardAddressWASM) throw new Error('copies are not distinct instances');
+  const a1 = dpp1.OrchardAddressWASM.fromSeed(seed, 1, 0);
+  const a2 = dpp2.OrchardAddressWASM.fromSeed(seed, 1, 0);
   if (toHex(a1.bytes()) !== toHex(a2.bytes())) throw new Error('copies disagree on address bytes');
   console.log('TWOCOPY_OK');
 } catch (e) { console.error('TWOCOPY_FAIL:' + ((e && e.message) || e)); process.exit(1); }

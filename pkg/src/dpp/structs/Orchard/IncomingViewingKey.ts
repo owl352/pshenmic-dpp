@@ -3,7 +3,7 @@ import { dppProvider } from '../../provider.js'
 import { ScopeLike } from '../../types.js'
 import { valueToShieldedDynamicValue } from '../../utils.js'
 import { FullViewingKeyWASM } from './FullViewingKey.js'
-import { ShieldedAddressWASM } from './ShieldedAddress.js'
+import { OrchardAddressWASM } from './OrchardAddress.js'
 
 /**
  * An Orchard incoming viewing key: it detects and decrypts notes sent to you,
@@ -20,15 +20,15 @@ export class IncomingViewingKeyWASM {
   }
 
   /** The payment address at `diversifierIndex` (default 0); scope is fixed by the key. */
-  address (diversifierIndex?: number): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(
+  address (diversifierIndex?: number): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
       this._rawIncomingViewingKey.address(diversifierIndex)
     )
   }
 
   /** The diversifier index `address` was derived at, or null if it is not from this key. */
-  diversifierIndex (address: ShieldedAddressWASM): number | null {
-    return this._rawIncomingViewingKey.diversifierIndex(address._rawShieldedAddress)
+  diversifierIndex (address: OrchardAddressWASM): number | null {
+    return this._rawIncomingViewingKey.diversifierIndex(address._rawOrchardAddress)
   }
 
   /**

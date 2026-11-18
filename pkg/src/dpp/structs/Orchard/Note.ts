@@ -1,26 +1,26 @@
 import type { NoteNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
-import { ShieldedAddressWASM } from './ShieldedAddress.js'
+import { OrchardAddressWASM } from './OrchardAddress.js'
 
 export class NoteWASM {
   /** @private **/
   _rawNote: NoteNAPI
 
-  constructor (address: ShieldedAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array) {
+  constructor (address: OrchardAddressWASM, value: bigint, rho: Uint8Array, rseed: Uint8Array) {
     this._rawNote = new dppProvider.shielded.NoteNAPI(
-      address._rawShieldedAddress,
+      address._rawOrchardAddress,
       value.toString(),
       rho,
       rseed
     )
   }
 
-  get address (): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(this._rawNote.address)
+  get address (): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(this._rawNote.address)
   }
 
-  set address (value: ShieldedAddressWASM) {
-    this._rawNote.address = value._rawShieldedAddress
+  set address (value: OrchardAddressWASM) {
+    this._rawNote.address = value._rawOrchardAddress
   }
 
   get value (): bigint {

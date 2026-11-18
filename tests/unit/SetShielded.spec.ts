@@ -3,14 +3,14 @@
 // so this is bundler-renaming robust — no global registry is involved.
 import shielded from 'dash-platform-shielded'
 import { loadShielded } from 'dash-platform-shielded/lazy'
-import { setShielded, ShieldedAddressWASM, ShieldedBuilderWASM } from 'pshenmic-dpp/wasm'
+import { setShielded, OrchardAddressWASM, ShieldedBuilderWASM } from 'pshenmic-dpp/wasm'
 
 const SEED = new Uint8Array(64).fill(7)
 
 describe('setShielded (explicit shielded-module injection)', function () {
   test('dash-platform-shielded default entry exposes the proving classes', function () {
     expect(shielded.ShieldedBuilderNAPI).toBeDefined()
-    expect(shielded.ShieldedAddressNAPI).toBeDefined()
+    expect(shielded.OrchardAddressNAPI).toBeDefined()
   })
 
   test('dash-platform-shielded/lazy returns the same cached module', function () {
@@ -19,7 +19,7 @@ describe('setShielded (explicit shielded-module injection)', function () {
 
   test('setShielded(shielded) enables the shielded classes', async function () {
     setShielded(shielded)
-    const address = ShieldedAddressWASM.fromSeed(SEED, 1, 0)
+    const address = OrchardAddressWASM.fromSeed(SEED, 1, 0)
     expect(address.bytes().length).toBe(43)
     const builder = new ShieldedBuilderWASM()
     await builder.init()

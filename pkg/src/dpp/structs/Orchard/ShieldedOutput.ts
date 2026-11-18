@@ -1,6 +1,6 @@
 import type { ShieldedOutputNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
-import { ShieldedAddressWASM } from './ShieldedAddress.js'
+import { OrchardAddressWASM } from './OrchardAddress.js'
 import { ShieldedMemoWASM } from './ShieldedMemo.js'
 
 /**
@@ -15,22 +15,22 @@ export class ShieldedOutputWASM {
   /** @private **/
   _rawShieldedOutput: ShieldedOutputNAPI
 
-  constructor (address: ShieldedAddressWASM, amount: bigint, memo: ShieldedMemoWASM) {
+  constructor (address: OrchardAddressWASM, amount: bigint, memo: ShieldedMemoWASM) {
     // The memo is base-kept: it crosses into the shielded instance as bytes,
     // never as a wrapped napi object (per-Env wrap maps don't share).
     this._rawShieldedOutput = new dppProvider.shielded.ShieldedOutputNAPI(
-      address._rawShieldedAddress,
+      address._rawOrchardAddress,
       amount.toString(),
       memo.toBytes()
     )
   }
 
-  get address (): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(this._rawShieldedOutput.address)
+  get address (): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(this._rawShieldedOutput.address)
   }
 
-  set address (value: ShieldedAddressWASM) {
-    this._rawShieldedOutput.address = value._rawShieldedAddress
+  set address (value: OrchardAddressWASM) {
+    this._rawShieldedOutput.address = value._rawOrchardAddress
   }
 
   get amount (): bigint {

@@ -9,7 +9,7 @@ import {
   IdentityPublicKeyInCreationWASM,
   KeyType,
   NoteWASM,
-  ShieldedAddressWASM,
+  OrchardAddressWASM,
   OutPointWASM,
   PlatformAddressWASM,
   PoolingWASM,
@@ -49,7 +49,7 @@ interface Pool {
 
 /** A pool holding one note of `value` owned by the seed account, witnessed against its anchor **/
 function poolWithNote (value: bigint, rseedByte: number): Pool {
-  const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
   const rho = new Uint8Array(32)
   rho[0] = 1
   const note = new NoteWASM(address, value, rho, new Uint8Array(32).fill(rseedByte))
@@ -77,13 +77,13 @@ describe('ShieldedBuilder boundary', function () {
   // Fixtures are created AFTER setShielded() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves. beforeAll (not top-level await) keeps both jest modes working.
-  let address: ShieldedAddressWASM
+  let address: OrchardAddressWASM
   let memo: ShieldedMemoWASM
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
     setShielded(shielded)
-    address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+    address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()
     await builder.init()
