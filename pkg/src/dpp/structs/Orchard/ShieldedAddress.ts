@@ -1,4 +1,4 @@
-import type { ShieldedAddressNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { ShieldedAddressNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { NetworkLike, ScopeLike } from '../../types.js'
 import { valueToShieldedDynamicValue } from '../../utils.js'

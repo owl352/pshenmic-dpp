@@ -43,7 +43,7 @@ debug = false
 
 # The base wasm build must stay under Chrome's 8MB main-thread sync-compile
 # limit (see build.cjs), so dependencies optimize for minimal size. The proving
-# stack lives in the separate pshenmic-orchard package, not here.
+# stack lives in the separate dash-platform-shielded package, not here.
 [profile.release-wasm]
 inherits = "release"
 opt-level = "z"

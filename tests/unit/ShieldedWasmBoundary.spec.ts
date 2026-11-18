@@ -1,4 +1,4 @@
-import { loadShielded } from 'pshenmic-orchard'
+import shielded from 'dash-platform-shielded'
 import {
   CommitmentTreeWASM,
   NoteWASM,
@@ -47,7 +47,7 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    setShielded(loadShielded())
+    setShielded(shielded)
     builder = new ShieldedBuilderWASM()
     await builder.init()
   }, PROVING_TIMEOUT)

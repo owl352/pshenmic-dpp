@@ -1,5 +1,5 @@
 import type { PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
-import type { ShieldedBuilderNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { ShieldedBuilderNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike, PlatformAddressLike, PoolingLike, TokenDistributionLike } from '../../types.js'
 import { IdentifierWASM } from '../Identifier.js'
@@ -26,9 +26,10 @@ import { IdentityCreateFromShieldedPoolResultWASM } from './IdentityCreateFromSh
  * Builds and proves shielded (Orchard) state transitions. Construction builds
  * the Halo 2 proving key (~seconds), so create one instance and reuse it.
  *
- * The proving classes live in the separate pshenmic-orchard module: call
- * `setShielded(loadShielded())` once before `init()` (the browser wasm path needs
- * cross-origin isolation; Node uses the native addon).
+ * The proving classes live in the separate dash-platform-shielded module: call
+ * `setShielded(shielded)` once before `init()` (the default orchard entry is
+ * eager; the browser wasm path needs cross-origin isolation, Node uses the
+ * native addon).
  *
  * Deposits (`shield`, `shieldFromAssetLock`) don't need pool notes. Spends
  * (`shieldedWithdrawal`, `unshield`, `shieldedTransfer`) need a `SpendableNote`

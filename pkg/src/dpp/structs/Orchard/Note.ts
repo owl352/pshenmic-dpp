@@ -1,4 +1,4 @@
-import type { NoteNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { NoteNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { ShieldedAddressWASM } from './ShieldedAddress.js'
 

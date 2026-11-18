@@ -1,6 +1,6 @@
-// Imports orchard's loadShielded and provides the proving module to dpp
+// Imports the shielded module and provides it to dpp
 // explicitly via setShielded() (dpp itself is base-only on every entry).
-import { loadShielded } from 'pshenmic-orchard'
+import shielded from 'dash-platform-shielded'
 import {
   BatchTransitionWASM,
   CommitmentTreeWASM,
@@ -70,9 +70,9 @@ function tokenTransitionOf (stateTransition: StateTransitionWASM): TokenTransiti
 }
 
 // dpp is base-only on every entry: the proving classes live in the separate
-// pshenmic-orchard module, provided explicitly via setShielded(loadShielded()).
+// dash-platform-shielded module, provided explicitly via setShielded(shielded).
 beforeAll(async function () {
-  setShielded(loadShielded())
+  setShielded(shielded)
 })
 
 describe('ShieldedBuilder v5', function () {

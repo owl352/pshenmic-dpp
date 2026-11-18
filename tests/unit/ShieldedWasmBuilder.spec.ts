@@ -1,4 +1,4 @@
-import { loadShielded } from 'pshenmic-orchard'
+import shielded from 'dash-platform-shielded'
 import {
   AddressFundsFeeStrategyStepWASM,
   AssetLockProofWASM,
@@ -127,7 +127,7 @@ describe('ShieldedBuilder cross-boundary (wasm entry)', function () {
   }
 
   beforeAll(async function () {
-    setShielded(loadShielded())
+    setShielded(shielded)
     builder = new ShieldedBuilderWASM()
     await builder.init()
     address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)

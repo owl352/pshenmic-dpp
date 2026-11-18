@@ -1,4 +1,4 @@
-import type { RecoveredNoteNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { RecoveredNoteNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { NoteWASM } from './Note.js'
 import { SerializedActionWASM } from '../ShieldedTransitions/SerializedAction.js'

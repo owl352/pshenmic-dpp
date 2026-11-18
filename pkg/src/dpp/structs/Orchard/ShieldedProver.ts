@@ -1,4 +1,4 @@
-import type { ShieldedProverNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { ShieldedProverNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 
 /**
@@ -6,8 +6,9 @@ import { dppProvider } from '../../provider.js'
  * expensive (~seconds); construct once and reuse. (The `ShieldedBuilderWASM`
  * already builds its own prover internally — this is exposed for standalone use.)
  *
- * Call `setShielded(loadShielded())` once before `init()` (the browser wasm path
- * needs cross-origin isolation; Node uses the native addon).
+ * Call `setShielded(shielded)` once before `init()` (the default orchard entry is
+ * eager; the browser wasm path needs cross-origin isolation, Node uses the
+ * native addon).
  */
 export class ShieldedProverWASM {
   /** @private **/

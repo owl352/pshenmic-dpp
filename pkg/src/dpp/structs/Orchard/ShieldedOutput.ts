@@ -1,4 +1,4 @@
-import type { ShieldedOutputNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { ShieldedOutputNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { ShieldedAddressWASM } from './ShieldedAddress.js'
 import { ShieldedMemoWASM } from './ShieldedMemo.js'

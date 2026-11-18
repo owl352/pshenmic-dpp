@@ -1,4 +1,4 @@
-import type { SpendableNoteNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { SpendableNoteNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { NoteWASM } from './Note.js'
 import { MerklePathWASM } from './MerklePath.js'

@@ -3,9 +3,10 @@ export default {
   // Browser e2e (playwright) runs via `npm run test:e2e`, not jest.
   testPathIgnorePatterns: ['<rootDir>/tests/e2e/'],
   moduleNameMapper: {
-    // Proving lives in the separate pshenmic-orchard repo (devDependency,
-    // symlinked into node_modules). Resolve its registration entry explicitly.
-    '^pshenmic-orchard$': '<rootDir>/node_modules/pshenmic-orchard/dist/src/index.cjs',
+    // Proving lives in the separate dash-platform-shielded repo (devDependency,
+    // symlinked into node_modules). Resolve its eager entry and lazy subpath.
+    '^dash-platform-shielded$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/index.cjs',
+    '^dash-platform-shielded/lazy$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/lazy.cjs',
     '^(\\.\\.?\\/.+)\\.js$': '$1'
   },
   // Proving suites (Shielded*, WebAssembly, InitShielded, Orchard*) each load

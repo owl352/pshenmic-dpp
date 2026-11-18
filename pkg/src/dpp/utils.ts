@@ -10,7 +10,7 @@ import { IdentifierLike, PlatformAddressLike } from './types.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
-/** The DynamicValue constructor surface shared by the base and orchard instances **/
+/** The DynamicValue constructor surface shared by the base and shielded instances **/
 interface DynamicValueCtor {
   new (value: any): DynamicValue
   fromBigIntString: (value: string) => DynamicValue
@@ -25,9 +25,9 @@ export function valueToDynamicValue (value: any): DynamicValue {
 
 /**
  * Same conversion as valueToDynamicValue, but wraps with the SHIELDED
- * (pshenmic-orchard) instance's DynamicValue. Wrapped napi objects cannot
+ * (dash-platform-shielded) instance's DynamicValue. Wrapped napi objects cannot
  * cross the base <-> shielded instance boundary, so arguments destined for
- * orchard methods (scope, network) must be wrapped by orchard's own
+ * shielded methods (scope, network) must be wrapped by the module's own
  * DynamicValue — ported with the identical JS surface for exactly this.
  */
 export function valueToShieldedDynamicValue (value: any): DynamicValue {

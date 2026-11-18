@@ -1,5 +1,5 @@
 import type * as protocol from '../../binaries/bindingsTypes.js'
-import type * as shieldedProtocol from 'pshenmic-orchard/bindingsTypes'
+import type * as shieldedProtocol from 'dash-platform-shielded/bindingsTypes'
 import {
   ActionGoal, AssetLockProofType, GasFeesPaidByWASM,
   KeyType,
@@ -53,9 +53,9 @@ import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.j
 import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
 export type DashPlatformProtocol = typeof protocol
-/** The proving (Orchard/Halo 2) NAPI surface, provided by pshenmic-orchard via
- * setShielded(loadShielded()). dpp itself carries no proving code. */
-export type ShieldedProtocol = typeof import('pshenmic-orchard/bindingsTypes')
+/** The proving (Orchard/Halo 2) NAPI surface, provided by dash-platform-shielded via
+ * setShielded(shielded). dpp itself carries no proving code. */
+export type ShieldedProtocol = typeof import('dash-platform-shielded/bindingsTypes')
 export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM
 export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM
 

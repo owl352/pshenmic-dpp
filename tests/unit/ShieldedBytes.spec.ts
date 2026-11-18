@@ -24,7 +24,7 @@ import {
 } from 'pshenmic-dpp'
 
 // Bytes round-trips for the classes that cross the base <-> shielded boundary
-// (smart-A1). Heavy orchard data classes (OrchardAddress, SpendableNote, Note,
+// (smart-A1). Heavy shielded data classes (OrchardAddress, SpendableNote, Note,
 // MerklePath, viewing keys, CommitmentTree, ShieldedOutput) are shielded-local
 // class refs and intentionally NOT covered here. PlatformVersion is a scalar
 // enum and crosses as a plain value.

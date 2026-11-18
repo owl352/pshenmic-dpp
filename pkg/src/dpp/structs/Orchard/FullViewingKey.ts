@@ -1,4 +1,4 @@
-import type { FullViewingKeyNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { FullViewingKeyNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { ScopeLike } from '../../types.js'
 import { valueToShieldedDynamicValue } from '../../utils.js'

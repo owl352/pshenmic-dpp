@@ -1,6 +1,6 @@
-// Imports orchard's loadShielded and provides the proving module to dpp
+// Imports the shielded module and provides it to dpp
 // explicitly via setShielded() (dpp itself is base-only on every entry).
-import { loadShielded } from 'pshenmic-orchard'
+import shielded from 'dash-platform-shielded'
 import {
   AssetLockProofWASM,
   CommitmentTreeWASM,
@@ -82,7 +82,7 @@ describe('ShieldedBuilder boundary', function () {
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    setShielded(loadShielded())
+    setShielded(shielded)
     address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()
