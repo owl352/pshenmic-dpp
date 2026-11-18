@@ -7,9 +7,11 @@
 //   ?profile=same-origin   -> COOP: same-origin            + COEP: require-corp
 //   ?profile=allow-popups  -> COOP: same-origin-allow-popups + COEP: require-corp
 //
-// The threaded shielded module is bundled but compiled lazily inside
-// loadShielded() (not at import) — so tests can assert lazy loading from the
-// instrumented WebAssembly.Module compile sizes.
+// The harness deliberately uses dash-platform-shielded/lazy: the package default entry
+// is eager, but these tests need to prove that the base module loads without
+// isolation and that the threaded shielded module compiles only inside
+// loadShielded(). That laziness is observed via the instrumented
+// WebAssembly.Module compile sizes.
 //
 // The served page instruments WebAssembly.Module (compiled byte sizes) and
 // Worker (spawn count), exposes the SDK namespace as window.__dpp, and has a
@@ -39,7 +41,7 @@ export const PROFILES = {
   }
 }
 
-// Node-only builtin referenced (guarded by isNode) in pshenmic-orchard's
+// Node-only builtin referenced (guarded by isNode) in dash-platform-shielded's
 // loader.cjs. In the browser bundle it is dead code; stub it so esbuild can
 // resolve it.
 const nodeBuiltinStub = {
@@ -54,18 +56,18 @@ const nodeBuiltinStub = {
   }
 }
 
-// Bundle the dist entry PLUS the optional pshenmic-orchard package in memory.
-// The page entry imports orchard's loadShielded and re-exports it alongside dpp,
-// so the test wires them explicitly via dpp.setShielded(loadShielded()). Both
-// imports are static, so this survives esbuild's renaming/chunking (no global
-// registry). Returns a Map urlPath -> { content, type } plus the entry chunk
-// path. The shielded WASM is compiled lazily inside loadShielded(), not at
-// import — laziness is observed via the instrumented WebAssembly.Module compile
-// sizes, not a separate chunk fetch.
+// Bundle the dist entry PLUS the optional dash-platform-shielded package in memory.
+// The page entry imports orchard's lazy entry and re-exports loadShielded
+// alongside dpp, so the test wires them explicitly via
+// dpp.setShielded(loadShielded()). Both imports are static, so this survives
+// esbuild's renaming/chunking (no global registry). Returns a Map urlPath ->
+// { content, type } plus the entry chunk path. The shielded WASM is compiled
+// lazily inside loadShielded(), not at import — laziness is observed via the
+// instrumented WebAssembly.Module compile sizes, not a separate chunk fetch.
 export async function buildBundle () {
   const result = await build({
     stdin: {
-      contents: `import { loadShielded } from ${JSON.stringify(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/src/index.cjs'))};
+      contents: `import { loadShielded } from ${JSON.stringify(path.join(ROOT, 'node_modules/dash-platform-shielded/dist/src/lazy.cjs'))};
 export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};
 export { loadShielded };`,
       resolveDir: ROOT,

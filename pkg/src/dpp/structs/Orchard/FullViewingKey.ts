@@ -1,9 +1,9 @@
-import type { FullViewingKeyNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { FullViewingKeyNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { ScopeLike } from '../../types.js'
 import { valueToShieldedDynamicValue } from '../../utils.js'
 import { IncomingViewingKeyWASM } from './IncomingViewingKey.js'
-import { OrchardAddressWASM } from './OrchardAddress.js'
+import { ShieldedAddressWASM } from './ShieldedAddress.js'
 
 /**
  * An Orchard full viewing key: it detects both incoming and outgoing notes and
@@ -31,8 +31,8 @@ export class FullViewingKeyWASM {
   }
 
   /** The payment address at `diversifierIndex` (default 0) for `scope` (default External). */
-  address (diversifierIndex?: number, scope?: ScopeLike): OrchardAddressWASM {
-    return OrchardAddressWASM.createFromRawInstance(
+  address (diversifierIndex?: number, scope?: ScopeLike): ShieldedAddressWASM {
+    return ShieldedAddressWASM.createFromRawInstance(
       this._rawFullViewingKey.address(
         diversifierIndex,
         scope == null ? undefined : valueToShieldedDynamicValue(scope)
@@ -41,8 +41,8 @@ export class FullViewingKeyWASM {
   }
 
   /** The scope `address` was derived under, or null if it does not belong to this key. */
-  scopeForAddress (address: OrchardAddressWASM): string | null {
-    return this._rawFullViewingKey.scopeForAddress(address._rawOrchardAddress)
+  scopeForAddress (address: ShieldedAddressWASM): string | null {
+    return this._rawFullViewingKey.scopeForAddress(address._rawShieldedAddress)
   }
 
   /** Derives the full viewing key from a BIP-39 seed via ZIP-32 (m/32'/coinType'/account'). */

@@ -3,9 +3,9 @@ import { dppProvider } from './dpp/provider.js'
 
 dppProvider.setDpp(protocol)
 
-// dpp carries no proving code: the consumer provides the orchard proving module
-// explicitly via setShielded(loadShielded()) from pshenmic-orchard. React Native
-// uses orchard's threaded wasm (its native addon targets desktop platforms); the
+// dpp carries no proving code: the consumer provides the shielded proving module
+// explicitly via setShielded(shielded) from dash-platform-shielded. React Native
+// uses the module's threaded wasm (its native addon targets desktop platforms); the
 // RN runtime must provide SharedArrayBuffer + wasm thread workers.
 export { setShielded } from './dpp/shielded.js'
 

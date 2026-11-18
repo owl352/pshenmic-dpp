@@ -1,6 +1,6 @@
-// Imports orchard's loadShielded and provides the proving module to dpp
+// Imports the shielded module and provides it to dpp
 // explicitly via setShielded() (dpp itself is base-only on every entry).
-import { loadShielded } from 'pshenmic-orchard'
+import shielded from 'dash-platform-shielded'
 import {
   BatchTransitionWASM,
   CommitmentTreeWASM,
@@ -11,7 +11,7 @@ import {
   IdentityWASM,
   KeyType,
   NoteWASM,
-  OrchardAddressWASM,
+  ShieldedAddressWASM,
   PrivateKeyWASM,
   Purpose,
   SecurityLevel,
@@ -47,7 +47,7 @@ interface Pool {
 
 /** A pool holding one note of `value` owned by the seed account, witnessed against its anchor **/
 function poolWithNote (value: bigint, rseedByte: number): Pool {
-  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+  const address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
   const rho = new Uint8Array(32)
   rho[0] = 1
   const note = new NoteWASM(address, value, rho, new Uint8Array(32).fill(rseedByte))
@@ -70,23 +70,23 @@ function tokenTransitionOf (stateTransition: StateTransitionWASM): TokenTransiti
 }
 
 // dpp is base-only on every entry: the proving classes live in the separate
-// pshenmic-orchard module, provided explicitly via setShielded(loadShielded()).
+// dash-platform-shielded module, provided explicitly via setShielded(shielded).
 beforeAll(async function () {
-  setShielded(loadShielded())
+  setShielded(shielded)
 })
 
 describe('ShieldedBuilder v5', function () {
   // Fixtures are created AFTER setShielded() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves.
-  let address: OrchardAddressWASM
+  let address: ShieldedAddressWASM
   let memo: ShieldedMemoWASM
   // token batch transitions must be signed with a critical key
   const authKey = key(1, Purpose.AUTHENTICATION, SecurityLevel.CRITICAL)
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+    address = ShieldedAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()
     await builder.init()

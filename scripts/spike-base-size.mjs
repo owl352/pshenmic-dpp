@@ -260,10 +260,10 @@ assert(id.base58() === B58, "base58 round-trip");
 console.log(`[spike] IdentifierNAPI.fromBase58(...).bytes() -> Uint8Array(${bytes.length}), round-trip OK`);
 
 // The proving feature is OFF: proving classes must NOT be registered.
-for (const provingClass of ["ShieldedBuilderNAPI", "OrchardProverNAPI"]) {
+for (const provingClass of ["ShieldedBuilderNAPI", "ShieldedProverNAPI"]) {
   assert(napiExports[provingClass] === undefined, `${provingClass} absent from base exports`);
 }
-console.log("[spike] proving classes (ShieldedBuilderNAPI, OrchardProverNAPI) absent from base: OK");
+console.log("[spike] proving classes (ShieldedBuilderNAPI, ShieldedProverNAPI) absent from base: OK");
 
 console.log(`\n[spike] RESULT: ${a2Viable ? "A2 VIABLE" : "A2 NOT VIABLE -> A1"}; base ${MB(sizeAfter)} MB; instantiation PASS`);
 process.exit(a2Viable ? 0 : 2);

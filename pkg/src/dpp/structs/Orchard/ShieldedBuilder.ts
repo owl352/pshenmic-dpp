@@ -1,5 +1,5 @@
 import type { PlatformVersionNAPI } from '../../../../binaries/bindingsTypes.js'
-import type { ShieldedBuilderNAPI } from 'pshenmic-orchard/bindingsTypes'
+import type { ShieldedBuilderNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { IdentifierLike, PlatformAddressLike, PoolingLike, TokenDistributionLike } from '../../types.js'
 import { IdentifierWASM } from '../Identifier.js'
@@ -7,7 +7,7 @@ import { IdentityWASM } from '../Identity.js'
 import { IdentityPublicKeyWASM } from '../IdentityPublicKey.js'
 import { GroupStateTransitionInfoWASM } from '../GroupStateTransitionInfo.js'
 import { TokenShieldedPaymentWASM } from '../Batch/TokenShieldedPayment.js'
-import { OrchardAddressWASM } from './OrchardAddress.js'
+import { ShieldedAddressWASM } from './ShieldedAddress.js'
 import { ShieldedMemoWASM } from './ShieldedMemo.js'
 import { SpendableNoteWASM } from './SpendableNote.js'
 import { ShieldedWithdrawalResultWASM } from './ShieldedWithdrawalResult.js'
@@ -26,9 +26,10 @@ import { IdentityCreateFromShieldedPoolResultWASM } from './IdentityCreateFromSh
  * Builds and proves shielded (Orchard) state transitions. Construction builds
  * the Halo 2 proving key (~seconds), so create one instance and reuse it.
  *
- * The proving classes live in the separate pshenmic-orchard module: call
- * `setShielded(loadShielded())` once before `init()` (the browser wasm path needs
- * cross-origin isolation; Node uses the native addon).
+ * The proving classes live in the separate dash-platform-shielded module: call
+ * `setShielded(shielded)` once before `init()` (the default orchard entry is
+ * eager; the browser wasm path needs cross-origin isolation, Node uses the
+ * native addon).
  *
  * Deposits (`shield`, `shieldFromAssetLock`) don't need pool notes. Spends
  * (`shieldedWithdrawal`, `unshield`, `shieldedTransfer`) need a `SpendableNote`
@@ -63,7 +64,7 @@ export class ShieldedBuilderWASM {
 
   /** Asset lock -> pool (deposit). */
   async shieldFromAssetLock (
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     shieldAmount: bigint,
     assetLockProof: AssetLockProofWASM,
     privateKey: PrivateKeyWASM,
@@ -75,7 +76,7 @@ export class ShieldedBuilderWASM {
   ): Promise<StateTransitionWASM> {
     return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.shieldFromAssetLock(
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         shieldAmount.toString(),
         assetLockProof.bytes(),
         privateKey.bytes(),
@@ -90,7 +91,7 @@ export class ShieldedBuilderWASM {
 
   /** Transparent platform addresses -> pool (deposit). One private key per input. */
   async shield (
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     shieldAmount: bigint,
     inputs: InputAddressWASM[],
     privateKeys: PrivateKeyWASM[],
@@ -102,7 +103,7 @@ export class ShieldedBuilderWASM {
   ): Promise<StateTransitionWASM> {
     return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.shield(
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         shieldAmount.toString(),
         inputs.map(i => i.bytes()),
         privateKeys.map(k => k.bytes()),
@@ -122,7 +123,7 @@ export class ShieldedBuilderWASM {
     outputScript: CoreScriptWASM,
     coreFeePerByte: number,
     pooling: PoolingLike,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -137,7 +138,7 @@ export class ShieldedBuilderWASM {
         outputScript.bytes(),
         coreFeePerByte,
         pooling,
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -153,7 +154,7 @@ export class ShieldedBuilderWASM {
     spends: SpendableNoteWASM[],
     outputAddress: PlatformAddressLike,
     unshieldAmount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -166,7 +167,7 @@ export class ShieldedBuilderWASM {
         spends.map(s => s._rawSpendableNote),
         new PlatformAddressWASM(outputAddress).bytes(),
         unshieldAmount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -180,9 +181,9 @@ export class ShieldedBuilderWASM {
   /** Pool -> pool (spend). */
   async shieldedTransfer (
     spends: SpendableNoteWASM[],
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     transferAmount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -193,9 +194,9 @@ export class ShieldedBuilderWASM {
     return ShieldedWithdrawalResultWASM.createFromRawInstance(
       await this._rawShieldedBuilder.shieldedTransfer(
         spends.map(s => s._rawSpendableNote),
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         transferAmount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -224,7 +225,7 @@ export class ShieldedBuilderWASM {
   async shieldedTransferMulti (
     spends: SpendableNoteWASM[],
     outputs: ShieldedOutputWASM[],
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -235,7 +236,7 @@ export class ShieldedBuilderWASM {
       await this._rawShieldedBuilder.shieldedTransferMulti(
         spends.map(s => s._rawSpendableNote),
         outputs.map(o => o._rawShieldedOutput),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -252,7 +253,7 @@ export class ShieldedBuilderWASM {
     denomination: bigint,
     sendToAddressOnCreationFailure: PlatformAddressLike,
     spends: SpendableNoteWASM[],
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -267,7 +268,7 @@ export class ShieldedBuilderWASM {
         denomination.toString(),
         new PlatformAddressWASM(sendToAddressOnCreationFailure).bytes(),
         spends.map(s => s._rawSpendableNote),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -281,7 +282,7 @@ export class ShieldedBuilderWASM {
   /** Identity balance -> shielded pool, signed with a transfer key of the identity **/
   async shieldFromIdentity (
     identity: IdentityWASM,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     shieldAmount: bigint,
     nonce: bigint,
     signingKey: IdentityPublicKeyWASM,
@@ -294,7 +295,7 @@ export class ShieldedBuilderWASM {
     return StateTransitionWASM.fromBytes(
       await this._rawShieldedBuilder.shieldFromIdentity(
         identity.bytes(),
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         shieldAmount.toString(),
         nonce.toString(),
         signingKey.bytes(),
@@ -312,7 +313,7 @@ export class ShieldedBuilderWASM {
     spends: SpendableNoteWASM[],
     identityId: IdentifierLike,
     topUpAmount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -325,7 +326,7 @@ export class ShieldedBuilderWASM {
         spends.map(s => s._rawSpendableNote),
         new IdentifierWASM(identityId).bytes(),
         topUpAmount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -347,7 +348,7 @@ export class ShieldedBuilderWASM {
     documentId: IdentifierLike,
     spends: SpendableNoteWASM[],
     amount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -363,7 +364,7 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(documentId).bytes(),
         spends.map(s => s._rawSpendableNote),
         amount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -380,7 +381,7 @@ export class ShieldedBuilderWASM {
     ownerId: IdentifierLike,
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     amount: bigint,
     memo: ShieldedMemoWASM,
     senderOvk: Uint8Array | undefined,
@@ -396,7 +397,7 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(ownerId).bytes(),
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         amount.toString(),
         memo.toBytes(),
         senderOvk,
@@ -418,7 +419,7 @@ export class ShieldedBuilderWASM {
     spends: SpendableNoteWASM[],
     recipientId: IdentifierLike,
     amount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -439,7 +440,7 @@ export class ShieldedBuilderWASM {
         spends.map(s => s._rawSpendableNote),
         new IdentifierWASM(recipientId).bytes(),
         amount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -461,9 +462,9 @@ export class ShieldedBuilderWASM {
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
     spends: SpendableNoteWASM[],
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     transferAmount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -482,9 +483,9 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         spends.map(s => s._rawSpendableNote),
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         transferAmount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -505,7 +506,7 @@ export class ShieldedBuilderWASM {
     ownerId: IdentifierLike,
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     amount: bigint,
     memo: ShieldedMemoWASM,
     senderOvk: Uint8Array | undefined,
@@ -523,7 +524,7 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(ownerId).bytes(),
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         amount.toString(),
         memo.toBytes(),
         senderOvk,
@@ -546,7 +547,7 @@ export class ShieldedBuilderWASM {
     tokenContractPosition: number,
     spends: SpendableNoteWASM[],
     amount: bigint,
-    changeAddress: OrchardAddressWASM,
+    changeAddress: ShieldedAddressWASM,
     seed: Uint8Array,
     coinType: number,
     account: number,
@@ -568,7 +569,7 @@ export class ShieldedBuilderWASM {
         tokenContractPosition,
         spends.map(s => s._rawSpendableNote),
         amount.toString(),
-        changeAddress._rawOrchardAddress,
+        changeAddress._rawShieldedAddress,
         seed,
         coinType,
         account,
@@ -591,7 +592,7 @@ export class ShieldedBuilderWASM {
     ownerId: IdentifierLike,
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     amount: bigint,
     distributionType: TokenDistributionLike,
     claimUpTo: bigint | undefined,
@@ -610,7 +611,7 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(ownerId).bytes(),
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         amount.toString(),
         distributionType,
         claimUpTo?.toString(),
@@ -632,7 +633,7 @@ export class ShieldedBuilderWASM {
     ownerId: IdentifierLike,
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     tokenCount: bigint,
     totalAgreedPrice: bigint,
     memo: ShieldedMemoWASM,
@@ -649,7 +650,7 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(ownerId).bytes(),
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         tokenCount.toString(),
         totalAgreedPrice.toString(),
         memo.toBytes(),
@@ -673,12 +674,12 @@ export class ShieldedBuilderWASM {
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
     tokenSpends: SpendableNoteWASM[],
-    tokenChangeAddress: OrchardAddressWASM,
+    tokenChangeAddress: ShieldedAddressWASM,
     tokenAnchor: Uint8Array,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     transferAmount: bigint,
     feeSpends: SpendableNoteWASM[],
-    feeChangeAddress: OrchardAddressWASM,
+    feeChangeAddress: ShieldedAddressWASM,
     feeAnchor: Uint8Array,
     seed: Uint8Array,
     coinType: number,
@@ -692,12 +693,12 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         tokenSpends.map(s => s._rawSpendableNote),
-        tokenChangeAddress._rawOrchardAddress,
+        tokenChangeAddress._rawShieldedAddress,
         tokenAnchor,
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         transferAmount.toString(),
         feeSpends.map(s => s._rawSpendableNote),
-        feeChangeAddress._rawOrchardAddress,
+        feeChangeAddress._rawShieldedAddress,
         feeAnchor,
         seed,
         coinType,
@@ -717,12 +718,12 @@ export class ShieldedBuilderWASM {
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
     tokenSpends: SpendableNoteWASM[],
-    tokenChangeAddress: OrchardAddressWASM,
+    tokenChangeAddress: ShieldedAddressWASM,
     tokenAnchor: Uint8Array,
     recipientId: IdentifierLike,
     amount: bigint,
     feeSpends: SpendableNoteWASM[],
-    feeChangeAddress: OrchardAddressWASM,
+    feeChangeAddress: ShieldedAddressWASM,
     feeAnchor: Uint8Array,
     seed: Uint8Array,
     coinType: number,
@@ -736,12 +737,12 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
         tokenSpends.map(s => s._rawSpendableNote),
-        tokenChangeAddress._rawOrchardAddress,
+        tokenChangeAddress._rawShieldedAddress,
         tokenAnchor,
         new IdentifierWASM(recipientId).bytes(),
         amount.toString(),
         feeSpends.map(s => s._rawSpendableNote),
-        feeChangeAddress._rawOrchardAddress,
+        feeChangeAddress._rawShieldedAddress,
         feeAnchor,
         seed,
         coinType,
@@ -761,11 +762,11 @@ export class ShieldedBuilderWASM {
     tokenId: IdentifierLike,
     dataContractId: IdentifierLike,
     tokenContractPosition: number,
-    recipient: OrchardAddressWASM,
+    recipient: ShieldedAddressWASM,
     tokenCount: bigint,
     totalAgreedPrice: bigint,
     feeSpends: SpendableNoteWASM[],
-    feeChangeAddress: OrchardAddressWASM,
+    feeChangeAddress: ShieldedAddressWASM,
     feeAnchor: Uint8Array,
     seed: Uint8Array,
     coinType: number,
@@ -778,11 +779,11 @@ export class ShieldedBuilderWASM {
         new IdentifierWASM(tokenId).bytes(),
         new IdentifierWASM(dataContractId).bytes(),
         tokenContractPosition,
-        recipient._rawOrchardAddress,
+        recipient._rawShieldedAddress,
         tokenCount.toString(),
         totalAgreedPrice.toString(),
         feeSpends.map(s => s._rawSpendableNote),
-        feeChangeAddress._rawOrchardAddress,
+        feeChangeAddress._rawShieldedAddress,
         feeAnchor,
         seed,
         coinType,

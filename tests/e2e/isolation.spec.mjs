@@ -8,6 +8,8 @@
 // true while the popup is open -> false "connection rejected". The split lets
 // non-proving sites drop COOP/COEP entirely (base loads without isolation);
 // proving stays opt-in via setShielded(loadShielded()) under COOP: same-origin.
+// The browser harness uses dash-platform-shielded/lazy so these tests can assert that
+// nothing loads at import; the Node native baseline uses the eager default entry.
 //
 // Tests:
 //   (a) no headers: base imports + IdentifierWASM works; loadShielded()
@@ -39,9 +41,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium, firefox } from 'playwright'
 import { startE2EServer } from '../../scripts/e2e-server.mjs'
-// dpp is base-only: register the orchard loader before the native baseline
-// calls setShielded(loadShielded()) (plain Node resolves the symlinked devDependency).
-import { loadShielded } from 'pshenmic-orchard'
+// dpp is base-only: import the eager shielded module for the native baseline and
+// pass it to setShielded() (plain Node resolves the symlinked devDependency).
+import shielded from 'dash-platform-shielded'
 import * as native from '../../dist/src/native.js'
 
 const require = createRequire(import.meta.url)
@@ -67,8 +69,8 @@ const { decompressSync } = require('fflate')
 const moduleSize = (p) =>
   decompressSync(new Uint8Array(decode(require(p).bytes))).length
 const BASE_SIZE = moduleSize(path.join(ROOT, 'dist/binaries/wasm/baseBytes.cjs'))
-// The shielded bytes ship in the separate pshenmic-orchard package.
-const SHIELDED_SIZE = moduleSize(path.join(ROOT, 'node_modules/pshenmic-orchard/dist/binaries/wasm/shieldedBytes.cjs'))
+// The shielded bytes ship in the separate dash-platform-shielded package.
+const SHIELDED_SIZE = moduleSize(path.join(ROOT, 'node_modules/dash-platform-shielded/dist/binaries/wasm/shieldedBytes.cjs'))
 
 // Builds the same shieldFromAssetLock transition as the Task 4 baseline,
 // in-page, and returns JSON-serializable deterministic fields + full bytes.
@@ -78,7 +80,7 @@ async function buildTransitionInPage () {
   const seed = new Uint8Array(window.__inputs.seed)
   const builder = new dpp.ShieldedBuilderWASM()
   await builder.init()
-  const recipient = dpp.OrchardAddressWASM.fromSeed(seed, 1, 0)
+  const recipient = dpp.ShieldedAddressWASM.fromSeed(seed, 1, 0)
   const privateKey = dpp.PrivateKeyWASM.fromWIF(window.__inputs.wif)
   const outPoint = new dpp.OutPointWASM(window.__inputs.txid, 0)
   const assetLockProof = dpp.AssetLockProofWASM.createChainAssetLockProof(window.__inputs.coreHeight, outPoint)
@@ -103,13 +105,13 @@ async function buildTransitionInPage () {
 }
 
 // Same build on the native entry (the regression oracle). dpp is base-only,
-// so the proving module is provided explicitly via setShielded(loadShielded()).
+// so the proving module is provided explicitly via setShielded(shielded).
 async function buildTransitionNative () {
-  native.setShielded(loadShielded())
+  native.setShielded(shielded)
   const seed = new Uint8Array(SEED)
   const builder = new native.ShieldedBuilderWASM()
   await builder.init()
-  const recipient = native.OrchardAddressWASM.fromSeed(seed, 1, 0)
+  const recipient = native.ShieldedAddressWASM.fromSeed(seed, 1, 0)
   const privateKey = native.PrivateKeyWASM.fromWIF(WIF)
   const outPoint = new native.OutPointWASM(TXID, 0)
   const assetLockProof = native.AssetLockProofWASM.createChainAssetLockProof(CORE_HEIGHT, outPoint)
@@ -191,7 +193,7 @@ async function main () {
         let builderErr = null
         try { await new dpp.ShieldedBuilderWASM().init() } catch (e) { builderErr = String(e) }
         let addrErr = null
-        try { dpp.OrchardAddressWASM.fromSeed(new Uint8Array(64).fill(7), 1, 0) } catch (e) { addrErr = String(e) }
+        try { dpp.ShieldedAddressWASM.fromSeed(new Uint8Array(64).fill(7), 1, 0) } catch (e) { addrErr = String(e) }
         return {
           isolated: crossOriginIsolated,
           sab: typeof SharedArrayBuffer,
