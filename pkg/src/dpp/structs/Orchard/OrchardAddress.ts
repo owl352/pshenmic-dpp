@@ -1,31 +1,31 @@
-import type { ShieldedAddressNAPI } from 'dash-platform-shielded/bindingsTypes'
+import type { OrchardAddressNAPI } from 'dash-platform-shielded/bindingsTypes'
 import { dppProvider } from '../../provider.js'
 import { NetworkLike, ScopeLike } from '../../types.js'
 import { valueToShieldedDynamicValue } from '../../utils.js'
 import { FullViewingKeyWASM } from './FullViewingKey.js'
 import { IncomingViewingKeyWASM } from './IncomingViewingKey.js'
 
-export class ShieldedAddressWASM {
+export class OrchardAddressWASM {
   /** @private **/
-  _rawShieldedAddress: ShieldedAddressNAPI
+  _rawOrchardAddress: OrchardAddressNAPI
 
   toBech32m (network: NetworkLike): string {
-    return this._rawShieldedAddress.toBech32m(valueToShieldedDynamicValue(network))
+    return this._rawOrchardAddress.toBech32m(valueToShieldedDynamicValue(network))
   }
 
   bytes (): Uint8Array {
-    return this._rawShieldedAddress.bytes()
+    return this._rawOrchardAddress.bytes()
   }
 
-  static fromBech32m (bech32m: string): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(
-      dppProvider.shielded.ShieldedAddressNAPI.fromBech32m(bech32m)
+  static fromBech32m (bech32m: string): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.shielded.OrchardAddressNAPI.fromBech32m(bech32m)
     )
   }
 
-  static fromBytes (bytes: Uint8Array): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(
-      dppProvider.shielded.ShieldedAddressNAPI.fromBytes(bytes)
+  static fromBytes (bytes: Uint8Array): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.shielded.OrchardAddressNAPI.fromBytes(bytes)
     )
   }
 
@@ -36,9 +36,9 @@ export class ShieldedAddressWASM {
     account: number,
     diversifierIndex?: number,
     scope?: ScopeLike
-  ): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(
-      dppProvider.shielded.ShieldedAddressNAPI.fromSeed(
+  ): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.shielded.OrchardAddressNAPI.fromSeed(
         seed,
         coinType,
         account,
@@ -56,9 +56,9 @@ export class ShieldedAddressWASM {
     fullViewingKey: FullViewingKeyWASM,
     diversifierIndex?: number,
     scope?: ScopeLike
-  ): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(
-      dppProvider.shielded.ShieldedAddressNAPI.fromFullViewingKey(
+  ): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.shielded.OrchardAddressNAPI.fromFullViewingKey(
         fullViewingKey._rawFullViewingKey,
         diversifierIndex,
         scope == null ? undefined : valueToShieldedDynamicValue(scope)
@@ -73,24 +73,24 @@ export class ShieldedAddressWASM {
   static fromIncomingViewingKey (
     incomingViewingKey: IncomingViewingKeyWASM,
     diversifierIndex?: number
-  ): ShieldedAddressWASM {
-    return ShieldedAddressWASM.createFromRawInstance(
-      dppProvider.shielded.ShieldedAddressNAPI.fromIncomingViewingKey(
+  ): OrchardAddressWASM {
+    return OrchardAddressWASM.createFromRawInstance(
+      dppProvider.shielded.OrchardAddressNAPI.fromIncomingViewingKey(
         incomingViewingKey._rawIncomingViewingKey,
         diversifierIndex
       )
     )
   }
 
-  static createFromRawInstance (rawInstance: ShieldedAddressNAPI): ShieldedAddressWASM {
-    const instance: ShieldedAddressWASM = Object.create(ShieldedAddressWASM.prototype)
-    instance._rawShieldedAddress = rawInstance
+  static createFromRawInstance (rawInstance: OrchardAddressNAPI): OrchardAddressWASM {
+    const instance: OrchardAddressWASM = Object.create(OrchardAddressWASM.prototype)
+    instance._rawOrchardAddress = rawInstance
 
     return instance
   }
 }
 
-/** Derives the sender's shielded outgoing viewing key (32 bytes) from a BIP-39 seed. */
-export function shieldedOvkFromSeed (seed: Uint8Array, coinType: number, account: number): Uint8Array {
-  return dppProvider.shielded.shieldedOvkFromSeed(seed, coinType, account)
+/** Derives the sender's Orchard outgoing viewing key (32 bytes) from a BIP-39 seed. */
+export function orchardOvkFromSeed (seed: Uint8Array, coinType: number, account: number): Uint8Array {
+  return dppProvider.shielded.orchardOvkFromSeed(seed, coinType, account)
 }

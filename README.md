@@ -191,7 +191,7 @@ These proving classes are provided by the separate `dash-platform-shielded` pack
 Call `setShielded(shielded)` first (the browser wasm path needs isolation; use
 `dash-platform-shielded/lazy` to defer the import) — see
 [Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
-- `ShieldedAddressWASM`, `shieldedOvkFromSeed`
+- `OrchardAddressWASM`, `orchardOvkFromSeed`
 - `FullViewingKeyWASM`
 - `IncomingViewingKeyWASM`
 - `NoteWASM`
@@ -201,7 +201,7 @@ Call `setShielded(shielded)` first (the browser wasm path needs isolation; use
 - `ShieldedOutputWASM`
 - `MerklePathWASM`
 - `CommitmentTreeWASM`
-- `ShieldedProverWASM`
+- `OrchardProverWASM`
 - `ShieldedBuilderWASM`
 - `ShieldedWithdrawalResultWASM`
 - `IdentityCreateFromShieldedPoolResultWASM`
