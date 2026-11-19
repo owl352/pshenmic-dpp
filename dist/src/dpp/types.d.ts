@@ -1,5 +1,4 @@
 import type * as protocol from '../../binaries/bindingsTypes.js';
-import type * as shieldedProtocol from 'dash-platform-shielded/bindingsTypes';
 import { ActionGoal, AssetLockProofType, GasFeesPaidByWASM, KeyType, NetworkWASM, PlatformVersionWASM, PoolingWASM, Purpose, SecurityLevel, TokenDistributionType, TokenEmergencyActionWASM, VoteStateResultType, ContractFeePot, BatchType } from './enums.js';
 import { IdentifierWASM } from './structs/Identifier.js';
 import { languageCodes } from './constants.js';
@@ -40,9 +39,6 @@ import { VotePollWASM } from './structs/MasternodeVote/VotePoll.js';
 import { TokenPricingScheduleWASM } from './structs/Batch/TokenPricingSchedule.js';
 import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js';
 export type DashPlatformProtocol = typeof protocol;
-/** The proving (Orchard/Halo 2) NAPI surface, provided by dash-platform-shielded via
- * setShielded(shielded). dpp itself carries no proving code. */
-export type ShieldedProtocol = typeof import('dash-platform-shielded/bindingsTypes');
 export type IdentifierLike = string | Uint8Array | protocol.IdentifierNAPI | IdentifierWASM;
 export type PlatformAddressLike = string | Uint8Array | protocol.PlatformAddressNAPI | PlatformAddressWASM;
 export type KeyTypeLike = KeyType | keyof typeof KeyType | Lowercase<keyof typeof KeyType>;
@@ -57,7 +53,6 @@ export type TokenEmergencyActionLike = TokenEmergencyActionWASM | keyof typeof T
 export type AssetLockProofTypeLike = AssetLockProofType | keyof typeof AssetLockProofType | Lowercase<keyof typeof AssetLockProofType>;
 export type PoolingLike = PoolingWASM | keyof typeof PoolingWASM | Lowercase<keyof typeof PoolingWASM>;
 export type VoteStateResultTypeLike = VoteStateResultType | keyof typeof VoteStateResultType | Lowercase<keyof typeof VoteStateResultType>;
-export type ScopeLike = shieldedProtocol.ScopeNAPI | keyof typeof shieldedProtocol.ScopeNAPI | Lowercase<keyof typeof shieldedProtocol.ScopeNAPI>;
 export type ContractFeePotLike = ContractFeePot | keyof typeof ContractFeePot | Lowercase<keyof typeof ContractFeePot>;
 export type BatchTypeLike = BatchType | keyof typeof BatchType | Lowercase<keyof typeof BatchType>;
 /** Identifiers inside plain moderation and contract group objects: base58 string or 32 bytes **/
@@ -464,41 +459,6 @@ export type VerifiedPlatformAddressInfoWithRootHash = VerifiedPlatformAddressInf
 export interface VerifiedPlatformAddressesInfosWithRootHash {
     rootHash: Uint8Array;
     infos: VerifiedPlatformAddressInfo[];
-}
-export interface VerifiedShieldedEncryptedNote {
-    cmx: Uint8Array;
-    nullifier: Uint8Array;
-    cvNet: Uint8Array;
-    encryptedNote: Uint8Array;
-}
-export interface VerifiedShieldedEncryptedNotes {
-    rootHash: Uint8Array;
-    notes: VerifiedShieldedEncryptedNote[];
-    totalCount: bigint;
-}
-export interface VerifiedShieldedAnchors {
-    rootHash: Uint8Array;
-    anchors: Uint8Array[];
-}
-export interface VerifiedMostRecentShieldedAnchor {
-    rootHash: Uint8Array;
-    anchor?: Uint8Array;
-}
-export interface VerifiedShieldedPoolState {
-    rootHash: Uint8Array;
-    totalBalance?: bigint;
-}
-export interface VerifiedShieldedNotesCount {
-    rootHash: Uint8Array;
-    count?: bigint;
-}
-export interface VerifiedShieldedNullifier {
-    nullifier: Uint8Array;
-    isSpent: boolean;
-}
-export interface VerifiedShieldedNullifiers {
-    rootHash: Uint8Array;
-    nullifiers: VerifiedShieldedNullifier[];
 }
 export type AddressBalanceOperation = 'setCredits' | 'addToCredits';
 export interface AddressBalanceChange {

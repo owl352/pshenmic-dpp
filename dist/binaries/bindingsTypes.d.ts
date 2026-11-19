@@ -2344,10 +2344,6 @@ export declare class VerifiedIdentityWithAddressInfosNAPI {
     get identity(): PartialIdentityNAPI;
     get infos(): Array<PlatformAddressInfoNAPI>;
 }
-export declare class VerifiedMostRecentShieldedAnchorNAPI {
-    rootHash: Uint8Array;
-    anchor?: Uint8Array;
-}
 /** A requested key and the element proven under it. */
 export declare class VerifiedPathElementNAPI {
     get key(): Uint8Array;
@@ -2385,37 +2381,6 @@ export declare class VerifiedRecentCompactedAddressBalanceChangesNAPI {
     rootHash: Uint8Array;
     /** The proven compacted ranges, in ascending block-height order. */
     get ranges(): Array<CompactedBlockAddressBalanceChangesNAPI>;
-}
-export declare class VerifiedShieldedAnchorsNAPI {
-    rootHash: Uint8Array;
-    get anchors(): Array<Uint8Array>;
-}
-export declare class VerifiedShieldedEncryptedNoteNAPI {
-    cmx: Uint8Array;
-    nullifier: Uint8Array;
-    cvNet: Uint8Array;
-    encryptedNote: Uint8Array;
-}
-export declare class VerifiedShieldedEncryptedNotesNAPI {
-    rootHash: Uint8Array;
-    totalCount: BigIntString;
-    get notes(): Array<VerifiedShieldedEncryptedNoteNAPI>;
-}
-export declare class VerifiedShieldedNotesCountNAPI {
-    rootHash: Uint8Array;
-    count?: BigIntString;
-}
-export declare class VerifiedShieldedNullifierNAPI {
-    nullifier: Uint8Array;
-    isSpent: boolean;
-}
-export declare class VerifiedShieldedNullifiersNAPI {
-    rootHash: Uint8Array;
-    get nullifiers(): Array<VerifiedShieldedNullifierNAPI>;
-}
-export declare class VerifiedShieldedPoolStateNAPI {
-    rootHash: Uint8Array;
-    totalBalance?: BigIntString;
 }
 export declare class VerifiedStateTransitionResultNAPI {
     rootHash: Uint8Array;
@@ -2841,7 +2806,6 @@ export declare function verifyIdentityKeysByIdentifierProof(proof: Uint8Array, j
  */
 export declare function verifyIdentityKeysRemainingBudgetsProof(proof: Uint8Array, jsIdentityId: IdentifierLikeNAPI, keyIds: Array<number>, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue): VerifiedProofNAPI;
 export declare function verifyIdentityNonceProof(proof: Uint8Array, jsIdentityId: IdentifierLikeNAPI, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue): VerifiedIdentityNonceNAPI;
-export declare function verifyMostRecentShieldedAnchorProof(proof: Uint8Array, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue, jsTokenId?: IdentifierLikeNAPI | undefined | null): VerifiedMostRecentShieldedAnchorNAPI;
 /**
  * Verifies a `getPathElements` proof: the elements stored under `keys` in the
  * subtree at `path`.
@@ -2872,11 +2836,6 @@ export declare function verifyRecentAddressBalanceChanges(proof: Uint8Array, sta
  * of.
  */
 export declare function verifyRecentCompactedAddressBalanceChanges(proof: Uint8Array, startBlockHeight: BigIntString, limit: number | undefined | null, jsPlatformVersion: DynamicValue): VerifiedRecentCompactedAddressBalanceChangesNAPI;
-export declare function verifyShieldedAnchorsProof(proof: Uint8Array, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue, jsTokenId?: IdentifierLikeNAPI | undefined | null): VerifiedShieldedAnchorsNAPI;
-export declare function verifyShieldedEncryptedNotesProof(proof: Uint8Array, startIndex: BigIntString, count: number, maxElements: number, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue, jsTokenId?: IdentifierLikeNAPI | undefined | null): VerifiedShieldedEncryptedNotesNAPI;
-export declare function verifyShieldedNotesCountProof(proof: Uint8Array, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue, jsTokenId?: IdentifierLikeNAPI | undefined | null): VerifiedShieldedNotesCountNAPI;
-export declare function verifyShieldedNullifiersProof(proof: Uint8Array, nullifiers: Array<Uint8Array>, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue, jsTokenId?: IdentifierLikeNAPI | undefined | null): VerifiedShieldedNullifiersNAPI;
-export declare function verifyShieldedPoolStateProof(proof: Uint8Array, verifySubsetOfProof: boolean, jsPlatformVersion: DynamicValue, jsTokenId?: IdentifierLikeNAPI | undefined | null): VerifiedShieldedPoolStateNAPI;
 export declare function verifySignatureDigest(signDigest: Uint8Array, signature: Uint8Array, pubkeyBytes: Uint8Array): boolean;
 export declare function verifyStateTransitionResult(proof: Uint8Array, stateTransition: StateTransitionNAPI, blockInfo: BlockInfoNAPI, jsKnownContractsArray: Array<DataContractNAPI>, jsPlatformVersion: DynamicValue): VerifiedStateTransitionResultNAPI;
 export declare function verifyTokenBalancesForIdentitiesProof(proof: Uint8Array, jsTokenId: IdentifierLikeNAPI, isProofSubset: boolean, jsIdentities: Array<IdentifierLikeNAPI>, jsPlatformVersion: DynamicValue): VerifiedTokenBalancesForIdentitiesNAPI;

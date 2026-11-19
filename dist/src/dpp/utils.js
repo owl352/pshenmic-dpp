@@ -5,16 +5,6 @@ import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.j
 export function valueToDynamicValue(value) {
     return wrapDynamicValue(value, dppProvider.dpp.DynamicValue, dppProvider.dpp.IdentifierNAPI);
 }
-/**
- * Same conversion as valueToDynamicValue, but wraps with the SHIELDED
- * (dash-platform-shielded) instance's DynamicValue. Wrapped napi objects cannot
- * cross the base <-> shielded instance boundary, so arguments destined for
- * shielded methods (scope, network) must be wrapped by the module's own
- * DynamicValue — ported with the identical JS surface for exactly this.
- */
-export function valueToShieldedDynamicValue(value) {
-    return wrapDynamicValue(value, dppProvider.shielded.DynamicValue);
-}
 function wrapDynamicValue(value, Ctor, IdentifierNAPI) {
     if (typeof value === 'bigint' || (value > UINT32MAX && typeof value !== 'string')) {
         return Ctor.fromBigIntString(BigInt(value.toString()).toString());

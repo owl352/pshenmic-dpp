@@ -2,14 +2,6 @@ import type { DynamicValue, IdentifierLikeNAPI, PlatformAddressLikeNAPI } from '
 import { IdentifierLike, PlatformAddressLike } from './types.js';
 import { IdentifierWASM } from './structs/Identifier.js';
 export declare function valueToDynamicValue(value: any): DynamicValue;
-/**
- * Same conversion as valueToDynamicValue, but wraps with the SHIELDED
- * (dash-platform-shielded) instance's DynamicValue. Wrapped napi objects cannot
- * cross the base <-> shielded instance boundary, so arguments destined for
- * shielded methods (scope, network) must be wrapped by the module's own
- * DynamicValue — ported with the identical JS surface for exactly this.
- */
-export declare function valueToShieldedDynamicValue(value: any): DynamicValue;
 export declare function valueFromDynamicValue(dynamicValue: DynamicValue, jsonLike?: boolean): any;
 export declare function prepareIdentifierValue(identifier: IdentifierLike): IdentifierLikeNAPI;
 export declare function preparePlatformAddressValue(address: PlatformAddressLike): PlatformAddressLikeNAPI;
