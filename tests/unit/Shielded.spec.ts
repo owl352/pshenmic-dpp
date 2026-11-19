@@ -1,6 +1,5 @@
 // Imports the shielded module and provides it to dpp
 // explicitly via setShielded() (dpp itself is base-only on every entry).
-import shielded from 'dash-platform-shielded'
 import {
   ShieldedMemoWASM,
   OrchardAddressWASM,
@@ -18,14 +17,12 @@ import {
   PrivateKeyWASM,
   PlatformAddressWASM,
   ShieldTransitionWASM,
-  StateTransitionWASM,
-  setShielded
-} from 'pshenmic-dpp'
+  StateTransitionWASM
+} from '../utils/withShielded.js'
 
 // dpp is base-only on every entry: the proving classes live in the separate
 // dash-platform-shielded module, provided explicitly via setShielded(shielded).
 beforeAll(async function () {
-  setShielded(shielded)
 })
 
 // Deterministic 64-byte BIP-39-style seed. Orchard derives via ZIP-32

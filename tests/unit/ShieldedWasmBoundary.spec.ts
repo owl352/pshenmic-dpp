@@ -1,4 +1,3 @@
-import shielded from 'dash-platform-shielded'
 import {
   CommitmentTreeWASM,
   NoteWASM,
@@ -10,9 +9,8 @@ import {
   ShieldedOutputWASM,
   ShieldedTransferTransitionWASM,
   SpendableNoteWASM,
-  setShielded,
   recoverNotes
-} from 'pshenmic-dpp/wasm'
+} from '../utils/withShieldedWasm.js'
 
 // Cross-instance boundary regression for the WASM entry (base + shielded split).
 // ShieldedMemoNAPI and SerializedActionNAPI are base-kept classes: their wrapped
@@ -47,7 +45,6 @@ describe('shielded wasm boundary (base <-> shielded instances)', function () {
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    setShielded(shielded)
     builder = new ShieldedBuilderWASM()
     await builder.init()
   }, PROVING_TIMEOUT)

@@ -20,7 +20,7 @@ import {
   KeyType,
   PlatformVersionWASM,
   StateTransitionWASM
-} from 'pshenmic-dpp'
+} from '../utils/withShielded.js'
 
 // BASE-only suite: SerializedAction + the shielded transitions are kept in the
 // base module on every entry, so no shielded import / setShielded() is needed.

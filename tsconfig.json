@@ -15,6 +15,7 @@
       "es2015",
       "dom"
     ],
+    "baseUrl": ".",
     "paths": {
       "pshenmic-dpp": ["./"]
     }

@@ -1,6 +1,5 @@
 // Imports the shielded module and provides it to dpp
 // explicitly via setShielded() (dpp itself is base-only on every entry).
-import shielded from 'dash-platform-shielded'
 import {
   AssetLockProofWASM,
   CommitmentTreeWASM,
@@ -24,9 +23,8 @@ import {
   ShieldedWithdrawalTransitionWASM,
   SpendableNoteWASM,
   StateTransitionWASM,
-  UnshieldTransitionWASM,
-  setShielded
-} from 'pshenmic-dpp'
+  UnshieldTransitionWASM
+} from '../utils/withShielded.js'
 
 // Builder methods whose only other coverage is the wasm entry (WebAssembly.spec)
 // or none at all. Runs against the native addon and pins the PUBLIC API contract
@@ -82,7 +80,6 @@ describe('ShieldedBuilder boundary', function () {
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
-    setShielded(shielded)
     address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
     memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()

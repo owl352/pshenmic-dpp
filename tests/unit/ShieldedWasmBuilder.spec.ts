@@ -1,4 +1,3 @@
-import shielded from 'dash-platform-shielded'
 import {
   AddressFundsFeeStrategyStepWASM,
   AssetLockProofWASM,
@@ -38,9 +37,8 @@ import {
   TokenTransitionWASM,
   TokenUnshieldWithShieldedFeeTransitionWASM,
   UnshieldTransitionWASM,
-  setShielded,
   orchardOvkFromSeed
-} from 'pshenmic-dpp/wasm'
+} from '../utils/withShieldedWasm.js'
 
 // Every builder method that crosses the base <-> shielded instance boundary,
 // exercised through the WASM entry (pshenmic-dpp/wasm) after setShielded().
@@ -127,7 +125,6 @@ describe('ShieldedBuilder cross-boundary (wasm entry)', function () {
   }
 
   beforeAll(async function () {
-    setShielded(shielded)
     builder = new ShieldedBuilderWASM()
     await builder.init()
     address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
