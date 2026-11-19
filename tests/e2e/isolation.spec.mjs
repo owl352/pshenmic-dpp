@@ -7,7 +7,7 @@
 // reference to the cross-origin wallet-extension popup, so popup.closed reads
 // true while the popup is open -> false "connection rejected". The split lets
 // non-proving sites drop COOP/COEP entirely (base loads without isolation);
-// proving stays opt-in via setShielded(loadShielded()) under COOP: same-origin.
+// proving loads on first use under COOP: same-origin.
 // The browser harness uses dash-platform-shielded/lazy so these tests can assert that
 // nothing loads at import; the Node native baseline uses the eager default entry.
 //
@@ -42,8 +42,7 @@ import { fileURLToPath } from 'node:url'
 import { chromium, firefox } from 'playwright'
 import { startE2EServer } from '../../scripts/e2e-server.mjs'
 // dpp is base-only: import the eager shielded module for the native baseline and
-// pass it to setShielded() (plain Node resolves the symlinked devDependency).
-import shielded from 'dash-platform-shielded'
+// use the native entry directly.
 import * as native from '../../dist/src/native.js'
 
 const require = createRequire(import.meta.url)
@@ -105,9 +104,8 @@ async function buildTransitionInPage () {
 }
 
 // Same build on the native entry (the regression oracle). dpp is base-only,
-// so the proving module is provided explicitly via setShielded(shielded).
+// so the proving module loads on first use.
 async function buildTransitionNative () {
-  native.setShielded(shielded)
   const seed = new Uint8Array(SEED)
   const builder = new native.ShieldedBuilderWASM()
   await builder.init()
@@ -189,7 +187,7 @@ async function main () {
         const id = dpp.IdentifierWASM.fromBase58(inputs.b58)
         const roundTrip = dpp.IdentifierWASM.fromBytes(id.bytes()).base58()
         let initErr = null
-        try { dpp.setShielded(dpp.loadShielded()) } catch (e) { initErr = String(e) }
+        try { dpp.loadShielded() } catch (e) { initErr = String(e) }
         let builderErr = null
         try { await new dpp.ShieldedBuilderWASM().init() } catch (e) { builderErr = String(e) }
         let addrErr = null
@@ -211,14 +209,14 @@ async function main () {
       assert.equal(r.roundTrip, IDENTIFIER_B58)
       assert.match(r.initErr, /SharedArrayBuffer/)
       assert.match(r.initErr, /cross-origin isolation/)
-      assert.match(r.builderErr, /setShielded/)
-      assert.match(r.addrErr, /setShielded/)
+      assert.match(r.builderErr, /SharedArrayBuffer/)
+      assert.match(r.addrErr, /SharedArrayBuffer/)
       assert.deepEqual(r.compiles, [BASE_SIZE]) // only the base module compiled
       await page.close()
     })
 
     // ------------------------------------------------------------------ (b)
-    await run('(b) same-origin+require-corp: isolated, setShielded(loadShielded()) succeeds, REAL proving + byte regression', async () => {
+    await run('(b) same-origin+require-corp: isolated, first use succeeds, REAL proving + byte regression', async () => {
       const page = await openPage('same-origin')
       const iso = await page.evaluate(() => ({ isolated: crossOriginIsolated, sab: typeof SharedArrayBuffer }))
       assert.equal(iso.isolated, true)
@@ -229,7 +227,6 @@ async function main () {
       // Real proving: Halo 2 proving key + 2 proofs on wasm thread workers.
       const browserResult = await page.evaluate(async (timeoutMs) => {
         const work = (async () => {
-          window.__dpp.setShielded(window.__dpp.loadShielded())
           return await window.__buildTransition()
         })()
         return await Promise.race([
@@ -280,7 +277,7 @@ async function main () {
       assert.equal(iso.isolated, false, 'current Chrome/Firefox: allow-popups does not grant crossOriginIsolated')
       assert.equal(iso.sab, 'undefined')
       const gate = await page.evaluate(async () => {
-        try { window.__dpp.setShielded(window.__dpp.loadShielded()); return null } catch (e) { return String(e) }
+        try { window.__dpp.loadShielded(); return null } catch (e) { return String(e) }
       })
       assert.match(gate, /SharedArrayBuffer/, 'loadShielded must reject without SAB even under allow-popups')
       // The crux: the opener KEEPS a live reference to the cross-origin popup.
@@ -331,7 +328,6 @@ async function main () {
         const dpp = window.__dpp
         const i1 = dpp.loadShielded()
         const i2 = dpp.loadShielded()
-        dpp.setShielded(i1)
         return { sameInstance: i1 === i2, compiles: window.__wasmCompiles }
       })
       assert.equal(r.sameInstance, true, 'repeated loadShielded returns the same cached instance')

@@ -1,9 +1,8 @@
-import { DashPlatformProtocol, ShieldedProtocol } from '../dpp/types.js'
+import { DashPlatformProtocol } from '../dpp/types.js'
 
 class DppProvider {
   private static instance?: DppProvider
   private _dpp: DashPlatformProtocol | null = null
-  private _shielded: ShieldedProtocol | null = null
 
   private constructor () {}
 
@@ -23,26 +22,6 @@ class DppProvider {
       throw new Error('DashPlatformProtocol (dpp) has not been set. Call setDpp() before using SDK classes.')
     }
     return this._dpp
-  }
-
-  setShielded (shielded: ShieldedProtocol): void {
-    this._shielded = shielded
-  }
-
-  get hasShielded (): boolean {
-    return this._shielded != null
-  }
-
-  /**
-   * The shielded (Orchard/Halo 2 proving) module from the separate
-   * dash-platform-shielded package, provided explicitly by the consumer via
-   * setShielded(shielded). dpp itself carries no proving code.
-   */
-  get shielded (): ShieldedProtocol {
-    if (this._shielded == null) {
-      throw new Error('The shielded (proving) module has not been loaded. Call setShielded(shielded) first.')
-    }
-    return this._shielded
   }
 }
 

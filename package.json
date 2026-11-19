@@ -37,7 +37,10 @@
     },
     "./wasm": "./dist/src/wasm.js",
     "./wasm/utils": "./dist/src/dpp/utils.js",
-    "./native": "./dist/src/native.js"
+    "./native": "./dist/src/native.js",
+    "./bindingsTypes": {
+      "types": "./dist/binaries/bindingsTypes.d.ts"
+    }
   },
   "author": "owl352",
   "license": "ISC",
@@ -60,14 +63,14 @@
     "node-addon-api": "^8.5.0",
     "path": "^0.12.7",
     "playwright": "^1.65.1",
-    "dash-platform-shielded": "file:../pshenmic-orchard",
     "toml": "^3.0.0",
     "ts-morph": "^26.0.0",
     "ts-standard": "^12.0.2",
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
-    "wasm-opt": "^1.4.0"
+    "wasm-opt": "^1.4.0",
+    "dash-platform-shielded": "file:../../pshenmic-orchard"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",

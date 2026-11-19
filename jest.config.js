@@ -5,8 +5,8 @@ export default {
   moduleNameMapper: {
     // Proving lives in the separate dash-platform-shielded repo (devDependency,
     // symlinked into node_modules). Resolve its eager entry and lazy subpath.
-    '^dash-platform-shielded$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/index.cjs',
-    '^dash-platform-shielded/lazy$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/lazy.cjs',
+    '^dash-platform-shielded$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/index.js',
+    '^dash-platform-shielded/lazy$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/lazy.js',
     '^(\\.\\.?\\/.+)\\.js$': '$1'
   },
   // Proving suites (Shielded*, WebAssembly, InitShielded, Orchard*) each load

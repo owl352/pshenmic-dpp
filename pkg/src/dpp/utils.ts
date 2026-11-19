@@ -23,16 +23,7 @@ export function valueToDynamicValue (value: any): DynamicValue {
   return wrapDynamicValue(value, dppProvider.dpp.DynamicValue, dppProvider.dpp.IdentifierNAPI)
 }
 
-/**
- * Same conversion as valueToDynamicValue, but wraps with the SHIELDED
- * (dash-platform-shielded) instance's DynamicValue. Wrapped napi objects cannot
- * cross the base <-> shielded instance boundary, so arguments destined for
- * shielded methods (scope, network) must be wrapped by the module's own
- * DynamicValue — ported with the identical JS surface for exactly this.
- */
-export function valueToShieldedDynamicValue (value: any): DynamicValue {
-  return wrapDynamicValue(value, dppProvider.shielded.DynamicValue)
-}
+
 
 function wrapDynamicValue (
   value: any,

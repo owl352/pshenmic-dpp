@@ -57,9 +57,9 @@ const nodeBuiltinStub = {
 }
 
 // Bundle the dist entry PLUS the optional dash-platform-shielded package in memory.
-// The page entry imports orchard's lazy entry and re-exports loadShielded
-// alongside dpp, so the test wires them explicitly via
-// dpp.setShielded(loadShielded()). Both imports are static, so this survives
+// The page entry imports the lazy entry and re-exports loadShielded
+// alongside dpp. The wrappers load the proving module on first use.
+// the wrappers lazy-load on first use. Both imports are static, so this survives
 // esbuild's renaming/chunking (no global registry). Returns a Map urlPath ->
 // { content, type } plus the entry chunk path. The shielded WASM is compiled
 // lazily inside loadShielded(), not at import — laziness is observed via the
@@ -67,7 +67,7 @@ const nodeBuiltinStub = {
 export async function buildBundle () {
   const result = await build({
     stdin: {
-      contents: `import { loadShielded } from ${JSON.stringify(path.join(ROOT, 'node_modules/dash-platform-shielded/dist/src/lazy.cjs'))};
+      contents: `import { loadShielded } from ${JSON.stringify(path.join(ROOT, 'node_modules/dash-platform-shielded/dist/src/lazy.js'))};
 export * from ${JSON.stringify(path.join(ROOT, 'dist/src/wasm.js'))};
 export { loadShielded };`,
       resolveDir: ROOT,

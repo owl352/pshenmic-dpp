@@ -1,6 +1,5 @@
 // Imports the shielded module and provides it to dpp
 // explicitly via setShielded() (dpp itself is base-only on every entry).
-import shielded from 'dash-platform-shielded'
 import {
   BatchTransitionWASM,
   CommitmentTreeWASM,
@@ -24,9 +23,8 @@ import {
   TokenShieldedPaymentWASM,
   TokenShieldedTransferWithShieldedFeeTransitionWASM,
   TokenTransitionWASM,
-  TokenUnshieldWithShieldedFeeTransitionWASM,
-  setShielded
-} from 'pshenmic-dpp'
+  TokenUnshieldWithShieldedFeeTransitionWASM
+} from '../utils/withShielded.js'
 
 const SEED = new Uint8Array(64)
 for (let i = 0; i < 64; i++) SEED[i] = (i * 7 + 1) & 0xff
@@ -72,7 +70,6 @@ function tokenTransitionOf (stateTransition: StateTransitionWASM): TokenTransiti
 // dpp is base-only on every entry: the proving classes live in the separate
 // dash-platform-shielded module, provided explicitly via setShielded(shielded).
 beforeAll(async function () {
-  setShielded(shielded)
 })
 
 describe('ShieldedBuilder v5', function () {
