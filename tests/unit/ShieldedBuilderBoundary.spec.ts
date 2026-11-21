@@ -1,3 +1,5 @@
+// Runs against the standalone dash-platform-shielded module; dpp itself is
+// base-only on every entry.
 import {
   AssetLockProofWASM,
   CommitmentTreeWASM,
@@ -22,7 +24,7 @@ import {
   SpendableNoteWASM,
   StateTransitionWASM,
   UnshieldTransitionWASM
-} from 'pshenmic-dpp'
+} from '../utils/withShielded.js'
 
 // Builder methods whose only other coverage is the wasm entry (WebAssembly.spec)
 // or none at all. Runs against the native addon and pins the PUBLIC API contract
@@ -70,11 +72,16 @@ function expectByteRoundTrip (st: StateTransitionWASM): void {
 }
 
 describe('ShieldedBuilder boundary', function () {
-  const address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
-  const memo = ShieldedMemoWASM.empty()
+  // Fixtures are created after builder init() — never at collection time —
+  // because the shielded classes (OrchardAddress, ...) only exist once it
+  // resolves. beforeAll (not top-level await) keeps both jest modes working.
+  let address: OrchardAddressWASM
+  let memo: ShieldedMemoWASM
   let builder: ShieldedBuilderWASM
 
   beforeAll(async function () {
+    address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)
+    memo = ShieldedMemoWASM.empty()
     builder = new ShieldedBuilderWASM()
     await builder.init()
   }, PROVING_TIMEOUT)

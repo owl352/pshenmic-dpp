@@ -21,7 +21,7 @@ ___
 
 | Entry point | Environment | Targets |
 |---|---|---|
-| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1` base + `wasm32-wasip1-threads` shielded, loaded on demand (via emnapi) |
+| `pshenmic-dpp/wasm` (`browser` / `default`) | Browsers, bundlers, any JS runtime | `wasm32-wasip1` base, loaded synchronously at import (via emnapi). Shielded proving is the separate `dash-platform-shielded` package. |
 | `pshenmic-dpp/native` (`node`) | Node.js | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, `x86_64-unknown-linux-musl`, `aarch64-unknown-linux-musl`, `x86_64-apple-darwin`, `aarch64-apple-darwin`, `x86_64-pc-windows-msvc`, `aarch64-pc-windows-msvc` |
 | `react-native` | React Native (via `react-native-node-api`) | `aarch64-linux-android`, `x86_64-linux-android`, `aarch64-apple-ios-sim` |
 
@@ -37,16 +37,21 @@ console.log(identifier.hex())
 ___
 ## Shielded proving / cross-origin isolation
 
-The browser build ships **two wasm binaries**:
+The browser build ships as **two packages**:
 
-- **base** (`wasm32-wasip1`, non-threaded) — loaded synchronously at import.
-  All core APIs (identifiers, identities, contracts, documents, transitions,
-  proof verification, ...) work in any browser context, **without**
-  cross-origin isolation.
-- **shielded** (`wasm32-wasip1-threads`) — the Orchard/Halo 2 proving stack.
-  Loaded **on demand** by `initShielded()`; it needs `SharedArrayBuffer` and
-  wasm thread workers, i.e. cross-origin isolation in browsers. Its bytes are
-  never fetched or compiled until `initShielded()` runs.
+- **`pshenmic-dpp`** — the base (`wasm32-wasip1`, non-threaded), loaded
+  synchronously at import. All core APIs (identifiers, identities, contracts,
+  documents, transitions, proof verification, ...) work in any browser context,
+  **without** cross-origin isolation. dpp itself contains no proving code.
+- **`dash-platform-shielded`** *(optional)* — the Orchard/Halo 2 proving stack, shipped
+  entirely by the separate
+  [`dash-platform-shielded`](https://github.com/owl352/dash-platform-shielded) package/repo as
+  **native Node-API addons** (preferred on Node, ~3x faster proving) plus a
+  threaded wasm module (`wasm32-wasip1-threads`) for browsers / fallback. It is a
+  completely independent module: create `new DashPlatformShielded()` and pass the
+  instance to the SDK. Importing the package alone does not load anything;
+  construction does. The wasm path needs `SharedArrayBuffer` and wasm thread
+  workers, i.e. cross-origin isolation in browsers.
 
 ### Connect-only sites (no proving)
 
@@ -54,7 +59,9 @@ Drop the `Cross-Origin-Opener-Policy` / `Cross-Origin-Embedder-Policy` headers
 entirely. The base module loads synchronously at import and cross-origin popup
 references (e.g. wallet-extension connection popups) keep working — this is the
 [_dash-platform-extension#219_](https://github.com/dashpay/dash-platform-extension/issues/219)
-fix. Proving APIs remain unavailable until `initShielded()` succeeds.
+fix. Proving APIs load when the `dash-platform-shielded` entry is imported (use
+`dash-platform-shielded/lazy` when the shielded import must happen before isolation is
+available).
 
 ### Proving sites
 
@@ -79,27 +86,38 @@ wallet flow in a non-isolated popup context.
 
 ### Usage
 
-```ts
-import { initShielded, ShieldedBuilderWASM } from 'pshenmic-dpp'
-
-// Before ANY shielded/proving API in the browser. Idempotent: concurrent and
-// repeated calls share one load. On Node.js / React Native it is a no-op.
-await initShielded()
-
-const builder = new ShieldedBuilderWASM()
-await builder.init()
-// ... shielded/proving APIs are now available
+```sh
+npm i pshenmic-dpp dash-platform-shielded   # shielded is optional
 ```
 
-Without cross-origin isolation `initShielded()` rejects with a
-`SharedArrayBuffer` error; until it resolves, shielded classes throw
-`The shielded (proving) module has not been loaded. Call initShielded() first.`
-A failed load can be retried — the next `initShielded()` call fetches again.
+`pshenmic-dpp` is base-only and contains no shielded code. If an application
+needs shielded proving, install `dash-platform-shielded`, create an instance, and
+pass it to the SDK:
 
-> **Breaking change (major version) for proving consumers:** you must now
-> `await initShielded()` before using any shielded/proving API and serve the
-> isolation headers above. Previously the threaded module was loaded at import
-> time. Connect-only consumers are unaffected: no headers, no init call.
+```ts
+import { DashPlatformShielded } from 'dash-platform-shielded'
+import { DashPlatformSDK } from 'dash-platform-sdk'
+
+const sdk = new DashPlatformSDK({
+  network: 'mainnet',
+  shielded: new DashPlatformShielded()
+})
+
+const builder = await sdk.shielded.init()
+```
+
+Constructing the instance loads the proving module (native addon on Node,
+threaded wasm in the browser — the latter needs the isolation headers above).
+Importing `dash-platform-shielded` alone does not load anything.
+
+Without cross-origin isolation the browser wasm path fails with a
+`SharedArrayBuffer` error. Connect-only consumers never install the shielded
+package and keep the base dpp entry with no isolation headers.
+
+> **Breaking change (major version) for proving consumers:** shielded classes are
+> no longer exported by `pshenmic-dpp`. Install `dash-platform-shielded`, pass a
+> `new DashPlatformShielded()` instance to the SDK, and use the shielded
+> controller. There is no `setShielded()` call on dpp.
 
 ___
 ## Current features
@@ -158,7 +176,9 @@ ___
   - `IdentityTopUpFromAddressesTransitionWASM`
 
 ### Shielded Pool (Orchard)
-In browsers these require `await initShielded()` first — see
+These proving classes live in the separate `dash-platform-shielded` package.
+Create `new DashPlatformShielded()` and pass it to the SDK; the browser wasm path
+needs isolation — see
 [Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
 - `OrchardAddressWASM`, `orchardOvkFromSeed`
 - `FullViewingKeyWASM`

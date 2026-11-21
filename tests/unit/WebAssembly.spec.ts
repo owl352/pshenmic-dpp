@@ -1,5 +1,5 @@
-import * as dpp from "pshenmic-dpp/wasm";
-import {IdentifierWASM, initShielded, ShieldedBuilderWASM} from "pshenmic-dpp/wasm";
+import * as dpp from '../utils/withShieldedWasm.js';
+import {IdentifierWASM, ShieldedBuilderWASM} from '../utils/withShieldedWasm.js';
 
 let identifierBytes: Uint8Array;
 
@@ -49,10 +49,7 @@ describe("dpp", function () {
 
   describe('shielded init', function () {
     // The base wasm (loaded at import) has no proving classes: the threaded
-    // shielded module is loaded on demand via initShielded() (SAB-gated).
-    beforeAll(async function () {
-      await initShielded();
-    });
+    // shielded module is provided by the standalone dash-platform-shielded module.
 
     // init() builds the Halo 2 proving key on a single wasm thread; on 4-vCPU CI
     // runners it competes with the native proving suites (ShieldedBuilderV5)

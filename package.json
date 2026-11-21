@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "3.0.0-dev.0",
+  "version": "2.1.0-dev.1",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
@@ -15,7 +15,7 @@
     "build:full": "npm run build:bin && npm run build:ts",
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:e2e": "node tests/e2e/isolation.spec.mjs",
     "docs": "typedoc",
     "lint:rust": "cargo fmt",
@@ -37,7 +37,10 @@
     },
     "./wasm": "./dist/src/wasm.js",
     "./wasm/utils": "./dist/src/dpp/utils.js",
-    "./native": "./dist/src/native.js"
+    "./native": "./dist/src/native.js",
+    "./bindingsTypes": {
+      "types": "./dist/binaries/bindingsTypes.d.ts"
+    }
   },
   "author": "owl352",
   "license": "ISC",
@@ -66,7 +69,8 @@
     "tsx": "^4.20.6",
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
-    "wasm-opt": "^1.4.0"
+    "wasm-opt": "^1.4.0",
+    "dash-platform-shielded": "0.0.1"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",

@@ -19,15 +19,11 @@ import {
   SecurityLevel,
   KeyType,
   PlatformVersionWASM,
-  StateTransitionWASM,
-  initShielded
-} from 'pshenmic-dpp'
+  StateTransitionWASM
+} from '../utils/withShielded.js'
 
-// Entry-agnostic: no-op on the native addon, loads the shielded module on the
-// wasm entry (where the proving classes live behind initShielded()).
-beforeAll(async function () {
-  await initShielded()
-})
+// BASE-only suite: SerializedAction + the shielded transitions are kept in the
+// base module on every entry, so no proving module is needed.
 
 function randomBytes (length: number): Uint8Array {
   const bytes = new Uint8Array(length)

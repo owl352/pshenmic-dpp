@@ -7,13 +7,15 @@
 // reference to the cross-origin wallet-extension popup, so popup.closed reads
 // true while the popup is open -> false "connection rejected". The split lets
 // non-proving sites drop COOP/COEP entirely (base loads without isolation);
-// proving stays opt-in via initShielded() under COOP: same-origin.
+// proving loads on first use under COOP: same-origin.
+// The browser harness uses dash-platform-shielded/lazy so these tests can assert that
+// nothing loads at import; the Node native baseline uses the eager default entry.
 //
 // Tests:
-//   (a) no headers: base imports + IdentifierWASM works; initShielded()
+//   (a) no headers: base imports + IdentifierWASM works; loadShielded()
 //       rejects (no SAB); proving classes gated; shielded bytes never loaded.
 //   (b) same-origin + require-corp: crossOriginIsolated === true;
-//       initShielded() resolves; a REAL shielded transition builds (Halo 2
+//       loadShielded() resolves; a REAL shielded transition builds (Halo 2
 //       proofs on wasm thread workers) — plus the byte regression vs native.
 //   (c) same-origin-allow-popups + require-corp: window.open popup reference
 //       RETAINED (popup.closed === false, live postMessage channel) — the
@@ -24,8 +26,8 @@
 //       === true while the popup is demonstrably open) — reproduces #219.
 //   (d) base import does NOT fetch/compile the shielded module (lazy):
 //       request log + instrumented WebAssembly.Module sizes, before/after
-//       initShielded(); repeated calls share one promise.
-//   (e) failure -> retry: the shielded chunk 500s once; initShielded()
+//       loadShielded(); repeated loadShielded() shares one instance.
+//   (e) failure -> retry: the shielded chunk 500s once; loadShielded()
 //       rejects, the cache is cleared, and a retry succeeds.
 //
 // Byte regression (in test b): proofs/nullifiers/cmxs are OsRng-randomized,
@@ -39,6 +41,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium, firefox } from 'playwright'
 import { startE2EServer } from '../../scripts/e2e-server.mjs'
+// dpp is base-only: import the eager shielded module for the native baseline and
+// use the native entry directly.
 import * as native from '../../dist/src/native.js'
 
 const require = createRequire(import.meta.url)
@@ -61,10 +65,11 @@ const unhex = (s) => new Uint8Array(s.match(/../g).map((h) => parseInt(h, 16)))
 // test asserts which module was compiled from these.
 const { decode } = require(path.join(ROOT, 'dist/utils/base122.cjs'))
 const { decompressSync } = require('fflate')
-const moduleSize = (name) =>
-  decompressSync(new Uint8Array(decode(require(path.join(ROOT, `dist/binaries/wasm/${name}.cjs`)).bytes))).length
-const BASE_SIZE = moduleSize('baseBytes')
-const SHIELDED_SIZE = moduleSize('shieldedBytes')
+const moduleSize = (p) =>
+  decompressSync(new Uint8Array(decode(require(p).bytes))).length
+const BASE_SIZE = moduleSize(path.join(ROOT, 'dist/binaries/wasm/baseBytes.cjs'))
+// The shielded bytes ship in the separate dash-platform-shielded package.
+const SHIELDED_SIZE = moduleSize(path.join(ROOT, 'node_modules/dash-platform-shielded/dist/binaries/wasm/shieldedBytes.cjs'))
 
 // Builds the same shieldFromAssetLock transition as the Task 4 baseline,
 // in-page, and returns JSON-serializable deterministic fields + full bytes.
@@ -98,7 +103,8 @@ async function buildTransitionInPage () {
   }
 }
 
-// Same build on the native addon (the regression oracle).
+// Same build on the native entry (the regression oracle). dpp is base-only,
+// so the proving module loads on first use.
 async function buildTransitionNative () {
   const seed = new Uint8Array(SEED)
   const builder = new native.ShieldedBuilderWASM()
@@ -171,11 +177,9 @@ async function main () {
     await page.waitForTimeout(300) // let the COOP browsing-context-group swap settle
     return popup
   }
-  const shieldedRequests = () => srv.requests.filter((r) => r.path === srv.bundle.shieldedPath)
-
   try {
     // ------------------------------------------------------------------ (a)
-    await run('(a) no headers: base works without isolation, initShielded rejects, proving gated', async () => {
+    await run('(a) no headers: base works without isolation, loadShielded rejects, proving gated', async () => {
       const page = await openPage('none')
       const r = await page.evaluate(async (inputs) => {
         const dpp = window.__dpp
@@ -183,7 +187,7 @@ async function main () {
         const id = dpp.IdentifierWASM.fromBase58(inputs.b58)
         const roundTrip = dpp.IdentifierWASM.fromBytes(id.bytes()).base58()
         let initErr = null
-        try { await dpp.initShielded() } catch (e) { initErr = String(e) }
+        try { dpp.loadShielded() } catch (e) { initErr = String(e) }
         let builderErr = null
         try { await new dpp.ShieldedBuilderWASM().init() } catch (e) { builderErr = String(e) }
         let addrErr = null
@@ -205,15 +209,14 @@ async function main () {
       assert.equal(r.roundTrip, IDENTIFIER_B58)
       assert.match(r.initErr, /SharedArrayBuffer/)
       assert.match(r.initErr, /cross-origin isolation/)
-      assert.match(r.builderErr, /initShielded/)
-      assert.match(r.addrErr, /initShielded/)
+      assert.match(r.builderErr, /SharedArrayBuffer/)
+      assert.match(r.addrErr, /SharedArrayBuffer/)
       assert.deepEqual(r.compiles, [BASE_SIZE]) // only the base module compiled
-      assert.equal(shieldedRequests().length, 0) // shielded chunk never even fetched
       await page.close()
     })
 
     // ------------------------------------------------------------------ (b)
-    await run('(b) same-origin+require-corp: isolated, initShielded resolves, REAL proving + byte regression', async () => {
+    await run('(b) same-origin+require-corp: isolated, first use succeeds, REAL proving + byte regression', async () => {
       const page = await openPage('same-origin')
       const iso = await page.evaluate(() => ({ isolated: crossOriginIsolated, sab: typeof SharedArrayBuffer }))
       assert.equal(iso.isolated, true)
@@ -224,7 +227,6 @@ async function main () {
       // Real proving: Halo 2 proving key + 2 proofs on wasm thread workers.
       const browserResult = await page.evaluate(async (timeoutMs) => {
         const work = (async () => {
-          await window.__dpp.initShielded()
           return await window.__buildTransition()
         })()
         return await Promise.race([
@@ -235,7 +237,7 @@ async function main () {
       assert.equal(browserResult.roundTripIdentical, true)
       assert.ok(browserResult.workers.length > 0, 'wasm thread workers must have spawned')
       assert.ok(browserResult.workers.every((w) => w.startsWith('blob:')), 'workers spawn from Blob URLs')
-      assert.ok(browserResult.compiles.includes(SHIELDED_SIZE), 'shielded module compiled after initShielded')
+      assert.ok(browserResult.compiles.includes(SHIELDED_SIZE), 'shielded module compiled after loadShielded')
       // Byte regression vs native: deterministic fields only (proofs,
       // nullifiers and cmxs are OsRng-randomized — never compared literally).
       for (const field of DETERMINISTIC_FIELDS) {
@@ -275,9 +277,9 @@ async function main () {
       assert.equal(iso.isolated, false, 'current Chrome/Firefox: allow-popups does not grant crossOriginIsolated')
       assert.equal(iso.sab, 'undefined')
       const gate = await page.evaluate(async () => {
-        try { await window.__dpp.initShielded(); return null } catch (e) { return String(e) }
+        try { window.__dpp.loadShielded(); return null } catch (e) { return String(e) }
       })
-      assert.match(gate, /SharedArrayBuffer/, 'initShielded must reject without SAB even under allow-popups')
+      assert.match(gate, /SharedArrayBuffer/, 'loadShielded must reject without SAB even under allow-popups')
       // The crux: the opener KEEPS a live reference to the cross-origin popup.
       const popup = await openPopup(page)
       assert.equal(await page.evaluate(() => window.__popup.closed), false, 'popup.closed must stay false while the popup is open')
@@ -314,56 +316,29 @@ async function main () {
     })
 
     // ------------------------------------------------------------------ (d)
-    await run('(d) lazy: base import neither fetches nor compiles shielded; initShielded does both, once', async () => {
+    await run('(d) lazy: base import does not compile shielded; loadShielded compiles it, once', async () => {
       const page = await openPage('same-origin')
-      const reqsBefore = shieldedRequests().length
       const atImport = await page.evaluate(() => ({
         compiles: window.__wasmCompiles, workers: window.__workers.length
       }))
       assert.ok(atImport.compiles.includes(BASE_SIZE), 'base compiled at import')
       assert.ok(!atImport.compiles.includes(SHIELDED_SIZE), 'shielded NOT compiled at import')
       assert.equal(atImport.workers, 0, 'no workers at import')
-      assert.equal(shieldedRequests().length, reqsBefore, 'shielded chunk NOT fetched at import')
-      const r = await page.evaluate(async () => {
+      const r = await page.evaluate(() => {
         const dpp = window.__dpp
-        const p1 = dpp.initShielded()
-        const p2 = dpp.initShielded()
-        await p1
-        return { samePromise: p1 === p2, compiles: window.__wasmCompiles }
+        const i1 = dpp.loadShielded()
+        const i2 = dpp.loadShielded()
+        return { sameInstance: i1 === i2, compiles: window.__wasmCompiles }
       })
-      assert.equal(r.samePromise, true, 'concurrent/repeated initShielded shares one promise')
-      assert.ok(r.compiles.includes(SHIELDED_SIZE), 'shielded compiled after initShielded')
-      assert.equal(shieldedRequests().length - reqsBefore, 1, 'shielded chunk fetched exactly once')
+      assert.equal(r.sameInstance, true, 'repeated loadShielded returns the same cached instance')
+      assert.ok(r.compiles.includes(SHIELDED_SIZE), 'shielded compiled after loadShielded')
       await page.close()
     })
 
-    // ------------------------------------------------------------------ (e)
-    await run('(e) failure->retry: shielded chunk 500s once, initShielded rejects, retry succeeds (cache cleared)', async () => {
-      const page = await openPage('same-origin')
-      const reqsBefore = shieldedRequests().length
-      srv.failNextShieldedOnce()
-      const r = await page.evaluate(async () => {
-        const dpp = window.__dpp
-        const p1 = dpp.initShielded()
-        let err1 = null
-        try { await p1 } catch (e) { err1 = String((e && e.message) || e) }
-        const p2 = dpp.initShielded()
-        let err2 = null
-        try { await p2 } catch (e) { err2 = String((e && e.message) || e) }
-        let addrOk = false
-        try { dpp.OrchardAddressWASM.fromSeed(new Uint8Array(64).fill(7), 1, 0); addrOk = true } catch (e) {}
-        return { err1, err2, samePromise: p1 === p2, addrOk }
-      })
-      assert.ok(r.err1 != null, 'first initShielded must reject when the chunk fails to load')
-      assert.equal(r.err2, null, `retry must succeed, got: ${r.err2}`)
-      assert.equal(r.samePromise, false, 'failed promise must be cleared from the cache')
-      assert.equal(r.addrOk, true, 'shielded classes usable after retry')
-      const reqs = shieldedRequests().slice(reqsBefore)
-      assert.equal(reqs.length, 2, 'shielded chunk fetched twice (fail then retry)')
-      assert.deepEqual(reqs.map((x) => x.status), [500, 200])
-      console.log(`      first load rejected: ${r.err1.slice(0, 90)}...`)
-      await page.close()
-    })
+    // (e) failure->retry: loadShielded() caches the instance only on success, so
+    // a failed load (e.g. no SharedArrayBuffer) is not cached and a later retry
+    // loads again. With explicit injection there is no network chunk to 500; the
+    // SAB-gate behavior is covered by the no-isolation profiles above.
 
     // ------------------------------------------- Firefox cross-browser check
     // The COOP/popup mechanism is spec-defined; verify Firefox agrees on the

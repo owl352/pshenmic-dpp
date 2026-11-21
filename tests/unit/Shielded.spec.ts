@@ -1,3 +1,5 @@
+// Runs against the standalone dash-platform-shielded module; dpp itself is
+// base-only on every entry.
 import {
   ShieldedMemoWASM,
   OrchardAddressWASM,
@@ -15,15 +17,11 @@ import {
   PrivateKeyWASM,
   PlatformAddressWASM,
   ShieldTransitionWASM,
-  StateTransitionWASM,
-  initShielded
-} from 'pshenmic-dpp'
+  StateTransitionWASM
+} from '../utils/withShielded.js'
 
-// Entry-agnostic: no-op on the native addon, loads the shielded module on the
-// wasm entry (where the proving classes live behind initShielded()).
-beforeAll(async function () {
-  await initShielded()
-})
+// dpp is base-only on every entry: the proving classes live in the separate
+// dash-platform-shielded package, used directly here.
 
 // Deterministic 64-byte BIP-39-style seed. Orchard derives via ZIP-32
 // (m/32'/coinType'/account'), so any 64 bytes is a valid seed for derivation.
@@ -503,7 +501,7 @@ describe('SpendableNote', function () {
   })
 })
 
-describe('OrchardProver', function () {
+describe('ShieldedProver', function () {
   // Initializing the prover builds the Halo 2 proving key (~seconds).
   test('should construct a prover', async function () {
     const prover = new OrchardProverWASM()

@@ -10,39 +10,58 @@ import { IdentifierLike, PlatformAddressLike } from './types.js'
 import { IdentifierWASM } from './structs/Identifier.js'
 import { PlatformAddressWASM } from './structs/PlatformAddress/PlatformAddress.js'
 
+/** The DynamicValue constructor surface shared by the base and shielded instances **/
+interface DynamicValueCtor {
+  new (value: any): DynamicValue
+  fromBigIntString: (value: string) => DynamicValue
+  fromInt: (value: number) => DynamicValue
+  fromUInt: (value: number) => DynamicValue
+  fromFloat: (value: number) => DynamicValue
+}
+
 export function valueToDynamicValue (value: any): DynamicValue {
+  return wrapDynamicValue(value, dppProvider.dpp.DynamicValue, dppProvider.dpp.IdentifierNAPI)
+}
+
+
+
+function wrapDynamicValue (
+  value: any,
+  Ctor: DynamicValueCtor,
+  IdentifierNAPI?: new (...args: any[]) => any
+): DynamicValue {
   if (typeof value === 'bigint' || (value > UINT32MAX && typeof value !== 'string')) {
-    return dppProvider.dpp.DynamicValue.fromBigIntString(BigInt(value.toString() as BigIntString).toString())
-  } else if (value instanceof IdentifierWASM || value instanceof dppProvider.dpp.IdentifierNAPI) {
-    return new dppProvider.dpp.DynamicValue(value.bytes())
+    return Ctor.fromBigIntString(BigInt(value.toString() as BigIntString).toString())
+  } else if (value instanceof IdentifierWASM || (IdentifierNAPI != null && value instanceof IdentifierNAPI)) {
+    return new Ctor(value.bytes())
   } else if (value instanceof Uint8Array) {
-    return new dppProvider.dpp.DynamicValue(value)
+    return new Ctor(value)
   } else if (Array.isArray(value)) {
-    return new dppProvider.dpp.DynamicValue(value.map(valueToDynamicValue))
+    return new Ctor(value.map(v => wrapDynamicValue(v, Ctor, IdentifierNAPI)))
   } else if (typeof value === 'object' && value !== null) {
     const keys = Object.keys(value)
     const objectWithDynamicValue: { [key: string]: DynamicValue } = Object.assign({}, value)
 
     for (const key of keys) {
-      objectWithDynamicValue[key] = valueToDynamicValue(value[key])
+      objectWithDynamicValue[key] = wrapDynamicValue(value[key], Ctor, IdentifierNAPI)
     }
 
-    return new dppProvider.dpp.DynamicValue(objectWithDynamicValue)
+    return new Ctor(objectWithDynamicValue)
   } else if (typeof value === 'function') {
     throw new Error('Cannot parse value from function')
   } if (typeof value === 'number') {
     // we cannot strongly pass uint or float without js layer check
     if (Number.isInteger(value)) {
       if (value > 4294967295 || value < 0) {
-        return dppProvider.dpp.DynamicValue.fromInt(value)
+        return Ctor.fromInt(value)
       } else {
-        return dppProvider.dpp.DynamicValue.fromUInt(value)
+        return Ctor.fromUInt(value)
       }
     } else {
-      return dppProvider.dpp.DynamicValue.fromFloat(value)
+      return Ctor.fromFloat(value)
     }
   } else {
-    return new dppProvider.dpp.DynamicValue(value)
+    return new Ctor(value)
   }
 }
 

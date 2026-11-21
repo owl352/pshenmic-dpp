@@ -1,8 +1,9 @@
 import * as protocol from "./wasmCreation.cjs";
 /* exports here */ = protocol.default;
 
-// On-demand shielded (threaded proving) loading lives in src/dpp/shielded.ts:
-// initShielded() (exported from the package entry, src/wasm.ts) gates on
-// SharedArrayBuffer, lazily imports ./shieldedCreation.cjs, calls loadShielded()
-// and installs the result as dppProvider.shielded. The shielded bytes are only
-// decoded / compiled when proving is actually requested, never at import time.
+// Shielded (threaded proving) wiring lives in src/dpp/shielded.ts:
+// setShielded() (exported from the package entry, src/wasm.ts) installs the
+// proving module exported by dash-platform-shielded. The consumer wires the two
+// packages explicitly — setShielded(shielded) — with static imports, so no global
+// registry is involved. The default orchard entry is eager; use
+// dash-platform-shielded/lazy + loadShielded() when the load must be deferred.

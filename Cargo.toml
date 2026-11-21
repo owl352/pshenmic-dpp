@@ -1,27 +1,11 @@
 [package]
 name = "pshenmic-dpp"
 authors = ["owl352 <kokosinca123@gmail.com>"]
-version = "3.0.0-dev.0"
+version = "2.1.0-dev.1"
 edition = "2024"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-
-[features]
-default = ["proving"]
-# The Orchard proving stack is optional: grovedb-commitment-tree (directly and
-# via dpp/shielded-client) pulls orchard's default `multicore` feature, which
-# cannot compile on non-threaded wasm32. The base build
-# (--no-default-features) must cut BOTH entry points or feature unification
-# re-adds the subtree.
-proving = [
-    "dpp/shielded-client",
-    "dep:grovedb-commitment-tree",
-    "dep:zip32",
-    "dep:indexmap1",
-    "dep:rand",
-    "dep:async-trait",
-]
 
 [dependencies]
 dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", default-features = false, features = [
@@ -35,28 +19,13 @@ dpp = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", defaul
 drive = { git = "https://github.com/dashpay/platform", tag = "v5.0.0-rc.8", default-features = false, features = [
     "verify"
 ] }
-grovedb-commitment-tree = { git = "https://github.com/dashpay/grovedb", rev = "2128ea18f9b1c2f9502f99967b1b1c6485c91f8b", features = ["client"], optional = true }
 indexmap = "2.0.2"
-# ZIP-32 AccountId for Orchard key derivation from a seed (matches the version
-# the orchard fork uses, so it unifies to a single crate instance).
-zip32 = { version = "=0.2.1", optional = true }
-# halo2_proofs pins indexmap 1.x and gates RandomState/`IndexMap::new()` behind
-# `#[cfg(has_std)]`, which its build.rs only auto-detects on native. Force the
-# `std` feature on so it compiles for the wasm target too.
-indexmap1 = { package = "indexmap", version = "=1.9.3", features = ["std"], optional = true }
 napi = {version = "=3.11.0", features = ["napi3", "async"], default-features = false}
 napi-derive = "=3.6.0"
-# Multi-output shielded transfers rebuild the Orchard prove/sign pipeline
-# locally (dpp's helper is `pub(crate)`), which needs an `OsRng` from the same
-# rand version orchard is built against.
-rand = { version = "0.8.5", optional = true }
 serde = "1.0"
 serde_json = { version = "1.0", features = ["preserve_order"] }
 hex = "0.4.3"
 sha2 = "0.10.8"
-# Used by the shielded signer: private-key-backed `Signer` impls (async-trait)
-# consumed by the Orchard builder.
-async-trait = { version = "0.1", optional = true }
 
 
 [build-dependencies]
@@ -72,78 +41,14 @@ panic = "abort"
 incremental = false
 debug = false
 
-# The wasm build must stay under Chrome's 8MB main-thread sync-compile limit
-# (see build.cjs), so dependencies optimize for minimal size. The Orchard/Halo 2
-# proving stack keeps opt-level 3, where proving time is spent.
+# The base wasm build must stay under Chrome's 8MB main-thread sync-compile
+# limit (see build.cjs), so dependencies optimize for minimal size. The proving
+# stack lives in the separate dash-platform-shielded package, not here.
 [profile.release-wasm]
 inherits = "release"
 opt-level = "z"
 
-# Fat LTO optimizes the whole linked module at the root crate's opt-level: at
-# "z" it slows proving ~7% even with the proving crates at 3, at "s" it doesn't
-# (~260KB smaller than "s" everywhere, same proving time).
+# Fat LTO optimizes the whole linked module at the root crate's opt-level; "s"
+# keeps the base module small without the size penalty of "z" everywhere.
 [profile.release-wasm.package.pshenmic-dpp]
 opt-level = "s"
-
-[profile.release-wasm.package.halo2_proofs]
-opt-level = 3
-
-[profile.release-wasm.package.halo2_gadgets]
-opt-level = 3
-
-[profile.release-wasm.package.halo2_poseidon]
-opt-level = 3
-
-[profile.release-wasm.package.orchard]
-opt-level = 3
-
-[profile.release-wasm.package.pasta_curves]
-opt-level = 3
-
-[profile.release-wasm.package.ff]
-opt-level = 3
-
-[profile.release-wasm.package.group]
-opt-level = 3
-
-[profile.release-wasm.package.sinsemilla]
-opt-level = 3
-
-[profile.release-wasm.package.reddsa]
-opt-level = 3
-
-[profile.release-wasm.package.blake2b_simd]
-opt-level = 3
-
-[profile.release-wasm.package.rayon]
-opt-level = 3
-
-[profile.release-wasm.package."rayon-core"]
-opt-level = 3
-
-[profile.release-wasm.package.subtle]
-opt-level = 3
-
-[profile.release-wasm.package.bitvec]
-opt-level = 3
-
-[profile.release-wasm.package.incrementalmerkletree]
-opt-level = 3
-
-[profile.release-wasm.package.zcash_note_encryption]
-opt-level = 3
-
-[profile.release-wasm.package."grovedb-commitment-tree"]
-opt-level = 3
-
-[profile.release-wasm.package.chacha20]
-opt-level = 3
-
-[profile.release-wasm.package.chacha20poly1305]
-opt-level = 3
-
-[profile.release-wasm.package.aes]
-opt-level = 3
-
-[profile.release-wasm.package.fpe]
-opt-level = 3

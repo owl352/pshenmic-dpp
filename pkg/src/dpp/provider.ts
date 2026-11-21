@@ -3,7 +3,6 @@ import { DashPlatformProtocol } from '../dpp/types.js'
 class DppProvider {
   private static instance?: DppProvider
   private _dpp: DashPlatformProtocol | null = null
-  private _shielded: DashPlatformProtocol | null = null
 
   private constructor () {}
 
@@ -23,22 +22,6 @@ class DppProvider {
       throw new Error('DashPlatformProtocol (dpp) has not been set. Call setDpp() before using SDK classes.')
     }
     return this._dpp
-  }
-
-  setShielded (shielded: DashPlatformProtocol): void {
-    this._shielded = shielded
-  }
-
-  /**
-   * The shielded (threaded Orchard/Halo 2 proving) module. On the wasm entry
-   * it is loaded on demand by initShielded(); the native entry sets it at
-   * import (the addon carries every class in one instance).
-   */
-  get shielded (): DashPlatformProtocol {
-    if (this._shielded == null) {
-      throw new Error('The shielded (proving) module has not been loaded. Call initShielded() first.')
-    }
-    return this._shielded
   }
 }
 

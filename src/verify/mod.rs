@@ -7,7 +7,6 @@ pub mod document;
 pub mod identity;
 pub mod plain;
 pub mod platform_address;
-pub mod shielded;
 pub mod signature_digest;
 pub mod state_transition;
 pub mod system;

@@ -37,19 +37,15 @@ import {
   TokenTransitionWASM,
   TokenUnshieldWithShieldedFeeTransitionWASM,
   UnshieldTransitionWASM,
-  initShielded,
   orchardOvkFromSeed
-} from 'pshenmic-dpp/wasm'
+} from '../utils/withShieldedWasm.js'
 
-// Every builder method that crosses the base <-> shielded instance boundary,
-// exercised through the WASM entry (pshenmic-dpp/wasm) after initShielded().
+// Every builder method, exercised through the WASM base entry
+// (pshenmic-dpp/wasm) with the standalone dash-platform-shielded package.
 // The native suites (ShieldedBuilderV5 / ShieldedBuilderBoundary / Shielded)
-// resolve to the single-instance addon and are structurally blind to
-// cross-instance wrapped-object leaks; this suite runs against the actual
-// split, so any base-kept class passed as a wrapped napi object (instead of
-// bytes) into the shielded instance fails here. Fixtures are created AFTER
-// initShielded() — never at collection time — because the shielded classes
-// (OrchardAddress, Note, CommitmentTree, ...) only exist once it resolves.
+// use dpp's native entry; this one pins that the wasm base values interop with
+// the shielded package (which loads its own native addon on Node). Fixtures are
+// created after the builder's init().
 
 const SEED = new Uint8Array(64)
 for (let i = 0; i < 64; i++) SEED[i] = (i * 7 + 1) & 0xff
@@ -126,7 +122,6 @@ describe('ShieldedBuilder cross-boundary (wasm entry)', function () {
   }
 
   beforeAll(async function () {
-    await initShielded()
     builder = new ShieldedBuilderWASM()
     await builder.init()
     address = OrchardAddressWASM.fromSeed(SEED, COIN_TYPE, ACCOUNT)

@@ -20,16 +20,18 @@ import {
   verifyFullIdentityByNonUniquePublicKeyHashTwoProofs,
   verifyHavingDocumentsProof,
   verifyIdentityKeysRemainingBudgetsProof,
-  verifyMostRecentShieldedAnchorProof,
   verifyPathElementsProof,
   verifyRankedDocumentsProof,
+  verifyVotePollsByEndDateProof
+} from 'pshenmic-dpp'
+import {
+  verifyMostRecentShieldedAnchorProof,
   verifyShieldedAnchorsProof,
   verifyShieldedEncryptedNotesProof,
   verifyShieldedNotesCountProof,
   verifyShieldedNullifiersProof,
-  verifyShieldedPoolStateProof,
-  verifyVotePollsByEndDateProof
-} from 'pshenmic-dpp'
+  verifyShieldedPoolStateProof
+} from 'dash-platform-shielded'
 
 const OWNER_ID = 'HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr'
 const CONTRACT_ID = 'GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec'
@@ -184,8 +186,8 @@ describe('Platform v5 verify', function () {
     test('should reject a malformed token id', function () {
       const badTokenId = new Uint8Array(31)
 
-      expect(() => verifyShieldedPoolStateProof(BAD_PROOF, false, V14, badTokenId)).toThrow('Identifier must be 32 bytes long')
-      expect(() => verifyShieldedNullifiersProof(BAD_PROOF, [new Uint8Array(32)], false, V14, badTokenId)).toThrow('Identifier must be 32 bytes long')
+      expect(() => verifyShieldedPoolStateProof(BAD_PROOF, false, V14, badTokenId)).toThrow('tokenId must be 32 bytes length')
+      expect(() => verifyShieldedNullifiersProof(BAD_PROOF, [new Uint8Array(32)], false, V14, badTokenId)).toThrow('tokenId must be 32 bytes length')
     })
   })
 
