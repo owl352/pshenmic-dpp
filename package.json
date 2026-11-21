@@ -15,7 +15,7 @@
     "build:full": "npm run build:bin && npm run build:ts",
     "ferric:build": "ferric build",
     "bundle": "rollup -c",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:e2e": "node tests/e2e/isolation.spec.mjs",
     "docs": "typedoc",
     "lint:rust": "cargo fmt",
@@ -70,7 +70,7 @@
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
     "wasm-opt": "^1.4.0",
-    "dash-platform-shielded": "file:../../pshenmic-orchard"
+    "dash-platform-shielded": "0.0.1"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",

@@ -12,13 +12,11 @@ import {
   IdentityKeyLimitsUpdateTransitionWASM,
   IdentityPublicKeyInCreationWASM,
   IdentityPublicKeyWASM,
-  IdentityTopUpFromShieldedPoolTransitionWASM,
   KeyType,
   PlatformVersionWASM,
   Purpose,
   SecurityLevel,
   SerializedActionWASM,
-  ShieldFromIdentityTransitionWASM,
   StateTransitionWASM,
   TokenBaseTransitionWASM,
   TokenBurnFromPoolTransitionWASM,
@@ -27,15 +25,19 @@ import {
   TokenDistributionRulesWASM,
   TokenMintToPoolTransitionWASM,
   TokenPaymentInfoWASM,
-  TokenPurchaseFromShieldedPoolTransitionWASM,
   TokenShieldedPaymentWASM,
   TokenShieldedTransferTransitionWASM,
-  TokenShieldedTransferWithShieldedFeeTransitionWASM,
   TokenShieldTransitionWASM,
   TokenTransitionWASM,
-  TokenUnshieldTransitionWASM,
-  TokenUnshieldWithShieldedFeeTransitionWASM
+  TokenUnshieldTransitionWASM
 } from 'pshenmic-dpp'
+import {
+  IdentityTopUpFromShieldedPoolTransitionWASM,
+  ShieldFromIdentityTransitionWASM,
+  TokenPurchaseFromShieldedPoolTransitionWASM,
+  TokenShieldedTransferWithShieldedFeeTransitionWASM,
+  TokenUnshieldWithShieldedFeeTransitionWASM
+} from '../utils/withShielded.js'
 import { buildChangeControlRules } from './utils/buildTokenConfiguration.js'
 
 const OWNER_ID = 'HEAmUtC72dPcZ59yyLUgfS8pfrEWqzYfDPzTofgWxXRr'

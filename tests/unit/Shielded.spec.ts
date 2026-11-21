@@ -1,5 +1,5 @@
-// Imports the shielded module and provides it to dpp
-// explicitly via setShielded() (dpp itself is base-only on every entry).
+// Runs against the standalone dash-platform-shielded module; dpp itself is
+// base-only on every entry.
 import {
   ShieldedMemoWASM,
   OrchardAddressWASM,
@@ -21,9 +21,7 @@ import {
 } from '../utils/withShielded.js'
 
 // dpp is base-only on every entry: the proving classes live in the separate
-// dash-platform-shielded module, provided explicitly via setShielded(shielded).
-beforeAll(async function () {
-})
+// dash-platform-shielded package, used directly here.
 
 // Deterministic 64-byte BIP-39-style seed. Orchard derives via ZIP-32
 // (m/32'/coinType'/account'), so any 64 bytes is a valid seed for derivation.

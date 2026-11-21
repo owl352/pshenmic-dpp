@@ -18,7 +18,7 @@ import {
 // into the SHIELDED instance (and vice versa). Everything crossing the boundary
 // must be BYTES. The native suites (ShieldedBuilderBoundary etc.) resolve to the
 // single-instance addon and are blind to this — these tests run through
-// pshenmic-dpp/wasm after setShielded(), i.e. against the actual split.
+// pshenmic-dpp/wasm against the standalone shielded package.
 
 const SEED = new Uint8Array(64)
 for (let i = 0; i < 64; i++) SEED[i] = (i * 7 + 1) & 0xff

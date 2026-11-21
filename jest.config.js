@@ -3,8 +3,8 @@ export default {
   // Browser e2e (playwright) runs via `npm run test:e2e`, not jest.
   testPathIgnorePatterns: ['<rootDir>/tests/e2e/'],
   moduleNameMapper: {
-    // Proving lives in the separate dash-platform-shielded repo (devDependency,
-    // symlinked into node_modules). Resolve its eager entry and lazy subpath.
+    // Proving lives in the separate dash-platform-shielded package
+    // (devDependency). Resolve its eager entry and lazy subpath.
     '^dash-platform-shielded$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/index.js',
     '^dash-platform-shielded/lazy$': '<rootDir>/node_modules/dash-platform-shielded/dist/src/lazy.js',
     '^(\\.\\.?\\/.+)\\.js$': '$1'

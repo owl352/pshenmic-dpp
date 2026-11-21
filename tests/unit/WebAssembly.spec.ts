@@ -49,7 +49,7 @@ describe("dpp", function () {
 
   describe('shielded init', function () {
     // The base wasm (loaded at import) has no proving classes: the threaded
-    // shielded module is provided via setShielded(shielded) (wasm path SAB-gated).
+    // shielded module is provided by the standalone dash-platform-shielded module.
 
     // init() builds the Halo 2 proving key on a single wasm thread; on 4-vCPU CI
     // runners it competes with the native proving suites (ShieldedBuilderV5)

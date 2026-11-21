@@ -1,5 +1,5 @@
-// Imports the shielded module and provides it to dpp
-// explicitly via setShielded() (dpp itself is base-only on every entry).
+// Runs against the standalone dash-platform-shielded module; dpp itself is
+// base-only on every entry.
 import {
   BatchTransitionWASM,
   CommitmentTreeWASM,
@@ -68,12 +68,10 @@ function tokenTransitionOf (stateTransition: StateTransitionWASM): TokenTransiti
 }
 
 // dpp is base-only on every entry: the proving classes live in the separate
-// dash-platform-shielded module, provided explicitly via setShielded(shielded).
-beforeAll(async function () {
-})
+// dash-platform-shielded package, used directly here.
 
 describe('ShieldedBuilder v5', function () {
-  // Fixtures are created AFTER setShielded() — never at collection time —
+  // Fixtures are created after builder init() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves.
   let address: OrchardAddressWASM

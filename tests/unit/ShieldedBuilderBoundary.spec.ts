@@ -1,5 +1,5 @@
-// Imports the shielded module and provides it to dpp
-// explicitly via setShielded() (dpp itself is base-only on every entry).
+// Runs against the standalone dash-platform-shielded module; dpp itself is
+// base-only on every entry.
 import {
   AssetLockProofWASM,
   CommitmentTreeWASM,
@@ -72,7 +72,7 @@ function expectByteRoundTrip (st: StateTransitionWASM): void {
 }
 
 describe('ShieldedBuilder boundary', function () {
-  // Fixtures are created AFTER setShielded() — never at collection time —
+  // Fixtures are created after builder init() — never at collection time —
   // because the shielded classes (OrchardAddress, ...) only exist once it
   // resolves. beforeAll (not top-level await) keeps both jest modes working.
   let address: OrchardAddressWASM

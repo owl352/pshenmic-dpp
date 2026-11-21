@@ -23,7 +23,7 @@ import {
 } from '../utils/withShielded.js'
 
 // BASE-only suite: SerializedAction + the shielded transitions are kept in the
-// base module on every entry, so no shielded import / setShielded() is needed.
+// base module on every entry, so no proving module is needed.
 
 function randomBytes (length: number): Uint8Array {
   const bytes = new Uint8Array(length)
