@@ -1,5 +1,6 @@
 pub mod identity_create_from_shielded_pool;
 pub mod identity_top_up_from_shielded_pool;
+pub mod private_document_create_from_shielded_pool;
 pub mod shield_from_asset_lock;
 pub mod shield_from_identity;
 pub mod shield_transition;

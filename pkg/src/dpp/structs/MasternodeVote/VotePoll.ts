@@ -3,6 +3,7 @@ import { IdentifierLike } from '../../types.js'
 import { dppProvider } from '../../provider.js'
 import { prepareIdentifierValue, valueToDynamicValue } from '../../utils.js'
 import { IdentifierWASM } from '../Identifier.js'
+import { YesNoMinimumVotingPowerWASM } from './YesNoMinimumVotingPower.js'
 
 export class VotePollWASM {
   /** @private **/
@@ -15,6 +16,26 @@ export class VotePollWASM {
       indexName,
       valueToDynamicValue(indexValues)
     )
+  }
+
+  get kind (): 'contestedDocumentResourceVotePoll' | 'yesNoVotePoll' {
+    return this._rawVotePollWASM.kind as 'contestedDocumentResourceVotePoll' | 'yesNoVotePoll'
+  }
+
+  get purposeDocumentId (): IdentifierWASM {
+    return IdentifierWASM.createFromRawInstance(this._rawVotePollWASM.purposeDocumentId)
+  }
+
+  get supermajorityNumerator (): number {
+    return this._rawVotePollWASM.supermajorityNumerator
+  }
+
+  get supermajorityDenominator (): number {
+    return this._rawVotePollWASM.supermajorityDenominator
+  }
+
+  get minimumVotingPower (): YesNoMinimumVotingPowerWASM {
+    return YesNoMinimumVotingPowerWASM.createFromRawInstance(this._rawVotePollWASM.minimumVotingPower)
   }
 
   get contractId (): IdentifierWASM {
@@ -57,7 +78,24 @@ export class VotePollWASM {
     return this._rawVotePollWASM.bytes()
   }
 
-  static fromBytes(bytes: Uint8Array): VotePollWASM {
+  /** A yes/no poll a decision proposal opens (protocol version 15). */
+  static fromYesNoDecisionProposal (
+    documentId: IdentifierLike,
+    supermajorityNumerator: number,
+    supermajorityDenominator: number,
+    minimumVotingPower: YesNoMinimumVotingPowerWASM
+  ): VotePollWASM {
+    return VotePollWASM.createFromRawInstance(
+      dppProvider.dpp.VotePollNAPI.fromYesNoDecisionProposal(
+        prepareIdentifierValue(documentId),
+        supermajorityNumerator,
+        supermajorityDenominator,
+        minimumVotingPower._rawYesNoMinimumVotingPower
+      )
+    )
+  }
+
+  static fromBytes (bytes: Uint8Array): VotePollWASM {
     const instance = dppProvider.dpp.VotePollNAPI.fromBytes(bytes)
 
     return VotePollWASM.createFromRawInstance(instance)

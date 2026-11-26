@@ -174,7 +174,7 @@ struct AggregateEntryJs<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     count: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    sum: Option<i64>,
+    sum: Option<i128>,
 }
 
 #[derive(serde::Serialize)]
@@ -211,7 +211,7 @@ fn average_entry(entry: &AverageEntry) -> AggregateEntryJs<'_> {
     }
 }
 
-fn single_entry(count: Option<u64>, sum: Option<i64>) -> Vec<AggregateEntryJs<'static>> {
+fn single_entry(count: Option<u64>, sum: Option<i128>) -> Vec<AggregateEntryJs<'static>> {
     vec![AggregateEntryJs {
         in_key: None,
         key: Bytes(&[]),

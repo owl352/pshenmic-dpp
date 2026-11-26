@@ -4,11 +4,13 @@ use dpp::platform_value::string_encoding::encode;
 use dpp::serialization::{PlatformDeserializableTrusted, PlatformSerializable};
 use dpp::voting::vote_polls::VotePoll;
 use dpp::voting::vote_polls::contested_document_resource_vote_poll::ContestedDocumentResourceVotePoll;
+use dpp::voting::vote_polls::yes_no_vote_poll::{YesNoVotePoll, YesNoVotePollPurpose};
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
 
 use crate::dynamic_value::{DynamicValue, IdentifierLikeNAPI};
 use crate::identifier::IdentifierNAPI;
+use crate::masternode_vote::yes_no_minimum_voting_power::YesNoMinimumVotingPowerNAPI;
 use crate::utils::WithJsError;
 
 #[derive(Clone)]
@@ -27,8 +29,23 @@ impl From<VotePollNAPI> for VotePoll {
     }
 }
 
+fn not_a_contested_poll() -> napi::Error {
+    napi::Error::new(
+        napi::Status::InvalidArg,
+        "this vote poll is a yes/no vote poll, not a contested document resource vote poll",
+    )
+}
+
+fn not_a_yes_no_poll() -> napi::Error {
+    napi::Error::new(
+        napi::Status::InvalidArg,
+        "this vote poll is a contested document resource vote poll, not a yes/no vote poll",
+    )
+}
+
 #[napi]
 impl VotePollNAPI {
+    /// A contested document resource vote poll (protocol version 3 and later).
     #[napi(constructor)]
     pub fn new(
         js_contract_id: IdentifierLikeNAPI,
@@ -61,6 +78,36 @@ impl VotePollNAPI {
         )))
     }
 
+    /// A yes/no poll a decision proposal opens (protocol version 15). The poll's id
+    /// is derived from the proposal document id alone.
+    #[napi(js_name = "fromYesNoDecisionProposal")]
+    pub fn from_yes_no_decision_proposal(
+        js_document_id: IdentifierLikeNAPI,
+        supermajority_numerator: u8,
+        supermajority_denominator: u8,
+        minimum_voting_power: &YesNoMinimumVotingPowerNAPI,
+    ) -> Result<Self, napi::Error> {
+        Ok(VotePollNAPI(VotePoll::YesNoVotePoll(YesNoVotePoll {
+            purpose: YesNoVotePollPurpose::DecisionProposal {
+                document_id: IdentifierNAPI::try_from(js_document_id)?.into(),
+            },
+            supermajority_numerator,
+            supermajority_denominator,
+            minimum_voting_power: minimum_voting_power.clone().into(),
+        })))
+    }
+
+    /// `contestedDocumentResourceVotePoll` or `yesNoVotePoll`.
+    #[napi(getter, js_name = "kind")]
+    pub fn kind(&self) -> String {
+        match &self.0 {
+            VotePoll::ContestedDocumentResourceVotePoll(_) => {
+                "contestedDocumentResourceVotePoll".to_string()
+            }
+            VotePoll::YesNoVotePoll(_) => "yesNoVotePoll".to_string(),
+        }
+    }
+
     #[napi(js_name = "fromBytes")]
     pub fn from_bytes(bytes: Uint8Array) -> Result<Self, napi::Error> {
         Ok(VotePollNAPI(
@@ -79,23 +126,26 @@ impl VotePollNAPI {
     }
 
     #[napi(getter, js_name = "contractId")]
-    pub fn contract_id(&self) -> IdentifierNAPI {
+    pub fn contract_id(&self) -> Result<IdentifierNAPI, napi::Error> {
         match self.0.clone() {
-            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll.contract_id.into(),
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => Ok(poll.contract_id.into()),
+            VotePoll::YesNoVotePoll(_) => Err(not_a_contested_poll()),
         }
     }
 
     #[napi(getter, js_name = "documentTypeName")]
-    pub fn document_type_name(&self) -> String {
+    pub fn document_type_name(&self) -> Result<String, napi::Error> {
         match self.0.clone() {
-            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll.document_type_name.into(),
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => Ok(poll.document_type_name),
+            VotePoll::YesNoVotePoll(_) => Err(not_a_contested_poll()),
         }
     }
 
     #[napi(getter, js_name = "indexName")]
-    pub fn index_name(&self) -> String {
+    pub fn index_name(&self) -> Result<String, napi::Error> {
         match self.0.clone() {
-            VotePoll::ContestedDocumentResourceVotePoll(poll) => poll.index_name.into(),
+            VotePoll::ContestedDocumentResourceVotePoll(poll) => Ok(poll.index_name),
+            VotePoll::YesNoVotePoll(_) => Err(not_a_contested_poll()),
         }
     }
 
@@ -127,6 +177,42 @@ impl VotePollNAPI {
                     })
                     .collect())
             }
+            VotePoll::YesNoVotePoll(_) => Err(not_a_contested_poll()),
+        }
+    }
+
+    /// The proposal document id of a yes/no decision proposal poll.
+    #[napi(getter, js_name = "purposeDocumentId")]
+    pub fn purpose_document_id(&self) -> Result<IdentifierNAPI, napi::Error> {
+        match &self.0 {
+            VotePoll::YesNoVotePoll(poll) => match poll.purpose {
+                YesNoVotePollPurpose::DecisionProposal { document_id } => Ok(document_id.into()),
+            },
+            VotePoll::ContestedDocumentResourceVotePoll(_) => Err(not_a_yes_no_poll()),
+        }
+    }
+
+    #[napi(getter, js_name = "supermajorityNumerator")]
+    pub fn supermajority_numerator(&self) -> Result<u8, napi::Error> {
+        match &self.0 {
+            VotePoll::YesNoVotePoll(poll) => Ok(poll.supermajority_numerator),
+            VotePoll::ContestedDocumentResourceVotePoll(_) => Err(not_a_yes_no_poll()),
+        }
+    }
+
+    #[napi(getter, js_name = "supermajorityDenominator")]
+    pub fn supermajority_denominator(&self) -> Result<u8, napi::Error> {
+        match &self.0 {
+            VotePoll::YesNoVotePoll(poll) => Ok(poll.supermajority_denominator),
+            VotePoll::ContestedDocumentResourceVotePoll(_) => Err(not_a_yes_no_poll()),
+        }
+    }
+
+    #[napi(getter, js_name = "minimumVotingPower")]
+    pub fn minimum_voting_power(&self) -> Result<YesNoMinimumVotingPowerNAPI, napi::Error> {
+        match &self.0 {
+            VotePoll::YesNoVotePoll(poll) => Ok(poll.minimum_voting_power.into()),
+            VotePoll::ContestedDocumentResourceVotePoll(_) => Err(not_a_yes_no_poll()),
         }
     }
 
@@ -143,31 +229,41 @@ impl VotePollNAPI {
 
                 VotePoll::ContestedDocumentResourceVotePoll(poll)
             }
+            VotePoll::YesNoVotePoll(_) => return Err(not_a_contested_poll()),
         };
 
         Ok(())
     }
 
     #[napi(setter, js_name = "documentTypeName")]
-    pub fn set_document_type_name(&mut self, document_type_name: String) {
+    pub fn set_document_type_name(
+        &mut self,
+        document_type_name: String,
+    ) -> Result<(), napi::Error> {
         self.0 = match self.0.clone() {
             VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {
                 poll.document_type_name = document_type_name;
 
                 VotePoll::ContestedDocumentResourceVotePoll(poll)
             }
-        }
+            VotePoll::YesNoVotePoll(_) => return Err(not_a_contested_poll()),
+        };
+
+        Ok(())
     }
 
     #[napi(setter, js_name = "indexName")]
-    pub fn set_index_name(&mut self, index_name: String) {
+    pub fn set_index_name(&mut self, index_name: String) -> Result<(), napi::Error> {
         self.0 = match self.0.clone() {
             VotePoll::ContestedDocumentResourceVotePoll(mut poll) => {
                 poll.index_name = index_name;
 
                 VotePoll::ContestedDocumentResourceVotePoll(poll)
             }
+            VotePoll::YesNoVotePoll(_) => return Err(not_a_contested_poll()),
         };
+
+        Ok(())
     }
 
     #[napi(setter, js_name = "indexValues")]
@@ -191,6 +287,7 @@ impl VotePollNAPI {
 
                 VotePoll::ContestedDocumentResourceVotePoll(poll)
             }
+            VotePoll::YesNoVotePoll(_) => return Err(not_a_contested_poll()),
         };
 
         Ok(())

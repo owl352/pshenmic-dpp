@@ -24,10 +24,19 @@ impl TokenTradeModeNAPI {
         TokenTradeModeNAPI(TokenTradeMode::NotTradeable)
     }
 
+    /// Holders may list the token and make offers for it. Admitted from protocol
+    /// version 16: earlier versions refuse a contract or a configuration update
+    /// that uses it.
+    #[napi(js_name = "Tradeable")]
+    pub fn tradeable() -> TokenTradeModeNAPI {
+        TokenTradeModeNAPI(TokenTradeMode::Tradeable)
+    }
+
     #[napi(js_name = "getValue")]
     pub fn get_value(&self) -> String {
         match self.0 {
             TokenTradeMode::NotTradeable => String::from("NotTradeable"),
+            TokenTradeMode::Tradeable => String::from("Tradeable"),
         }
     }
 }

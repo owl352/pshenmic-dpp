@@ -13,9 +13,11 @@ use dpp::state_transition::batch_transition::document_base_transition::v1::Docum
 use dpp::state_transition::batch_transition::document_base_transition::v2::DocumentBaseTransitionV2;
 use dpp::state_transition::batch_transition::document_create_transition::DocumentCreateTransitionV0;
 use dpp::state_transition::batch_transition::document_delete_transition::DocumentDeleteTransitionV0;
+use dpp::state_transition::batch_transition::document_erase_transition::DocumentEraseTransitionV0;
 use dpp::state_transition::batch_transition::document_replace_transition::DocumentReplaceTransitionV0;
 use dpp::state_transition::batch_transition::{
-    DocumentCreateTransition, DocumentDeleteTransition, DocumentReplaceTransition,
+    DocumentCreateTransition, DocumentDeleteTransition, DocumentEraseTransition,
+    DocumentReplaceTransition,
 };
 
 use crate::batch::action_fee_agreement::DocumentActionFeeAgreementNAPI;
@@ -85,6 +87,24 @@ pub fn generate_delete_transition(
     action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
 ) -> DocumentDeleteTransition {
     DocumentDeleteTransition::V0(DocumentDeleteTransitionV0 {
+        base: generate_base_transition(
+            document,
+            identity_contract_nonce,
+            document_type_name,
+            token_payment_info,
+            action_fee_agreement,
+        ),
+    })
+}
+
+pub fn generate_erase_transition(
+    document: &DocumentNAPI,
+    identity_contract_nonce: IdentityNonce,
+    document_type_name: String,
+    token_payment_info: Option<&TokenPaymentInfoNAPI>,
+    action_fee_agreement: Option<&DocumentActionFeeAgreementNAPI>,
+) -> DocumentEraseTransition {
+    DocumentEraseTransition::V0(DocumentEraseTransitionV0 {
         base: generate_base_transition(
             document,
             identity_contract_nonce,

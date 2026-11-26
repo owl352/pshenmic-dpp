@@ -1,4 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
 use dpp::platform_value::string_encoding::{decode, encode};
 use dpp::serialization::{PlatformDeserializableUntrusted, PlatformSerializable};
 use dpp::{
@@ -291,10 +290,9 @@ impl IdentityPublicKeyNAPI {
             .0
             .public_key_hash()
             .with_js_error()
-            .map(|slice| slice.to_vec())?
-            .to_hex_string(Case::Lower);
+            .map(|slice| slice.to_vec())?;
 
-        Ok(hash)
+        Ok(hex::encode(hash))
     }
 
     #[napi(js_name = "isMaster")]
