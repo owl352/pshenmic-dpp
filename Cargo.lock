@@ -1697,7 +1697,7 @@ dependencies = [
 
 [[package]]
 name = "pshenmic-dpp"
-version = "2.1.0-dev.1"
+version = "2.1.0"
 dependencies = [
  "dpp",
  "drive",
