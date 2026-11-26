@@ -23,13 +23,16 @@ const wasmProfile = isRelease ? "release-wasm" : buildProfile;
 // The base binary is sync-compiled there at import time, so it must stay
 // under this limit.
 const CHROME_SYNC_COMPILE_LIMIT = 8 * 1024 * 1024;
-// The BASE wasm is non-threaded: no build-std/atomics/tokio_unstable needed, so
-// it builds on stable. Fall back to the pinned nightly-2026-08-15 (still no
-// build-std/atomics) if stable ever fails; BASE_WASM_TOOLCHAIN pins a single
-// toolchain for reproducibility.
+// The BASE wasm is non-threaded. It is built with the pinned nightly and
+// `-Z build-std` so std is linked under the same fat LTO as the crate, plus
+// `panic_immediate_abort` to drop panic formatting/messages (the release
+// profile already uses panic=abort, so runtime behaviour is unchanged).
+// Fall back to stable without build-std if the nightly is unavailable or its
+// build-std link fails; BASE_WASM_TOOLCHAIN pins a single toolchain for
+// reproducibility.
 const baseWasmToolchains = process.env.BASE_WASM_TOOLCHAIN
   ? [process.env.BASE_WASM_TOOLCHAIN]
-  : ["stable", "nightly-2026-08-15"];
+  : ["nightly-2026-08-15", "stable"];
 const wasmOptScript =
   process.env.WASM_OPT_SCRIPT ?? path.join(__dirname, "scripts/wasm-opt.sh");
 const binariesOutputDir =
@@ -120,17 +123,24 @@ async function buildBaseWasm() {
   // missing (compile cache is untouched).
   fs.rmSync(targetWasmFile, { force: true });
 
-  // Stable first; pinned nightly fallback WITHOUT build-std/atomics/
-  // tokio_unstable (the base needs none of them). RUSTFLAGS is set explicitly
-  // so it wins over any inherited RUSTFLAGS (e.g. CI's `-crt-static`);
-  // .cargo/config.toml's atomics flags are scoped to the -threads target only.
+  // Nightly first with build-std/panic_immediate_abort; stable fallback
+  // without them. RUSTFLAGS is set explicitly so it wins over any inherited
+  // RUSTFLAGS (e.g. CI's `-crt-static`); .cargo/config.toml's atomics flags are
+  // scoped to the -threads target only.
   const failures = [];
   let toolchainUsed = null;
   for (const tc of baseWasmToolchains) {
     try {
+      const isNightly = tc.includes("nightly");
       await execTask(`rustup target add wasm32-wasip1 --toolchain ${tc}`, {
         env: { ...process.env },
       });
+      if (isNightly) {
+        // `-Z build-std` needs the std sources for this exact toolchain.
+        await execTask(`rustup component add rust-src --toolchain ${tc}`, {
+          env: { ...process.env },
+        });
+      }
       // napi-build 2.3.2 hardcodes the +atomics emnapi archive, which cannot
       // link without TLS; generate the non-threaded shadow archive + stubs.
       const emnapiLinkDir = prepareEmnapiBaseLink({
@@ -139,13 +149,22 @@ async function buildBaseWasm() {
         emnapiLibDir: emnapiBase,
         rootDir: __dirname,
       });
+      // `panic_immediate_abort` became a real panic strategy in the pinned
+      // nightly; the compiler-flag route avoids adding the unstable
+      // `cargo-features` entry to the manifest the stable fallback must parse.
+      const useBuildStd = isNightly && isRelease;
+      const buildStdFlags = useBuildStd ? "-Z build-std=std,panic_abort" : "";
+      const rustFlags = [
+        `-C target-feature=${BASE_TARGET_FEATURES}`,
+        ...(useBuildStd ? ["-Zunstable-options", "-Cpanic=immediate-abort"] : []),
+      ].join(" ");
       await execTask(
-        `cargo +${tc} build --target wasm32-wasip1 --no-default-features ${isRelease ? `--profile ${wasmProfile}` : ""}`,
+        `cargo +${tc} build ${buildStdFlags} --target wasm32-wasip1 --no-default-features ${isRelease ? `--profile ${wasmProfile}` : ""}`,
         {
           env: {
             ...process.env,
             EMNAPI_LINK_DIR: emnapiLinkDir,
-            RUSTFLAGS: `-C target-feature=${BASE_TARGET_FEATURES}`,
+            RUSTFLAGS: rustFlags,
           },
           maxBuffer: 1024 * 1024 * 50,
         }
