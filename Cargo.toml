@@ -13,10 +13,6 @@ dpp = { git = "https://github.com/dashpay/platform", tag = "v5.1.0-rc.1", defaul
     "identity-serialization",
     "state-transition-signing",
     "platform-value"
-    # JSON conversions are enabled transitively by drive's `verify` feature
-    # (dpp/system_contracts -> platform-value-json -> json-conversion), so they
-    # are not listed here. Keeping the direct list minimal lets a future verify
-    # split drop them from the base build.
 ] }
 drive = { git = "https://github.com/dashpay/platform", tag = "v5.1.0-rc.1", default-features = false, features = [
     "verify"
