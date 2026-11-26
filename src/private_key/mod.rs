@@ -1,8 +1,4 @@
-use dpp::dashcore::hashes::hex::FromHex;
-use dpp::dashcore::key::Secp256k1;
-use dpp::dashcore::secp256k1::Message;
-use dpp::dashcore::secp256k1::hashes::hex::{Case, DisplayHex};
-use dpp::dashcore::signer::{CompactSignature, double_sha};
+use dpp::dashcore::signer::double_sha;
 use dpp::dashcore::{Network, PrivateKey, base58};
 use dpp::platform_value::string_encoding::{Encoding, decode};
 use napi::Either;
@@ -56,7 +52,7 @@ impl PrivateKeyNAPI {
 
     #[napi(js_name = "fromHex")]
     pub fn from_hex(hex_key: String, js_network: &DynamicValue) -> Result<Self, napi::Error> {
-        let bytes = Vec::from_hex(hex_key.as_str())
+        let bytes = hex::decode(hex_key.as_str())
             .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
 
         PrivateKeyNAPI::from_bytes(bytes.into(), js_network)
@@ -64,11 +60,7 @@ impl PrivateKeyNAPI {
 
     #[napi(js_name = "getPublicKey")]
     pub fn get_public_key(&self) -> PublicKeyNAPI {
-        let secp = Secp256k1::new();
-
-        let public_key = self.0.public_key(&secp);
-
-        public_key.into()
+        self.0.public_key().into()
     }
 }
 
@@ -91,14 +83,12 @@ impl PrivateKeyNAPI {
 
     #[napi(js_name = "hex")]
     pub fn get_hex(&self) -> String {
-        self.0.to_bytes().to_hex_string(Case::Upper)
+        hex::encode(self.0.to_bytes()).to_uppercase()
     }
 
     #[napi(js_name = "getPublicKeyHash")]
     pub fn get_public_key_hash(&self) -> String {
-        let secp = Secp256k1::new();
-
-        self.0.public_key(&secp).pubkey_hash().to_hex()
+        hex::encode(self.0.public_key().pubkey_hash().to_byte_array())
     }
 
     #[napi(js_name = "sign")]
@@ -113,19 +103,16 @@ impl PrivateKeyNAPI {
     pub fn sign_hash(&self, data_hash: Uint8Array) -> Result<Uint8Array, napi::Error> {
         let data_hash_vec = data_hash.to_vec();
 
-        let secp = Secp256k1::new();
-        let msg = Message::from_digest(data_hash_vec.as_slice().try_into().map_err(|_| {
+        let data_hash_arr: [u8; 32] = data_hash_vec.as_slice().try_into().map_err(|_| {
             napi::Error::new(
                 napi::Status::InvalidArg,
                 "Cannot convert data_hash to [u8; 32]",
             )
-        })?);
+        })?;
 
-        let signature = secp
-            .sign_ecdsa_recoverable(&msg, &self.0.inner)
-            .to_compact_signature(self.0.compressed);
+        let signature = self.0.inner.sign_recoverable(&data_hash_arr);
 
-        Ok(signature.to_vec().into())
+        Ok(AsRef::<[u8]>::as_ref(&signature).to_vec().into())
     }
 }
 

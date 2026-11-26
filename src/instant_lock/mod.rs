@@ -1,8 +1,5 @@
 use dpp::dashcore::bls_sig_utils::BLSSignature;
 use dpp::dashcore::hash_types::CycleHash;
-use dpp::dashcore::hashes::hex::FromHex;
-use dpp::dashcore::secp256k1::hashes::hex::Case::Lower;
-use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::dashcore::{InstantLock, Txid};
 use napi::Status;
 use napi_derive::napi;
@@ -42,7 +39,7 @@ impl InstantLockNAPI {
                 .into_iter()
                 .map(|input| input.clone().into())
                 .collect(),
-            txid: Txid::from_hex(&txid)
+            txid: Txid::from_str(&txid)
                 .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?,
             cyclehash: CycleHash::from_str(&cycle_hash)
                 .map_err(|err| napi::Error::new(Status::GenericFailure, err.to_string()))?,
@@ -77,7 +74,7 @@ impl InstantLockNAPI {
 
     #[napi(getter, js_name = "blsSignature")]
     pub fn get_bls_signature(&self) -> String {
-        self.0.signature.to_bytes().to_hex_string(Lower)
+        hex::encode(self.0.signature.to_bytes())
     }
 
     #[napi(setter, js_name = "version")]
@@ -95,7 +92,7 @@ impl InstantLockNAPI {
 
     #[napi(setter, js_name = "txid")]
     pub fn set_txid(&mut self, txid: String) -> Result<(), napi::Error> {
-        self.0.txid = Txid::from_hex(&txid)
+        self.0.txid = Txid::from_str(&txid)
             .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))?;
         Ok(())
     }

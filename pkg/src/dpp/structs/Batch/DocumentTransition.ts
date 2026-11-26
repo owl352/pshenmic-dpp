@@ -2,6 +2,7 @@ import type { DocumentTransitionNAPI } from '../../../../binaries/bindingsTypes.
 import { DocumentCreateTransitionWASM } from './DocumentTransitions/DocumentCreateTransition.js'
 import { DocumentReplaceTransitionWASM } from './DocumentTransitions/DocumentReplaceTransition.js'
 import { DocumentDeleteTransitionWASM } from './DocumentTransitions/DocumentDeleteTransition.js'
+import { DocumentEraseTransitionWASM } from './DocumentTransitions/DocumentEraseTransition.js'
 import { DocumentIndexOnlyDeleteTransitionWASM } from './DocumentTransitions/DocumentIndexOnlyDeleteTransition.js'
 import { DocumentPurchaseTransitionWASM } from './DocumentTransitions/DocumentPurchaseTransition.js'
 import { DocumentTransferTransitionWASM } from './DocumentTransitions/DocumentTransferTransition.js'
@@ -72,6 +73,10 @@ export class DocumentTransitionWASM {
 
   get deleteTransition (): DocumentDeleteTransitionWASM {
     return DocumentDeleteTransitionWASM.createFromRawInstance(this._rawTransition.deleteTransition)
+  }
+
+  get eraseTransition (): DocumentEraseTransitionWASM {
+    return DocumentEraseTransitionWASM.createFromRawInstance(this._rawTransition.eraseTransition)
   }
 
   get indexOnlyDeleteTransition (): DocumentIndexOnlyDeleteTransitionWASM {

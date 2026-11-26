@@ -166,6 +166,36 @@ impl GroveElementNAPI {
 
             // Indexed trees: `value` is the primary Merk's root key; the
             // secondary (ranking) Merks are not surfaced.
+            Element::ProvableCountProvableBigSumTree(root_key, count, sum, _) => (
+                "ProvableCountProvableBigSumTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                Some(count.to_string()),
+            ),
+            Element::CountBigSumTree(root_key, count, sum, _) => (
+                "CountBigSumTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                Some(count.to_string()),
+            ),
+            Element::ProvableBigSumTree(root_key, sum, _) => (
+                "ProvableBigSumTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                None,
+            ),
+            Element::ProvableBigSumIndexedTree(root_key, _, sum, _) => (
+                "ProvableBigSumIndexedTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                None,
+            ),
+            Element::ProvableCountProvableBigSumIndexedTree(root_key, count, sum, _, _) => (
+                "ProvableCountProvableBigSumIndexedTree",
+                root_key.clone(),
+                Some(sum.to_string()),
+                Some(count.to_string()),
+            ),
             Element::ProvableSumIndexedTree(root_key, _, sum, _) => (
                 "ProvableSumIndexedTree",
                 root_key.clone(),

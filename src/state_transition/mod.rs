@@ -1,5 +1,3 @@
-use dpp::dashcore::secp256k1::hashes::hex::Case::Lower;
-use dpp::dashcore::secp256k1::hashes::hex::DisplayHex;
 use dpp::data_contract::serialized_version::DataContractInSerializationFormat;
 use dpp::identity::KeyType;
 use dpp::platform_value::BinaryData;
@@ -301,7 +299,7 @@ impl StateTransitionNAPI {
                 .with_js_error()?;
         }
 
-        Ok(Sha256::digest(payload).to_hex_string(Lower))
+        Ok(hex::encode(Sha256::digest(payload)))
     }
 
     #[napi(js_name = "getActionName")]
@@ -378,6 +376,9 @@ impl StateTransitionNAPI {
             StateTransition::TokenPurchaseFromShieldedPool(st) => {
                 st.calculate_min_required_fee(&platform_version)
             }
+            StateTransition::PrivateDocumentCreateFromShieldedPool(st) => {
+                st.calculate_min_required_fee(&platform_version)
+            }
         };
 
         fee.map(BigIntString::from_u64).with_js_error()
@@ -423,6 +424,9 @@ impl StateTransitionNAPI {
             StateTransition::TokenPurchaseFromShieldedPool(_) => {
                 "TOKEN_PURCHASE_FROM_SHIELDED_POOL"
             }
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => {
+                "PRIVATE_DOCUMENT_CREATE_FROM_SHIELDED_POOL"
+            }
         }
         .to_string()
     }
@@ -459,6 +463,7 @@ impl StateTransitionNAPI {
             StateTransition::TokenShieldedTransferWithShieldedFee(_) => 26,
             StateTransition::TokenUnshieldWithShieldedFee(_) => 27,
             StateTransition::TokenPurchaseFromShieldedPool(_) => 28,
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => 29,
         }
     }
 
@@ -567,6 +572,7 @@ impl StateTransitionNAPI {
             StateTransition::TokenShieldedTransferWithShieldedFee(_) => None,
             StateTransition::TokenUnshieldWithShieldedFee(_) => None,
             StateTransition::TokenPurchaseFromShieldedPool(_) => None,
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => None,
         }
     }
 
@@ -612,6 +618,7 @@ impl StateTransitionNAPI {
             StateTransition::TokenShieldedTransferWithShieldedFee(_) => None,
             StateTransition::TokenUnshieldWithShieldedFee(_) => None,
             StateTransition::TokenPurchaseFromShieldedPool(_) => None,
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => None,
         }
     }
 
@@ -652,6 +659,11 @@ impl StateTransitionNAPI {
 
                         DataContractInSerializationFormat::V1(v1)
                     }
+                    DataContractInSerializationFormat::V2(mut v2) => {
+                        v2.base.owner_id = owner_id.into();
+
+                        DataContractInSerializationFormat::V2(v2)
+                    }
                 };
 
                 contract_create.set_data_contract(new_contract);
@@ -669,6 +681,11 @@ impl StateTransitionNAPI {
                         v1.owner_id = owner_id.into();
 
                         DataContractInSerializationFormat::V1(v1)
+                    }
+                    DataContractInSerializationFormat::V2(mut v2) => {
+                        v2.base.owner_id = owner_id.into();
+
+                        DataContractInSerializationFormat::V2(v2)
                     }
                 };
 
@@ -836,6 +853,12 @@ impl StateTransitionNAPI {
                     "Cannot set owner for TokenPurchaseFromShieldedPool",
                 ))?;
             }
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => {
+                Err(napi::Error::new(
+                    napi::Status::GenericFailure,
+                    "Cannot set owner for PrivateDocumentCreateFromShieldedPool",
+                ))?;
+            }
         };
 
         Ok(())
@@ -965,6 +988,10 @@ impl StateTransitionNAPI {
             StateTransition::TokenPurchaseFromShieldedPool(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot set identity contract nonce for TokenPurchaseFromShieldedPool",
+            ))?,
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity contract nonce for PrivateDocumentCreateFromShieldedPool",
             ))?,
         };
 
@@ -1112,6 +1139,10 @@ impl StateTransitionNAPI {
             StateTransition::TokenPurchaseFromShieldedPool(_) => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 "Cannot set identity nonce for TokenPurchaseFromShieldedPool",
+            ))?,
+            StateTransition::PrivateDocumentCreateFromShieldedPool(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "Cannot set identity nonce for PrivateDocumentCreateFromShieldedPool",
             ))?,
         };
 

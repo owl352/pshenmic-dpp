@@ -15,6 +15,7 @@ import { TokenConfigurationWASM } from './structs/TokenConfiguration/TokenConfig
 import { GroupWASM } from './structs/TokenConfiguration/Group.js'
 import { DocumentCreateTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentCreateTransition.js'
 import { DocumentDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentDeleteTransition.js'
+import { DocumentEraseTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentEraseTransition.js'
 import { DocumentIndexOnlyDeleteTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentIndexOnlyDeleteTransition.js'
 import { DocumentPurchaseTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentPurchaseTransition.js'
 import { DocumentReplaceTransitionWASM } from './structs/Batch/DocumentTransitions/DocumentReplaceTransition.js'
@@ -146,6 +147,7 @@ export interface DataContractGroups {
 export type DocumentTransitionLike =
   DocumentCreateTransitionWASM
   | DocumentDeleteTransitionWASM
+  | DocumentEraseTransitionWASM
   | DocumentIndexOnlyDeleteTransitionWASM
   | DocumentPurchaseTransitionWASM
   | DocumentReplaceTransitionWASM

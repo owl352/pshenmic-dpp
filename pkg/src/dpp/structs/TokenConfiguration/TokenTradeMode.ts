@@ -17,6 +17,11 @@ export class TokenTradeModeWASM {
     return TokenTradeModeWASM.createFromRawInstance(dppProvider.dpp.TokenTradeModeNAPI.NotTradeable())
   }
 
+  /** Holders may list the token and make offers for it (protocol version 16). */
+  static Tradeable (): TokenTradeModeWASM {
+    return TokenTradeModeWASM.createFromRawInstance(dppProvider.dpp.TokenTradeModeNAPI.Tradeable())
+  }
+
   static createFromRawInstance (rawInstance: TokenTradeModeNAPI): TokenTradeModeWASM {
     return new TokenTradeModeWASM(rawInstance)
   }

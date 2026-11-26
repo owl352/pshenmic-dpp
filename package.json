@@ -1,6 +1,6 @@
 {
   "name": "pshenmic-dpp",
-  "version": "2.1.0-dev.1",
+  "version": "2.1.0",
   "main": "dist/src/wasm.js",
   "types": "dist/src/wasm.d.ts",
   "react-native": "./dist/src/react-native.js",
@@ -70,7 +70,7 @@
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
     "wasm-opt": "^1.4.0",
-    "dash-platform-shielded": "0.0.1"
+    "dash-platform-shielded": "0.0.2"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",

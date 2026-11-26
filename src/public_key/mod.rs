@@ -1,5 +1,6 @@
+use dpp::dashcore::PublicKey;
+use dpp::dashcore::ecdsa::EcdsaPublicKey;
 use dpp::dashcore::key::constants;
-use dpp::dashcore::{PublicKey, secp256k1};
 use dpp::util::hash::ripemd160_sha256;
 use napi::bindgen_prelude::Uint8Array;
 use napi_derive::napi;
@@ -40,11 +41,8 @@ impl PublicKeyNAPI {
 
                 let public_key_bytes_vec = public_key_bytes.to_vec();
 
-                secp256k1::PublicKey::from_byte_array_compressed(
-                    &public_key_bytes_vec.try_into().map_err(|_| {
-                        napi::Error::new(napi::Status::InvalidArg, "Invalid public key bytes")
-                    })?,
-                )
+                EcdsaPublicKey::from_bytes(&public_key_bytes_vec)
+                    .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))
             }
             false => {
                 if public_key_bytes.len() != constants::UNCOMPRESSED_PUBLIC_KEY_SIZE {
@@ -59,11 +57,8 @@ impl PublicKeyNAPI {
 
                 let public_key_bytes_vec = public_key_bytes.to_vec();
 
-                secp256k1::PublicKey::from_byte_array_uncompressed(
-                    &public_key_bytes_vec.try_into().map_err(|_| {
-                        napi::Error::new(napi::Status::InvalidArg, "Invalid public key bytes")
-                    })?,
-                )
+                EcdsaPublicKey::from_bytes(&public_key_bytes_vec)
+                    .map_err(|err| napi::Error::new(napi::Status::InvalidArg, err.to_string()))
             }
         }
         .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
@@ -79,8 +74,8 @@ impl PublicKeyNAPI {
     #[napi(getter, js_name = "inner")]
     pub fn inner(&self) -> Uint8Array {
         match self.0.compressed {
-            true => self.0.inner.serialize().into(),
-            false => self.0.inner.serialize_uncompressed().into(),
+            true => self.0.inner.to_compressed().to_vec().into(),
+            false => self.0.inner.to_uncompressed().to_vec().into(),
         }
     }
 
@@ -96,15 +91,9 @@ impl PublicKeyNAPI {
                 let inner_vec = inner.to_vec();
 
                 self.0.compressed = true;
-                self.0.inner = secp256k1::PublicKey::from_byte_array_compressed(
-                    &inner_vec.try_into().map_err(|_| {
-                        napi::Error::new(
-                            napi::Status::GenericFailure,
-                            "Cannot convert Uint8Array to byte array",
-                        )
-                    })?,
-                )
-                .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?
+                self.0.inner = EcdsaPublicKey::from_bytes(&inner_vec).map_err(|err| {
+                    napi::Error::new(napi::Status::GenericFailure, err.to_string())
+                })?
             }
             false => {
                 let inner_vec = inner.to_vec();
@@ -120,15 +109,9 @@ impl PublicKeyNAPI {
                 }
 
                 self.0.compressed = false;
-                self.0.inner = secp256k1::PublicKey::from_byte_array_uncompressed(
-                    &inner_vec.try_into().map_err(|_| {
-                        napi::Error::new(
-                            napi::Status::GenericFailure,
-                            "Cannot convert Uint8Array to byte array",
-                        )
-                    })?,
-                )
-                .map_err(|err| napi::Error::new(napi::Status::GenericFailure, err.to_string()))?;
+                self.0.inner = EcdsaPublicKey::from_bytes(&inner_vec).map_err(|err| {
+                    napi::Error::new(napi::Status::GenericFailure, err.to_string())
+                })?;
             }
         };
 
@@ -137,7 +120,7 @@ impl PublicKeyNAPI {
 
     #[napi(js_name = getPublicKeyHash)]
     pub fn get_public_key_hash(&self) -> String {
-        self.0.pubkey_hash().to_hex()
+        hex::encode(self.0.pubkey_hash().to_byte_array())
     }
 
     #[napi(js_name = hash160)]

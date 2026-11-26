@@ -1,6 +1,7 @@
 pub mod resource_vote_choice;
 pub mod vote;
 pub mod vote_poll;
+pub mod yes_no_minimum_voting_power;
 
 use dpp::identity::state_transition::OptionallyAssetLockProved;
 use dpp::platform_value::BinaryData;

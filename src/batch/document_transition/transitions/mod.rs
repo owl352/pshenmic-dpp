@@ -1,5 +1,6 @@
 pub mod create;
 pub mod delete;
+pub mod erase;
 pub mod index_only_delete;
 pub mod purchase;
 pub mod replace;

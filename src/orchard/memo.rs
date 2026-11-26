@@ -33,6 +33,26 @@ impl ShieldedMemoNAPI {
         ShieldedMemoNAPI(ShieldedMemo::Empty)
     }
 
+    /// A payment reference (protocol version 15): what the payment is for, in a value
+    /// the payee chose and gave to the payer (an invoice or order number), padded on
+    /// the right with zero bytes. 1 to 32 bytes; an empty or all-zero reference is
+    /// refused.
+    #[napi(js_name = "fromPaymentRef")]
+    pub fn from_payment_ref(reference: Uint8Array) -> Result<Self, napi::Error> {
+        ShieldedMemo::payment_ref(reference.to_vec().as_slice())
+            .map(ShieldedMemoNAPI)
+            .map_err(|error| napi::Error::new(napi::Status::InvalidArg, error.to_string()))
+    }
+
+    /// The 32-byte reference of a `PaymentRef` memo, or `None` for another kind.
+    #[napi(getter, js_name = "paymentRef")]
+    pub fn payment_ref(&self) -> Option<Uint8Array> {
+        match &self.0 {
+            ShieldedMemo::PaymentRef(reference) => Some(reference.to_vec().into()),
+            _ => None,
+        }
+    }
+
     #[napi(js_name = "other")]
     pub fn other(kind: u32, payload: Uint8Array) -> Result<Self, napi::Error> {
         if payload.len() != MEMO_PAYLOAD_SIZE {
@@ -56,6 +76,10 @@ impl ShieldedMemoNAPI {
         match &self.0 {
             ShieldedMemo::Empty => Ok(String::new()),
             ShieldedMemo::Text(text) => Ok(text.clone()),
+            ShieldedMemo::PaymentRef(_) => Err(napi::Error::new(
+                napi::Status::GenericFailure,
+                "memo is a payment reference, not text; use paymentRef or toBytes instead",
+            )),
             ShieldedMemo::Other { kind, .. } => Err(napi::Error::new(
                 napi::Status::GenericFailure,
                 format!("memo of kind {kind} is not text; use toBytes instead"),
