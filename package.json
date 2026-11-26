@@ -70,7 +70,7 @@
     "typedoc": "^0.28.7",
     "typescript": "^5.8.3",
     "wasm-opt": "^1.4.0",
-    "dash-platform-shielded": "0.0.1"
+    "dash-platform-shielded": "0.0.2"
   },
   "dependencies": {
     "@emnapi/core": "1.11.3",
