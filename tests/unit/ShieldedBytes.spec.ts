@@ -21,7 +21,7 @@ import {
   ShieldedTransferTransitionWASM,
   StateTransitionWASM,
   TokenShieldedPaymentWASM
-} from '../utils/withShielded.js'
+} from 'pshenmic-dpp'
 
 // Bytes round-trips for the classes that cross the base <-> shielded boundary
 // (smart-A1). Heavy shielded data classes (OrchardAddress, SpendableNote, Note,
@@ -318,6 +318,14 @@ describe('boundary bytes round-trips', function () {
     test('fromBytes rejects a wrong-length payload', function () {
       // MEMO_SIZE is 36; the error must name the expected length, not just throw
       expect(() => ShieldedMemoWASM.fromBytes(bytes(35))).toThrow(/36/)
+    })
+
+    test('payment reference memo round-trips (protocol v15)', function () {
+      const memo = ShieldedMemoWASM.fromPaymentRef(new Uint8Array([1, 2, 3, 4]))
+
+      expect(memo.toBytes()).toHaveLength(36)
+      expect(memo.paymentRef?.slice(0, 4)).toEqual(new Uint8Array([1, 2, 3, 4]))
+      expect(ShieldedMemoWASM.fromBytes(memo.toBytes()).toBytes()).toEqual(memo.toBytes())
     })
   })
 

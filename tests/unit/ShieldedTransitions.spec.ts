@@ -19,8 +19,9 @@ import {
   SecurityLevel,
   KeyType,
   PlatformVersionWASM,
-  StateTransitionWASM
-} from '../utils/withShielded.js'
+  StateTransitionWASM,
+  PrivateDocumentCreateFromShieldedPoolTransitionWASM
+} from 'pshenmic-dpp'
 
 // BASE-only suite: SerializedAction + the shielded transitions are kept in the
 // base module on every entry, so no proving module is needed.
@@ -876,5 +877,34 @@ describe('computeMinimumFee across shielded transitions', function () {
   test('IdentityCreateFromShieldedPool should add the identity create floor on top of ShieldedTransfer', function () {
     expect(IdentityCreateFromShieldedPoolTransitionWASM.computeMinimumFee(numActions, 1))
       .toBeGreaterThan(ShieldedTransferTransitionWASM.computeMinimumFee(numActions))
+  })
+})
+
+describe('PrivateDocumentCreateFromShieldedPoolTransition', function () {
+  const dataContractId = IdentifierWASM.fromBytes(randomBytes(32))
+
+  test('builds a type 29 transition and exposes its committed fields', function () {
+    const transition = new PrivateDocumentCreateFromShieldedPoolTransitionWASM(
+      dataContractId,
+      'privateNote',
+      [randomBytes(64)],
+      [],
+      BigInt(0),
+      randomBytes(32),
+      new Uint8Array(),
+      randomBytes(64)
+    )
+
+    expect(transition.dataContractId.base58()).toEqual(dataContractId.base58())
+    expect(transition.documentTypeName).toEqual('privateNote')
+    expect(transition.entries).toHaveLength(1)
+    expect(transition.toStateTransition().getActionTypeNumber()).toEqual(29)
+  })
+
+  test('computeMinimumFee grows with the entries', function () {
+    const withoutEntries = PrivateDocumentCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 0, 0)
+    const withEntries = PrivateDocumentCreateFromShieldedPoolTransitionWASM.computeMinimumFee(2, 2, 64)
+
+    expect(withEntries).toBeGreaterThan(withoutEntries)
   })
 })
