@@ -114,10 +114,12 @@ Without cross-origin isolation the browser wasm path fails with a
 `SharedArrayBuffer` error. Connect-only consumers never install the shielded
 package and keep the base dpp entry with no isolation headers.
 
-> **Breaking change (major version) for proving consumers:** shielded classes are
-> no longer exported by `pshenmic-dpp`. Install `dash-platform-shielded`, pass a
+> **Shielded proving:** the proving classes (Orchard data, builder/prover,
+> commitment tree) live in `dash-platform-shielded`; install it, pass a
 > `new DashPlatformShielded()` instance to the SDK, and use the shielded
-> controller. There is no `setShielded()` call on dpp.
+> controller. The dependency-free shielded wrappers (`ShieldedMemoWASM`, the
+> shield/transfer/unshield/token-pool transition classes and the shielded proof
+> verifiers) remain exported by `pshenmic-dpp`.
 
 ___
 ## Current features
@@ -176,10 +178,17 @@ ___
   - `IdentityTopUpFromAddressesTransitionWASM`
 
 ### Shielded Pool (Orchard)
-These proving classes live in the separate `dash-platform-shielded` package.
+The proving classes below live in the separate `dash-platform-shielded` package.
 Create `new DashPlatformShielded()` and pass it to the SDK; the browser wasm path
 needs isolation — see
 [Shielded proving / cross-origin isolation](#shielded-proving--cross-origin-isolation).
+
+`pshenmic-dpp` still exports the dependency-free data side: `ShieldedMemoWASM`,
+`ShieldTransitionWASM`, `ShieldedTransferTransitionWASM`, `UnshieldTransitionWASM`,
+`ShieldFromAssetLockTransitionWASM`, `ShieldFromIdentityTransitionWASM`,
+`ShieldedWithdrawalTransitionWASM`, the identity/token shielded-pool transition
+classes, `PrivateDocumentCreateFromShieldedPoolTransitionWASM`, and the
+`verifyShielded*Proof` functions.
 - `OrchardAddressWASM`, `orchardOvkFromSeed`
 - `FullViewingKeyWASM`
 - `IncomingViewingKeyWASM`
